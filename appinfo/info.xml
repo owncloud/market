@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<info>
+	<id>market</id>
+	<name>Market</name>
+	<description>ownCloud marketplace integration and app management</description>
+	<licence>AGPL</licence>
+	<author>Thomas Müller</author>
+	<version>0.1.0</version>
+	<default_enable/>
+	<dependencies>
+		<owncloud min-version="9.2" max-version="9.2" />
+	</dependencies>
+	<background-jobs>
+		<job>OCA\Market\SyncJob</job>
+	</background-jobs>
+	<commands>
+		<command>OCA\Market\Command\InstallApp</command>
+	</commands>
+</info>
