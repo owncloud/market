@@ -105,7 +105,7 @@ class MarketService {
 	}
 
 	private function getInstalledAppInfo($ocsId) {
-		$apps = $this->appManager->getInstalledApps();
+		$apps = $this->appManager->getAllApps();
 		foreach ($apps as $app) {
 			$info = $this->appManager->getAppInfo($app);
 			if (isset($info['ocsid']) && (int)$info['ocsid'] === (int)$ocsId) {
@@ -129,7 +129,7 @@ class MarketService {
 
 	public function getUpdates() {
 		$result = [];
-		$apps = $this->appManager->getInstalledApps();
+		$apps = $this->appManager->getAllApps();
 		foreach ($apps as $app) {
 			$info = $this->appManager->getAppInfo($app);
 			if (isset($info['ocsid'])) {
