@@ -36,6 +36,7 @@ namespace OCA\Market\AppStore;
 use OCP\Http\Client\IClientService;
 use OCP\IConfig;
 use OCP\ILogger;
+use OCP\Util;
 
 /**
  * Class OCSClient is a class for communication with the ownCloud appstore
@@ -69,13 +70,7 @@ class OCSClient {
 	 * @return bool
 	 */
 	public function isAppStoreEnabled() {
-		// For a regular edition default to true, all others default to false
-		$default = false;
-		if (\OC_Util::getEditionString() === '') {
-			$default = true;
-		}
-
-		return $this->config->getSystemValue('appstoreenabled', $default) === true;
+		return $this->config->getSystemValue('appstoreenabled', true) === true;
 	}
 
 	/**
@@ -280,7 +275,7 @@ class OCSClient {
 
 		$tmp = $data->data->content;
 		if (is_null($tmp)) {
-			\OCP\Util::writeLog('core', 'No update found at the ownCloud appstore for app ' . $id, \OCP\Util::DEBUG);
+			Util::writeLog('core', 'No update found at the ownCloud appstore for app ' . $id, Util::DEBUG);
 			return null;
 		}
 
