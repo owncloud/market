@@ -22,8 +22,7 @@
 
 namespace OCA\Market;
 
-
-use OC\OCSClient;
+use OCA\Market\AppStore\OCSClient;
 use OCP\App\IAppManager;
 use OCP\IAppConfig;
 
