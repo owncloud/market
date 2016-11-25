@@ -27,7 +27,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class InstallApp extends Command {
+class UpgradeApp extends Command {
 
 	private $marketService;
 
@@ -38,15 +38,29 @@ class InstallApp extends Command {
 
 	protected function configure() {
 		$this
-			->setName('market:install')
-			->setDescription('Install apps from the marketplace. If already installed and an update is available the update will be installed.')
+			->setName('market:upgrade')
+			->setDescription('Installs new app versions if available on the marketplace')
 			->addArgument('ids',
-				InputArgument::REQUIRED | InputArgument::IS_ARRAY,
-				'Ids of the apps');
+				InputArgument::OPTIONAL | InputArgument::IS_ARRAY,
+				'Ids of the apps')
+			->addOption('list')
+			->addOption('all');
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
+		if ($input->getOption('list')) {
+			$updates = $this->marketService->getUpdates();
+			foreach ($updates as $name => $info) {
+				$output->writeln("$name : {$info['version']}");
+			}
+			return;
+		}
 		$ocsIds = $input->getArgument('ids');
+		if ($input->getOption('all')) {
+			$ocsIds = array_map(function($elem) {
+				return $elem['ocsid'];
+			}, $this->marketService->getUpdates());
+		}
 		$ocsIds = array_unique($ocsIds);
 
 		foreach ($ocsIds as $ocsId) {
@@ -58,12 +72,10 @@ class InstallApp extends Command {
 						$this->marketService->updateApp($ocsId);
 						$output->writeln("$ocsId: App updated.");
 					} else {
-						$output->writeln("$ocsId: App already installed and no update available");
+						$output->writeln("$ocsId: No update available");
 					}
 				} else {
-					$output->writeln("$ocsId: Installing new app ...");
-					$this->marketService->installApp($ocsId);
-					$output->writeln("$ocsId: App installed.");
+					$output->writeln("$ocsId: Not installed ...");
 				}
 			} catch (\Exception $ex) {
 				$output->writeln("$ocsId: {$ex->getMessage()}");

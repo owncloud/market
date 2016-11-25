@@ -1,11 +1,11 @@
 language: php
 php:
   - 5.6
-  - 7
+  - "7.0"
 
 env:
   global:
-    - CORE_BRANCH=master
+    - CORE_BRANCH=public-api-app-mgmt
     - APP_NAME=market
   matrix:
     - DB=sqlite
