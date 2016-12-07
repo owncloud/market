@@ -17,4 +17,9 @@
 		<command>OCA\Market\Command\InstallApp</command>
 		<command>OCA\Market\Command\UpgradeApp</command>
 	</commands>
+	<navigation role="admin">
+		<route>market.page.index</route>
+		<order>100</order>
+	</navigation>
+
 </info>
