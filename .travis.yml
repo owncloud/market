@@ -6,7 +6,7 @@ php:
 
 env:
   global:
-    - CORE_BRANCH=public-api-app-mgmt
+    - CORE_BRANCH=master
     - APP_NAME=market
   matrix:
     - DB=sqlite
