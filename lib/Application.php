@@ -31,37 +31,8 @@ class Application extends App {
 	 * @param array $urlParams
 	 */
 	public function __construct(array $urlParams = array()) {
-		parent::__construct('firewall', $urlParams);
-
-//		$this->registerServices();
-	}
-
-
-	public function boot() {
-		if ($this->isAdmin()) {
-			\OC::$server->getNavigationManager()->add(function () {
-				$urlGenerator = \OC::$server->getURLGenerator();
-				$l = \OC::$server->getL10N('market');
-				return [
-					'id' => 'market',
-					'order' => 100,
-					'href' => $urlGenerator->linkToRoute('market.page.index'),
-					'icon' => $urlGenerator->imagePath('market', 'market.svg'),
-					'name' => $l->t('Market'),
-				];
-			});
-		}
-	}
-
-	private function isAdmin() {
-		$container = $this->getContainer();
-		$userSession = $container->getServer()->getUserSession();
-
-		$user = $userSession->getUser();
-		if ($user !== null) {
-			$groupManager = $container->getServer()->getGroupManager();
-			return $groupManager->isAdmin($user->getUID());
-		}
-		return false;
+		parent::__construct('market', $urlParams);
+		// needed for translation
+		// t('Market')
 	}
 }
