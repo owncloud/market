@@ -59,8 +59,6 @@ matrix:
       env: DB=mysql;CODECHECK=1
     - php: 5.6
       env: DB=mysql;CODECHECK=2
-#    - php: 5.6
-#      env: DB=mysql;JSTESTS=1
   allow_failures:
     - env: DB=mysql;CODECHECK=2
   fast_finish: true
