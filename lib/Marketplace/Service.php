@@ -292,4 +292,10 @@ class Service {
 		return $response;
 	}
 
+	public function listApps() {
+		$apps = $this->getApps();
+		// TODO: filter?
+		return $apps;
+	}
+
 }
