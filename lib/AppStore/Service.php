@@ -172,4 +172,10 @@ class Service {
 
 		return $result;
 	}
+
+
+	public function listApps() {
+		return [];
+	}
+
 }

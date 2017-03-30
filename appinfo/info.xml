@@ -15,6 +15,7 @@
 	</background-jobs>
 	<commands>
 		<command>OCA\Market\Command\InstallApp</command>
+		<command>OCA\Market\Command\ListApps</command>
 		<command>OCA\Market\Command\UpgradeApp</command>
 	</commands>
 	<navigation role="admin">

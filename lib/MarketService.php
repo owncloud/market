@@ -59,4 +59,8 @@ class MarketService {
 	public function getUpdates() {
 		return $this->impl->getUpdates();
 	}
+
+	public function listApps() {
+		return $this->impl->listApps();
+	}
 }
