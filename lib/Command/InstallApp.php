@@ -29,6 +29,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class InstallApp extends Command {
 
+	/** @var MarketService */
 	private $marketService;
 
 	public function __construct(MarketService $marketService) {
@@ -46,27 +47,27 @@ class InstallApp extends Command {
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
-		$ocsIds = $input->getArgument('ids');
-		$ocsIds = array_unique($ocsIds);
+		$appIds = $input->getArgument('ids');
+		$appIds = array_unique($appIds);
 
-		foreach ($ocsIds as $ocsId) {
+		foreach ($appIds as $appId) {
 			try {
-				if ($this->marketService->isAppInstalled($ocsId)) {
-					$updateVersion = $this->marketService->updateAvailable($ocsId);
+				if ($this->marketService->isAppInstalled($appId)) {
+					$updateVersion = $this->marketService->getAvailableUpdateVersion($appId);
 					if ($updateVersion !== false) {
-						$output->writeln("$ocsId: Installing new version $updateVersion ...");
-						$this->marketService->updateApp($ocsId);
-						$output->writeln("$ocsId: App updated.");
+						$output->writeln("$appId: Installing new version $updateVersion ...");
+						$this->marketService->updateApp($appId);
+						$output->writeln("$appId: App updated.");
 					} else {
-						$output->writeln("$ocsId: App already installed and no update available");
+						$output->writeln("$appId: App already installed and no update available");
 					}
 				} else {
-					$output->writeln("$ocsId: Installing new app ...");
-					$this->marketService->installApp($ocsId);
-					$output->writeln("$ocsId: App installed.");
+					$output->writeln("$appId: Installing new app ...");
+					$this->marketService->installApp($appId);
+					$output->writeln("$appId: App installed.");
 				}
 			} catch (\Exception $ex) {
-				$output->writeln("$ocsId: {$ex->getMessage()}");
+				$output->writeln("$appId: {$ex->getMessage()}");
 			}
 		}
 	}
