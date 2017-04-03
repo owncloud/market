@@ -22,6 +22,8 @@
 
 namespace OCA\Market;
 
+use OC\App\DependencyAnalyzer;
+use OC\App\Platform;
 use OCP\App\IAppManager;
 use OCP\ICacheFactory;
 use OCP\IConfig;
@@ -128,10 +130,14 @@ class MarketService {
 		if (is_null($marketInfo)) {
 			throw new \InvalidArgumentException("App ($appId) is not known at the marketplace.");
 		}
-		$marketVersion = (string) $marketInfo['version'];
+		$releases = $marketInfo['releases'];
 		$currentVersion = (string) $info['version'];
-		if (version_compare($marketVersion, $currentVersion, '>')) {
-			return $marketVersion;
+		$releases = array_filter($releases, function($r) use ($currentVersion) {
+			$marketVersion = $r['version'];
+			return version_compare($marketVersion, $currentVersion, '>');
+		});
+		if (!empty($releases)) {
+			return $releases[0]['version'];
 		}
 		return false;
 	}
@@ -147,7 +153,11 @@ class MarketService {
 		return $data[0];
 	}
 
-	private function getInstalledAppInfo($appId) {
+	/**
+	 * @param string $appId
+	 * @return array|null
+	 */
+	public function getInstalledAppInfo($appId) {
 		$apps = $this->appManager->getAllApps();
 		foreach ($apps as $app) {
 			$info = $this->appManager->getAppInfo($app);
@@ -167,12 +177,26 @@ class MarketService {
 	public function updateApp($appId) {
 		$info = $this->getInstalledAppInfo($appId);
 		if (is_null($info)) {
-			throw new \InvalidArgumentException('App is not installed');
+			throw new \InvalidArgumentException("App $appId is not installed");
 		}
 
 		// download package
 		$package = $this->downloadPackage($appId);
 		$this->appManager->updateApp($package);
+	}
+
+	/**
+	 * Verify if all requirements are met
+	 *
+	 * @param [] $appInfo
+	 * @return []
+	 */
+	public function getMissingDependencies($appInfo) {
+		// bad hack - should use OCP
+		$l10n = \OC::$server->getL10N('settings');
+		$dependencyAnalyzer = new DependencyAnalyzer(new Platform($this->config), $l10n);
+
+		return $dependencyAnalyzer->analyze($appInfo);
 	}
 
 	/**
