@@ -25,6 +25,7 @@ namespace OCA\Market\Marketplace;
 use OCP\App\IAppManager;
 use OCP\IAppConfig;
 use OCP\ICacheFactory;
+use OCP\IConfig;
 use OCP\Util;
 
 class Service {
@@ -35,8 +36,8 @@ class Service {
 	private $cacheFactory;
 	/** @var IAppManager */
 	private $appManager;
-	/** @var IAppConfig */
-	private $appConfig;
+	/** @var IConfig */
+	private $config;
 	/** @var string */
 	private $storeUrl;
 
@@ -44,13 +45,13 @@ class Service {
 	 * Service constructor.
 	 *
 	 * @param IAppManager $appManager
-	 * @param IAppConfig $appConfig
+	 * @param IConfig $config
 	 * @param ICacheFactory $cacheFactory
 	 * @param string $storeUrl
 	 */
-	public function __construct(IAppManager $appManager, IAppConfig $appConfig, ICacheFactory $cacheFactory, $storeUrl) {
+	public function __construct(IAppManager $appManager, IConfig $config, ICacheFactory $cacheFactory, $storeUrl) {
 		$this->appManager = $appManager;
-		$this->appConfig = $appConfig;
+		$this->config = $config;
 		$this->storeUrl = $storeUrl;
 		$this->cacheFactory = $cacheFactory;
 	}
@@ -96,8 +97,7 @@ class Service {
 		$pathInfo = pathinfo($downloadLink);
 		$extension = isset($pathInfo['extension']) ? '.' . $pathInfo['extension'] : '';
 		$path = \OC::$server->getTempManager()->getTemporaryFile($extension);
-		$client = $this->newHttpClient();
-		$client->get($downloadLink, ['save_to' => $path]);
+		$this->httpGet($downloadLink, ['save_to' => $path]);
 
 		return $path;
 	}
@@ -264,8 +264,7 @@ class Service {
 		}
 
 		// ask the server
-		$client = $this->newHttpClient();
-		$response = $client->get($this->storeUrl . "/api/v1/platform/$version/apps.json");
+		$response = $this->httpGet($this->storeUrl . "/api/v1/platform/$version/apps.json");
 		$data = $response->getBody();
 		if ($this->cacheFactory->isAvailable()) {
 			// cache if for a day - TODO: evaluate the response header
@@ -277,11 +276,26 @@ class Service {
 	}
 
 	/**
-	 * @return \OCP\Http\Client\IClient
+	 * @param string $path
+	 * @param array $options
+	 * @return \OCP\Http\Client\IResponse
 	 */
-	private function newHttpClient() {
-		// TODO: set auth
-		return \OC::$server->getHTTPClientService()->newClient();
+	private function httpGet($path, $options = []) {
+		$apiKey = $this->config->getSystemValue('marketplace.key', null);
+		if ($apiKey !== null) {
+			$options = array_merge([
+				'headers' => ['Authorization' => "apikey: $apiKey"]
+			], $options);
+		}
+		$client = \OC::$server->getHTTPClientService()->newClient();
+		$response = $client->get($path, $options);
+		return $response;
+	}
+
+	public function listApps() {
+		$apps = $this->getApps();
+		// TODO: filter?
+		return $apps;
 	}
 
 }

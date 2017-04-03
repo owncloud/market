@@ -30,13 +30,13 @@ use OCP\IConfig;
 
 class MarketService {
 
-	public function __construct(IConfig $config, IAppManager $appManager, IAppConfig $appConfig, ICacheFactory $cacheFactory) {
+	public function __construct(IConfig $config, IAppManager $appManager, ICacheFactory $cacheFactory) {
 		$storeUrl = $config->getSystemValue('appstoreurl', 'https://api.owncloud.com/v1');
 
 		if ($storeUrl === 'https://api.owncloud.com/v1') {
-			$this->impl = new AppStore\Service($appManager, $appConfig);
+			$this->impl = new AppStore\Service($appManager);
 		} else {
-			$this->impl = new Service($appManager, $appConfig, $cacheFactory, $storeUrl);
+			$this->impl = new Service($appManager, $config, $cacheFactory, $storeUrl);
 		}
 	}
 
@@ -58,5 +58,9 @@ class MarketService {
 
 	public function getUpdates() {
 		return $this->impl->getUpdates();
+	}
+
+	public function listApps() {
+		return $this->impl->listApps();
 	}
 }

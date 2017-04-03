@@ -23,13 +23,11 @@
 namespace OCA\Market\AppStore;
 
 use OCP\App\IAppManager;
-use OCP\IAppConfig;
 
 class Service {
 
-	public function __construct(IAppManager $appManager, IAppConfig $appConfig) {
+	public function __construct(IAppManager $appManager) {
 		$this->appManager = $appManager;
-		$this->appConfig = $appConfig;
 	}
 
 	/**
@@ -174,4 +172,10 @@ class Service {
 
 		return $result;
 	}
+
+
+	public function listApps() {
+		return [];
+	}
+
 }

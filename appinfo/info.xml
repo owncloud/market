@@ -8,13 +8,14 @@
 	<version>0.1.0</version>
 	<default_enable/>
 	<dependencies>
-		<owncloud min-version="9.2" max-version="9.2" />
+		<owncloud min-version="10.0" max-version="10.0" />
 	</dependencies>
 	<background-jobs>
 		<job>OCA\Market\SyncJob</job>
 	</background-jobs>
 	<commands>
 		<command>OCA\Market\Command\InstallApp</command>
+		<command>OCA\Market\Command\ListApps</command>
 		<command>OCA\Market\Command\UpgradeApp</command>
 	</commands>
 	<navigation role="admin">

@@ -28,6 +28,7 @@ before_install:
   - ./occ app:list
 
 script:
+  - ./occ app:enable market
   - cd apps/$APP_NAME/
 
   # Test the app
