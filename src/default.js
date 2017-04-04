@@ -1,6 +1,5 @@
 import 'babel-polyfill';
 
-
 // ------------------------------------------------------------------------------------------------ Uikit components ---
 import UIkit from 'uikit';
 import Icons from 'uikit/dist/js/uikit-icons';
@@ -12,6 +11,8 @@ import Vue from 'vue'
 
 // -------------------------------------------------------------------------------------------------- App components ---
 import App from './App.vue'
+
+require('./styles/theme.scss');
 
 window.onload = function () {
 
