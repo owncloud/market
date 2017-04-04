@@ -12,6 +12,8 @@ import Vue from 'vue'
 // -------------------------------------------------------------------------------------------------- App components ---
 import App from './App.vue'
 
+require('./styles/theme.scss');
+
 window.onload = function () {
 
 	new Vue({

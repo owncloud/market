@@ -1,0 +1,12 @@
+$font-family: "Open Sans", Frutiger, Calibri, "Myriad Pro", Myriad, sans-serif;
+
+@import "variables-theme.scss";
+
+// 3. Your custom mixin overwrites.
+@mixin hook-base-h1(){ font-family: $font-family }
+@mixin hook-base-h2(){ font-family: $font-family }
+@mixin hook-base-h3(){ font-family: $font-family }
+@mixin hook-base-h4(){ font-family: $font-family }
+
+// 4. Import UIkit.
+@import "../../node_modules/uikit/src/scss/uikit-theme.scss";
