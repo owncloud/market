@@ -21,6 +21,7 @@
 
 namespace OCA\Market\Controller;
 
+use OC\Security\CSP\ContentSecurityPolicy;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\TemplateResponse;
 
@@ -30,6 +31,12 @@ class PageController extends Controller {
 	 * @NoCSRFRequired
 	 */
 	public function index() {
-		return new TemplateResponse($this->appName, 'index', []);
+		$templateResponse = new TemplateResponse($this->appName, 'index', []);
+		$policy = new ContentSecurityPolicy();
+		$policy->addAllowedImageDomain('https://storage.marketplace.owncloud.com');
+		$policy->addAllowedImageDomain('https://unsplash.it');
+		$templateResponse->setContentSecurityPolicy($policy);
+
+		return $templateResponse;
 	}
 }
