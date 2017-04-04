@@ -191,6 +191,7 @@ EOL;
 	 */
 	public function index() {
 		return json_decode(self::$testData);
+
 		// TODO: verify if app can be installed
 		$apps = $this->marketService->listApps();
 
