@@ -138,7 +138,9 @@ class MarketController extends Controller {
 				"id" => $appId,
 				"name" => ucfirst(str_replace('_', ' ', $appId)),
 				"categories" => [
-					"collaboration"
+					"collaboration",
+					"food",
+					"sausage"
 				],
 				"description" => "The new and improved app for your Contacts.",
 				"screenshots" => [

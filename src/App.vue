@@ -1,18 +1,24 @@
 <template lang="pug">
-	.market
-		h1.uk-h1 Market Place
-		ul.uk-list
-			AppTile(v-if="appList!=null", v-for="(app, index) in appList", :app="app")
+	.market.uk-grid-large(uk-grid)
+		aside
+			NavMain
+		main.uk-width-expand
+			ul(uk-grid)
+				AppTile(v-if="appList!=null", v-for="app in appList", :app="app", :key="app.id")
 </template>
 
 <script>
 
 	import Axios from 'axios';
+
+	// Components
 	import AppTile from './components/app-tile.vue';
+	import NavMain from './components/nav-main.vue';
 
 	export default {
 		components: {
-			AppTile
+			AppTile,
+			NavMain
 		},
 		data () {
 			return {
@@ -42,9 +48,12 @@
 
 	@import "styles/variables-theme";
 
-	.market {
-		margin: 0 auto;
-		padding: $global-gutter;
-		max-width: $container-max-width;
+	aside {
+		width: 260px;
 	}
+
+	.market {
+		padding: $global-gutter;
+	}
+
 </style>
