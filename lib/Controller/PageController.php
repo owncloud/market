@@ -21,8 +21,8 @@
 
 namespace OCA\Market\Controller;
 
-use OC\Security\CSP\ContentSecurityPolicy;
 use OCP\AppFramework\Controller;
+use OCP\AppFramework\Http\ContentSecurityPolicy;
 use OCP\AppFramework\Http\TemplateResponse;
 
 class PageController extends Controller {
