@@ -40,6 +40,17 @@ class MarketController extends Controller {
 	 *
 	 * @return array|mixed
 	 */
+	public function categories() {
+		return json_decode('[{"id":"automation","translations":{"en":{"name":"Automation"}}},{"id":"collaboration","translations":{"en":{"name":"Collaboration"}}},{"id":"customization","translations":{"en":{"name":"Customization"}}},{"id":"external-plugins","translations":{"en":{"name":"External plugins"}}},{"id":"games","translations":{"en":{"name":"Games"}}},{"id":"integration","translations":{"en":{"name":"Integration"}}},{"id":"multimedia","translations":{"en":{"name":"Multimedia"}}},{"id":"productivity","translations":{"en":{"name":"Productivity"}}},{"id":"security","translations":{"en":{"name":"Security"}}},{"id":"storage","translations":{"en":{"name":"Storage"}}},{"id":"tools","translations":{"en":{"name":"Tools"}}}]');
+		// real code below
+		return $this->marketService->getCategories();
+	}
+
+	/**
+	 * @NoCSRFRequired
+	 *
+	 * @return array|mixed
+	 */
 	public function index() {
 		return $this->generateTestData();
 

@@ -24,6 +24,7 @@ return [
 		// ui controller
 		['name' => 'page#index', 'url' => '/', 'verb' => 'GET'],
 		// market controller
+		['name' => 'market#categories', 'url' => '/categories', 'verb' => 'GET'],
 		['name' => 'market#index', 'url' => '/apps', 'verb' => 'GET'],
 		['name' => 'market#install', 'url' => '/apps/{appId}/install', 'verb' => 'POST'],
 		['name' => 'market#update', 'url' => '/apps/{appId}/update', 'verb' => 'POST'],
