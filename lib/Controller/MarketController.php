@@ -39,11 +39,10 @@ class MarketController extends Controller {
 	 * @NoCSRFRequired
 	 *
 	 * @return array|mixed
+	 * @param $category
 	 */
-	public function categories() {
-		return json_decode('[{"id":"automation","translations":{"en":{"name":"Automation"}}},{"id":"collaboration","translations":{"en":{"name":"Collaboration"}}},{"id":"customization","translations":{"en":{"name":"Customization"}}},{"id":"external-plugins","translations":{"en":{"name":"External plugins"}}},{"id":"games","translations":{"en":{"name":"Games"}}},{"id":"integration","translations":{"en":{"name":"Integration"}}},{"id":"multimedia","translations":{"en":{"name":"Multimedia"}}},{"id":"productivity","translations":{"en":{"name":"Productivity"}}},{"id":"security","translations":{"en":{"name":"Security"}}},{"id":"storage","translations":{"en":{"name":"Storage"}}},{"id":"tools","translations":{"en":{"name":"Tools"}}}]');
-		// real code below
-		return $this->marketService->getCategories();
+	public function appPerCategory($category) {
+		return $this->queryData($category);
 	}
 
 	/**
@@ -51,27 +50,18 @@ class MarketController extends Controller {
 	 *
 	 * @return array|mixed
 	 */
+	public function categories() {
+		return json_decode('[{"id":"automation","translations":{"en":{"name":"Automation"}}},{"id":"collaboration","translations":{"en":{"name":"Collaboration"}}},{"id":"customization","translations":{"en":{"name":"Customization"}}},{"id":"external-plugins","translations":{"en":{"name":"External plugins"}}},{"id":"games","translations":{"en":{"name":"Games"}}},{"id":"integration","translations":{"en":{"name":"Integration"}}},{"id":"multimedia","translations":{"en":{"name":"Multimedia"}}},{"id":"productivity","translations":{"en":{"name":"Productivity"}}},{"id":"security","translations":{"en":{"name":"Security"}}},{"id":"storage","translations":{"en":{"name":"Storage"}}},{"id":"tools","translations":{"en":{"name":"Tools"}}}]');
+		// real code below
+		return $this->marketService->getCategories();
+	}
+	/**
+	 * @NoCSRFRequired
+	 *
+	 * @return array|mixed
+	 */
 	public function index() {
-		return $this->generateTestData();
-
-		// TODO: verify if app can be installed
-		$apps = $this->marketService->listApps();
-
-		return array_map(function($app) {
-			$app['installed'] = $this->marketService->isAppInstalled($app['id']);
-			$app['updateInfo'] = [];
-			if ($app['installed']) {
-				$app['installInfo'] = $this->marketService->getInstalledAppInfo($app['id']);
-				$app['updateInfo'] = $this->marketService->getAvailableUpdateVersion($app['id']);
-			}
-			$app['releases'] = array_map(function($release) {
-				$missing = $this->marketService->getMissingDependencies($release);
-				$release['canInstall'] = empty($missing);
-				$release['missingDependencies'] = $missing;
-				return $release;
-			}, $app['releases']);
-			return $app;
-		}, $apps);
+		return $this->queryData();
 	}
 
 	/**
@@ -92,7 +82,7 @@ class MarketController extends Controller {
 		return [];
 	}
 
-	private function generateTestData() {
+	private function generateTestData($category = null) {
 		$apps = [
 'activity',
 'admin_audit',
@@ -144,15 +134,27 @@ class MarketController extends Controller {
 'user_shibboleth',
 		];
 
-		return array_map(function ($appId) {
+		return array_map(function ($appId) use ($category) {
+			if ($category === null) {
+				$categories = [
+					"automation",
+					"collaboration",
+					"customization",
+					"external-plugins",
+					"games",
+					"integration",
+					"multimedia",
+					"productivity",
+					"security",
+					"storage",
+					"tools"
+				];
+				$category = $categories[mt_rand(0, count($categories) - 1)];
+			}
 			return [
 				"id" => $appId,
 				"name" => ucfirst(str_replace('_', ' ', $appId)),
-				"categories" => [
-					"collaboration",
-					"food",
-					"sausage"
-				],
+				"categories" => [ $category	],
 				"description" => "The new and improved app for your Contacts.",
 				"screenshots" => [
 					"url" => "https =>//marketplace.owncloud-content.com/screenshots/contacts-58e1f3a995950"
@@ -191,6 +193,32 @@ class MarketController extends Controller {
 				]
 
 			];
+		}, $apps);
+	}
+
+	/**
+	 * @return array
+	 */
+	protected function queryData($category = null) {
+		return $this->generateTestData($category);
+
+		// TODO: verify if app can be installed
+		$apps = $this->marketService->listApps($category);
+
+		return array_map(function ($app) {
+			$app['installed'] = $this->marketService->isAppInstalled($app['id']);
+			$app['updateInfo'] = [];
+			if ($app['installed']) {
+				$app['installInfo'] = $this->marketService->getInstalledAppInfo($app['id']);
+				$app['updateInfo'] = $this->marketService->getAvailableUpdateVersion($app['id']);
+			}
+			$app['releases'] = array_map(function ($release) {
+				$missing = $this->marketService->getMissingDependencies($release);
+				$release['canInstall'] = empty($missing);
+				$release['missingDependencies'] = $missing;
+				return $release;
+			}, $app['releases']);
+			return $app;
 		}, $apps);
 	}
 }

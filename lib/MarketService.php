@@ -303,9 +303,13 @@ class MarketService {
 		return $response;
 	}
 
-	public function listApps() {
+	public function listApps($category = null) {
 		$apps = $this->getApps();
-		// TODO: filter?
+		if ($category !== null) {
+			$apps = array_filter($apps, function ($app) use ($category) {
+				return in_array($category, $app['categories']);
+			});
+		}
 		return $apps;
 	}
 

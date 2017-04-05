@@ -26,6 +26,7 @@ return [
 		// market controller
 		['name' => 'market#categories', 'url' => '/categories', 'verb' => 'GET'],
 		['name' => 'market#index', 'url' => '/apps', 'verb' => 'GET'],
+		['name' => 'market#appPerCategory', 'url' => '/apps/{category}', 'verb' => 'GET'],
 		['name' => 'market#install', 'url' => '/apps/{appId}/install', 'verb' => 'POST'],
 		['name' => 'market#update', 'url' => '/apps/{appId}/update', 'verb' => 'POST'],
 	],
