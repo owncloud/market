@@ -74,7 +74,16 @@ class MarketService {
 
 		// download package
 		$package = $this->downloadPackage($appId);
-		$this->appManager->installApp($package);
+		$this->installPackage($package);
+	}
+
+	/**
+	 * Install downloaded package
+	 * @param string $package
+	 * @return string appId
+	 */
+	public function installPackage($package){
+		return $this->appManager->installApp($package);
 	}
 
 	private function downloadPackage($appId) {
