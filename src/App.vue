@@ -3,8 +3,10 @@
 		aside
 			NavMain
 		main.uk-width-expand
-			ul(uk-grid)
-				AppTile(v-if="appList!=null", v-for="app in appList", :app="app", :key="app.id")
+			ul(v-if="appList!=null", uk-grid)
+				AppTile(v-for="app in appList", :app="app", :key="app.id")
+
+			div(uk-spinner, v-if="!appList")
 </template>
 
 <script>
@@ -22,6 +24,7 @@
 		},
 		data () {
 			return {
+				menu : null,
 				endpoint: '/index.php/apps/market/apps',
 				appList: null
 			}
