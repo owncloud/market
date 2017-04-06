@@ -6,7 +6,7 @@
 			ul.uk-nav-default.uk-nav-parent-icon(uk-nav)
 				li.uk-nav-header Categories
 				li(v-for="category in categories")
-					a(href='#') {{ category }}
+					a(href='#') {{ category.translations.en.name }}
 
 				li.uk-nav-header My Apps
 				li
@@ -21,11 +21,22 @@
 </template>
 
 <script>
+	import Axios from 'axios';
 
 	export default {
 		data () {
-			return { categories : ['Collaboration', 'Food', 'Sausage'] }
+			return { categories : null }
 		},
+		mounted : function () {
+			let self = this;
+			Axios.get('/index.php/apps/market/categories')
+				.then(function (response) {
+					self.categories = response.data;
+				})
+				.catch(function (error) {
+					console.log(error);
+				});
+		}
 	}
 </script>
 
