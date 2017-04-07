@@ -86,6 +86,15 @@ class MarketService {
 		return $this->appManager->installApp($package);
 	}
 
+	/**
+	 * Get appinfo from package
+	 * @param string $path
+	 * @return string[] app info
+	 */
+	public function readAppPackage($path){
+		return $this->appManager->readAppPackage($path);
+	}
+
 	private function downloadPackage($appId) {
 
 		$data = $this->getAppInfo($appId);
@@ -194,7 +203,16 @@ class MarketService {
 
 		// download package
 		$package = $this->downloadPackage($appId);
-		$this->appManager->updateApp($package);
+		$this->updatePackage($package);
+	}
+
+	/**
+	 * Update downloaded package
+	 * @param string $package
+	 * @return string appId
+	 */
+	public function updatePackage($package){
+		return $this->appManager->updateApp($package);
 	}
 
 	/**
