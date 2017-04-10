@@ -89,18 +89,31 @@ class MarketController extends Controller {
 
 		return array_map(function ($app) {
 			$app['installed'] = $this->marketService->isAppInstalled($app['id']);
-			$app['updateInfo'] = [];
-			if ($app['installed']) {
-				$app['installInfo'] = $this->marketService->getInstalledAppInfo($app['id']);
-				$app['updateInfo'] = $this->marketService->getAvailableUpdateVersion($app['id']);
-			}
 			$releases = array_map(function ($release) {
 				$missing = $this->marketService->getMissingDependencies($release);
 				$release['canInstall'] = empty($missing);
 				$release['missingDependencies'] = $missing;
 				return $release;
 			}, $app['releases']);
-			$app['release'] = $releases[0];
+			unset($app['releases']);
+			if ($app['installed']) {
+				$app['installInfo'] = $this->marketService->getInstalledAppInfo($app['id']);
+				$app['updateInfo'] = $this->marketService->getAvailableUpdateVersion($app['id']);
+				$app['release'] = array_pop(array_filter($releases, function ($release) use ($app) {
+					if (empty($app['updateInfo'])) {
+						return $release['version'] === $app['updateInfo'];
+					}
+					return $release['version'] === $app['updateInfo'];
+				}));
+			} else {
+				$app['updateInfo'] = [];
+				usort($releases, function ($a, $b) {
+					return version_compare($a, $b, '>');
+				});
+				if (!empty($releases)) {
+					$app['release'] = array_pop($releases);
+				}
+			}
 			return $app;
 		}, $apps);
 	}

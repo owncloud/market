@@ -157,8 +157,11 @@ class MarketService {
 			$marketVersion = $r['version'];
 			return version_compare($marketVersion, $currentVersion, '>');
 		});
+		usort($releases, function ($a, $b) {
+			return version_compare($a, $b, '>');
+		});
 		if (!empty($releases)) {
-			return $releases[0]['version'];
+			return array_pop($releases)['version'];
 		}
 		return false;
 	}
@@ -171,7 +174,7 @@ class MarketService {
 		if (empty($data)) {
 			return null;
 		}
-		return $data[0];
+		return reset($data);
 	}
 
 	/**
