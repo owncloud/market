@@ -25,7 +25,8 @@ class PageControllerTest extends TestCase {
 
 		$policy = new \OCP\AppFramework\Http\ContentSecurityPolicy();
 		$policy->addAllowedImageDomain('https://storage.marketplace.owncloud.com');
-		$policy->addAllowedImageDomain('https://unsplash.it');
+		$policy->addAllowedImageDomain('https://marketplace-storage.int.owncloud.com');
+		$policy->addAllowedImageDomain('http://minio:9000');
 		$this->assertEquals($policy, $response->getContentSecurityPolicy());
 
 		$this->assertEquals('index', $response->getTemplateName());
