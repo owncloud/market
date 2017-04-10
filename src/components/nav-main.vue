@@ -29,7 +29,7 @@
 		},
 		mounted : function () {
 			let self = this;
-			Axios.get('/index.php/apps/market/categories')
+			Axios.get(OC.generateUrl('/apps/market/categories'))
 				.then(function (response) {
 					self.categories = response.data;
 				})

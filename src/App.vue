@@ -25,7 +25,7 @@
 		data () {
 			return {
 				menu : null,
-				endpoint: '/index.php/apps/market/apps',
+				endpoint: OC.generateUrl('/apps/market/apps'),
 				appList: null
 			}
 		},

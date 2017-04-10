@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 121);
+/******/ 	return __webpack_require__(__webpack_require__.s = 155);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -71,10 +71,10 @@
 /***/ (function(module, exports, __webpack_require__) {
 
 var global    = __webpack_require__(2)
-  , core      = __webpack_require__(24)
+  , core      = __webpack_require__(25)
   , hide      = __webpack_require__(12)
   , redefine  = __webpack_require__(13)
-  , ctx       = __webpack_require__(25)
+  , ctx       = __webpack_require__(26)
   , PROTOTYPE = 'prototype';
 
 var $export = function(type, name, source){
@@ -157,8 +157,8 @@ module.exports = function(it){
 /* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var store      = __webpack_require__(57)('wks')
-  , uid        = __webpack_require__(39)
+var store      = __webpack_require__(60)('wks')
+  , uid        = __webpack_require__(40)
   , Symbol     = __webpack_require__(2).Symbol
   , USE_SYMBOL = typeof Symbol == 'function';
 
@@ -183,8 +183,8 @@ module.exports = !__webpack_require__(3)(function(){
 /***/ (function(module, exports, __webpack_require__) {
 
 var anObject       = __webpack_require__(1)
-  , IE8_DOM_DEFINE = __webpack_require__(94)
-  , toPrimitive    = __webpack_require__(23)
+  , IE8_DOM_DEFINE = __webpack_require__(106)
+  , toPrimitive    = __webpack_require__(24)
   , dP             = Object.defineProperty;
 
 exports.f = __webpack_require__(6) ? Object.defineProperty : function defineProperty(O, P, Attributes){
@@ -204,7 +204,7 @@ exports.f = __webpack_require__(6) ? Object.defineProperty : function defineProp
 /***/ (function(module, exports, __webpack_require__) {
 
 // 7.1.15 ToLength
-var toInteger = __webpack_require__(30)
+var toInteger = __webpack_require__(31)
   , min       = Math.min;
 module.exports = function(it){
   return it > 0 ? min(toInteger(it), 0x1fffffffffffff) : 0; // pow(2, 53) - 1 == 9007199254740991
@@ -215,7 +215,7 @@ module.exports = function(it){
 /***/ (function(module, exports, __webpack_require__) {
 
 // 7.1.13 ToObject(argument)
-var defined = __webpack_require__(19);
+var defined = __webpack_require__(20);
 module.exports = function(it){
   return Object(defined(it));
 };
@@ -243,7 +243,7 @@ module.exports = function(it){
 /***/ (function(module, exports, __webpack_require__) {
 
 var dP         = __webpack_require__(7)
-  , createDesc = __webpack_require__(29);
+  , createDesc = __webpack_require__(30);
 module.exports = __webpack_require__(6) ? function(object, key, value){
   return dP.f(object, key, createDesc(1, value));
 } : function(object, key, value){
@@ -258,12 +258,12 @@ module.exports = __webpack_require__(6) ? function(object, key, value){
 var global    = __webpack_require__(2)
   , hide      = __webpack_require__(12)
   , has       = __webpack_require__(10)
-  , SRC       = __webpack_require__(39)('src')
+  , SRC       = __webpack_require__(40)('src')
   , TO_STRING = 'toString'
   , $toString = Function[TO_STRING]
   , TPL       = ('' + $toString).split(TO_STRING);
 
-__webpack_require__(24).inspectSource = function(it){
+__webpack_require__(25).inspectSource = function(it){
   return $toString.call(it);
 };
 
@@ -294,7 +294,7 @@ __webpack_require__(24).inspectSource = function(it){
 
 var $export = __webpack_require__(0)
   , fails   = __webpack_require__(3)
-  , defined = __webpack_require__(19)
+  , defined = __webpack_require__(20)
   , quot    = /"/g;
 // B.2.3.2.1 CreateHTML(string, tag, attribute, value)
 var createHTML = function(string, tag, attribute, value) {
@@ -317,8 +317,8 @@ module.exports = function(NAME, exec){
 /***/ (function(module, exports, __webpack_require__) {
 
 // to indexed object, toObject with fallback for non-array-like ES3 strings
-var IObject = __webpack_require__(46)
-  , defined = __webpack_require__(19);
+var IObject = __webpack_require__(48)
+  , defined = __webpack_require__(20);
 module.exports = function(it){
   return IObject(defined(it));
 };
@@ -327,12 +327,332 @@ module.exports = function(it){
 /* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var pIE            = __webpack_require__(47)
-  , createDesc     = __webpack_require__(29)
+"use strict";
+/* WEBPACK VAR INJECTION */(function(Buffer) {
+
+var bind = __webpack_require__(97);
+
+/*global toString:true*/
+
+// utils is a library of generic helper functions non-specific to axios
+
+var toString = Object.prototype.toString;
+
+/**
+ * Determine if a value is an Array
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an Array, otherwise false
+ */
+function isArray(val) {
+  return toString.call(val) === '[object Array]';
+}
+
+/**
+ * Determine if a value is a Node Buffer
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Node Buffer, otherwise false
+ */
+function isBuffer(val) {
+  return ((typeof Buffer !== 'undefined') && (Buffer.isBuffer) && (Buffer.isBuffer(val)));
+}
+
+/**
+ * Determine if a value is an ArrayBuffer
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an ArrayBuffer, otherwise false
+ */
+function isArrayBuffer(val) {
+  return toString.call(val) === '[object ArrayBuffer]';
+}
+
+/**
+ * Determine if a value is a FormData
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an FormData, otherwise false
+ */
+function isFormData(val) {
+  return (typeof FormData !== 'undefined') && (val instanceof FormData);
+}
+
+/**
+ * Determine if a value is a view on an ArrayBuffer
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a view on an ArrayBuffer, otherwise false
+ */
+function isArrayBufferView(val) {
+  var result;
+  if ((typeof ArrayBuffer !== 'undefined') && (ArrayBuffer.isView)) {
+    result = ArrayBuffer.isView(val);
+  } else {
+    result = (val) && (val.buffer) && (val.buffer instanceof ArrayBuffer);
+  }
+  return result;
+}
+
+/**
+ * Determine if a value is a String
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a String, otherwise false
+ */
+function isString(val) {
+  return typeof val === 'string';
+}
+
+/**
+ * Determine if a value is a Number
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Number, otherwise false
+ */
+function isNumber(val) {
+  return typeof val === 'number';
+}
+
+/**
+ * Determine if a value is undefined
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if the value is undefined, otherwise false
+ */
+function isUndefined(val) {
+  return typeof val === 'undefined';
+}
+
+/**
+ * Determine if a value is an Object
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an Object, otherwise false
+ */
+function isObject(val) {
+  return val !== null && typeof val === 'object';
+}
+
+/**
+ * Determine if a value is a Date
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Date, otherwise false
+ */
+function isDate(val) {
+  return toString.call(val) === '[object Date]';
+}
+
+/**
+ * Determine if a value is a File
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a File, otherwise false
+ */
+function isFile(val) {
+  return toString.call(val) === '[object File]';
+}
+
+/**
+ * Determine if a value is a Blob
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Blob, otherwise false
+ */
+function isBlob(val) {
+  return toString.call(val) === '[object Blob]';
+}
+
+/**
+ * Determine if a value is a Function
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Function, otherwise false
+ */
+function isFunction(val) {
+  return toString.call(val) === '[object Function]';
+}
+
+/**
+ * Determine if a value is a Stream
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Stream, otherwise false
+ */
+function isStream(val) {
+  return isObject(val) && isFunction(val.pipe);
+}
+
+/**
+ * Determine if a value is a URLSearchParams object
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a URLSearchParams object, otherwise false
+ */
+function isURLSearchParams(val) {
+  return typeof URLSearchParams !== 'undefined' && val instanceof URLSearchParams;
+}
+
+/**
+ * Trim excess whitespace off the beginning and end of a string
+ *
+ * @param {String} str The String to trim
+ * @returns {String} The String freed of excess whitespace
+ */
+function trim(str) {
+  return str.replace(/^\s*/, '').replace(/\s*$/, '');
+}
+
+/**
+ * Determine if we're running in a standard browser environment
+ *
+ * This allows axios to run in a web worker, and react-native.
+ * Both environments support XMLHttpRequest, but not fully standard globals.
+ *
+ * web workers:
+ *  typeof window -> undefined
+ *  typeof document -> undefined
+ *
+ * react-native:
+ *  navigator.product -> 'ReactNative'
+ */
+function isStandardBrowserEnv() {
+  if (typeof navigator !== 'undefined' && navigator.product === 'ReactNative') {
+    return false;
+  }
+  return (
+    typeof window !== 'undefined' &&
+    typeof document !== 'undefined'
+  );
+}
+
+/**
+ * Iterate over an Array or an Object invoking a function for each item.
+ *
+ * If `obj` is an Array callback will be called passing
+ * the value, index, and complete array for each item.
+ *
+ * If 'obj' is an Object callback will be called passing
+ * the value, key, and complete object for each property.
+ *
+ * @param {Object|Array} obj The object to iterate
+ * @param {Function} fn The callback to invoke for each item
+ */
+function forEach(obj, fn) {
+  // Don't bother if no value provided
+  if (obj === null || typeof obj === 'undefined') {
+    return;
+  }
+
+  // Force an array if not already something iterable
+  if (typeof obj !== 'object' && !isArray(obj)) {
+    /*eslint no-param-reassign:0*/
+    obj = [obj];
+  }
+
+  if (isArray(obj)) {
+    // Iterate over array values
+    for (var i = 0, l = obj.length; i < l; i++) {
+      fn.call(null, obj[i], i, obj);
+    }
+  } else {
+    // Iterate over object keys
+    for (var key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        fn.call(null, obj[key], key, obj);
+      }
+    }
+  }
+}
+
+/**
+ * Accepts varargs expecting each argument to be an object, then
+ * immutably merges the properties of each object and returns result.
+ *
+ * When multiple objects contain the same key the later object in
+ * the arguments list will take precedence.
+ *
+ * Example:
+ *
+ * ```js
+ * var result = merge({foo: 123}, {foo: 456});
+ * console.log(result.foo); // outputs 456
+ * ```
+ *
+ * @param {Object} obj1 Object to merge
+ * @returns {Object} Result of all merge properties
+ */
+function merge(/* obj1, obj2, obj3, ... */) {
+  var result = {};
+  function assignValue(val, key) {
+    if (typeof result[key] === 'object' && typeof val === 'object') {
+      result[key] = merge(result[key], val);
+    } else {
+      result[key] = val;
+    }
+  }
+
+  for (var i = 0, l = arguments.length; i < l; i++) {
+    forEach(arguments[i], assignValue);
+  }
+  return result;
+}
+
+/**
+ * Extends object a by mutably adding to it the properties of object b.
+ *
+ * @param {Object} a The object to be extended
+ * @param {Object} b The object to copy properties from
+ * @param {Object} thisArg The object to bind function to
+ * @return {Object} The resulting value of object a
+ */
+function extend(a, b, thisArg) {
+  forEach(b, function assignValue(val, key) {
+    if (thisArg && typeof val === 'function') {
+      a[key] = bind(val, thisArg);
+    } else {
+      a[key] = val;
+    }
+  });
+  return a;
+}
+
+module.exports = {
+  isArray: isArray,
+  isArrayBuffer: isArrayBuffer,
+  isBuffer: isBuffer,
+  isFormData: isFormData,
+  isArrayBufferView: isArrayBufferView,
+  isString: isString,
+  isNumber: isNumber,
+  isObject: isObject,
+  isUndefined: isUndefined,
+  isDate: isDate,
+  isFile: isFile,
+  isBlob: isBlob,
+  isFunction: isFunction,
+  isStream: isStream,
+  isURLSearchParams: isURLSearchParams,
+  isStandardBrowserEnv: isStandardBrowserEnv,
+  forEach: forEach,
+  merge: merge,
+  extend: extend,
+  trim: trim
+};
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(126).Buffer))
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var pIE            = __webpack_require__(49)
+  , createDesc     = __webpack_require__(30)
   , toIObject      = __webpack_require__(15)
-  , toPrimitive    = __webpack_require__(23)
+  , toPrimitive    = __webpack_require__(24)
   , has            = __webpack_require__(10)
-  , IE8_DOM_DEFINE = __webpack_require__(94)
+  , IE8_DOM_DEFINE = __webpack_require__(106)
   , gOPD           = Object.getOwnPropertyDescriptor;
 
 exports.f = __webpack_require__(6) ? gOPD : function getOwnPropertyDescriptor(O, P){
@@ -345,13 +665,13 @@ exports.f = __webpack_require__(6) ? gOPD : function getOwnPropertyDescriptor(O,
 };
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.9 / 15.2.3.2 Object.getPrototypeOf(O)
 var has         = __webpack_require__(10)
   , toObject    = __webpack_require__(9)
-  , IE_PROTO    = __webpack_require__(75)('IE_PROTO')
+  , IE_PROTO    = __webpack_require__(81)('IE_PROTO')
   , ObjectProto = Object.prototype;
 
 module.exports = Object.getPrototypeOf || function(O){
@@ -363,7 +683,7 @@ module.exports = Object.getPrototypeOf || function(O){
 };
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports) {
 
 var toString = {}.toString;
@@ -373,7 +693,7 @@ module.exports = function(it){
 };
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports) {
 
 // 7.2.1 RequireObjectCoercible(argument)
@@ -383,7 +703,7 @@ module.exports = function(it){
 };
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var fails = __webpack_require__(3);
@@ -395,7 +715,7 @@ module.exports = function(method, arg){
 };
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 0 -> Array#forEach
@@ -405,11 +725,11 @@ module.exports = function(method, arg){
 // 4 -> Array#every
 // 5 -> Array#find
 // 6 -> Array#findIndex
-var ctx      = __webpack_require__(25)
-  , IObject  = __webpack_require__(46)
+var ctx      = __webpack_require__(26)
+  , IObject  = __webpack_require__(48)
   , toObject = __webpack_require__(9)
   , toLength = __webpack_require__(8)
-  , asc      = __webpack_require__(126);
+  , asc      = __webpack_require__(158);
 module.exports = function(TYPE, $create){
   var IS_MAP        = TYPE == 1
     , IS_FILTER     = TYPE == 2
@@ -444,12 +764,12 @@ module.exports = function(TYPE, $create){
 };
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // most Object methods by ES6 should accept primitives
 var $export = __webpack_require__(0)
-  , core    = __webpack_require__(24)
+  , core    = __webpack_require__(25)
   , fails   = __webpack_require__(3);
 module.exports = function(KEY, exec){
   var fn  = (core.Object || {})[KEY] || Object[KEY]
@@ -459,7 +779,7 @@ module.exports = function(KEY, exec){
 };
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 7.1.1 ToPrimitive(input [, PreferredType])
@@ -476,14 +796,14 @@ module.exports = function(it, S){
 };
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports) {
 
 var core = module.exports = {version: '2.4.0'};
 if(typeof __e == 'number')__e = core; // eslint-disable-line no-undef
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // optional / simple context binding
@@ -508,13 +828,13 @@ module.exports = function(fn, that, length){
 };
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Map     = __webpack_require__(110)
+var Map     = __webpack_require__(122)
   , $export = __webpack_require__(0)
-  , shared  = __webpack_require__(57)('metadata')
-  , store   = shared.store || (shared.store = new (__webpack_require__(113)));
+  , shared  = __webpack_require__(60)('metadata')
+  , store   = shared.store || (shared.store = new (__webpack_require__(125)));
 
 var getOrCreateMetadataMap = function(target, targetKey, create){
   var targetMetadata = store.get(target);
@@ -564,50 +884,50 @@ module.exports = {
 };
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 if(__webpack_require__(6)){
-  var LIBRARY             = __webpack_require__(32)
+  var LIBRARY             = __webpack_require__(33)
     , global              = __webpack_require__(2)
     , fails               = __webpack_require__(3)
     , $export             = __webpack_require__(0)
-    , $typed              = __webpack_require__(58)
-    , $buffer             = __webpack_require__(82)
-    , ctx                 = __webpack_require__(25)
-    , anInstance          = __webpack_require__(31)
-    , propertyDesc        = __webpack_require__(29)
+    , $typed              = __webpack_require__(61)
+    , $buffer             = __webpack_require__(88)
+    , ctx                 = __webpack_require__(26)
+    , anInstance          = __webpack_require__(32)
+    , propertyDesc        = __webpack_require__(30)
     , hide                = __webpack_require__(12)
-    , redefineAll         = __webpack_require__(36)
-    , toInteger           = __webpack_require__(30)
+    , redefineAll         = __webpack_require__(37)
+    , toInteger           = __webpack_require__(31)
     , toLength            = __webpack_require__(8)
-    , toIndex             = __webpack_require__(38)
-    , toPrimitive         = __webpack_require__(23)
+    , toIndex             = __webpack_require__(39)
+    , toPrimitive         = __webpack_require__(24)
     , has                 = __webpack_require__(10)
-    , same                = __webpack_require__(107)
-    , classof             = __webpack_require__(45)
+    , same                = __webpack_require__(119)
+    , classof             = __webpack_require__(47)
     , isObject            = __webpack_require__(4)
     , toObject            = __webpack_require__(9)
-    , isArrayIter         = __webpack_require__(67)
-    , create              = __webpack_require__(33)
-    , getPrototypeOf      = __webpack_require__(17)
-    , gOPN                = __webpack_require__(34).f
-    , getIterFn           = __webpack_require__(84)
-    , uid                 = __webpack_require__(39)
+    , isArrayIter         = __webpack_require__(73)
+    , create              = __webpack_require__(34)
+    , getPrototypeOf      = __webpack_require__(18)
+    , gOPN                = __webpack_require__(35).f
+    , getIterFn           = __webpack_require__(90)
+    , uid                 = __webpack_require__(40)
     , wks                 = __webpack_require__(5)
-    , createArrayMethod   = __webpack_require__(21)
-    , createArrayIncludes = __webpack_require__(48)
-    , speciesConstructor  = __webpack_require__(76)
-    , ArrayIterators      = __webpack_require__(85)
-    , Iterators           = __webpack_require__(42)
-    , $iterDetect         = __webpack_require__(54)
-    , setSpecies          = __webpack_require__(37)
-    , arrayFill           = __webpack_require__(60)
-    , arrayCopyWithin     = __webpack_require__(87)
+    , createArrayMethod   = __webpack_require__(22)
+    , createArrayIncludes = __webpack_require__(51)
+    , speciesConstructor  = __webpack_require__(82)
+    , ArrayIterators      = __webpack_require__(91)
+    , Iterators           = __webpack_require__(43)
+    , $iterDetect         = __webpack_require__(57)
+    , setSpecies          = __webpack_require__(38)
+    , arrayFill           = __webpack_require__(66)
+    , arrayCopyWithin     = __webpack_require__(99)
     , $DP                 = __webpack_require__(7)
-    , $GOPD               = __webpack_require__(16)
+    , $GOPD               = __webpack_require__(17)
     , dP                  = $DP.f
     , gOPD                = $GOPD.f
     , RangeError          = global.RangeError
@@ -1049,10 +1369,10 @@ if(__webpack_require__(6)){
 } else module.exports = function(){ /* empty */ };
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var META     = __webpack_require__(39)('meta')
+var META     = __webpack_require__(40)('meta')
   , isObject = __webpack_require__(4)
   , has      = __webpack_require__(10)
   , setDesc  = __webpack_require__(7).f
@@ -1107,7 +1427,7 @@ var meta = module.exports = {
 };
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports) {
 
 module.exports = function(bitmap, value){
@@ -1120,7 +1440,7 @@ module.exports = function(bitmap, value){
 };
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports) {
 
 // 7.1.4 ToInteger
@@ -1131,7 +1451,7 @@ module.exports = function(it){
 };
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports) {
 
 module.exports = function(it, Constructor, name, forbiddenField){
@@ -1141,33 +1461,33 @@ module.exports = function(it, Constructor, name, forbiddenField){
 };
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports) {
 
 module.exports = false;
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
 var anObject    = __webpack_require__(1)
-  , dPs         = __webpack_require__(100)
-  , enumBugKeys = __webpack_require__(63)
-  , IE_PROTO    = __webpack_require__(75)('IE_PROTO')
+  , dPs         = __webpack_require__(112)
+  , enumBugKeys = __webpack_require__(69)
+  , IE_PROTO    = __webpack_require__(81)('IE_PROTO')
   , Empty       = function(){ /* empty */ }
   , PROTOTYPE   = 'prototype';
 
 // Create object with fake `null` prototype: use iframe Object with cleared prototype
 var createDict = function(){
   // Thrash, waste and sodomy: IE GC bug
-  var iframe = __webpack_require__(62)('iframe')
+  var iframe = __webpack_require__(68)('iframe')
     , i      = enumBugKeys.length
     , lt     = '<'
     , gt     = '>'
     , iframeDocument;
   iframe.style.display = 'none';
-  __webpack_require__(65).appendChild(iframe);
+  __webpack_require__(71).appendChild(iframe);
   iframe.src = 'javascript:'; // eslint-disable-line no-script-url
   // createDict = iframe.contentWindow.Object;
   // html.removeChild(iframe);
@@ -1194,31 +1514,31 @@ module.exports = Object.create || function create(O, Properties){
 
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.7 / 15.2.3.4 Object.getOwnPropertyNames(O)
-var $keys      = __webpack_require__(102)
-  , hiddenKeys = __webpack_require__(63).concat('length', 'prototype');
+var $keys      = __webpack_require__(114)
+  , hiddenKeys = __webpack_require__(69).concat('length', 'prototype');
 
 exports.f = Object.getOwnPropertyNames || function getOwnPropertyNames(O){
   return $keys(O, hiddenKeys);
 };
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.14 / 15.2.3.14 Object.keys(O)
-var $keys       = __webpack_require__(102)
-  , enumBugKeys = __webpack_require__(63);
+var $keys       = __webpack_require__(114)
+  , enumBugKeys = __webpack_require__(69);
 
 module.exports = Object.keys || function keys(O){
   return $keys(O, enumBugKeys);
 };
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var redefine = __webpack_require__(13);
@@ -1228,7 +1548,7 @@ module.exports = function(target, src, safe){
 };
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1247,10 +1567,10 @@ module.exports = function(KEY){
 };
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var toInteger = __webpack_require__(30)
+var toInteger = __webpack_require__(31)
   , max       = Math.max
   , min       = Math.min;
 module.exports = function(index, length){
@@ -1259,7 +1579,7 @@ module.exports = function(index, length){
 };
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, exports) {
 
 var id = 0
@@ -1269,7 +1589,7 @@ module.exports = function(key){
 };
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 22.1.3.31 Array.prototype[@@unscopables]
@@ -1281,15 +1601,15 @@ module.exports = function(key){
 };
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var ctx         = __webpack_require__(25)
-  , call        = __webpack_require__(96)
-  , isArrayIter = __webpack_require__(67)
+var ctx         = __webpack_require__(26)
+  , call        = __webpack_require__(108)
+  , isArrayIter = __webpack_require__(73)
   , anObject    = __webpack_require__(1)
   , toLength    = __webpack_require__(8)
-  , getIterFn   = __webpack_require__(84)
+  , getIterFn   = __webpack_require__(90)
   , BREAK       = {}
   , RETURN      = {};
 var exports = module.exports = function(iterable, entries, fn, that, ITERATOR){
@@ -1311,13 +1631,13 @@ exports.BREAK  = BREAK;
 exports.RETURN = RETURN;
 
 /***/ }),
-/* 42 */
+/* 43 */
 /***/ (function(module, exports) {
 
 module.exports = {};
 
 /***/ }),
-/* 43 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var def = __webpack_require__(7).f
@@ -1329,13 +1649,13 @@ module.exports = function(it, tag, stat){
 };
 
 /***/ }),
-/* 44 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $export = __webpack_require__(0)
-  , defined = __webpack_require__(19)
+  , defined = __webpack_require__(20)
   , fails   = __webpack_require__(3)
-  , spaces  = __webpack_require__(80)
+  , spaces  = __webpack_require__(86)
   , space   = '[' + spaces + ']'
   , non     = '\u200b\u0085'
   , ltrim   = RegExp('^' + space + space + '*')
@@ -1364,11 +1684,93 @@ var trim = exporter.trim = function(string, TYPE){
 module.exports = exporter;
 
 /***/ }),
-/* 45 */
+/* 46 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(Buffer) {/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+// css base code, injected by the css-loader
+module.exports = function(useSourceMap) {
+	var list = [];
+
+	// return the list of modules as css string
+	list.toString = function toString() {
+		return this.map(function (item) {
+			var content = cssWithMappingToString(item, useSourceMap);
+			if(item[2]) {
+				return "@media " + item[2] + "{" + content + "}";
+			} else {
+				return content;
+			}
+		}).join("");
+	};
+
+	// import a list of modules into the list
+	list.i = function(modules, mediaQuery) {
+		if(typeof modules === "string")
+			modules = [[null, modules, ""]];
+		var alreadyImportedModules = {};
+		for(var i = 0; i < this.length; i++) {
+			var id = this[i][0];
+			if(typeof id === "number")
+				alreadyImportedModules[id] = true;
+		}
+		for(i = 0; i < modules.length; i++) {
+			var item = modules[i];
+			// skip already imported module
+			// this implementation is not 100% perfect for weird media query combinations
+			//  when a module is imported multiple times with different media queries.
+			//  I hope this will never occur (Hey this way we have smaller bundles)
+			if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
+				if(mediaQuery && !item[2]) {
+					item[2] = mediaQuery;
+				} else if(mediaQuery) {
+					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
+				}
+				list.push(item);
+			}
+		}
+	};
+	return list;
+};
+
+function cssWithMappingToString(item, useSourceMap) {
+	var content = item[1] || '';
+	var cssMapping = item[3];
+	if (!cssMapping) {
+		return content;
+	}
+
+	if (useSourceMap) {
+		var sourceMapping = toComment(cssMapping);
+		var sourceURLs = cssMapping.sources.map(function (source) {
+			return '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */'
+		});
+
+		return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
+	}
+
+	return [content].join('\n');
+}
+
+// Adapted from convert-source-map (MIT)
+function toComment(sourceMap) {
+  var base64 = new Buffer(JSON.stringify(sourceMap)).toString('base64');
+  var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
+
+  return '/*# ' + data + ' */';
+}
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(126).Buffer))
+
+/***/ }),
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // getting tag from 19.1.3.6 Object.prototype.toString()
-var cof = __webpack_require__(18)
+var cof = __webpack_require__(19)
   , TAG = __webpack_require__(5)('toStringTag')
   // ES3 wrong here
   , ARG = cof(function(){ return arguments; }()) == 'Arguments';
@@ -1392,30 +1794,87 @@ module.exports = function(it){
 };
 
 /***/ }),
-/* 46 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // fallback for non-array-like ES3 and non-enumerable old V8 strings
-var cof = __webpack_require__(18);
+var cof = __webpack_require__(19);
 module.exports = Object('z').propertyIsEnumerable(0) ? Object : function(it){
   return cof(it) == 'String' ? it.split('') : Object(it);
 };
 
 /***/ }),
-/* 47 */
+/* 49 */
 /***/ (function(module, exports) {
 
 exports.f = {}.propertyIsEnumerable;
 
 /***/ }),
-/* 48 */
+/* 50 */
+/***/ (function(module, exports) {
+
+// this module is a runtime utility for cleaner component module output and will
+// be included in the final webpack user bundle
+
+module.exports = function normalizeComponent (
+  rawScriptExports,
+  compiledTemplate,
+  scopeId,
+  cssModules
+) {
+  var esModule
+  var scriptExports = rawScriptExports = rawScriptExports || {}
+
+  // ES6 modules interop
+  var type = typeof rawScriptExports.default
+  if (type === 'object' || type === 'function') {
+    esModule = rawScriptExports
+    scriptExports = rawScriptExports.default
+  }
+
+  // Vue.extend constructor export interop
+  var options = typeof scriptExports === 'function'
+    ? scriptExports.options
+    : scriptExports
+
+  // render functions
+  if (compiledTemplate) {
+    options.render = compiledTemplate.render
+    options.staticRenderFns = compiledTemplate.staticRenderFns
+  }
+
+  // scopedId
+  if (scopeId) {
+    options._scopeId = scopeId
+  }
+
+  // inject cssModules
+  if (cssModules) {
+    var computed = Object.create(options.computed || null)
+    Object.keys(cssModules).forEach(function (key) {
+      var module = cssModules[key]
+      computed[key] = function () { return module }
+    })
+    options.computed = computed
+  }
+
+  return {
+    esModule: esModule,
+    exports: scriptExports,
+    options: options
+  }
+}
+
+
+/***/ }),
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // false -> Array#indexOf
 // true  -> Array#includes
 var toIObject = __webpack_require__(15)
   , toLength  = __webpack_require__(8)
-  , toIndex   = __webpack_require__(38);
+  , toIndex   = __webpack_require__(39);
 module.exports = function(IS_INCLUDES){
   return function($this, el, fromIndex){
     var O      = toIObject($this)
@@ -1434,7 +1893,7 @@ module.exports = function(IS_INCLUDES){
 };
 
 /***/ }),
-/* 49 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1442,15 +1901,15 @@ module.exports = function(IS_INCLUDES){
 var global            = __webpack_require__(2)
   , $export           = __webpack_require__(0)
   , redefine          = __webpack_require__(13)
-  , redefineAll       = __webpack_require__(36)
-  , meta              = __webpack_require__(28)
-  , forOf             = __webpack_require__(41)
-  , anInstance        = __webpack_require__(31)
+  , redefineAll       = __webpack_require__(37)
+  , meta              = __webpack_require__(29)
+  , forOf             = __webpack_require__(42)
+  , anInstance        = __webpack_require__(32)
   , isObject          = __webpack_require__(4)
   , fails             = __webpack_require__(3)
-  , $iterDetect       = __webpack_require__(54)
-  , setToStringTag    = __webpack_require__(43)
-  , inheritIfRequired = __webpack_require__(66);
+  , $iterDetect       = __webpack_require__(57)
+  , setToStringTag    = __webpack_require__(44)
+  , inheritIfRequired = __webpack_require__(72);
 
 module.exports = function(NAME, wrapper, methods, common, IS_MAP, IS_WEAK){
   var Base  = global[NAME]
@@ -1525,7 +1984,7 @@ module.exports = function(NAME, wrapper, methods, common, IS_MAP, IS_WEAK){
 };
 
 /***/ }),
-/* 50 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1533,7 +1992,7 @@ module.exports = function(NAME, wrapper, methods, common, IS_MAP, IS_WEAK){
 var hide     = __webpack_require__(12)
   , redefine = __webpack_require__(13)
   , fails    = __webpack_require__(3)
-  , defined  = __webpack_require__(19)
+  , defined  = __webpack_require__(20)
   , wks      = __webpack_require__(5);
 
 module.exports = function(KEY, length, exec){
@@ -1559,7 +2018,7 @@ module.exports = function(KEY, length, exec){
 };
 
 /***/ }),
-/* 51 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1578,7 +2037,7 @@ module.exports = function(){
 };
 
 /***/ }),
-/* 52 */
+/* 55 */
 /***/ (function(module, exports) {
 
 // fast apply, http://jsperf.lnkit.com/fast-apply/5
@@ -1599,12 +2058,12 @@ module.exports = function(fn, args, that){
 };
 
 /***/ }),
-/* 53 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 7.2.8 IsRegExp(argument)
 var isObject = __webpack_require__(4)
-  , cof      = __webpack_require__(18)
+  , cof      = __webpack_require__(19)
   , MATCH    = __webpack_require__(5)('match');
 module.exports = function(it){
   var isRegExp;
@@ -1612,7 +2071,7 @@ module.exports = function(it){
 };
 
 /***/ }),
-/* 54 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var ITERATOR     = __webpack_require__(5)('iterator')
@@ -1638,11 +2097,11 @@ module.exports = function(exec, skipClosing){
 };
 
 /***/ }),
-/* 55 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Forced replacement prototype accessors methods
-module.exports = __webpack_require__(32)|| !__webpack_require__(3)(function(){
+module.exports = __webpack_require__(33)|| !__webpack_require__(3)(function(){
   var K = Math.random();
   // In FF throws only define methods
   __defineSetter__.call(null, K, function(){ /* empty */});
@@ -1650,13 +2109,13 @@ module.exports = __webpack_require__(32)|| !__webpack_require__(3)(function(){
 });
 
 /***/ }),
-/* 56 */
+/* 59 */
 /***/ (function(module, exports) {
 
 exports.f = Object.getOwnPropertySymbols;
 
 /***/ }),
-/* 57 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(2)
@@ -1667,12 +2126,12 @@ module.exports = function(key){
 };
 
 /***/ }),
-/* 58 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(2)
   , hide   = __webpack_require__(12)
-  , uid    = __webpack_require__(39)
+  , uid    = __webpack_require__(40)
   , TYPED  = uid('typed_array')
   , VIEW   = uid('view')
   , ABV    = !!(global.ArrayBuffer && global.DataView)
@@ -1698,7 +2157,229 @@ module.exports = {
 };
 
 /***/ }),
-/* 59 */
+/* 62 */
+/***/ (function(module, exports) {
+
+/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+var stylesInDom = {},
+	memoize = function(fn) {
+		var memo;
+		return function () {
+			if (typeof memo === "undefined") memo = fn.apply(this, arguments);
+			return memo;
+		};
+	},
+	isOldIE = memoize(function() {
+		return /msie [6-9]\b/.test(window.navigator.userAgent.toLowerCase());
+	}),
+	getHeadElement = memoize(function () {
+		return document.head || document.getElementsByTagName("head")[0];
+	}),
+	singletonElement = null,
+	singletonCounter = 0,
+	styleElementsInsertedAtTop = [];
+
+module.exports = function(list, options) {
+	if(typeof DEBUG !== "undefined" && DEBUG) {
+		if(typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
+	}
+
+	options = options || {};
+	// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
+	// tags it will allow on a page
+	if (typeof options.singleton === "undefined") options.singleton = isOldIE();
+
+	// By default, add <style> tags to the bottom of <head>.
+	if (typeof options.insertAt === "undefined") options.insertAt = "bottom";
+
+	var styles = listToStyles(list);
+	addStylesToDom(styles, options);
+
+	return function update(newList) {
+		var mayRemove = [];
+		for(var i = 0; i < styles.length; i++) {
+			var item = styles[i];
+			var domStyle = stylesInDom[item.id];
+			domStyle.refs--;
+			mayRemove.push(domStyle);
+		}
+		if(newList) {
+			var newStyles = listToStyles(newList);
+			addStylesToDom(newStyles, options);
+		}
+		for(var i = 0; i < mayRemove.length; i++) {
+			var domStyle = mayRemove[i];
+			if(domStyle.refs === 0) {
+				for(var j = 0; j < domStyle.parts.length; j++)
+					domStyle.parts[j]();
+				delete stylesInDom[domStyle.id];
+			}
+		}
+	};
+}
+
+function addStylesToDom(styles, options) {
+	for(var i = 0; i < styles.length; i++) {
+		var item = styles[i];
+		var domStyle = stylesInDom[item.id];
+		if(domStyle) {
+			domStyle.refs++;
+			for(var j = 0; j < domStyle.parts.length; j++) {
+				domStyle.parts[j](item.parts[j]);
+			}
+			for(; j < item.parts.length; j++) {
+				domStyle.parts.push(addStyle(item.parts[j], options));
+			}
+		} else {
+			var parts = [];
+			for(var j = 0; j < item.parts.length; j++) {
+				parts.push(addStyle(item.parts[j], options));
+			}
+			stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
+		}
+	}
+}
+
+function listToStyles(list) {
+	var styles = [];
+	var newStyles = {};
+	for(var i = 0; i < list.length; i++) {
+		var item = list[i];
+		var id = item[0];
+		var css = item[1];
+		var media = item[2];
+		var sourceMap = item[3];
+		var part = {css: css, media: media, sourceMap: sourceMap};
+		if(!newStyles[id])
+			styles.push(newStyles[id] = {id: id, parts: [part]});
+		else
+			newStyles[id].parts.push(part);
+	}
+	return styles;
+}
+
+function insertStyleElement(options, styleElement) {
+	var head = getHeadElement();
+	var lastStyleElementInsertedAtTop = styleElementsInsertedAtTop[styleElementsInsertedAtTop.length - 1];
+	if (options.insertAt === "top") {
+		if(!lastStyleElementInsertedAtTop) {
+			head.insertBefore(styleElement, head.firstChild);
+		} else if(lastStyleElementInsertedAtTop.nextSibling) {
+			head.insertBefore(styleElement, lastStyleElementInsertedAtTop.nextSibling);
+		} else {
+			head.appendChild(styleElement);
+		}
+		styleElementsInsertedAtTop.push(styleElement);
+	} else if (options.insertAt === "bottom") {
+		head.appendChild(styleElement);
+	} else {
+		throw new Error("Invalid value for parameter 'insertAt'. Must be 'top' or 'bottom'.");
+	}
+}
+
+function removeStyleElement(styleElement) {
+	styleElement.parentNode.removeChild(styleElement);
+	var idx = styleElementsInsertedAtTop.indexOf(styleElement);
+	if(idx >= 0) {
+		styleElementsInsertedAtTop.splice(idx, 1);
+	}
+}
+
+function createStyleElement(options) {
+	var styleElement = document.createElement("style");
+	styleElement.type = "text/css";
+	insertStyleElement(options, styleElement);
+	return styleElement;
+}
+
+function addStyle(obj, options) {
+	var styleElement, update, remove;
+
+	if (options.singleton) {
+		var styleIndex = singletonCounter++;
+		styleElement = singletonElement || (singletonElement = createStyleElement(options));
+		update = applyToSingletonTag.bind(null, styleElement, styleIndex, false);
+		remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true);
+	} else {
+		styleElement = createStyleElement(options);
+		update = applyToTag.bind(null, styleElement);
+		remove = function() {
+			removeStyleElement(styleElement);
+		};
+	}
+
+	update(obj);
+
+	return function updateStyle(newObj) {
+		if(newObj) {
+			if(newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap)
+				return;
+			update(obj = newObj);
+		} else {
+			remove();
+		}
+	};
+}
+
+var replaceText = (function () {
+	var textStore = [];
+
+	return function (index, replacement) {
+		textStore[index] = replacement;
+		return textStore.filter(Boolean).join('\n');
+	};
+})();
+
+function applyToSingletonTag(styleElement, index, remove, obj) {
+	var css = remove ? "" : obj.css;
+
+	if (styleElement.styleSheet) {
+		styleElement.styleSheet.cssText = replaceText(index, css);
+	} else {
+		var cssNode = document.createTextNode(css);
+		var childNodes = styleElement.childNodes;
+		if (childNodes[index]) styleElement.removeChild(childNodes[index]);
+		if (childNodes.length) {
+			styleElement.insertBefore(cssNode, childNodes[index]);
+		} else {
+			styleElement.appendChild(cssNode);
+		}
+	}
+}
+
+function applyToTag(styleElement, obj) {
+	var css = obj.css;
+	var media = obj.media;
+	var sourceMap = obj.sourceMap;
+
+	if (media) {
+		styleElement.setAttribute("media", media);
+	}
+
+	if (sourceMap) {
+		// https://developer.chrome.com/devtools/docs/javascript-debugging
+		// this makes source maps inside style tags work properly in Chrome
+		css += '\n/*# sourceURL=' + sourceMap.sources[0] + ' */';
+		// http://stackoverflow.com/a/26603875
+		css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
+	}
+
+	if (styleElement.styleSheet) {
+		styleElement.styleSheet.cssText = css;
+	} else {
+		while(styleElement.firstChild) {
+			styleElement.removeChild(styleElement.firstChild);
+		}
+		styleElement.appendChild(document.createTextNode(css));
+	}
+}
+
+
+/***/ }),
+/* 63 */
 /***/ (function(module, exports) {
 
 var g;
@@ -1725,14 +2406,300 @@ module.exports = g;
 
 
 /***/ }),
-/* 60 */
+/* 64 */
+/***/ (function(module, exports) {
+
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
+
+/***/ }),
+/* 65 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(process) {
+
+var utils = __webpack_require__(16);
+var normalizeHeaderName = __webpack_require__(147);
+
+var DEFAULT_CONTENT_TYPE = {
+  'Content-Type': 'application/x-www-form-urlencoded'
+};
+
+function setContentTypeIfUnset(headers, value) {
+  if (!utils.isUndefined(headers) && utils.isUndefined(headers['Content-Type'])) {
+    headers['Content-Type'] = value;
+  }
+}
+
+function getDefaultAdapter() {
+  var adapter;
+  if (typeof XMLHttpRequest !== 'undefined') {
+    // For browsers use XHR adapter
+    adapter = __webpack_require__(93);
+  } else if (typeof process !== 'undefined') {
+    // For node use HTTP adapter
+    adapter = __webpack_require__(93);
+  }
+  return adapter;
+}
+
+var defaults = {
+  adapter: getDefaultAdapter(),
+
+  transformRequest: [function transformRequest(data, headers) {
+    normalizeHeaderName(headers, 'Content-Type');
+    if (utils.isFormData(data) ||
+      utils.isArrayBuffer(data) ||
+      utils.isBuffer(data) ||
+      utils.isStream(data) ||
+      utils.isFile(data) ||
+      utils.isBlob(data)
+    ) {
+      return data;
+    }
+    if (utils.isArrayBufferView(data)) {
+      return data.buffer;
+    }
+    if (utils.isURLSearchParams(data)) {
+      setContentTypeIfUnset(headers, 'application/x-www-form-urlencoded;charset=utf-8');
+      return data.toString();
+    }
+    if (utils.isObject(data)) {
+      setContentTypeIfUnset(headers, 'application/json;charset=utf-8');
+      return JSON.stringify(data);
+    }
+    return data;
+  }],
+
+  transformResponse: [function transformResponse(data) {
+    /*eslint no-param-reassign:0*/
+    if (typeof data === 'string') {
+      try {
+        data = JSON.parse(data);
+      } catch (e) { /* Ignore */ }
+    }
+    return data;
+  }],
+
+  timeout: 0,
+
+  xsrfCookieName: 'XSRF-TOKEN',
+  xsrfHeaderName: 'X-XSRF-TOKEN',
+
+  maxContentLength: -1,
+
+  validateStatus: function validateStatus(status) {
+    return status >= 200 && status < 300;
+  }
+};
+
+defaults.headers = {
+  common: {
+    'Accept': 'application/json, text/plain, */*'
+  }
+};
+
+utils.forEach(['delete', 'get', 'head'], function forEachMethodNoData(method) {
+  defaults.headers[method] = {};
+});
+
+utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
+  defaults.headers[method] = utils.merge(DEFAULT_CONTENT_TYPE);
+});
+
+module.exports = defaults;
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(64)))
+
+/***/ }),
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 // 22.1.3.6 Array.prototype.fill(value, start = 0, end = this.length)
 
 var toObject = __webpack_require__(9)
-  , toIndex  = __webpack_require__(38)
+  , toIndex  = __webpack_require__(39)
   , toLength = __webpack_require__(8);
 module.exports = function fill(value /*, start = 0, end = @length */){
   var O      = toObject(this)
@@ -1746,13 +2713,13 @@ module.exports = function fill(value /*, start = 0, end = @length */){
 };
 
 /***/ }),
-/* 61 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var $defineProperty = __webpack_require__(7)
-  , createDesc      = __webpack_require__(29);
+  , createDesc      = __webpack_require__(30);
 
 module.exports = function(object, index, value){
   if(index in object)$defineProperty.f(object, index, createDesc(0, value));
@@ -1760,7 +2727,7 @@ module.exports = function(object, index, value){
 };
 
 /***/ }),
-/* 62 */
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(4)
@@ -1772,7 +2739,7 @@ module.exports = function(it){
 };
 
 /***/ }),
-/* 63 */
+/* 69 */
 /***/ (function(module, exports) {
 
 // IE 8- don't enum bug keys
@@ -1781,7 +2748,7 @@ module.exports = (
 ).split(',');
 
 /***/ }),
-/* 64 */
+/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var MATCH = __webpack_require__(5)('match');
@@ -1798,17 +2765,17 @@ module.exports = function(KEY){
 };
 
 /***/ }),
-/* 65 */
+/* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(2).document && document.documentElement;
 
 /***/ }),
-/* 66 */
+/* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var isObject       = __webpack_require__(4)
-  , setPrototypeOf = __webpack_require__(74).set;
+  , setPrototypeOf = __webpack_require__(80).set;
 module.exports = function(that, target, C){
   var P, S = target.constructor;
   if(S !== C && typeof S == 'function' && (P = S.prototype) !== C.prototype && isObject(P) && setPrototypeOf){
@@ -1817,11 +2784,11 @@ module.exports = function(that, target, C){
 };
 
 /***/ }),
-/* 67 */
+/* 73 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // check on default Array iterator
-var Iterators  = __webpack_require__(42)
+var Iterators  = __webpack_require__(43)
   , ITERATOR   = __webpack_require__(5)('iterator')
   , ArrayProto = Array.prototype;
 
@@ -1830,24 +2797,24 @@ module.exports = function(it){
 };
 
 /***/ }),
-/* 68 */
+/* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 7.2.2 IsArray(argument)
-var cof = __webpack_require__(18);
+var cof = __webpack_require__(19);
 module.exports = Array.isArray || function isArray(arg){
   return cof(arg) == 'Array';
 };
 
 /***/ }),
-/* 69 */
+/* 75 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var create         = __webpack_require__(33)
-  , descriptor     = __webpack_require__(29)
-  , setToStringTag = __webpack_require__(43)
+var create         = __webpack_require__(34)
+  , descriptor     = __webpack_require__(30)
+  , setToStringTag = __webpack_require__(44)
   , IteratorPrototype = {};
 
 // 25.1.2.1.1 %IteratorPrototype%[@@iterator]()
@@ -1859,20 +2826,20 @@ module.exports = function(Constructor, NAME, next){
 };
 
 /***/ }),
-/* 70 */
+/* 76 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var LIBRARY        = __webpack_require__(32)
+var LIBRARY        = __webpack_require__(33)
   , $export        = __webpack_require__(0)
   , redefine       = __webpack_require__(13)
   , hide           = __webpack_require__(12)
   , has            = __webpack_require__(10)
-  , Iterators      = __webpack_require__(42)
-  , $iterCreate    = __webpack_require__(69)
-  , setToStringTag = __webpack_require__(43)
-  , getPrototypeOf = __webpack_require__(17)
+  , Iterators      = __webpack_require__(43)
+  , $iterCreate    = __webpack_require__(75)
+  , setToStringTag = __webpack_require__(44)
+  , getPrototypeOf = __webpack_require__(18)
   , ITERATOR       = __webpack_require__(5)('iterator')
   , BUGGY          = !([].keys && 'next' in [].keys()) // Safari has buggy iterators w/o `next`
   , FF_ITERATOR    = '@@iterator'
@@ -1935,7 +2902,7 @@ module.exports = function(Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCED
 };
 
 /***/ }),
-/* 71 */
+/* 77 */
 /***/ (function(module, exports) {
 
 // 20.2.2.14 Math.expm1(x)
@@ -1950,7 +2917,7 @@ module.exports = (!$expm1
 } : $expm1;
 
 /***/ }),
-/* 72 */
+/* 78 */
 /***/ (function(module, exports) {
 
 // 20.2.2.28 Math.sign(x)
@@ -1959,15 +2926,15 @@ module.exports = Math.sign || function sign(x){
 };
 
 /***/ }),
-/* 73 */
+/* 79 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var global    = __webpack_require__(2)
-  , macrotask = __webpack_require__(81).set
+  , macrotask = __webpack_require__(87).set
   , Observer  = global.MutationObserver || global.WebKitMutationObserver
   , process   = global.process
   , Promise   = global.Promise
-  , isNode    = __webpack_require__(18)(process) == 'process';
+  , isNode    = __webpack_require__(19)(process) == 'process';
 
 module.exports = function(){
   var head, last, notify;
@@ -2032,7 +2999,7 @@ module.exports = function(){
 };
 
 /***/ }),
-/* 74 */
+/* 80 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Works with __proto__ only. Old v8 can't work with null proto objects.
@@ -2047,7 +3014,7 @@ module.exports = {
   set: Object.setPrototypeOf || ('__proto__' in {} ? // eslint-disable-line
     function(test, buggy, set){
       try {
-        set = __webpack_require__(25)(Function.call, __webpack_require__(16).f(Object.prototype, '__proto__').set, 2);
+        set = __webpack_require__(26)(Function.call, __webpack_require__(17).f(Object.prototype, '__proto__').set, 2);
         set(test, []);
         buggy = !(test instanceof Array);
       } catch(e){ buggy = true; }
@@ -2062,17 +3029,17 @@ module.exports = {
 };
 
 /***/ }),
-/* 75 */
+/* 81 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var shared = __webpack_require__(57)('keys')
-  , uid    = __webpack_require__(39);
+var shared = __webpack_require__(60)('keys')
+  , uid    = __webpack_require__(40);
 module.exports = function(key){
   return shared[key] || (shared[key] = uid(key));
 };
 
 /***/ }),
-/* 76 */
+/* 82 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 7.3.20 SpeciesConstructor(O, defaultConstructor)
@@ -2085,11 +3052,11 @@ module.exports = function(O, D){
 };
 
 /***/ }),
-/* 77 */
+/* 83 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var toInteger = __webpack_require__(30)
-  , defined   = __webpack_require__(19);
+var toInteger = __webpack_require__(31)
+  , defined   = __webpack_require__(20);
 // true  -> String#at
 // false -> String#codePointAt
 module.exports = function(TO_STRING){
@@ -2107,12 +3074,12 @@ module.exports = function(TO_STRING){
 };
 
 /***/ }),
-/* 78 */
+/* 84 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // helper for String#{startsWith, endsWith, includes}
-var isRegExp = __webpack_require__(53)
-  , defined  = __webpack_require__(19);
+var isRegExp = __webpack_require__(56)
+  , defined  = __webpack_require__(20);
 
 module.exports = function(that, searchString, NAME){
   if(isRegExp(searchString))throw TypeError('String#' + NAME + " doesn't accept regex!");
@@ -2120,13 +3087,13 @@ module.exports = function(that, searchString, NAME){
 };
 
 /***/ }),
-/* 79 */
+/* 85 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var toInteger = __webpack_require__(30)
-  , defined   = __webpack_require__(19);
+var toInteger = __webpack_require__(31)
+  , defined   = __webpack_require__(20);
 
 module.exports = function repeat(count){
   var str = String(defined(this))
@@ -2138,20 +3105,20 @@ module.exports = function repeat(count){
 };
 
 /***/ }),
-/* 80 */
+/* 86 */
 /***/ (function(module, exports) {
 
 module.exports = '\x09\x0A\x0B\x0C\x0D\x20\xA0\u1680\u180E\u2000\u2001\u2002\u2003' +
   '\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000\u2028\u2029\uFEFF';
 
 /***/ }),
-/* 81 */
+/* 87 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var ctx                = __webpack_require__(25)
-  , invoke             = __webpack_require__(52)
-  , html               = __webpack_require__(65)
-  , cel                = __webpack_require__(62)
+var ctx                = __webpack_require__(26)
+  , invoke             = __webpack_require__(55)
+  , html               = __webpack_require__(71)
+  , cel                = __webpack_require__(68)
   , global             = __webpack_require__(2)
   , process            = global.process
   , setTask            = global.setImmediate
@@ -2187,7 +3154,7 @@ if(!setTask || !clearTask){
     delete queue[id];
   };
   // Node.js 0.8-
-  if(__webpack_require__(18)(process) == 'process'){
+  if(__webpack_require__(19)(process) == 'process'){
     defer = function(id){
       process.nextTick(ctx(run, id, 1));
     };
@@ -2225,25 +3192,25 @@ module.exports = {
 };
 
 /***/ }),
-/* 82 */
+/* 88 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var global         = __webpack_require__(2)
   , DESCRIPTORS    = __webpack_require__(6)
-  , LIBRARY        = __webpack_require__(32)
-  , $typed         = __webpack_require__(58)
+  , LIBRARY        = __webpack_require__(33)
+  , $typed         = __webpack_require__(61)
   , hide           = __webpack_require__(12)
-  , redefineAll    = __webpack_require__(36)
+  , redefineAll    = __webpack_require__(37)
   , fails          = __webpack_require__(3)
-  , anInstance     = __webpack_require__(31)
-  , toInteger      = __webpack_require__(30)
+  , anInstance     = __webpack_require__(32)
+  , toInteger      = __webpack_require__(31)
   , toLength       = __webpack_require__(8)
-  , gOPN           = __webpack_require__(34).f
+  , gOPN           = __webpack_require__(35).f
   , dP             = __webpack_require__(7).f
-  , arrayFill      = __webpack_require__(60)
-  , setToStringTag = __webpack_require__(43)
+  , arrayFill      = __webpack_require__(66)
+  , setToStringTag = __webpack_require__(44)
   , ARRAY_BUFFER   = 'ArrayBuffer'
   , DATA_VIEW      = 'DataView'
   , PROTOTYPE      = 'prototype'
@@ -2504,13 +3471,13 @@ exports[ARRAY_BUFFER] = $ArrayBuffer;
 exports[DATA_VIEW] = $DataView;
 
 /***/ }),
-/* 83 */
+/* 89 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var global         = __webpack_require__(2)
-  , core           = __webpack_require__(24)
-  , LIBRARY        = __webpack_require__(32)
-  , wksExt         = __webpack_require__(109)
+  , core           = __webpack_require__(25)
+  , LIBRARY        = __webpack_require__(33)
+  , wksExt         = __webpack_require__(121)
   , defineProperty = __webpack_require__(7).f;
 module.exports = function(name){
   var $Symbol = core.Symbol || (core.Symbol = LIBRARY ? {} : global.Symbol || {});
@@ -2518,34 +3485,34 @@ module.exports = function(name){
 };
 
 /***/ }),
-/* 84 */
+/* 90 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var classof   = __webpack_require__(45)
+var classof   = __webpack_require__(47)
   , ITERATOR  = __webpack_require__(5)('iterator')
-  , Iterators = __webpack_require__(42);
-module.exports = __webpack_require__(24).getIteratorMethod = function(it){
+  , Iterators = __webpack_require__(43);
+module.exports = __webpack_require__(25).getIteratorMethod = function(it){
   if(it != undefined)return it[ITERATOR]
     || it['@@iterator']
     || Iterators[classof(it)];
 };
 
 /***/ }),
-/* 85 */
+/* 91 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var addToUnscopables = __webpack_require__(40)
-  , step             = __webpack_require__(97)
-  , Iterators        = __webpack_require__(42)
+var addToUnscopables = __webpack_require__(41)
+  , step             = __webpack_require__(109)
+  , Iterators        = __webpack_require__(43)
   , toIObject        = __webpack_require__(15);
 
 // 22.1.3.4 Array.prototype.entries()
 // 22.1.3.13 Array.prototype.keys()
 // 22.1.3.29 Array.prototype.values()
 // 22.1.3.30 Array.prototype[@@iterator]()
-module.exports = __webpack_require__(70)(Array, 'Array', function(iterated, kind){
+module.exports = __webpack_require__(76)(Array, 'Array', function(iterated, kind){
   this._t = toIObject(iterated); // target
   this._i = 0;                   // next index
   this._k = kind;                // kind
@@ -2571,24 +3538,297 @@ addToUnscopables('values');
 addToUnscopables('entries');
 
 /***/ }),
-/* 86 */
+/* 92 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var cof = __webpack_require__(18);
+module.exports = __webpack_require__(133);
+
+/***/ }),
+/* 93 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(process) {
+
+var utils = __webpack_require__(16);
+var settle = __webpack_require__(139);
+var buildURL = __webpack_require__(142);
+var parseHeaders = __webpack_require__(148);
+var isURLSameOrigin = __webpack_require__(146);
+var createError = __webpack_require__(96);
+var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(141);
+
+module.exports = function xhrAdapter(config) {
+  return new Promise(function dispatchXhrRequest(resolve, reject) {
+    var requestData = config.data;
+    var requestHeaders = config.headers;
+
+    if (utils.isFormData(requestData)) {
+      delete requestHeaders['Content-Type']; // Let the browser set it
+    }
+
+    var request = new XMLHttpRequest();
+    var loadEvent = 'onreadystatechange';
+    var xDomain = false;
+
+    // For IE 8/9 CORS support
+    // Only supports POST and GET calls and doesn't returns the response headers.
+    // DON'T do this for testing b/c XMLHttpRequest is mocked, not XDomainRequest.
+    if (process.env.NODE_ENV !== 'test' &&
+        typeof window !== 'undefined' &&
+        window.XDomainRequest && !('withCredentials' in request) &&
+        !isURLSameOrigin(config.url)) {
+      request = new window.XDomainRequest();
+      loadEvent = 'onload';
+      xDomain = true;
+      request.onprogress = function handleProgress() {};
+      request.ontimeout = function handleTimeout() {};
+    }
+
+    // HTTP basic authentication
+    if (config.auth) {
+      var username = config.auth.username || '';
+      var password = config.auth.password || '';
+      requestHeaders.Authorization = 'Basic ' + btoa(username + ':' + password);
+    }
+
+    request.open(config.method.toUpperCase(), buildURL(config.url, config.params, config.paramsSerializer), true);
+
+    // Set the request timeout in MS
+    request.timeout = config.timeout;
+
+    // Listen for ready state
+    request[loadEvent] = function handleLoad() {
+      if (!request || (request.readyState !== 4 && !xDomain)) {
+        return;
+      }
+
+      // The request errored out and we didn't get a response, this will be
+      // handled by onerror instead
+      // With one exception: request that using file: protocol, most browsers
+      // will return status as 0 even though it's a successful request
+      if (request.status === 0 && !(request.responseURL && request.responseURL.indexOf('file:') === 0)) {
+        return;
+      }
+
+      // Prepare the response
+      var responseHeaders = 'getAllResponseHeaders' in request ? parseHeaders(request.getAllResponseHeaders()) : null;
+      var responseData = !config.responseType || config.responseType === 'text' ? request.responseText : request.response;
+      var response = {
+        data: responseData,
+        // IE sends 1223 instead of 204 (https://github.com/mzabriskie/axios/issues/201)
+        status: request.status === 1223 ? 204 : request.status,
+        statusText: request.status === 1223 ? 'No Content' : request.statusText,
+        headers: responseHeaders,
+        config: config,
+        request: request
+      };
+
+      settle(resolve, reject, response);
+
+      // Clean up request
+      request = null;
+    };
+
+    // Handle low level network errors
+    request.onerror = function handleError() {
+      // Real errors are hidden from us by the browser
+      // onerror should only fire if it's a network error
+      reject(createError('Network Error', config));
+
+      // Clean up request
+      request = null;
+    };
+
+    // Handle timeout
+    request.ontimeout = function handleTimeout() {
+      reject(createError('timeout of ' + config.timeout + 'ms exceeded', config, 'ECONNABORTED'));
+
+      // Clean up request
+      request = null;
+    };
+
+    // Add xsrf header
+    // This is only done if running in a standard browser environment.
+    // Specifically not if we're in a web worker, or react-native.
+    if (utils.isStandardBrowserEnv()) {
+      var cookies = __webpack_require__(144);
+
+      // Add xsrf header
+      var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
+          cookies.read(config.xsrfCookieName) :
+          undefined;
+
+      if (xsrfValue) {
+        requestHeaders[config.xsrfHeaderName] = xsrfValue;
+      }
+    }
+
+    // Add headers to the request
+    if ('setRequestHeader' in request) {
+      utils.forEach(requestHeaders, function setRequestHeader(val, key) {
+        if (typeof requestData === 'undefined' && key.toLowerCase() === 'content-type') {
+          // Remove Content-Type if data is undefined
+          delete requestHeaders[key];
+        } else {
+          // Otherwise add header to the request
+          request.setRequestHeader(key, val);
+        }
+      });
+    }
+
+    // Add withCredentials to request if needed
+    if (config.withCredentials) {
+      request.withCredentials = true;
+    }
+
+    // Add responseType to request if needed
+    if (config.responseType) {
+      try {
+        request.responseType = config.responseType;
+      } catch (e) {
+        // Expected DOMException thrown by browsers not compatible XMLHttpRequest Level 2.
+        // But, this can be suppressed for 'json' type as it can be parsed by default 'transformResponse' function.
+        if (config.responseType !== 'json') {
+          throw e;
+        }
+      }
+    }
+
+    // Handle progress if needed
+    if (typeof config.onDownloadProgress === 'function') {
+      request.addEventListener('progress', config.onDownloadProgress);
+    }
+
+    // Not all browsers support upload events
+    if (typeof config.onUploadProgress === 'function' && request.upload) {
+      request.upload.addEventListener('progress', config.onUploadProgress);
+    }
+
+    if (config.cancelToken) {
+      // Handle cancellation
+      config.cancelToken.promise.then(function onCanceled(cancel) {
+        if (!request) {
+          return;
+        }
+
+        request.abort();
+        reject(cancel);
+        // Clean up request
+        request = null;
+      });
+    }
+
+    if (requestData === undefined) {
+      requestData = null;
+    }
+
+    // Send the request
+    request.send(requestData);
+  });
+};
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(64)))
+
+/***/ }),
+/* 94 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/**
+ * A `Cancel` is an object that is thrown when an operation is canceled.
+ *
+ * @class
+ * @param {string=} message The message.
+ */
+function Cancel(message) {
+  this.message = message;
+}
+
+Cancel.prototype.toString = function toString() {
+  return 'Cancel' + (this.message ? ': ' + this.message : '');
+};
+
+Cancel.prototype.__CANCEL__ = true;
+
+module.exports = Cancel;
+
+
+/***/ }),
+/* 95 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = function isCancel(value) {
+  return !!(value && value.__CANCEL__);
+};
+
+
+/***/ }),
+/* 96 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var enhanceError = __webpack_require__(138);
+
+/**
+ * Create an Error with the specified message, config, error code, and response.
+ *
+ * @param {string} message The error message.
+ * @param {Object} config The config.
+ * @param {string} [code] The error code (for example, 'ECONNABORTED').
+ @ @param {Object} [response] The response.
+ * @returns {Error} The created error.
+ */
+module.exports = function createError(message, config, code, response) {
+  var error = new Error(message);
+  return enhanceError(error, config, code, response);
+};
+
+
+/***/ }),
+/* 97 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = function bind(fn, thisArg) {
+  return function wrap() {
+    var args = new Array(arguments.length);
+    for (var i = 0; i < args.length; i++) {
+      args[i] = arguments[i];
+    }
+    return fn.apply(thisArg, args);
+  };
+};
+
+
+/***/ }),
+/* 98 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var cof = __webpack_require__(19);
 module.exports = function(it, msg){
   if(typeof it != 'number' && cof(it) != 'Number')throw TypeError(msg);
   return +it;
 };
 
 /***/ }),
-/* 87 */
+/* 99 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 // 22.1.3.3 Array.prototype.copyWithin(target, start, end = this.length)
 
 var toObject = __webpack_require__(9)
-  , toIndex  = __webpack_require__(38)
+  , toIndex  = __webpack_require__(39)
   , toLength = __webpack_require__(8);
 
 module.exports = [].copyWithin || function copyWithin(target/*= 0*/, start/*= 0, end = @length*/){
@@ -2613,10 +3853,10 @@ module.exports = [].copyWithin || function copyWithin(target/*= 0*/, start/*= 0,
 };
 
 /***/ }),
-/* 88 */
+/* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var forOf = __webpack_require__(41);
+var forOf = __webpack_require__(42);
 
 module.exports = function(iter, ITERATOR){
   var result = [];
@@ -2626,12 +3866,12 @@ module.exports = function(iter, ITERATOR){
 
 
 /***/ }),
-/* 89 */
+/* 101 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var aFunction = __webpack_require__(11)
   , toObject  = __webpack_require__(9)
-  , IObject   = __webpack_require__(46)
+  , IObject   = __webpack_require__(48)
   , toLength  = __webpack_require__(8);
 
 module.exports = function(that, callbackfn, aLen, memo, isRight){
@@ -2659,14 +3899,14 @@ module.exports = function(that, callbackfn, aLen, memo, isRight){
 };
 
 /***/ }),
-/* 90 */
+/* 102 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var aFunction  = __webpack_require__(11)
   , isObject   = __webpack_require__(4)
-  , invoke     = __webpack_require__(52)
+  , invoke     = __webpack_require__(55)
   , arraySlice = [].slice
   , factories  = {};
 
@@ -2689,23 +3929,23 @@ module.exports = Function.bind || function bind(that /*, args... */){
 };
 
 /***/ }),
-/* 91 */
+/* 103 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var dP          = __webpack_require__(7).f
-  , create      = __webpack_require__(33)
-  , redefineAll = __webpack_require__(36)
-  , ctx         = __webpack_require__(25)
-  , anInstance  = __webpack_require__(31)
-  , defined     = __webpack_require__(19)
-  , forOf       = __webpack_require__(41)
-  , $iterDefine = __webpack_require__(70)
-  , step        = __webpack_require__(97)
-  , setSpecies  = __webpack_require__(37)
+  , create      = __webpack_require__(34)
+  , redefineAll = __webpack_require__(37)
+  , ctx         = __webpack_require__(26)
+  , anInstance  = __webpack_require__(32)
+  , defined     = __webpack_require__(20)
+  , forOf       = __webpack_require__(42)
+  , $iterDefine = __webpack_require__(76)
+  , step        = __webpack_require__(109)
+  , setSpecies  = __webpack_require__(38)
   , DESCRIPTORS = __webpack_require__(6)
-  , fastKey     = __webpack_require__(28).fastKey
+  , fastKey     = __webpack_require__(29).fastKey
   , SIZE        = DESCRIPTORS ? '_s' : 'size';
 
 var getEntry = function(that, key){
@@ -2837,12 +4077,12 @@ module.exports = {
 };
 
 /***/ }),
-/* 92 */
+/* 104 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://github.com/DavidBruant/Map-Set.prototype.toJSON
-var classof = __webpack_require__(45)
-  , from    = __webpack_require__(88);
+var classof = __webpack_require__(47)
+  , from    = __webpack_require__(100);
 module.exports = function(NAME){
   return function toJSON(){
     if(classof(this) != NAME)throw TypeError(NAME + "#toJSON isn't generic");
@@ -2851,18 +4091,18 @@ module.exports = function(NAME){
 };
 
 /***/ }),
-/* 93 */
+/* 105 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var redefineAll       = __webpack_require__(36)
-  , getWeak           = __webpack_require__(28).getWeak
+var redefineAll       = __webpack_require__(37)
+  , getWeak           = __webpack_require__(29).getWeak
   , anObject          = __webpack_require__(1)
   , isObject          = __webpack_require__(4)
-  , anInstance        = __webpack_require__(31)
-  , forOf             = __webpack_require__(41)
-  , createArrayMethod = __webpack_require__(21)
+  , anInstance        = __webpack_require__(32)
+  , forOf             = __webpack_require__(42)
+  , createArrayMethod = __webpack_require__(22)
   , $has              = __webpack_require__(10)
   , arrayFind         = createArrayMethod(5)
   , arrayFindIndex    = createArrayMethod(6)
@@ -2940,15 +4180,15 @@ module.exports = {
 };
 
 /***/ }),
-/* 94 */
+/* 106 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = !__webpack_require__(6) && !__webpack_require__(3)(function(){
-  return Object.defineProperty(__webpack_require__(62)('div'), 'a', {get: function(){ return 7; }}).a != 7;
+  return Object.defineProperty(__webpack_require__(68)('div'), 'a', {get: function(){ return 7; }}).a != 7;
 });
 
 /***/ }),
-/* 95 */
+/* 107 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.1.2.3 Number.isInteger(number)
@@ -2959,7 +4199,7 @@ module.exports = function isInteger(it){
 };
 
 /***/ }),
-/* 96 */
+/* 108 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // call something on iterator step with safe closing on error
@@ -2976,7 +4216,7 @@ module.exports = function(iterator, fn, value, entries){
 };
 
 /***/ }),
-/* 97 */
+/* 109 */
 /***/ (function(module, exports) {
 
 module.exports = function(done, value){
@@ -2984,7 +4224,7 @@ module.exports = function(done, value){
 };
 
 /***/ }),
-/* 98 */
+/* 110 */
 /***/ (function(module, exports) {
 
 // 20.2.2.20 Math.log1p(x)
@@ -2993,17 +4233,17 @@ module.exports = Math.log1p || function log1p(x){
 };
 
 /***/ }),
-/* 99 */
+/* 111 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 // 19.1.2.1 Object.assign(target, source, ...)
-var getKeys  = __webpack_require__(35)
-  , gOPS     = __webpack_require__(56)
-  , pIE      = __webpack_require__(47)
+var getKeys  = __webpack_require__(36)
+  , gOPS     = __webpack_require__(59)
+  , pIE      = __webpack_require__(49)
   , toObject = __webpack_require__(9)
-  , IObject  = __webpack_require__(46)
+  , IObject  = __webpack_require__(48)
   , $assign  = Object.assign;
 
 // should work with symbols and should have deterministic property order (V8 bug)
@@ -3032,12 +4272,12 @@ module.exports = !$assign || __webpack_require__(3)(function(){
 } : $assign;
 
 /***/ }),
-/* 100 */
+/* 112 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var dP       = __webpack_require__(7)
   , anObject = __webpack_require__(1)
-  , getKeys  = __webpack_require__(35);
+  , getKeys  = __webpack_require__(36);
 
 module.exports = __webpack_require__(6) ? Object.defineProperties : function defineProperties(O, Properties){
   anObject(O);
@@ -3050,12 +4290,12 @@ module.exports = __webpack_require__(6) ? Object.defineProperties : function def
 };
 
 /***/ }),
-/* 101 */
+/* 113 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // fallback for IE11 buggy Object.getOwnPropertyNames with iframe and window
 var toIObject = __webpack_require__(15)
-  , gOPN      = __webpack_require__(34).f
+  , gOPN      = __webpack_require__(35).f
   , toString  = {}.toString;
 
 var windowNames = typeof window == 'object' && window && Object.getOwnPropertyNames
@@ -3075,13 +4315,13 @@ module.exports.f = function getOwnPropertyNames(it){
 
 
 /***/ }),
-/* 102 */
+/* 114 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var has          = __webpack_require__(10)
   , toIObject    = __webpack_require__(15)
-  , arrayIndexOf = __webpack_require__(48)(false)
-  , IE_PROTO     = __webpack_require__(75)('IE_PROTO');
+  , arrayIndexOf = __webpack_require__(51)(false)
+  , IE_PROTO     = __webpack_require__(81)('IE_PROTO');
 
 module.exports = function(object, names){
   var O      = toIObject(object)
@@ -3097,12 +4337,12 @@ module.exports = function(object, names){
 };
 
 /***/ }),
-/* 103 */
+/* 115 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getKeys   = __webpack_require__(35)
+var getKeys   = __webpack_require__(36)
   , toIObject = __webpack_require__(15)
-  , isEnum    = __webpack_require__(47).f;
+  , isEnum    = __webpack_require__(49).f;
 module.exports = function(isEntries){
   return function(it){
     var O      = toIObject(it)
@@ -3118,12 +4358,12 @@ module.exports = function(isEntries){
 };
 
 /***/ }),
-/* 104 */
+/* 116 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // all object keys, includes non-enumerable and symbols
-var gOPN     = __webpack_require__(34)
-  , gOPS     = __webpack_require__(56)
+var gOPN     = __webpack_require__(35)
+  , gOPS     = __webpack_require__(59)
   , anObject = __webpack_require__(1)
   , Reflect  = __webpack_require__(2).Reflect;
 module.exports = Reflect && Reflect.ownKeys || function ownKeys(it){
@@ -3133,25 +4373,25 @@ module.exports = Reflect && Reflect.ownKeys || function ownKeys(it){
 };
 
 /***/ }),
-/* 105 */
+/* 117 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $parseFloat = __webpack_require__(2).parseFloat
-  , $trim       = __webpack_require__(44).trim;
+  , $trim       = __webpack_require__(45).trim;
 
-module.exports = 1 / $parseFloat(__webpack_require__(80) + '-0') !== -Infinity ? function parseFloat(str){
+module.exports = 1 / $parseFloat(__webpack_require__(86) + '-0') !== -Infinity ? function parseFloat(str){
   var string = $trim(String(str), 3)
     , result = $parseFloat(string);
   return result === 0 && string.charAt(0) == '-' ? -0 : result;
 } : $parseFloat;
 
 /***/ }),
-/* 106 */
+/* 118 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $parseInt = __webpack_require__(2).parseInt
-  , $trim     = __webpack_require__(44).trim
-  , ws        = __webpack_require__(80)
+  , $trim     = __webpack_require__(45).trim
+  , ws        = __webpack_require__(86)
   , hex       = /^[\-+]?0[xX]/;
 
 module.exports = $parseInt(ws + '08') !== 8 || $parseInt(ws + '0x16') !== 22 ? function parseInt(str, radix){
@@ -3160,7 +4400,7 @@ module.exports = $parseInt(ws + '08') !== 8 || $parseInt(ws + '0x16') !== 22 ? f
 } : $parseInt;
 
 /***/ }),
-/* 107 */
+/* 119 */
 /***/ (function(module, exports) {
 
 // 7.2.9 SameValue(x, y)
@@ -3169,13 +4409,13 @@ module.exports = Object.is || function is(x, y){
 };
 
 /***/ }),
-/* 108 */
+/* 120 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://github.com/tc39/proposal-string-pad-start-end
 var toLength = __webpack_require__(8)
-  , repeat   = __webpack_require__(79)
-  , defined  = __webpack_require__(19);
+  , repeat   = __webpack_require__(85)
+  , defined  = __webpack_require__(20);
 
 module.exports = function(that, maxLength, fillString, left){
   var S            = String(defined(that))
@@ -3191,21 +4431,21 @@ module.exports = function(that, maxLength, fillString, left){
 
 
 /***/ }),
-/* 109 */
+/* 121 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports.f = __webpack_require__(5);
 
 /***/ }),
-/* 110 */
+/* 122 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var strong = __webpack_require__(91);
+var strong = __webpack_require__(103);
 
 // 23.1 Map Objects
-module.exports = __webpack_require__(49)('Map', function(get){
+module.exports = __webpack_require__(52)('Map', function(get){
   return function Map(){ return get(this, arguments.length > 0 ? arguments[0] : undefined); };
 }, {
   // 23.1.3.6 Map.prototype.get(key)
@@ -3220,25 +4460,25 @@ module.exports = __webpack_require__(49)('Map', function(get){
 }, strong, true);
 
 /***/ }),
-/* 111 */
+/* 123 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 21.2.5.3 get RegExp.prototype.flags()
 if(__webpack_require__(6) && /./g.flags != 'g')__webpack_require__(7).f(RegExp.prototype, 'flags', {
   configurable: true,
-  get: __webpack_require__(51)
+  get: __webpack_require__(54)
 });
 
 /***/ }),
-/* 112 */
+/* 124 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var strong = __webpack_require__(91);
+var strong = __webpack_require__(103);
 
 // 23.2 Set Objects
-module.exports = __webpack_require__(49)('Set', function(get){
+module.exports = __webpack_require__(52)('Set', function(get){
   return function Set(){ return get(this, arguments.length > 0 ? arguments[0] : undefined); };
 }, {
   // 23.2.3.1 Set.prototype.add(value)
@@ -3248,16 +4488,16 @@ module.exports = __webpack_require__(49)('Set', function(get){
 }, strong);
 
 /***/ }),
-/* 113 */
+/* 125 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var each         = __webpack_require__(21)(0)
+var each         = __webpack_require__(22)(0)
   , redefine     = __webpack_require__(13)
-  , meta         = __webpack_require__(28)
-  , assign       = __webpack_require__(99)
-  , weak         = __webpack_require__(93)
+  , meta         = __webpack_require__(29)
+  , assign       = __webpack_require__(111)
+  , weak         = __webpack_require__(105)
   , isObject     = __webpack_require__(4)
   , getWeak      = meta.getWeak
   , isExtensible = Object.isExtensible
@@ -3287,7 +4527,7 @@ var methods = {
 };
 
 // 23.3 WeakMap Objects
-var $WeakMap = module.exports = __webpack_require__(49)('WeakMap', wrapper, methods, weak, true, true);
+var $WeakMap = module.exports = __webpack_require__(52)('WeakMap', wrapper, methods, weak, true, true);
 
 // IE11 WeakMap frozen keys fix
 if(new $WeakMap().set((Object.freeze || Object)(tmp), 7).get(tmp) != 7){
@@ -3310,203 +4550,1814 @@ if(new $WeakMap().set((Object.freeze || Object)(tmp), 7).get(tmp) != 7){
 }
 
 /***/ }),
-/* 114 */
-/***/ (function(module, exports) {
+/* 126 */
+/***/ (function(module, exports, __webpack_require__) {
 
-// shim for using process in browser
-var process = module.exports = {};
+"use strict";
+/* WEBPACK VAR INJECTION */(function(global) {/*!
+ * The buffer module from node.js, for the browser.
+ *
+ * @author   Feross Aboukhadijeh <feross@feross.org> <http://feross.org>
+ * @license  MIT
+ */
+/* eslint-disable no-proto */
 
-// cached from whatever global is present so that test runners that stub it
-// don't break things.  But we need to wrap it in a try catch in case it is
-// wrapped in strict mode code which doesn't define any globals.  It's inside a
-// function because try/catches deoptimize in certain engines.
 
-var cachedSetTimeout;
-var cachedClearTimeout;
 
-function defaultSetTimout() {
-    throw new Error('setTimeout has not been defined');
+var base64 = __webpack_require__(363)
+var ieee754 = __webpack_require__(364)
+var isArray = __webpack_require__(365)
+
+exports.Buffer = Buffer
+exports.SlowBuffer = SlowBuffer
+exports.INSPECT_MAX_BYTES = 50
+
+/**
+ * If `Buffer.TYPED_ARRAY_SUPPORT`:
+ *   === true    Use Uint8Array implementation (fastest)
+ *   === false   Use Object implementation (most compatible, even IE6)
+ *
+ * Browsers that support typed arrays are IE 10+, Firefox 4+, Chrome 7+, Safari 5.1+,
+ * Opera 11.6+, iOS 4.2+.
+ *
+ * Due to various browser bugs, sometimes the Object implementation will be used even
+ * when the browser supports typed arrays.
+ *
+ * Note:
+ *
+ *   - Firefox 4-29 lacks support for adding new properties to `Uint8Array` instances,
+ *     See: https://bugzilla.mozilla.org/show_bug.cgi?id=695438.
+ *
+ *   - Chrome 9-10 is missing the `TypedArray.prototype.subarray` function.
+ *
+ *   - IE10 has a broken `TypedArray.prototype.subarray` function which returns arrays of
+ *     incorrect length in some situations.
+
+ * We detect these buggy browsers and set `Buffer.TYPED_ARRAY_SUPPORT` to `false` so they
+ * get the Object implementation, which is slower but behaves correctly.
+ */
+Buffer.TYPED_ARRAY_SUPPORT = global.TYPED_ARRAY_SUPPORT !== undefined
+  ? global.TYPED_ARRAY_SUPPORT
+  : typedArraySupport()
+
+/*
+ * Export kMaxLength after typed array support is determined.
+ */
+exports.kMaxLength = kMaxLength()
+
+function typedArraySupport () {
+  try {
+    var arr = new Uint8Array(1)
+    arr.__proto__ = {__proto__: Uint8Array.prototype, foo: function () { return 42 }}
+    return arr.foo() === 42 && // typed array instances can be augmented
+        typeof arr.subarray === 'function' && // chrome 9-10 lack `subarray`
+        arr.subarray(1, 1).byteLength === 0 // ie10 has broken `subarray`
+  } catch (e) {
+    return false
+  }
 }
-function defaultClearTimeout () {
-    throw new Error('clearTimeout has not been defined');
+
+function kMaxLength () {
+  return Buffer.TYPED_ARRAY_SUPPORT
+    ? 0x7fffffff
+    : 0x3fffffff
 }
-(function () {
-    try {
-        if (typeof setTimeout === 'function') {
-            cachedSetTimeout = setTimeout;
-        } else {
-            cachedSetTimeout = defaultSetTimout;
-        }
-    } catch (e) {
-        cachedSetTimeout = defaultSetTimout;
-    }
-    try {
-        if (typeof clearTimeout === 'function') {
-            cachedClearTimeout = clearTimeout;
-        } else {
-            cachedClearTimeout = defaultClearTimeout;
-        }
-    } catch (e) {
-        cachedClearTimeout = defaultClearTimeout;
-    }
-} ())
-function runTimeout(fun) {
-    if (cachedSetTimeout === setTimeout) {
-        //normal enviroments in sane situations
-        return setTimeout(fun, 0);
-    }
-    // if setTimeout wasn't available but was latter defined
-    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-        cachedSetTimeout = setTimeout;
-        return setTimeout(fun, 0);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedSetTimeout(fun, 0);
-    } catch(e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-            return cachedSetTimeout.call(null, fun, 0);
-        } catch(e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-            return cachedSetTimeout.call(this, fun, 0);
-        }
-    }
 
+function createBuffer (that, length) {
+  if (kMaxLength() < length) {
+    throw new RangeError('Invalid typed array length')
+  }
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    // Return an augmented `Uint8Array` instance, for best performance
+    that = new Uint8Array(length)
+    that.__proto__ = Buffer.prototype
+  } else {
+    // Fallback: Return an object instance of the Buffer class
+    if (that === null) {
+      that = new Buffer(length)
+    }
+    that.length = length
+  }
 
+  return that
 }
-function runClearTimeout(marker) {
-    if (cachedClearTimeout === clearTimeout) {
-        //normal enviroments in sane situations
-        return clearTimeout(marker);
-    }
-    // if clearTimeout wasn't available but was latter defined
-    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-        cachedClearTimeout = clearTimeout;
-        return clearTimeout(marker);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedClearTimeout(marker);
-    } catch (e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-            return cachedClearTimeout.call(null, marker);
-        } catch (e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-            return cachedClearTimeout.call(this, marker);
-        }
-    }
 
+/**
+ * The Buffer constructor returns instances of `Uint8Array` that have their
+ * prototype changed to `Buffer.prototype`. Furthermore, `Buffer` is a subclass of
+ * `Uint8Array`, so the returned instances will have all the node `Buffer` methods
+ * and the `Uint8Array` methods. Square bracket notation works as expected -- it
+ * returns a single octet.
+ *
+ * The `Uint8Array` prototype remains unmodified.
+ */
 
+function Buffer (arg, encodingOrOffset, length) {
+  if (!Buffer.TYPED_ARRAY_SUPPORT && !(this instanceof Buffer)) {
+    return new Buffer(arg, encodingOrOffset, length)
+  }
 
+  // Common case.
+  if (typeof arg === 'number') {
+    if (typeof encodingOrOffset === 'string') {
+      throw new Error(
+        'If encoding is specified then the first argument must be a string'
+      )
+    }
+    return allocUnsafe(this, arg)
+  }
+  return from(this, arg, encodingOrOffset, length)
 }
-var queue = [];
-var draining = false;
-var currentQueue;
-var queueIndex = -1;
 
-function cleanUpNextTick() {
-    if (!draining || !currentQueue) {
-        return;
+Buffer.poolSize = 8192 // not used by this implementation
+
+// TODO: Legacy, not needed anymore. Remove in next major version.
+Buffer._augment = function (arr) {
+  arr.__proto__ = Buffer.prototype
+  return arr
+}
+
+function from (that, value, encodingOrOffset, length) {
+  if (typeof value === 'number') {
+    throw new TypeError('"value" argument must not be a number')
+  }
+
+  if (typeof ArrayBuffer !== 'undefined' && value instanceof ArrayBuffer) {
+    return fromArrayBuffer(that, value, encodingOrOffset, length)
+  }
+
+  if (typeof value === 'string') {
+    return fromString(that, value, encodingOrOffset)
+  }
+
+  return fromObject(that, value)
+}
+
+/**
+ * Functionally equivalent to Buffer(arg, encoding) but throws a TypeError
+ * if value is a number.
+ * Buffer.from(str[, encoding])
+ * Buffer.from(array)
+ * Buffer.from(buffer)
+ * Buffer.from(arrayBuffer[, byteOffset[, length]])
+ **/
+Buffer.from = function (value, encodingOrOffset, length) {
+  return from(null, value, encodingOrOffset, length)
+}
+
+if (Buffer.TYPED_ARRAY_SUPPORT) {
+  Buffer.prototype.__proto__ = Uint8Array.prototype
+  Buffer.__proto__ = Uint8Array
+  if (typeof Symbol !== 'undefined' && Symbol.species &&
+      Buffer[Symbol.species] === Buffer) {
+    // Fix subarray() in ES2016. See: https://github.com/feross/buffer/pull/97
+    Object.defineProperty(Buffer, Symbol.species, {
+      value: null,
+      configurable: true
+    })
+  }
+}
+
+function assertSize (size) {
+  if (typeof size !== 'number') {
+    throw new TypeError('"size" argument must be a number')
+  } else if (size < 0) {
+    throw new RangeError('"size" argument must not be negative')
+  }
+}
+
+function alloc (that, size, fill, encoding) {
+  assertSize(size)
+  if (size <= 0) {
+    return createBuffer(that, size)
+  }
+  if (fill !== undefined) {
+    // Only pay attention to encoding if it's a string. This
+    // prevents accidentally sending in a number that would
+    // be interpretted as a start offset.
+    return typeof encoding === 'string'
+      ? createBuffer(that, size).fill(fill, encoding)
+      : createBuffer(that, size).fill(fill)
+  }
+  return createBuffer(that, size)
+}
+
+/**
+ * Creates a new filled Buffer instance.
+ * alloc(size[, fill[, encoding]])
+ **/
+Buffer.alloc = function (size, fill, encoding) {
+  return alloc(null, size, fill, encoding)
+}
+
+function allocUnsafe (that, size) {
+  assertSize(size)
+  that = createBuffer(that, size < 0 ? 0 : checked(size) | 0)
+  if (!Buffer.TYPED_ARRAY_SUPPORT) {
+    for (var i = 0; i < size; ++i) {
+      that[i] = 0
     }
-    draining = false;
-    if (currentQueue.length) {
-        queue = currentQueue.concat(queue);
+  }
+  return that
+}
+
+/**
+ * Equivalent to Buffer(num), by default creates a non-zero-filled Buffer instance.
+ * */
+Buffer.allocUnsafe = function (size) {
+  return allocUnsafe(null, size)
+}
+/**
+ * Equivalent to SlowBuffer(num), by default creates a non-zero-filled Buffer instance.
+ */
+Buffer.allocUnsafeSlow = function (size) {
+  return allocUnsafe(null, size)
+}
+
+function fromString (that, string, encoding) {
+  if (typeof encoding !== 'string' || encoding === '') {
+    encoding = 'utf8'
+  }
+
+  if (!Buffer.isEncoding(encoding)) {
+    throw new TypeError('"encoding" must be a valid string encoding')
+  }
+
+  var length = byteLength(string, encoding) | 0
+  that = createBuffer(that, length)
+
+  var actual = that.write(string, encoding)
+
+  if (actual !== length) {
+    // Writing a hex string, for example, that contains invalid characters will
+    // cause everything after the first invalid character to be ignored. (e.g.
+    // 'abxxcd' will be treated as 'ab')
+    that = that.slice(0, actual)
+  }
+
+  return that
+}
+
+function fromArrayLike (that, array) {
+  var length = array.length < 0 ? 0 : checked(array.length) | 0
+  that = createBuffer(that, length)
+  for (var i = 0; i < length; i += 1) {
+    that[i] = array[i] & 255
+  }
+  return that
+}
+
+function fromArrayBuffer (that, array, byteOffset, length) {
+  array.byteLength // this throws if `array` is not a valid ArrayBuffer
+
+  if (byteOffset < 0 || array.byteLength < byteOffset) {
+    throw new RangeError('\'offset\' is out of bounds')
+  }
+
+  if (array.byteLength < byteOffset + (length || 0)) {
+    throw new RangeError('\'length\' is out of bounds')
+  }
+
+  if (byteOffset === undefined && length === undefined) {
+    array = new Uint8Array(array)
+  } else if (length === undefined) {
+    array = new Uint8Array(array, byteOffset)
+  } else {
+    array = new Uint8Array(array, byteOffset, length)
+  }
+
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    // Return an augmented `Uint8Array` instance, for best performance
+    that = array
+    that.__proto__ = Buffer.prototype
+  } else {
+    // Fallback: Return an object instance of the Buffer class
+    that = fromArrayLike(that, array)
+  }
+  return that
+}
+
+function fromObject (that, obj) {
+  if (Buffer.isBuffer(obj)) {
+    var len = checked(obj.length) | 0
+    that = createBuffer(that, len)
+
+    if (that.length === 0) {
+      return that
+    }
+
+    obj.copy(that, 0, 0, len)
+    return that
+  }
+
+  if (obj) {
+    if ((typeof ArrayBuffer !== 'undefined' &&
+        obj.buffer instanceof ArrayBuffer) || 'length' in obj) {
+      if (typeof obj.length !== 'number' || isnan(obj.length)) {
+        return createBuffer(that, 0)
+      }
+      return fromArrayLike(that, obj)
+    }
+
+    if (obj.type === 'Buffer' && isArray(obj.data)) {
+      return fromArrayLike(that, obj.data)
+    }
+  }
+
+  throw new TypeError('First argument must be a string, Buffer, ArrayBuffer, Array, or array-like object.')
+}
+
+function checked (length) {
+  // Note: cannot use `length < kMaxLength()` here because that fails when
+  // length is NaN (which is otherwise coerced to zero.)
+  if (length >= kMaxLength()) {
+    throw new RangeError('Attempt to allocate Buffer larger than maximum ' +
+                         'size: 0x' + kMaxLength().toString(16) + ' bytes')
+  }
+  return length | 0
+}
+
+function SlowBuffer (length) {
+  if (+length != length) { // eslint-disable-line eqeqeq
+    length = 0
+  }
+  return Buffer.alloc(+length)
+}
+
+Buffer.isBuffer = function isBuffer (b) {
+  return !!(b != null && b._isBuffer)
+}
+
+Buffer.compare = function compare (a, b) {
+  if (!Buffer.isBuffer(a) || !Buffer.isBuffer(b)) {
+    throw new TypeError('Arguments must be Buffers')
+  }
+
+  if (a === b) return 0
+
+  var x = a.length
+  var y = b.length
+
+  for (var i = 0, len = Math.min(x, y); i < len; ++i) {
+    if (a[i] !== b[i]) {
+      x = a[i]
+      y = b[i]
+      break
+    }
+  }
+
+  if (x < y) return -1
+  if (y < x) return 1
+  return 0
+}
+
+Buffer.isEncoding = function isEncoding (encoding) {
+  switch (String(encoding).toLowerCase()) {
+    case 'hex':
+    case 'utf8':
+    case 'utf-8':
+    case 'ascii':
+    case 'latin1':
+    case 'binary':
+    case 'base64':
+    case 'ucs2':
+    case 'ucs-2':
+    case 'utf16le':
+    case 'utf-16le':
+      return true
+    default:
+      return false
+  }
+}
+
+Buffer.concat = function concat (list, length) {
+  if (!isArray(list)) {
+    throw new TypeError('"list" argument must be an Array of Buffers')
+  }
+
+  if (list.length === 0) {
+    return Buffer.alloc(0)
+  }
+
+  var i
+  if (length === undefined) {
+    length = 0
+    for (i = 0; i < list.length; ++i) {
+      length += list[i].length
+    }
+  }
+
+  var buffer = Buffer.allocUnsafe(length)
+  var pos = 0
+  for (i = 0; i < list.length; ++i) {
+    var buf = list[i]
+    if (!Buffer.isBuffer(buf)) {
+      throw new TypeError('"list" argument must be an Array of Buffers')
+    }
+    buf.copy(buffer, pos)
+    pos += buf.length
+  }
+  return buffer
+}
+
+function byteLength (string, encoding) {
+  if (Buffer.isBuffer(string)) {
+    return string.length
+  }
+  if (typeof ArrayBuffer !== 'undefined' && typeof ArrayBuffer.isView === 'function' &&
+      (ArrayBuffer.isView(string) || string instanceof ArrayBuffer)) {
+    return string.byteLength
+  }
+  if (typeof string !== 'string') {
+    string = '' + string
+  }
+
+  var len = string.length
+  if (len === 0) return 0
+
+  // Use a for loop to avoid recursion
+  var loweredCase = false
+  for (;;) {
+    switch (encoding) {
+      case 'ascii':
+      case 'latin1':
+      case 'binary':
+        return len
+      case 'utf8':
+      case 'utf-8':
+      case undefined:
+        return utf8ToBytes(string).length
+      case 'ucs2':
+      case 'ucs-2':
+      case 'utf16le':
+      case 'utf-16le':
+        return len * 2
+      case 'hex':
+        return len >>> 1
+      case 'base64':
+        return base64ToBytes(string).length
+      default:
+        if (loweredCase) return utf8ToBytes(string).length // assume utf8
+        encoding = ('' + encoding).toLowerCase()
+        loweredCase = true
+    }
+  }
+}
+Buffer.byteLength = byteLength
+
+function slowToString (encoding, start, end) {
+  var loweredCase = false
+
+  // No need to verify that "this.length <= MAX_UINT32" since it's a read-only
+  // property of a typed array.
+
+  // This behaves neither like String nor Uint8Array in that we set start/end
+  // to their upper/lower bounds if the value passed is out of range.
+  // undefined is handled specially as per ECMA-262 6th Edition,
+  // Section 13.3.3.7 Runtime Semantics: KeyedBindingInitialization.
+  if (start === undefined || start < 0) {
+    start = 0
+  }
+  // Return early if start > this.length. Done here to prevent potential uint32
+  // coercion fail below.
+  if (start > this.length) {
+    return ''
+  }
+
+  if (end === undefined || end > this.length) {
+    end = this.length
+  }
+
+  if (end <= 0) {
+    return ''
+  }
+
+  // Force coersion to uint32. This will also coerce falsey/NaN values to 0.
+  end >>>= 0
+  start >>>= 0
+
+  if (end <= start) {
+    return ''
+  }
+
+  if (!encoding) encoding = 'utf8'
+
+  while (true) {
+    switch (encoding) {
+      case 'hex':
+        return hexSlice(this, start, end)
+
+      case 'utf8':
+      case 'utf-8':
+        return utf8Slice(this, start, end)
+
+      case 'ascii':
+        return asciiSlice(this, start, end)
+
+      case 'latin1':
+      case 'binary':
+        return latin1Slice(this, start, end)
+
+      case 'base64':
+        return base64Slice(this, start, end)
+
+      case 'ucs2':
+      case 'ucs-2':
+      case 'utf16le':
+      case 'utf-16le':
+        return utf16leSlice(this, start, end)
+
+      default:
+        if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding)
+        encoding = (encoding + '').toLowerCase()
+        loweredCase = true
+    }
+  }
+}
+
+// The property is used by `Buffer.isBuffer` and `is-buffer` (in Safari 5-7) to detect
+// Buffer instances.
+Buffer.prototype._isBuffer = true
+
+function swap (b, n, m) {
+  var i = b[n]
+  b[n] = b[m]
+  b[m] = i
+}
+
+Buffer.prototype.swap16 = function swap16 () {
+  var len = this.length
+  if (len % 2 !== 0) {
+    throw new RangeError('Buffer size must be a multiple of 16-bits')
+  }
+  for (var i = 0; i < len; i += 2) {
+    swap(this, i, i + 1)
+  }
+  return this
+}
+
+Buffer.prototype.swap32 = function swap32 () {
+  var len = this.length
+  if (len % 4 !== 0) {
+    throw new RangeError('Buffer size must be a multiple of 32-bits')
+  }
+  for (var i = 0; i < len; i += 4) {
+    swap(this, i, i + 3)
+    swap(this, i + 1, i + 2)
+  }
+  return this
+}
+
+Buffer.prototype.swap64 = function swap64 () {
+  var len = this.length
+  if (len % 8 !== 0) {
+    throw new RangeError('Buffer size must be a multiple of 64-bits')
+  }
+  for (var i = 0; i < len; i += 8) {
+    swap(this, i, i + 7)
+    swap(this, i + 1, i + 6)
+    swap(this, i + 2, i + 5)
+    swap(this, i + 3, i + 4)
+  }
+  return this
+}
+
+Buffer.prototype.toString = function toString () {
+  var length = this.length | 0
+  if (length === 0) return ''
+  if (arguments.length === 0) return utf8Slice(this, 0, length)
+  return slowToString.apply(this, arguments)
+}
+
+Buffer.prototype.equals = function equals (b) {
+  if (!Buffer.isBuffer(b)) throw new TypeError('Argument must be a Buffer')
+  if (this === b) return true
+  return Buffer.compare(this, b) === 0
+}
+
+Buffer.prototype.inspect = function inspect () {
+  var str = ''
+  var max = exports.INSPECT_MAX_BYTES
+  if (this.length > 0) {
+    str = this.toString('hex', 0, max).match(/.{2}/g).join(' ')
+    if (this.length > max) str += ' ... '
+  }
+  return '<Buffer ' + str + '>'
+}
+
+Buffer.prototype.compare = function compare (target, start, end, thisStart, thisEnd) {
+  if (!Buffer.isBuffer(target)) {
+    throw new TypeError('Argument must be a Buffer')
+  }
+
+  if (start === undefined) {
+    start = 0
+  }
+  if (end === undefined) {
+    end = target ? target.length : 0
+  }
+  if (thisStart === undefined) {
+    thisStart = 0
+  }
+  if (thisEnd === undefined) {
+    thisEnd = this.length
+  }
+
+  if (start < 0 || end > target.length || thisStart < 0 || thisEnd > this.length) {
+    throw new RangeError('out of range index')
+  }
+
+  if (thisStart >= thisEnd && start >= end) {
+    return 0
+  }
+  if (thisStart >= thisEnd) {
+    return -1
+  }
+  if (start >= end) {
+    return 1
+  }
+
+  start >>>= 0
+  end >>>= 0
+  thisStart >>>= 0
+  thisEnd >>>= 0
+
+  if (this === target) return 0
+
+  var x = thisEnd - thisStart
+  var y = end - start
+  var len = Math.min(x, y)
+
+  var thisCopy = this.slice(thisStart, thisEnd)
+  var targetCopy = target.slice(start, end)
+
+  for (var i = 0; i < len; ++i) {
+    if (thisCopy[i] !== targetCopy[i]) {
+      x = thisCopy[i]
+      y = targetCopy[i]
+      break
+    }
+  }
+
+  if (x < y) return -1
+  if (y < x) return 1
+  return 0
+}
+
+// Finds either the first index of `val` in `buffer` at offset >= `byteOffset`,
+// OR the last index of `val` in `buffer` at offset <= `byteOffset`.
+//
+// Arguments:
+// - buffer - a Buffer to search
+// - val - a string, Buffer, or number
+// - byteOffset - an index into `buffer`; will be clamped to an int32
+// - encoding - an optional encoding, relevant is val is a string
+// - dir - true for indexOf, false for lastIndexOf
+function bidirectionalIndexOf (buffer, val, byteOffset, encoding, dir) {
+  // Empty buffer means no match
+  if (buffer.length === 0) return -1
+
+  // Normalize byteOffset
+  if (typeof byteOffset === 'string') {
+    encoding = byteOffset
+    byteOffset = 0
+  } else if (byteOffset > 0x7fffffff) {
+    byteOffset = 0x7fffffff
+  } else if (byteOffset < -0x80000000) {
+    byteOffset = -0x80000000
+  }
+  byteOffset = +byteOffset  // Coerce to Number.
+  if (isNaN(byteOffset)) {
+    // byteOffset: it it's undefined, null, NaN, "foo", etc, search whole buffer
+    byteOffset = dir ? 0 : (buffer.length - 1)
+  }
+
+  // Normalize byteOffset: negative offsets start from the end of the buffer
+  if (byteOffset < 0) byteOffset = buffer.length + byteOffset
+  if (byteOffset >= buffer.length) {
+    if (dir) return -1
+    else byteOffset = buffer.length - 1
+  } else if (byteOffset < 0) {
+    if (dir) byteOffset = 0
+    else return -1
+  }
+
+  // Normalize val
+  if (typeof val === 'string') {
+    val = Buffer.from(val, encoding)
+  }
+
+  // Finally, search either indexOf (if dir is true) or lastIndexOf
+  if (Buffer.isBuffer(val)) {
+    // Special case: looking for empty string/buffer always fails
+    if (val.length === 0) {
+      return -1
+    }
+    return arrayIndexOf(buffer, val, byteOffset, encoding, dir)
+  } else if (typeof val === 'number') {
+    val = val & 0xFF // Search for a byte value [0-255]
+    if (Buffer.TYPED_ARRAY_SUPPORT &&
+        typeof Uint8Array.prototype.indexOf === 'function') {
+      if (dir) {
+        return Uint8Array.prototype.indexOf.call(buffer, val, byteOffset)
+      } else {
+        return Uint8Array.prototype.lastIndexOf.call(buffer, val, byteOffset)
+      }
+    }
+    return arrayIndexOf(buffer, [ val ], byteOffset, encoding, dir)
+  }
+
+  throw new TypeError('val must be string, number or Buffer')
+}
+
+function arrayIndexOf (arr, val, byteOffset, encoding, dir) {
+  var indexSize = 1
+  var arrLength = arr.length
+  var valLength = val.length
+
+  if (encoding !== undefined) {
+    encoding = String(encoding).toLowerCase()
+    if (encoding === 'ucs2' || encoding === 'ucs-2' ||
+        encoding === 'utf16le' || encoding === 'utf-16le') {
+      if (arr.length < 2 || val.length < 2) {
+        return -1
+      }
+      indexSize = 2
+      arrLength /= 2
+      valLength /= 2
+      byteOffset /= 2
+    }
+  }
+
+  function read (buf, i) {
+    if (indexSize === 1) {
+      return buf[i]
     } else {
-        queueIndex = -1;
+      return buf.readUInt16BE(i * indexSize)
     }
-    if (queue.length) {
-        drainQueue();
+  }
+
+  var i
+  if (dir) {
+    var foundIndex = -1
+    for (i = byteOffset; i < arrLength; i++) {
+      if (read(arr, i) === read(val, foundIndex === -1 ? 0 : i - foundIndex)) {
+        if (foundIndex === -1) foundIndex = i
+        if (i - foundIndex + 1 === valLength) return foundIndex * indexSize
+      } else {
+        if (foundIndex !== -1) i -= i - foundIndex
+        foundIndex = -1
+      }
     }
+  } else {
+    if (byteOffset + valLength > arrLength) byteOffset = arrLength - valLength
+    for (i = byteOffset; i >= 0; i--) {
+      var found = true
+      for (var j = 0; j < valLength; j++) {
+        if (read(arr, i + j) !== read(val, j)) {
+          found = false
+          break
+        }
+      }
+      if (found) return i
+    }
+  }
+
+  return -1
 }
 
-function drainQueue() {
-    if (draining) {
-        return;
-    }
-    var timeout = runTimeout(cleanUpNextTick);
-    draining = true;
+Buffer.prototype.includes = function includes (val, byteOffset, encoding) {
+  return this.indexOf(val, byteOffset, encoding) !== -1
+}
 
-    var len = queue.length;
-    while(len) {
-        currentQueue = queue;
-        queue = [];
-        while (++queueIndex < len) {
-            if (currentQueue) {
-                currentQueue[queueIndex].run();
+Buffer.prototype.indexOf = function indexOf (val, byteOffset, encoding) {
+  return bidirectionalIndexOf(this, val, byteOffset, encoding, true)
+}
+
+Buffer.prototype.lastIndexOf = function lastIndexOf (val, byteOffset, encoding) {
+  return bidirectionalIndexOf(this, val, byteOffset, encoding, false)
+}
+
+function hexWrite (buf, string, offset, length) {
+  offset = Number(offset) || 0
+  var remaining = buf.length - offset
+  if (!length) {
+    length = remaining
+  } else {
+    length = Number(length)
+    if (length > remaining) {
+      length = remaining
+    }
+  }
+
+  // must be an even number of digits
+  var strLen = string.length
+  if (strLen % 2 !== 0) throw new TypeError('Invalid hex string')
+
+  if (length > strLen / 2) {
+    length = strLen / 2
+  }
+  for (var i = 0; i < length; ++i) {
+    var parsed = parseInt(string.substr(i * 2, 2), 16)
+    if (isNaN(parsed)) return i
+    buf[offset + i] = parsed
+  }
+  return i
+}
+
+function utf8Write (buf, string, offset, length) {
+  return blitBuffer(utf8ToBytes(string, buf.length - offset), buf, offset, length)
+}
+
+function asciiWrite (buf, string, offset, length) {
+  return blitBuffer(asciiToBytes(string), buf, offset, length)
+}
+
+function latin1Write (buf, string, offset, length) {
+  return asciiWrite(buf, string, offset, length)
+}
+
+function base64Write (buf, string, offset, length) {
+  return blitBuffer(base64ToBytes(string), buf, offset, length)
+}
+
+function ucs2Write (buf, string, offset, length) {
+  return blitBuffer(utf16leToBytes(string, buf.length - offset), buf, offset, length)
+}
+
+Buffer.prototype.write = function write (string, offset, length, encoding) {
+  // Buffer#write(string)
+  if (offset === undefined) {
+    encoding = 'utf8'
+    length = this.length
+    offset = 0
+  // Buffer#write(string, encoding)
+  } else if (length === undefined && typeof offset === 'string') {
+    encoding = offset
+    length = this.length
+    offset = 0
+  // Buffer#write(string, offset[, length][, encoding])
+  } else if (isFinite(offset)) {
+    offset = offset | 0
+    if (isFinite(length)) {
+      length = length | 0
+      if (encoding === undefined) encoding = 'utf8'
+    } else {
+      encoding = length
+      length = undefined
+    }
+  // legacy write(string, encoding, offset, length) - remove in v0.13
+  } else {
+    throw new Error(
+      'Buffer.write(string, encoding, offset[, length]) is no longer supported'
+    )
+  }
+
+  var remaining = this.length - offset
+  if (length === undefined || length > remaining) length = remaining
+
+  if ((string.length > 0 && (length < 0 || offset < 0)) || offset > this.length) {
+    throw new RangeError('Attempt to write outside buffer bounds')
+  }
+
+  if (!encoding) encoding = 'utf8'
+
+  var loweredCase = false
+  for (;;) {
+    switch (encoding) {
+      case 'hex':
+        return hexWrite(this, string, offset, length)
+
+      case 'utf8':
+      case 'utf-8':
+        return utf8Write(this, string, offset, length)
+
+      case 'ascii':
+        return asciiWrite(this, string, offset, length)
+
+      case 'latin1':
+      case 'binary':
+        return latin1Write(this, string, offset, length)
+
+      case 'base64':
+        // Warning: maxLength not taken into account in base64Write
+        return base64Write(this, string, offset, length)
+
+      case 'ucs2':
+      case 'ucs-2':
+      case 'utf16le':
+      case 'utf-16le':
+        return ucs2Write(this, string, offset, length)
+
+      default:
+        if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding)
+        encoding = ('' + encoding).toLowerCase()
+        loweredCase = true
+    }
+  }
+}
+
+Buffer.prototype.toJSON = function toJSON () {
+  return {
+    type: 'Buffer',
+    data: Array.prototype.slice.call(this._arr || this, 0)
+  }
+}
+
+function base64Slice (buf, start, end) {
+  if (start === 0 && end === buf.length) {
+    return base64.fromByteArray(buf)
+  } else {
+    return base64.fromByteArray(buf.slice(start, end))
+  }
+}
+
+function utf8Slice (buf, start, end) {
+  end = Math.min(buf.length, end)
+  var res = []
+
+  var i = start
+  while (i < end) {
+    var firstByte = buf[i]
+    var codePoint = null
+    var bytesPerSequence = (firstByte > 0xEF) ? 4
+      : (firstByte > 0xDF) ? 3
+      : (firstByte > 0xBF) ? 2
+      : 1
+
+    if (i + bytesPerSequence <= end) {
+      var secondByte, thirdByte, fourthByte, tempCodePoint
+
+      switch (bytesPerSequence) {
+        case 1:
+          if (firstByte < 0x80) {
+            codePoint = firstByte
+          }
+          break
+        case 2:
+          secondByte = buf[i + 1]
+          if ((secondByte & 0xC0) === 0x80) {
+            tempCodePoint = (firstByte & 0x1F) << 0x6 | (secondByte & 0x3F)
+            if (tempCodePoint > 0x7F) {
+              codePoint = tempCodePoint
             }
-        }
-        queueIndex = -1;
-        len = queue.length;
+          }
+          break
+        case 3:
+          secondByte = buf[i + 1]
+          thirdByte = buf[i + 2]
+          if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80) {
+            tempCodePoint = (firstByte & 0xF) << 0xC | (secondByte & 0x3F) << 0x6 | (thirdByte & 0x3F)
+            if (tempCodePoint > 0x7FF && (tempCodePoint < 0xD800 || tempCodePoint > 0xDFFF)) {
+              codePoint = tempCodePoint
+            }
+          }
+          break
+        case 4:
+          secondByte = buf[i + 1]
+          thirdByte = buf[i + 2]
+          fourthByte = buf[i + 3]
+          if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80 && (fourthByte & 0xC0) === 0x80) {
+            tempCodePoint = (firstByte & 0xF) << 0x12 | (secondByte & 0x3F) << 0xC | (thirdByte & 0x3F) << 0x6 | (fourthByte & 0x3F)
+            if (tempCodePoint > 0xFFFF && tempCodePoint < 0x110000) {
+              codePoint = tempCodePoint
+            }
+          }
+      }
     }
-    currentQueue = null;
-    draining = false;
-    runClearTimeout(timeout);
+
+    if (codePoint === null) {
+      // we did not generate a valid codePoint so insert a
+      // replacement char (U+FFFD) and advance only 1 byte
+      codePoint = 0xFFFD
+      bytesPerSequence = 1
+    } else if (codePoint > 0xFFFF) {
+      // encode to utf16 (surrogate pair dance)
+      codePoint -= 0x10000
+      res.push(codePoint >>> 10 & 0x3FF | 0xD800)
+      codePoint = 0xDC00 | codePoint & 0x3FF
+    }
+
+    res.push(codePoint)
+    i += bytesPerSequence
+  }
+
+  return decodeCodePointsArray(res)
 }
 
-process.nextTick = function (fun) {
-    var args = new Array(arguments.length - 1);
-    if (arguments.length > 1) {
-        for (var i = 1; i < arguments.length; i++) {
-            args[i - 1] = arguments[i];
-        }
-    }
-    queue.push(new Item(fun, args));
-    if (queue.length === 1 && !draining) {
-        runTimeout(drainQueue);
-    }
-};
+// Based on http://stackoverflow.com/a/22747272/680742, the browser with
+// the lowest limit is Chrome, with 0x10000 args.
+// We go 1 magnitude less, for safety
+var MAX_ARGUMENTS_LENGTH = 0x1000
 
-// v8 likes predictible objects
-function Item(fun, array) {
-    this.fun = fun;
-    this.array = array;
+function decodeCodePointsArray (codePoints) {
+  var len = codePoints.length
+  if (len <= MAX_ARGUMENTS_LENGTH) {
+    return String.fromCharCode.apply(String, codePoints) // avoid extra slice()
+  }
+
+  // Decode in chunks to avoid "call stack size exceeded".
+  var res = ''
+  var i = 0
+  while (i < len) {
+    res += String.fromCharCode.apply(
+      String,
+      codePoints.slice(i, i += MAX_ARGUMENTS_LENGTH)
+    )
+  }
+  return res
 }
-Item.prototype.run = function () {
-    this.fun.apply(null, this.array);
-};
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-process.version = ''; // empty string to avoid regexp issues
-process.versions = {};
 
-function noop() {}
+function asciiSlice (buf, start, end) {
+  var ret = ''
+  end = Math.min(buf.length, end)
 
-process.on = noop;
-process.addListener = noop;
-process.once = noop;
-process.off = noop;
-process.removeListener = noop;
-process.removeAllListeners = noop;
-process.emit = noop;
+  for (var i = start; i < end; ++i) {
+    ret += String.fromCharCode(buf[i] & 0x7F)
+  }
+  return ret
+}
 
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-};
+function latin1Slice (buf, start, end) {
+  var ret = ''
+  end = Math.min(buf.length, end)
 
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-process.umask = function() { return 0; };
+  for (var i = start; i < end; ++i) {
+    ret += String.fromCharCode(buf[i])
+  }
+  return ret
+}
 
+function hexSlice (buf, start, end) {
+  var len = buf.length
+
+  if (!start || start < 0) start = 0
+  if (!end || end < 0 || end > len) end = len
+
+  var out = ''
+  for (var i = start; i < end; ++i) {
+    out += toHex(buf[i])
+  }
+  return out
+}
+
+function utf16leSlice (buf, start, end) {
+  var bytes = buf.slice(start, end)
+  var res = ''
+  for (var i = 0; i < bytes.length; i += 2) {
+    res += String.fromCharCode(bytes[i] + bytes[i + 1] * 256)
+  }
+  return res
+}
+
+Buffer.prototype.slice = function slice (start, end) {
+  var len = this.length
+  start = ~~start
+  end = end === undefined ? len : ~~end
+
+  if (start < 0) {
+    start += len
+    if (start < 0) start = 0
+  } else if (start > len) {
+    start = len
+  }
+
+  if (end < 0) {
+    end += len
+    if (end < 0) end = 0
+  } else if (end > len) {
+    end = len
+  }
+
+  if (end < start) end = start
+
+  var newBuf
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    newBuf = this.subarray(start, end)
+    newBuf.__proto__ = Buffer.prototype
+  } else {
+    var sliceLen = end - start
+    newBuf = new Buffer(sliceLen, undefined)
+    for (var i = 0; i < sliceLen; ++i) {
+      newBuf[i] = this[i + start]
+    }
+  }
+
+  return newBuf
+}
+
+/*
+ * Need to make sure that buffer isn't trying to write out of bounds.
+ */
+function checkOffset (offset, ext, length) {
+  if ((offset % 1) !== 0 || offset < 0) throw new RangeError('offset is not uint')
+  if (offset + ext > length) throw new RangeError('Trying to access beyond buffer length')
+}
+
+Buffer.prototype.readUIntLE = function readUIntLE (offset, byteLength, noAssert) {
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) checkOffset(offset, byteLength, this.length)
+
+  var val = this[offset]
+  var mul = 1
+  var i = 0
+  while (++i < byteLength && (mul *= 0x100)) {
+    val += this[offset + i] * mul
+  }
+
+  return val
+}
+
+Buffer.prototype.readUIntBE = function readUIntBE (offset, byteLength, noAssert) {
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) {
+    checkOffset(offset, byteLength, this.length)
+  }
+
+  var val = this[offset + --byteLength]
+  var mul = 1
+  while (byteLength > 0 && (mul *= 0x100)) {
+    val += this[offset + --byteLength] * mul
+  }
+
+  return val
+}
+
+Buffer.prototype.readUInt8 = function readUInt8 (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 1, this.length)
+  return this[offset]
+}
+
+Buffer.prototype.readUInt16LE = function readUInt16LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length)
+  return this[offset] | (this[offset + 1] << 8)
+}
+
+Buffer.prototype.readUInt16BE = function readUInt16BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length)
+  return (this[offset] << 8) | this[offset + 1]
+}
+
+Buffer.prototype.readUInt32LE = function readUInt32LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+
+  return ((this[offset]) |
+      (this[offset + 1] << 8) |
+      (this[offset + 2] << 16)) +
+      (this[offset + 3] * 0x1000000)
+}
+
+Buffer.prototype.readUInt32BE = function readUInt32BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+
+  return (this[offset] * 0x1000000) +
+    ((this[offset + 1] << 16) |
+    (this[offset + 2] << 8) |
+    this[offset + 3])
+}
+
+Buffer.prototype.readIntLE = function readIntLE (offset, byteLength, noAssert) {
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) checkOffset(offset, byteLength, this.length)
+
+  var val = this[offset]
+  var mul = 1
+  var i = 0
+  while (++i < byteLength && (mul *= 0x100)) {
+    val += this[offset + i] * mul
+  }
+  mul *= 0x80
+
+  if (val >= mul) val -= Math.pow(2, 8 * byteLength)
+
+  return val
+}
+
+Buffer.prototype.readIntBE = function readIntBE (offset, byteLength, noAssert) {
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) checkOffset(offset, byteLength, this.length)
+
+  var i = byteLength
+  var mul = 1
+  var val = this[offset + --i]
+  while (i > 0 && (mul *= 0x100)) {
+    val += this[offset + --i] * mul
+  }
+  mul *= 0x80
+
+  if (val >= mul) val -= Math.pow(2, 8 * byteLength)
+
+  return val
+}
+
+Buffer.prototype.readInt8 = function readInt8 (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 1, this.length)
+  if (!(this[offset] & 0x80)) return (this[offset])
+  return ((0xff - this[offset] + 1) * -1)
+}
+
+Buffer.prototype.readInt16LE = function readInt16LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length)
+  var val = this[offset] | (this[offset + 1] << 8)
+  return (val & 0x8000) ? val | 0xFFFF0000 : val
+}
+
+Buffer.prototype.readInt16BE = function readInt16BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length)
+  var val = this[offset + 1] | (this[offset] << 8)
+  return (val & 0x8000) ? val | 0xFFFF0000 : val
+}
+
+Buffer.prototype.readInt32LE = function readInt32LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+
+  return (this[offset]) |
+    (this[offset + 1] << 8) |
+    (this[offset + 2] << 16) |
+    (this[offset + 3] << 24)
+}
+
+Buffer.prototype.readInt32BE = function readInt32BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+
+  return (this[offset] << 24) |
+    (this[offset + 1] << 16) |
+    (this[offset + 2] << 8) |
+    (this[offset + 3])
+}
+
+Buffer.prototype.readFloatLE = function readFloatLE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+  return ieee754.read(this, offset, true, 23, 4)
+}
+
+Buffer.prototype.readFloatBE = function readFloatBE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+  return ieee754.read(this, offset, false, 23, 4)
+}
+
+Buffer.prototype.readDoubleLE = function readDoubleLE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 8, this.length)
+  return ieee754.read(this, offset, true, 52, 8)
+}
+
+Buffer.prototype.readDoubleBE = function readDoubleBE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 8, this.length)
+  return ieee754.read(this, offset, false, 52, 8)
+}
+
+function checkInt (buf, value, offset, ext, max, min) {
+  if (!Buffer.isBuffer(buf)) throw new TypeError('"buffer" argument must be a Buffer instance')
+  if (value > max || value < min) throw new RangeError('"value" argument is out of bounds')
+  if (offset + ext > buf.length) throw new RangeError('Index out of range')
+}
+
+Buffer.prototype.writeUIntLE = function writeUIntLE (value, offset, byteLength, noAssert) {
+  value = +value
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) {
+    var maxBytes = Math.pow(2, 8 * byteLength) - 1
+    checkInt(this, value, offset, byteLength, maxBytes, 0)
+  }
+
+  var mul = 1
+  var i = 0
+  this[offset] = value & 0xFF
+  while (++i < byteLength && (mul *= 0x100)) {
+    this[offset + i] = (value / mul) & 0xFF
+  }
+
+  return offset + byteLength
+}
+
+Buffer.prototype.writeUIntBE = function writeUIntBE (value, offset, byteLength, noAssert) {
+  value = +value
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) {
+    var maxBytes = Math.pow(2, 8 * byteLength) - 1
+    checkInt(this, value, offset, byteLength, maxBytes, 0)
+  }
+
+  var i = byteLength - 1
+  var mul = 1
+  this[offset + i] = value & 0xFF
+  while (--i >= 0 && (mul *= 0x100)) {
+    this[offset + i] = (value / mul) & 0xFF
+  }
+
+  return offset + byteLength
+}
+
+Buffer.prototype.writeUInt8 = function writeUInt8 (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 1, 0xff, 0)
+  if (!Buffer.TYPED_ARRAY_SUPPORT) value = Math.floor(value)
+  this[offset] = (value & 0xff)
+  return offset + 1
+}
+
+function objectWriteUInt16 (buf, value, offset, littleEndian) {
+  if (value < 0) value = 0xffff + value + 1
+  for (var i = 0, j = Math.min(buf.length - offset, 2); i < j; ++i) {
+    buf[offset + i] = (value & (0xff << (8 * (littleEndian ? i : 1 - i)))) >>>
+      (littleEndian ? i : 1 - i) * 8
+  }
+}
+
+Buffer.prototype.writeUInt16LE = function writeUInt16LE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value & 0xff)
+    this[offset + 1] = (value >>> 8)
+  } else {
+    objectWriteUInt16(this, value, offset, true)
+  }
+  return offset + 2
+}
+
+Buffer.prototype.writeUInt16BE = function writeUInt16BE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value >>> 8)
+    this[offset + 1] = (value & 0xff)
+  } else {
+    objectWriteUInt16(this, value, offset, false)
+  }
+  return offset + 2
+}
+
+function objectWriteUInt32 (buf, value, offset, littleEndian) {
+  if (value < 0) value = 0xffffffff + value + 1
+  for (var i = 0, j = Math.min(buf.length - offset, 4); i < j; ++i) {
+    buf[offset + i] = (value >>> (littleEndian ? i : 3 - i) * 8) & 0xff
+  }
+}
+
+Buffer.prototype.writeUInt32LE = function writeUInt32LE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset + 3] = (value >>> 24)
+    this[offset + 2] = (value >>> 16)
+    this[offset + 1] = (value >>> 8)
+    this[offset] = (value & 0xff)
+  } else {
+    objectWriteUInt32(this, value, offset, true)
+  }
+  return offset + 4
+}
+
+Buffer.prototype.writeUInt32BE = function writeUInt32BE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value >>> 24)
+    this[offset + 1] = (value >>> 16)
+    this[offset + 2] = (value >>> 8)
+    this[offset + 3] = (value & 0xff)
+  } else {
+    objectWriteUInt32(this, value, offset, false)
+  }
+  return offset + 4
+}
+
+Buffer.prototype.writeIntLE = function writeIntLE (value, offset, byteLength, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) {
+    var limit = Math.pow(2, 8 * byteLength - 1)
+
+    checkInt(this, value, offset, byteLength, limit - 1, -limit)
+  }
+
+  var i = 0
+  var mul = 1
+  var sub = 0
+  this[offset] = value & 0xFF
+  while (++i < byteLength && (mul *= 0x100)) {
+    if (value < 0 && sub === 0 && this[offset + i - 1] !== 0) {
+      sub = 1
+    }
+    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
+  }
+
+  return offset + byteLength
+}
+
+Buffer.prototype.writeIntBE = function writeIntBE (value, offset, byteLength, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) {
+    var limit = Math.pow(2, 8 * byteLength - 1)
+
+    checkInt(this, value, offset, byteLength, limit - 1, -limit)
+  }
+
+  var i = byteLength - 1
+  var mul = 1
+  var sub = 0
+  this[offset + i] = value & 0xFF
+  while (--i >= 0 && (mul *= 0x100)) {
+    if (value < 0 && sub === 0 && this[offset + i + 1] !== 0) {
+      sub = 1
+    }
+    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
+  }
+
+  return offset + byteLength
+}
+
+Buffer.prototype.writeInt8 = function writeInt8 (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 1, 0x7f, -0x80)
+  if (!Buffer.TYPED_ARRAY_SUPPORT) value = Math.floor(value)
+  if (value < 0) value = 0xff + value + 1
+  this[offset] = (value & 0xff)
+  return offset + 1
+}
+
+Buffer.prototype.writeInt16LE = function writeInt16LE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value & 0xff)
+    this[offset + 1] = (value >>> 8)
+  } else {
+    objectWriteUInt16(this, value, offset, true)
+  }
+  return offset + 2
+}
+
+Buffer.prototype.writeInt16BE = function writeInt16BE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value >>> 8)
+    this[offset + 1] = (value & 0xff)
+  } else {
+    objectWriteUInt16(this, value, offset, false)
+  }
+  return offset + 2
+}
+
+Buffer.prototype.writeInt32LE = function writeInt32LE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value & 0xff)
+    this[offset + 1] = (value >>> 8)
+    this[offset + 2] = (value >>> 16)
+    this[offset + 3] = (value >>> 24)
+  } else {
+    objectWriteUInt32(this, value, offset, true)
+  }
+  return offset + 4
+}
+
+Buffer.prototype.writeInt32BE = function writeInt32BE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000)
+  if (value < 0) value = 0xffffffff + value + 1
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value >>> 24)
+    this[offset + 1] = (value >>> 16)
+    this[offset + 2] = (value >>> 8)
+    this[offset + 3] = (value & 0xff)
+  } else {
+    objectWriteUInt32(this, value, offset, false)
+  }
+  return offset + 4
+}
+
+function checkIEEE754 (buf, value, offset, ext, max, min) {
+  if (offset + ext > buf.length) throw new RangeError('Index out of range')
+  if (offset < 0) throw new RangeError('Index out of range')
+}
+
+function writeFloat (buf, value, offset, littleEndian, noAssert) {
+  if (!noAssert) {
+    checkIEEE754(buf, value, offset, 4, 3.4028234663852886e+38, -3.4028234663852886e+38)
+  }
+  ieee754.write(buf, value, offset, littleEndian, 23, 4)
+  return offset + 4
+}
+
+Buffer.prototype.writeFloatLE = function writeFloatLE (value, offset, noAssert) {
+  return writeFloat(this, value, offset, true, noAssert)
+}
+
+Buffer.prototype.writeFloatBE = function writeFloatBE (value, offset, noAssert) {
+  return writeFloat(this, value, offset, false, noAssert)
+}
+
+function writeDouble (buf, value, offset, littleEndian, noAssert) {
+  if (!noAssert) {
+    checkIEEE754(buf, value, offset, 8, 1.7976931348623157E+308, -1.7976931348623157E+308)
+  }
+  ieee754.write(buf, value, offset, littleEndian, 52, 8)
+  return offset + 8
+}
+
+Buffer.prototype.writeDoubleLE = function writeDoubleLE (value, offset, noAssert) {
+  return writeDouble(this, value, offset, true, noAssert)
+}
+
+Buffer.prototype.writeDoubleBE = function writeDoubleBE (value, offset, noAssert) {
+  return writeDouble(this, value, offset, false, noAssert)
+}
+
+// copy(targetBuffer, targetStart=0, sourceStart=0, sourceEnd=buffer.length)
+Buffer.prototype.copy = function copy (target, targetStart, start, end) {
+  if (!start) start = 0
+  if (!end && end !== 0) end = this.length
+  if (targetStart >= target.length) targetStart = target.length
+  if (!targetStart) targetStart = 0
+  if (end > 0 && end < start) end = start
+
+  // Copy 0 bytes; we're done
+  if (end === start) return 0
+  if (target.length === 0 || this.length === 0) return 0
+
+  // Fatal error conditions
+  if (targetStart < 0) {
+    throw new RangeError('targetStart out of bounds')
+  }
+  if (start < 0 || start >= this.length) throw new RangeError('sourceStart out of bounds')
+  if (end < 0) throw new RangeError('sourceEnd out of bounds')
+
+  // Are we oob?
+  if (end > this.length) end = this.length
+  if (target.length - targetStart < end - start) {
+    end = target.length - targetStart + start
+  }
+
+  var len = end - start
+  var i
+
+  if (this === target && start < targetStart && targetStart < end) {
+    // descending copy from end
+    for (i = len - 1; i >= 0; --i) {
+      target[i + targetStart] = this[i + start]
+    }
+  } else if (len < 1000 || !Buffer.TYPED_ARRAY_SUPPORT) {
+    // ascending copy from start
+    for (i = 0; i < len; ++i) {
+      target[i + targetStart] = this[i + start]
+    }
+  } else {
+    Uint8Array.prototype.set.call(
+      target,
+      this.subarray(start, start + len),
+      targetStart
+    )
+  }
+
+  return len
+}
+
+// Usage:
+//    buffer.fill(number[, offset[, end]])
+//    buffer.fill(buffer[, offset[, end]])
+//    buffer.fill(string[, offset[, end]][, encoding])
+Buffer.prototype.fill = function fill (val, start, end, encoding) {
+  // Handle string cases:
+  if (typeof val === 'string') {
+    if (typeof start === 'string') {
+      encoding = start
+      start = 0
+      end = this.length
+    } else if (typeof end === 'string') {
+      encoding = end
+      end = this.length
+    }
+    if (val.length === 1) {
+      var code = val.charCodeAt(0)
+      if (code < 256) {
+        val = code
+      }
+    }
+    if (encoding !== undefined && typeof encoding !== 'string') {
+      throw new TypeError('encoding must be a string')
+    }
+    if (typeof encoding === 'string' && !Buffer.isEncoding(encoding)) {
+      throw new TypeError('Unknown encoding: ' + encoding)
+    }
+  } else if (typeof val === 'number') {
+    val = val & 255
+  }
+
+  // Invalid ranges are not set to a default, so can range check early.
+  if (start < 0 || this.length < start || this.length < end) {
+    throw new RangeError('Out of range index')
+  }
+
+  if (end <= start) {
+    return this
+  }
+
+  start = start >>> 0
+  end = end === undefined ? this.length : end >>> 0
+
+  if (!val) val = 0
+
+  var i
+  if (typeof val === 'number') {
+    for (i = start; i < end; ++i) {
+      this[i] = val
+    }
+  } else {
+    var bytes = Buffer.isBuffer(val)
+      ? val
+      : utf8ToBytes(new Buffer(val, encoding).toString())
+    var len = bytes.length
+    for (i = 0; i < end - start; ++i) {
+      this[i + start] = bytes[i % len]
+    }
+  }
+
+  return this
+}
+
+// HELPER FUNCTIONS
+// ================
+
+var INVALID_BASE64_RE = /[^+\/0-9A-Za-z-_]/g
+
+function base64clean (str) {
+  // Node strips out invalid characters like \n and \t from the string, base64-js does not
+  str = stringtrim(str).replace(INVALID_BASE64_RE, '')
+  // Node converts strings with length < 2 to ''
+  if (str.length < 2) return ''
+  // Node allows for non-padded base64 strings (missing trailing ===), base64-js does not
+  while (str.length % 4 !== 0) {
+    str = str + '='
+  }
+  return str
+}
+
+function stringtrim (str) {
+  if (str.trim) return str.trim()
+  return str.replace(/^\s+|\s+$/g, '')
+}
+
+function toHex (n) {
+  if (n < 16) return '0' + n.toString(16)
+  return n.toString(16)
+}
+
+function utf8ToBytes (string, units) {
+  units = units || Infinity
+  var codePoint
+  var length = string.length
+  var leadSurrogate = null
+  var bytes = []
+
+  for (var i = 0; i < length; ++i) {
+    codePoint = string.charCodeAt(i)
+
+    // is surrogate component
+    if (codePoint > 0xD7FF && codePoint < 0xE000) {
+      // last char was a lead
+      if (!leadSurrogate) {
+        // no lead yet
+        if (codePoint > 0xDBFF) {
+          // unexpected trail
+          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+          continue
+        } else if (i + 1 === length) {
+          // unpaired lead
+          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+          continue
+        }
+
+        // valid lead
+        leadSurrogate = codePoint
+
+        continue
+      }
+
+      // 2 leads in a row
+      if (codePoint < 0xDC00) {
+        if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+        leadSurrogate = codePoint
+        continue
+      }
+
+      // valid surrogate pair
+      codePoint = (leadSurrogate - 0xD800 << 10 | codePoint - 0xDC00) + 0x10000
+    } else if (leadSurrogate) {
+      // valid bmp char, but last char was a lead
+      if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+    }
+
+    leadSurrogate = null
+
+    // encode utf8
+    if (codePoint < 0x80) {
+      if ((units -= 1) < 0) break
+      bytes.push(codePoint)
+    } else if (codePoint < 0x800) {
+      if ((units -= 2) < 0) break
+      bytes.push(
+        codePoint >> 0x6 | 0xC0,
+        codePoint & 0x3F | 0x80
+      )
+    } else if (codePoint < 0x10000) {
+      if ((units -= 3) < 0) break
+      bytes.push(
+        codePoint >> 0xC | 0xE0,
+        codePoint >> 0x6 & 0x3F | 0x80,
+        codePoint & 0x3F | 0x80
+      )
+    } else if (codePoint < 0x110000) {
+      if ((units -= 4) < 0) break
+      bytes.push(
+        codePoint >> 0x12 | 0xF0,
+        codePoint >> 0xC & 0x3F | 0x80,
+        codePoint >> 0x6 & 0x3F | 0x80,
+        codePoint & 0x3F | 0x80
+      )
+    } else {
+      throw new Error('Invalid code point')
+    }
+  }
+
+  return bytes
+}
+
+function asciiToBytes (str) {
+  var byteArray = []
+  for (var i = 0; i < str.length; ++i) {
+    // Node's code seems to be doing this and not & 0x7F..
+    byteArray.push(str.charCodeAt(i) & 0xFF)
+  }
+  return byteArray
+}
+
+function utf16leToBytes (str, units) {
+  var c, hi, lo
+  var byteArray = []
+  for (var i = 0; i < str.length; ++i) {
+    if ((units -= 2) < 0) break
+
+    c = str.charCodeAt(i)
+    hi = c >> 8
+    lo = c % 256
+    byteArray.push(lo)
+    byteArray.push(hi)
+  }
+
+  return byteArray
+}
+
+function base64ToBytes (str) {
+  return base64.toByteArray(base64clean(str))
+}
+
+function blitBuffer (src, dst, offset, length) {
+  for (var i = 0; i < length; ++i) {
+    if ((i + offset >= dst.length) || (i >= src.length)) break
+    dst[i + offset] = src[i]
+  }
+  return i
+}
+
+function isnan (val) {
+  return val !== val // eslint-disable-line no-self-compare
+}
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(63)))
 
 /***/ }),
-/* 115 */
+/* 127 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(global) {
 
-__webpack_require__(304);
+__webpack_require__(336);
 
-__webpack_require__(310);
+__webpack_require__(337);
 
-__webpack_require__(124);
+__webpack_require__(156);
 
 if (global._babelPolyfill) {
   throw new Error("only one instance of babel-polyfill is allowed");
@@ -3528,13 +6379,39 @@ define(String.prototype, "padRight", "".padEnd);
 "pop,reverse,shift,keys,values,entries,indexOf,every,some,forEach,map,filter,find,findIndex,includes,join,slice,concat,push,splice,unshift,sort,lastIndexOf,reduce,reduceRight,copyWithin,fill".split(",").forEach(function (key) {
   [][key] && define(Array, key, Function.call.bind([][key]));
 });
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(59)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(63)))
 
 /***/ }),
-/* 116 */
+/* 128 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/*! UIkit 3.0.0-beta.18 | http://www.getuikit.com | (c) 2014 - 2017 YOOtheme | MIT License */
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(338);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// add the styles to the DOM
+var update = __webpack_require__(345)(content, {});
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./theme.scss", function() {
+			var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./theme.scss");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 129 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*! UIkit 3.0.0-beta.20 | http://www.getuikit.com | (c) 2014 - 2017 YOOtheme | MIT License */
 
 (function (global, factory) {
 	 true ? module.exports = factory() :
@@ -3583,7 +6460,7 @@ var history = "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"htt
 var home = "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><polygon points=\"18.65 11.35 10 2.71 1.35 11.35 0.65 10.65 10 1.29 19.35 10.65\"></polygon><polygon points=\"15 4 18 4 18 7 17 7 17 5 15 5\"></polygon><polygon points=\"3 11 4 11 4 18 7 18 7 12 12 12 12 18 16 18 16 11 17 11 17 19 11 19 11 13 8 13 8 19 3 19\"></polygon></svg>";
 var image = "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><circle cx=\"16.1\" cy=\"6.1\" r=\"1.1\"></circle><rect fill=\"none\" stroke=\"#000\" x=\"0.5\" y=\"2.5\" width=\"19\" height=\"15\"></rect><polyline fill=\"none\" stroke=\"#000\" stroke-width=\"1.01\" points=\"4,13 8,9 13,14\"></polyline><polyline fill=\"none\" stroke=\"#000\" stroke-width=\"1.01\" points=\"11,12 12.5,10.5 16,14\"></polyline></svg>";
 var info = "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M12.13,11.59 C11.97,12.84 10.35,14.12 9.1,14.16 C6.17,14.2 9.89,9.46 8.74,8.37 C9.3,8.16 10.62,7.83 10.62,8.81 C10.62,9.63 10.12,10.55 9.88,11.32 C8.66,15.16 12.13,11.15 12.14,11.18 C12.16,11.21 12.16,11.35 12.13,11.59 C12.08,11.95 12.16,11.35 12.13,11.59 L12.13,11.59 Z M11.56,5.67 C11.56,6.67 9.36,7.15 9.36,6.03 C9.36,5 11.56,4.54 11.56,5.67 L11.56,5.67 Z\"></path><circle fill=\"none\" stroke=\"#000\" stroke-width=\"1.1\" cx=\"10\" cy=\"10\" r=\"9\"></circle></svg>";
-var instagram = "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M13.547,1 L6.463,1 C3.452,1 1,3.44 1,6.44 L1,13.561 C1,16.561 3.452,19 6.463,19 L13.536,19 C16.559,19 19,16.561 19,13.561 L19,6.44 C19.01,3.44 16.559,1 13.547,1 L13.547,1 L13.547,1 Z M17.479,13.98 C17.479,15.879 15.927,17.429 14.016,17.429 L6.133,17.429 C4.222,17.429 2.671,15.89 2.671,13.98 L2.671,6.19 C2.671,4.29 4.222,2.74 6.133,2.74 L14.017,2.74 C15.928,2.74 17.48,4.28 17.48,6.19 L17.48,13.98 L17.479,13.98 L17.479,13.98 Z\"></path><circle cx=\"14.87\" cy=\"5.26\" r=\"1.09\"></circle><path d=\"M10.03,5.45 C7.48,5.45 5.4,7.51 5.4,10.05 C5.4,12.6 7.47,14.66 10.03,14.66 C12.59,14.66 14.66,12.599 14.66,10.05 C14.65,7.51 12.58,5.45 10.03,5.45 L10.03,5.45 L10.03,5.45 Z M10.08,13 C8.42,13 7.08,11.66 7.08,10.01 C7.08,8.36 8.42,7.02 10.08,7.02 C11.74,7.02 13.08,8.36 13.08,10.01 C13.08,11.66 11.74,13 10.08,13 L10.08,13 L10.08,13 Z\"></path></svg>";
+var instagram = "<?xml version=\"1.0\" encoding=\"utf-8\"?><!-- Generator: Adobe Illustrator 16.0.3, SVG Export Plug-In . SVG Version: 6.00 Build 0)  --><!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\"><svg version=\"1.1\" id=\"Ebene_1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\"\t width=\"20px\" height=\"20px\" viewBox=\"0 0 20 20\" enable-background=\"new 0 0 20 20\" xml:space=\"preserve\"><path d=\"M13.55,1H6.46C3.45,1,1,3.44,1,6.44v7.12c0,3,2.45,5.44,5.46,5.44h7.08c3.02,0,5.46-2.44,5.46-5.44V6.44\tC19.01,3.44,16.56,1,13.55,1z M17.5,14c0,1.93-1.57,3.5-3.5,3.5H6c-1.93,0-3.5-1.57-3.5-3.5V6c0-1.93,1.57-3.5,3.5-3.5h8\tc1.93,0,3.5,1.57,3.5,3.5V14z\"/><circle cx=\"14.87\" cy=\"5.26\" r=\"1.09\"/><path d=\"M10.03,5.45c-2.55,0-4.63,2.06-4.63,4.6c0,2.55,2.07,4.61,4.63,4.61c2.56,0,4.63-2.061,4.63-4.61\tC14.65,7.51,12.58,5.45,10.03,5.45L10.03,5.45L10.03,5.45z M10.08,13c-1.66,0-3-1.34-3-2.99c0-1.65,1.34-2.99,3-2.99s3,1.34,3,2.99\tC13.08,11.66,11.74,13,10.08,13L10.08,13L10.08,13z\"/></svg>";
 var italic = "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M12.63,5.48 L10.15,14.52 C10,15.08 10.37,15.25 11.92,15.3 L11.72,16 L6,16 L6.2,15.31 C7.78,15.26 8.19,15.09 8.34,14.53 L10.82,5.49 C10.97,4.92 10.63,4.76 9.09,4.71 L9.28,4 L15,4 L14.81,4.69 C13.23,4.75 12.78,4.91 12.63,5.48 L12.63,5.48 Z\"></path></svg>";
 var joomla = "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M7.8,13.4l1.7-1.7L5.9,8c-0.6-0.5-0.6-1.5,0-2c0.6-0.6,1.4-0.6,2,0l1.7-1.7c-1-1-2.3-1.3-3.6-1C5.8,2.2,4.8,1.4,3.7,1.4 c-1.3,0-2.3,1-2.3,2.3c0,1.1,0.8,2,1.8,2.3c-0.4,1.3-0.1,2.8,1,3.8L7.8,13.4L7.8,13.4z\"></path><path d=\"M10.2,4.3c1-1,2.5-1.4,3.8-1c0.2-1.1,1.1-2,2.3-2c1.3,0,2.3,1,2.3,2.3c0,1.2-0.9,2.2-2,2.3c0.4,1.3,0,2.8-1,3.8L13.9,8 c0.6-0.5,0.6-1.5,0-2c-0.5-0.6-1.5-0.6-2,0L8.2,9.7L6.5,8\"></path><path d=\"M14.1,16.8c-1.3,0.4-2.8,0.1-3.8-1l1.7-1.7c0.6,0.6,1.5,0.6,2,0c0.5-0.6,0.6-1.5,0-2l-3.7-3.7L12,6.7l3.7,3.7 c1,1,1.3,2.4,1,3.6c1.1,0.2,2,1.1,2,2.3c0,1.3-1,2.3-2.3,2.3C15.2,18.6,14.3,17.8,14.1,16.8\"></path><path d=\"M13.2,12.2l-3.7,3.7c-1,1-2.4,1.3-3.6,1c-0.2,1-1.2,1.8-2.2,1.8c-1.3,0-2.3-1-2.3-2.3c0-1.1,0.8-2,1.8-2.3 c-0.3-1.3,0-2.7,1-3.7l1.7,1.7c-0.6,0.6-0.6,1.5,0,2c0.6,0.6,1.4,0.6,2,0l3.7-3.7\"></path></svg>";
 var laptop = "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><rect y=\"16\" width=\"20\" height=\"1\"></rect><rect fill=\"none\" stroke=\"#000\" x=\"2.5\" y=\"4.5\" width=\"15\" height=\"10\"></rect></svg>";
@@ -3617,7 +6494,7 @@ var server = "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http
 var settings = "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><ellipse fill=\"none\" stroke=\"#000\" cx=\"6.11\" cy=\"3.55\" rx=\"2.11\" ry=\"2.15\"></ellipse><ellipse fill=\"none\" stroke=\"#000\" cx=\"6.11\" cy=\"15.55\" rx=\"2.11\" ry=\"2.15\"></ellipse><circle fill=\"none\" stroke=\"#000\" cx=\"13.15\" cy=\"9.55\" r=\"2.15\"></circle><rect x=\"1\" y=\"3\" width=\"3\" height=\"1\"></rect><rect x=\"10\" y=\"3\" width=\"8\" height=\"1\"></rect><rect x=\"1\" y=\"9\" width=\"8\" height=\"1\"></rect><rect x=\"15\" y=\"9\" width=\"3\" height=\"1\"></rect><rect x=\"1\" y=\"15\" width=\"3\" height=\"1\"></rect><rect x=\"10\" y=\"15\" width=\"8\" height=\"1\"></rect></svg>";
 var shrink = "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><polygon points=\"11 4 12 4 12 8 16 8 16 9 11 9\"></polygon><polygon points=\"4 11 9 11 9 16 8 16 8 12 4 12\"></polygon><path fill=\"none\" stroke=\"#000\" stroke-width=\"1.1\" d=\"M12,8 L18,2\"></path><path fill=\"none\" stroke=\"#000\" stroke-width=\"1.1\" d=\"M2,18 L8,12\"></path></svg>";
 var social = "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><line fill=\"none\" stroke=\"#000\" stroke-width=\"1.1\" x1=\"13.4\" y1=\"14\" x2=\"6.3\" y2=\"10.7\"></line><line fill=\"none\" stroke=\"#000\" stroke-width=\"1.1\" x1=\"13.5\" y1=\"5.5\" x2=\"6.5\" y2=\"8.8\"></line><circle fill=\"none\" stroke=\"#000\" stroke-width=\"1.1\" cx=\"15.5\" cy=\"4.6\" r=\"2.3\"></circle><circle fill=\"none\" stroke=\"#000\" stroke-width=\"1.1\" cx=\"15.5\" cy=\"14.8\" r=\"2.3\"></circle><circle fill=\"none\" stroke=\"#000\" stroke-width=\"1.1\" cx=\"4.5\" cy=\"9.8\" r=\"2.3\"></circle></svg>";
-var soundcloud = "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M17.2,8.4c-0.4,0-0.8,0.1-1.1,0.2c-0.2-2.5-2.4-4.5-5-4.5c-0.6,0-1.2,0.1-1.7,0.3C9.2,4.5,9.1,4.6,9.1,4.6V14h8 c1.6,0,2.8-1.2,2.8-2.8C20,9.7,18.7,8.4,17.2,8.4L17.2,8.4z\"></path><rect x=\"6\" y=\"5.5\" width=\"1.5\" height=\"8.5\"></rect><rect x=\"3\" y=\"7\" width=\"1.5\" height=\"7\"></rect><rect y=\"9\" width=\"1.5\" height=\"5\"></rect></svg>";
+var soundcloud = "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M17.2,9.4c-0.4,0-0.8,0.1-1.101,0.2c-0.199-2.5-2.399-4.5-5-4.5c-0.6,0-1.2,0.1-1.7,0.3C9.2,5.5,9.1,5.6,9.1,5.6V15h8 c1.601,0,2.801-1.2,2.801-2.8C20,10.7,18.7,9.4,17.2,9.4L17.2,9.4z\"></path><rect x=\"6\" y=\"6.5\" width=\"1.5\" height=\"8.5\"></rect><rect x=\"3\" y=\"8\" width=\"1.5\" height=\"7\"></rect><rect y=\"10\" width=\"1.5\" height=\"5\"></rect></svg>";
 var star = "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><polygon fill=\"none\" stroke=\"#000\" stroke-width=\"1.01\" points=\"10 2 12.63 7.27 18.5 8.12 14.25 12.22 15.25 18 10 15.27 4.75 18 5.75 12.22 1.5 8.12 7.37 7.27\"></polygon></svg>";
 var strikethrough = "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M6,13.02 L6.65,13.02 C7.64,15.16 8.86,16.12 10.41,16.12 C12.22,16.12 12.92,14.93 12.92,13.89 C12.92,12.55 11.99,12.03 9.74,11.23 C8.05,10.64 6.23,10.11 6.23,7.83 C6.23,5.5 8.09,4.09 10.4,4.09 C11.44,4.09 12.13,4.31 12.72,4.54 L13.33,4 L13.81,4 L13.81,7.59 L13.16,7.59 C12.55,5.88 11.52,4.89 10.07,4.89 C8.84,4.89 7.89,5.69 7.89,7.03 C7.89,8.29 8.89,8.78 10.88,9.45 C12.57,10.03 14.38,10.6 14.38,12.91 C14.38,14.75 13.27,16.93 10.18,16.93 C9.18,16.93 8.17,16.69 7.46,16.39 L6.52,17 L6,17 L6,13.02 L6,13.02 Z\"></path><rect x=\"3\" y=\"10\" width=\"15\" height=\"1\"></rect></svg>";
 var table = "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"1\" y=\"3\" width=\"18\" height=\"1\"></rect><rect x=\"1\" y=\"7\" width=\"18\" height=\"1\"></rect><rect x=\"1\" y=\"11\" width=\"18\" height=\"1\"></rect><rect x=\"1\" y=\"15\" width=\"18\" height=\"1\"></rect></svg>";
@@ -3625,7 +6502,8 @@ var tablet = "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http
 var tag = "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"none\" stroke=\"#000\" stroke-width=\"1.1\" d=\"M17.5,3.71 L17.5,7.72 C17.5,7.96 17.4,8.2 17.21,8.39 L8.39,17.2 C7.99,17.6 7.33,17.6 6.93,17.2 L2.8,13.07 C2.4,12.67 2.4,12.01 2.8,11.61 L11.61,2.8 C11.81,2.6 12.08,2.5 12.34,2.5 L16.19,2.5 C16.52,2.5 16.86,2.63 17.11,2.88 C17.35,3.11 17.48,3.4 17.5,3.71 L17.5,3.71 Z\"></path><circle cx=\"14\" cy=\"6\" r=\"1\"></circle></svg>";
 var thumbnails = "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><rect fill=\"none\" stroke=\"#000\" x=\"3.5\" y=\"3.5\" width=\"5\" height=\"5\"></rect><rect fill=\"none\" stroke=\"#000\" x=\"11.5\" y=\"3.5\" width=\"5\" height=\"5\"></rect><rect fill=\"none\" stroke=\"#000\" x=\"11.5\" y=\"11.5\" width=\"5\" height=\"5\"></rect><rect fill=\"none\" stroke=\"#000\" x=\"3.5\" y=\"11.5\" width=\"5\" height=\"5\"></rect></svg>";
 var trash = "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><polyline fill=\"none\" stroke=\"#000\" points=\"6.5 3 6.5 1.5 13.5 1.5 13.5 3\"></polyline><polyline fill=\"none\" stroke=\"#000\" points=\"4.5 4 4.5 18.5 15.5 18.5 15.5 4\"></polyline><rect x=\"8\" y=\"7\" width=\"1\" height=\"9\"></rect><rect x=\"11\" y=\"7\" width=\"1\" height=\"9\"></rect><rect x=\"2\" y=\"3\" width=\"16\" height=\"1\"></rect></svg>";
-var tumblr = "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M7,9c0,0,0,3.6,0,5.3c0,0.3,0,0.7,0.1,1c0.4,1.6,1.2,2.7,2.7,3.3c1.4,0.5,2.5,0.5,3.9,0c0.6-0.2,1.2-0.7,1.2-0.7L14,15.5 c0,0-1.1,0.4-1.7,0.3c-0.6-0.1-1.3-0.7-1.3-1.6c0-1.7,0-5.2,0-5.2h3V6h-3V2H8.4c0,0-0.1,0.7-0.2,1C8,3.9,7.4,4.9,6.7,5.6 C5.9,6.4,5,6.7,5,6.7V9H7z\"></path></svg>";
+var tripadvisor = "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M19.021,7.866C19.256,6.862,20,5.854,20,5.854h-3.346C14.781,4.641,12.504,4,9.98,4C7.363,4,4.999,4.651,3.135,5.876H0\tc0,0,0.738,0.987,0.976,1.988c-0.611,0.837-0.973,1.852-0.973,2.964c0,2.763,2.249,5.009,5.011,5.009\tc1.576,0,2.976-0.737,3.901-1.879l1.063,1.599l1.075-1.615c0.475,0.611,1.1,1.111,1.838,1.451c1.213,0.547,2.574,0.612,3.825,0.15\tc2.589-0.963,3.913-3.852,2.964-6.439c-0.175-0.463-0.4-0.876-0.675-1.238H19.021z M16.38,14.594\tc-1.002,0.371-2.088,0.328-3.06-0.119c-0.688-0.317-1.252-0.817-1.657-1.438c-0.164-0.25-0.313-0.52-0.417-0.811\tc-0.124-0.328-0.186-0.668-0.217-1.014c-0.063-0.689,0.037-1.396,0.339-2.043c0.448-0.971,1.251-1.71,2.25-2.079\tc2.075-0.765,4.375,0.3,5.14,2.366c0.762,2.066-0.301,4.37-2.363,5.134L16.38,14.594L16.38,14.594z M8.322,13.066\tc-0.72,1.059-1.935,1.76-3.309,1.76c-2.207,0-4.001-1.797-4.001-3.996c0-2.203,1.795-4.002,4.001-4.002\tc2.204,0,3.999,1.8,3.999,4.002c0,0.137-0.024,0.261-0.04,0.396c-0.067,0.678-0.284,1.313-0.648,1.853v-0.013H8.322z M2.472,10.775\tc0,1.367,1.112,2.479,2.476,2.479c1.363,0,2.472-1.11,2.472-2.479c0-1.359-1.11-2.468-2.472-2.468\tC3.584,8.306,2.473,9.416,2.472,10.775L2.472,10.775z M12.514,10.775c0,1.367,1.104,2.479,2.471,2.479\tc1.363,0,2.474-1.108,2.474-2.479c0-1.359-1.11-2.468-2.474-2.468c-1.364,0-2.477,1.109-2.477,2.468H12.514z M3.324,10.775\tc0-0.893,0.726-1.618,1.614-1.618c0.889,0,1.625,0.727,1.625,1.618c0,0.898-0.725,1.627-1.625,1.627\tc-0.901,0-1.625-0.729-1.625-1.627H3.324z M13.354,10.775c0-0.893,0.726-1.618,1.627-1.618c0.886,0,1.61,0.727,1.61,1.618\tc0,0.898-0.726,1.627-1.626,1.627s-1.625-0.729-1.625-1.627H13.354z M9.977,4.875c1.798,0,3.425,0.324,4.849,0.968\tc-0.535,0.015-1.061,0.108-1.586,0.3c-1.264,0.463-2.264,1.388-2.815,2.604c-0.262,0.551-0.398,1.133-0.448,1.72\tC9.79,7.905,7.677,5.873,5.076,5.82C6.501,5.208,8.153,4.875,9.94,4.875H9.977z\"></path></svg>";
+var tumblr = "<?xml version=\"1.0\" encoding=\"utf-8\"?><!-- Generator: Adobe Illustrator 16.0.3, SVG Export Plug-In . SVG Version: 6.00 Build 0)  --><!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\"><svg version=\"1.1\" id=\"Ebene_1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\"\t width=\"20px\" height=\"20px\" viewBox=\"0 0 20 20\" enable-background=\"new 0 0 20 20\" xml:space=\"preserve\"><path d=\"M6.885,8.598c0,0,0,3.393,0,4.996c0,0.282,0,0.66,0.094,0.942c0.377,1.509,1.131,2.545,2.545,3.11\tc1.319,0.472,2.356,0.472,3.676,0c0.565-0.188,1.132-0.659,1.132-0.659l-0.849-2.263c0,0-1.036,0.378-1.603,0.283\tc-0.565-0.094-1.226-0.66-1.226-1.508c0-1.603,0-4.902,0-4.902h2.828V5.771h-2.828V2H8.205c0,0-0.094,0.66-0.188,0.942\tC7.828,3.791,7.262,4.733,6.603,5.394C5.848,6.147,5,6.43,5,6.43v2.168H6.885z\"/></svg>";
 var tv = "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"7\" y=\"16\" width=\"6\" height=\"1\"></rect><rect fill=\"none\" stroke=\"#000\" x=\"0.5\" y=\"3.5\" width=\"19\" height=\"11\"></rect></svg>";
 var twitter = "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M19,4.74 C18.339,5.029 17.626,5.229 16.881,5.32 C17.644,4.86 18.227,4.139 18.503,3.28 C17.79,3.7 17.001,4.009 16.159,4.17 C15.485,3.45 14.526,3 13.464,3 C11.423,3 9.771,4.66 9.771,6.7 C9.771,6.99 9.804,7.269 9.868,7.539 C6.795,7.38 4.076,5.919 2.254,3.679 C1.936,4.219 1.754,4.86 1.754,5.539 C1.754,6.82 2.405,7.95 3.397,8.61 C2.79,8.589 2.22,8.429 1.723,8.149 L1.723,8.189 C1.723,9.978 2.997,11.478 4.686,11.82 C4.376,11.899 4.049,11.939 3.713,11.939 C3.475,11.939 3.245,11.919 3.018,11.88 C3.49,13.349 4.852,14.419 6.469,14.449 C5.205,15.429 3.612,16.019 1.882,16.019 C1.583,16.019 1.29,16.009 1,15.969 C2.635,17.019 4.576,17.629 6.662,17.629 C13.454,17.629 17.17,12 17.17,7.129 C17.17,6.969 17.166,6.809 17.157,6.649 C17.879,6.129 18.504,5.478 19,4.74\"></path></svg>";
 var uikit = "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><polygon points=\"14.4,3.1 11.3,5.1 15,7.3 15,12.9 10,15.7 5,12.9 5,8.5 2,6.8 2,14.8 9.9,19.5 18,14.8 18,5.3\"></polygon><polygon points=\"9.8,4.2 6.7,2.4 9.8,0.4 12.9,2.3\"></polygon></svg>";
@@ -3633,12 +6511,13 @@ var unlock = "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http
 var upload = "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><polyline fill=\"none\" stroke=\"#000\" points=\"5 8 9.5 3.5 14 8 \"></polyline><rect x=\"3\" y=\"17\" width=\"13\" height=\"1\"></rect><line fill=\"none\" stroke=\"#000\" x1=\"9.5\" y1=\"15\" x2=\"9.5\" y2=\"4\"></line></svg>";
 var user = "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><circle fill=\"none\" stroke=\"#000\" stroke-width=\"1.1\" cx=\"9.9\" cy=\"6.4\" r=\"4.4\"></circle><path fill=\"none\" stroke=\"#000\" stroke-width=\"1.1\" d=\"M1.5,19 C2.3,14.5 5.8,11.2 10,11.2 C14.2,11.2 17.7,14.6 18.5,19.2\"></path></svg>";
 var users = "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><circle fill=\"none\" stroke=\"#000\" stroke-width=\"1.1\" cx=\"7.7\" cy=\"8.6\" r=\"3.5\"></circle><path fill=\"none\" stroke=\"#000\" stroke-width=\"1.1\" d=\"M1,18.1 C1.7,14.6 4.4,12.1 7.6,12.1 C10.9,12.1 13.7,14.8 14.3,18.3\"></path><path fill=\"none\" stroke=\"#000\" stroke-width=\"1.1\" d=\"M11.4,4 C12.8,2.4 15.4,2.8 16.3,4.7 C17.2,6.6 15.7,8.9 13.6,8.9 C16.5,8.9 18.8,11.3 19.2,14.1\"></path></svg>";
-var vimeo = "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M1.78,7.31 C1.55,7.08 1.36,6.79 1.17,6.54 C0.83,6.11 1.03,6.12 1.45,5.75 C2.5,4.82 3.5,3.81 4.65,3 C5.69,2.27 7.07,1.8 8.01,2.96 C8.88,4.03 8.9,5.65 9.12,6.94 C9.34,8.28 9.55,9.65 10.02,10.93 C10.15,11.29 10.4,11.97 10.85,12.03 C11.43,12.11 12.02,11.09 12.29,10.71 C12.99,9.7 13.94,8.34 13.82,7.04 C13.7,5.66 12.21,5.92 11.28,6.25 C11.43,4.7 12.87,2.96 14.26,2.37 C15.73,1.76 17.92,1.77 18.66,3.43 C19.45,5.23 18.74,7.32 17.88,8.95 C16.94,10.72 15.73,12.36 14.44,13.89 C13.3,15.25 11.95,16.74 10.25,17.39 C8.31,18.13 7.16,16.69 6.5,15.02 C5.78,13.2 5.42,11.16 4.9,9.27 C4.68,8.47 4.42,7.56 3.9,6.9 C3.22,6.05 2.45,6.85 1.78,7.31 C1.69,7.22 1.83,7.27 1.78,7.31 L1.78,7.31 Z\"></path></svg>";
+var vimeo = "<?xml version=\"1.0\" encoding=\"utf-8\"?><!-- Generator: Adobe Illustrator 16.0.3, SVG Export Plug-In . SVG Version: 6.00 Build 0)  --><!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\"><svg version=\"1.1\" id=\"Ebene_1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\"\t width=\"20px\" height=\"20px\" viewBox=\"0 0 20 20\" enable-background=\"new 0 0 20 20\" xml:space=\"preserve\"><path d=\"M2.065,7.59C1.84,7.367,1.654,7.082,1.468,6.838c-0.332-0.42-0.137-0.411,0.274-0.772c1.026-0.91,2.004-1.896,3.127-2.688\tc1.017-0.713,2.365-1.173,3.286-0.039c0.849,1.045,0.869,2.629,1.084,3.891c0.215,1.309,0.421,2.648,0.88,3.901\tc0.127,0.352,0.37,1.018,0.81,1.074c0.567,0.078,1.145-0.917,1.408-1.289c0.684-0.987,1.611-2.317,1.494-3.587\tc-0.115-1.349-1.572-1.095-2.482-0.773c0.146-1.514,1.555-3.216,2.912-3.792c1.439-0.597,3.579-0.587,4.302,1.036\tc0.772,1.759,0.078,3.802-0.763,5.396c-0.918,1.731-2.1,3.333-3.363,4.829c-1.114,1.329-2.432,2.787-4.093,3.422\tc-1.897,0.723-3.021-0.686-3.667-2.318c-0.705-1.777-1.056-3.771-1.565-5.621C4.898,8.726,4.644,7.836,4.136,7.191\tC3.473,6.358,2.72,7.141,2.065,7.59C1.977,7.502,2.115,7.551,2.065,7.59L2.065,7.59z\"/></svg>";
 var warning = "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><circle cx=\"10\" cy=\"14\" r=\"1\"></circle><circle fill=\"none\" stroke=\"#000\" stroke-width=\"1.1\" cx=\"10\" cy=\"10\" r=\"9\"></circle><path d=\"M10.97,7.72 C10.85,9.54 10.56,11.29 10.56,11.29 C10.51,11.87 10.27,12 9.99,12 C9.69,12 9.49,11.87 9.43,11.29 C9.43,11.29 9.16,9.54 9.03,7.72 C8.96,6.54 9.03,6 9.03,6 C9.03,5.45 9.46,5.02 9.99,5 C10.53,5.01 10.97,5.44 10.97,6 C10.97,6 11.04,6.54 10.97,7.72 L10.97,7.72 Z\"></path></svg>";
 var whatsapp = "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M16.7,3.3c-1.8-1.8-4.1-2.8-6.7-2.8c-5.2,0-9.4,4.2-9.4,9.4c0,1.7,0.4,3.3,1.3,4.7l-1.3,4.9l5-1.3c1.4,0.8,2.9,1.2,4.5,1.2 l0,0l0,0c5.2,0,9.4-4.2,9.4-9.4C19.5,7.4,18.5,5,16.7,3.3 M10.1,17.7L10.1,17.7c-1.4,0-2.8-0.4-4-1.1l-0.3-0.2l-3,0.8l0.8-2.9 l-0.2-0.3c-0.8-1.2-1.2-2.7-1.2-4.2c0-4.3,3.5-7.8,7.8-7.8c2.1,0,4.1,0.8,5.5,2.3c1.5,1.5,2.3,3.4,2.3,5.5 C17.9,14.2,14.4,17.7,10.1,17.7 M14.4,11.9c-0.2-0.1-1.4-0.7-1.6-0.8c-0.2-0.1-0.4-0.1-0.5,0.1c-0.2,0.2-0.6,0.8-0.8,0.9 c-0.1,0.2-0.3,0.2-0.5,0.1c-0.2-0.1-1-0.4-1.9-1.2c-0.7-0.6-1.2-1.4-1.3-1.6c-0.1-0.2,0-0.4,0.1-0.5C8,8.8,8.1,8.7,8.2,8.5 c0.1-0.1,0.2-0.2,0.2-0.4c0.1-0.2,0-0.3,0-0.4C8.4,7.6,7.9,6.5,7.7,6C7.5,5.5,7.3,5.6,7.2,5.6c-0.1,0-0.3,0-0.4,0 c-0.2,0-0.4,0.1-0.6,0.3c-0.2,0.2-0.8,0.8-0.8,2c0,1.2,0.8,2.3,1,2.4c0.1,0.2,1.7,2.5,4,3.5c0.6,0.2,1,0.4,1.3,0.5 c0.6,0.2,1.1,0.2,1.5,0.1c0.5-0.1,1.4-0.6,1.6-1.1c0.2-0.5,0.2-1,0.1-1.1C14.8,12.1,14.6,12,14.4,11.9\"></path></svg>";
 var wordpress = "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M10,0.5c-5.2,0-9.5,4.3-9.5,9.5s4.3,9.5,9.5,9.5c5.2,0,9.5-4.3,9.5-9.5S15.2,0.5,10,0.5L10,0.5L10,0.5z M15.6,3.9h-0.1 c-0.8,0-1.4,0.7-1.4,1.5c0,0.7,0.4,1.3,0.8,1.9c0.3,0.6,0.7,1.3,0.7,2.3c0,0.7-0.3,1.5-0.6,2.7L14.1,15l-3-8.9 c0.5,0,0.9-0.1,0.9-0.1C12.5,6,12.5,5.3,12,5.4c0,0-1.3,0.1-2.2,0.1C9,5.5,7.7,5.4,7.7,5.4C7.2,5.3,7.2,6,7.6,6c0,0,0.4,0.1,0.9,0.1 l1.3,3.5L8,15L5,6.1C5.5,6.1,5.9,6,5.9,6C6.4,6,6.3,5.3,5.9,5.4c0,0-1.3,0.1-2.2,0.1c-0.2,0-0.3,0-0.5,0c1.5-2.2,4-3.7,6.9-3.7 C12.2,1.7,14.1,2.6,15.6,3.9L15.6,3.9L15.6,3.9z M2.5,6.6l3.9,10.8c-2.7-1.3-4.6-4.2-4.6-7.4C1.8,8.8,2,7.6,2.5,6.6L2.5,6.6L2.5,6.6 z M10.2,10.7l2.5,6.9c0,0,0,0.1,0.1,0.1C11.9,18,11,18.2,10,18.2c-0.8,0-1.6-0.1-2.3-0.3L10.2,10.7L10.2,10.7L10.2,10.7z M14.2,17.1 l2.5-7.3c0.5-1.2,0.6-2.1,0.6-2.9c0-0.3,0-0.6-0.1-0.8c0.6,1.2,1,2.5,1,4C18.3,13,16.6,15.7,14.2,17.1L14.2,17.1L14.2,17.1z\"></path></svg>";
 var world = "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"none\" stroke=\"#000\" d=\"M1,10.5 L19,10.5\"></path><path fill=\"none\" stroke=\"#000\" d=\"M2.35,15.5 L17.65,15.5\"></path><path fill=\"none\" stroke=\"#000\" d=\"M2.35,5.5 L17.523,5.5\"></path><path fill=\"none\" stroke=\"#000\" d=\"M10,19.46 L9.98,19.46 C7.31,17.33 5.61,14.141 5.61,10.58 C5.61,7.02 7.33,3.83 10,1.7 C10.01,1.7 9.99,1.7 10,1.7 L10,1.7 C12.67,3.83 14.4,7.02 14.4,10.58 C14.4,14.141 12.67,17.33 10,19.46 L10,19.46 L10,19.46 L10,19.46 Z\"></path><circle fill=\"none\" stroke=\"#000\" cx=\"10\" cy=\"10.5\" r=\"9\"></circle></svg>";
 var xing = "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M4.4,4.56 C4.24,4.56 4.11,4.61 4.05,4.72 C3.98,4.83 3.99,4.97 4.07,5.12 L5.82,8.16 L5.82,8.17 L3.06,13.04 C2.99,13.18 2.99,13.33 3.06,13.44 C3.12,13.55 3.24,13.62 3.4,13.62 L6,13.62 C6.39,13.62 6.57,13.36 6.71,13.12 C6.71,13.12 9.41,8.35 9.51,8.16 C9.49,8.14 7.72,5.04 7.72,5.04 C7.58,4.81 7.39,4.56 6.99,4.56 L4.4,4.56 L4.4,4.56 Z\"></path><path d=\"M15.3,1 C14.91,1 14.74,1.25 14.6,1.5 C14.6,1.5 9.01,11.42 8.82,11.74 C8.83,11.76 12.51,18.51 12.51,18.51 C12.64,18.74 12.84,19 13.23,19 L15.82,19 C15.98,19 16.1,18.94 16.16,18.83 C16.23,18.72 16.23,18.57 16.16,18.43 L12.5,11.74 L12.5,11.72 L18.25,1.56 C18.32,1.42 18.32,1.27 18.25,1.16 C18.21,1.06 18.08,1 17.93,1 L15.3,1 L15.3,1 Z\"></path></svg>";
+var yelp = "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M17.175,14.971c-0.112,0.77-1.686,2.767-2.406,3.054c-0.246,0.1-0.487,0.076-0.675-0.069\tc-0.122-0.096-2.446-3.859-2.446-3.859c-0.194-0.293-0.157-0.682,0.083-0.978c0.234-0.284,0.581-0.393,0.881-0.276\tc0.016,0.01,4.21,1.394,4.332,1.482c0.178,0.148,0.263,0.379,0.225,0.646L17.175,14.971L17.175,14.971z M11.464,10.789\tc-0.203-0.307-0.199-0.666,0.009-0.916c0,0,2.625-3.574,2.745-3.657c0.203-0.135,0.452-0.141,0.69-0.025\tc0.691,0.335,2.085,2.405,2.167,3.199v0.027c0.024,0.271-0.082,0.491-0.273,0.623c-0.132,0.083-4.43,1.155-4.43,1.155\tc-0.322,0.096-0.68-0.06-0.882-0.381L11.464,10.789z M9.475,9.563C9.32,9.609,8.848,9.757,8.269,8.817c0,0-3.916-6.16-4.007-6.351\tc-0.057-0.212,0.011-0.455,0.202-0.65C5.047,1.211,8.21,0.327,9.037,0.529c0.27,0.069,0.457,0.238,0.522,0.479\tc0.047,0.266,0.433,5.982,0.488,7.264C10.098,9.368,9.629,9.517,9.475,9.563z M9.927,19.066c-0.083,0.225-0.273,0.373-0.54,0.421\tc-0.762,0.13-3.15-0.751-3.647-1.342c-0.096-0.131-0.155-0.262-0.167-0.394c-0.011-0.095,0-0.189,0.036-0.272\tc0.061-0.155,2.917-3.538,2.917-3.538c0.214-0.272,0.595-0.355,0.952-0.213c0.345,0.13,0.56,0.428,0.536,0.749\tC10.014,14.479,9.977,18.923,9.927,19.066z M3.495,13.912c-0.235-0.009-0.444-0.148-0.568-0.382c-0.089-0.17-0.151-0.453-0.19-0.794\tC2.63,11.701,2.761,10.144,3.07,9.648c0.145-0.226,0.357-0.345,0.592-0.336c0.154,0,4.255,1.667,4.255,1.667\tc0.321,0.118,0.521,0.453,0.5,0.833c-0.023,0.37-0.236,0.655-0.551,0.738L3.495,13.912z\"></path></svg>";
 var youtube = "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M15,4.1c1,0.1,2.3,0,3,0.8c0.8,0.8,0.9,2.1,0.9,3.1C19,9.2,19,10.9,19,12c-0.1,1.1,0,2.4-0.5,3.4c-0.5,1.1-1.4,1.5-2.5,1.6 c-1.2,0.1-8.6,0.1-11,0c-1.1-0.1-2.4-0.1-3.2-1c-0.7-0.8-0.7-2-0.8-3C1,11.8,1,10.1,1,8.9c0-1.1,0-2.4,0.5-3.4C2,4.5,3,4.3,4.1,4.2 C5.3,4.1,12.6,4,15,4.1z M8,7.5v6l5.5-3L8,7.5z\"></path></svg>";
 var Icons = {
 	album: album,
@@ -3724,6 +6603,7 @@ var Icons = {
 	tag: tag,
 	thumbnails: thumbnails,
 	trash: trash,
+	tripadvisor: tripadvisor,
 	tumblr: tumblr,
 	tv: tv,
 	twitter: twitter,
@@ -3738,6 +6618,7 @@ var Icons = {
 	wordpress: wordpress,
 	world: world,
 	xing: xing,
+	yelp: yelp,
 	youtube: youtube,
 	"arrow-down": "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><polygon points=\"10.5,16.08 5.63,10.66 6.37,10 10.5,14.58 14.63,10 15.37,10.66\"></polygon><line fill=\"none\" stroke=\"#000\" x1=\"10.5\" y1=\"4\" x2=\"10.5\" y2=\"15\"></line></svg>",
 	"arrow-left": "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><polyline fill=\"none\" stroke=\"#000\" points=\"10 14 5 9.5 10 5\"></polyline><line fill=\"none\" stroke=\"#000\" x1=\"16\" y1=\"9.5\" x2=\"5\" y2=\"9.52\"></line></svg>",
@@ -3791,24 +6672,24 @@ return plugin;
 })));
 
 /***/ }),
-/* 117 */
+/* 130 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/*! UIkit 3.0.0-beta.18 | http://www.getuikit.com | (c) 2014 - 2017 YOOtheme | MIT License */
+/*! UIkit 3.0.0-beta.20 | http://www.getuikit.com | (c) 2014 - 2017 YOOtheme | MIT License */
 
 (function (global, factory) {
-    true ? module.exports = factory(__webpack_require__(309)) :
-   typeof define === 'function' && define.amd ? define('uikit', ['jquery'], factory) :
-   (global.UIkit = factory(global.jQuery));
-}(this, (function ($$1) { 'use strict';
+     true ? module.exports = factory(__webpack_require__(344)) :
+    typeof define === 'function' && define.amd ? define('uikit', ['jquery'], factory) :
+    (global.UIkit = factory(global.jQuery));
+}(this, (function ($) { 'use strict';
 
-var $$1__default = 'default' in $$1 ? $$1['default'] : $$1;
+var $__default = 'default' in $ ? $['default'] : $;
 
-var win = $$1__default(window);
-var doc = $$1__default(document);
-var docElement = $$1__default(document.documentElement);
+var win = $__default(window);
+var doc = $__default(document);
+var docElement = $__default(document.documentElement);
 
-var isRtl = $$1__default('html').attr('dir') === 'rtl';
+var isRtl = $__default('html').attr('dir') === 'rtl';
 
 function isReady() {
     return document.readyState === 'complete' || document.readyState !== 'loading' && !document.documentElement.doScroll;
@@ -3846,7 +6727,7 @@ function transition(element, props, duration, transition) {
 
     var p = promise(function (resolve, reject) {
 
-        element = $$1__default(element);
+        element = $__default(element);
 
         for (var name in props) {
             element.css(name, element.css(name));
@@ -3881,8 +6762,8 @@ var Transition = {
     start: transition,
 
     stop: function stop(element, cancel) {
-        var e = $$1__default.Event(transitionend || 'transitionend');
-        $$1__default(element).triggerHandler(e, [cancel]);
+        var e = $__default.Event(transitionend || 'transitionend');
+        $__default(element).triggerHandler(e, [cancel]);
         return e.promise || promise.resolve();
     },
 
@@ -3891,7 +6772,7 @@ var Transition = {
     },
 
     inProgress: function inProgress(element) {
-        return $$1__default(element).hasClass('uk-transition');
+        return $__default(element).hasClass('uk-transition');
     }
 
 };
@@ -3904,7 +6785,7 @@ function animate(element, animation, duration, origin, out) {
 
         var cls = out ? 'uk-animation-leave' : 'uk-animation-enter';
 
-        element = $$1__default(element);
+        element = $__default(element);
 
         if (animation.lastIndexOf('uk-animation-', 0) === 0) {
 
@@ -3920,7 +6801,7 @@ function animate(element, animation, duration, origin, out) {
 
         reset();
 
-        element
+        requestAnimationFrame(function () { return element
             .one(animationend || 'animationend', function (e) {
                 e.promise = p;
                 p.then(reset);
@@ -3928,7 +6809,8 @@ function animate(element, animation, duration, origin, out) {
             })
             .css('animation-duration', (duration + "ms"))
             .addClass(animation)
-            .addClass(cls);
+            .addClass(cls); }
+        );
 
         if (!animationend) {
             requestAnimationFrame(function () { return Animation.cancel(element); });
@@ -3954,30 +6836,30 @@ var Animation = {
     },
 
     inProgress: function inProgress(element) {
-        return $$1__default(element).hasClass('uk-animation-enter') || $$1__default(element).hasClass('uk-animation-leave');
+        return $__default(element).hasClass('uk-animation-enter') || $__default(element).hasClass('uk-animation-leave');
     },
 
     cancel: function cancel(element) {
-        var e = $$1__default.Event(animationend || 'animationend');
-        $$1__default(element).triggerHandler(e);
+        var e = $__default.Event(animationend || 'animationend');
+        $__default(element).triggerHandler(e);
         return e.promise || promise.resolve();
     }
 
 };
 
 function isJQuery(obj) {
-    return obj instanceof $$1__default;
+    return obj instanceof $__default;
 }
 
 function isWithin(element, selector) {
-    element = $$1__default(element);
+    element = $__default(element);
     return element.is(selector) || !!(isString(selector)
-            ? element.parents(selector).length
-            : $$1__default.contains(toNode(selector), element[0]));
+        ? element.parents(selector).length
+        : $__default.contains(toNode(selector), element[0]));
 }
 
 function attrFilter(element, attr, pattern, replacement) {
-    element = $$1__default(element);
+    element = $__default(element);
     return element.attr(attr, function (i, value) { return value ? value.replace(pattern, replacement) : value; });
 }
 
@@ -3997,7 +6879,7 @@ function createEvent(e, bubbles, cancelable, data) {
     }
 
     if (data) {
-        $$1__default.extend(e, data);
+        $__default.extend(e, data);
     }
 
     return e;
@@ -4010,8 +6892,8 @@ function isInView(element, offsetTop, offsetLeft) {
 
     var rect = toNode(element).getBoundingClientRect();
 
-    return rect.top >= -1 * offsetTop
-        && rect.left >= -1 * offsetLeft
+    return rect.bottom >= -1 * offsetTop
+        && rect.right >= -1 * offsetLeft
         && rect.top <= (window.innerHeight || document.documentElement.clientHeight) + offsetTop
         && rect.left <= (window.innerWidth || document.documentElement.clientWidth) + offsetLeft;
 }
@@ -4020,9 +6902,9 @@ function getIndex(index, elements, current) {
     if ( current === void 0 ) current = 0;
 
 
-    elements = $$1__default(elements);
+    elements = $__default(elements);
 
-    var length = $$1__default(elements).length;
+    var length = $__default(elements).length;
 
     index = (isNumber(index)
         ? index
@@ -4073,9 +6955,9 @@ var Dimensions = {
     fit: function fit(dimensions, maxDimensions) {
         var this$1 = this;
 
-        dimensions = $$1.extend({}, dimensions);
+        dimensions = $.extend({}, dimensions);
 
-        $$1.each(dimensions, function (prop) { return dimensions = dimensions[prop] > maxDimensions[prop] ? this$1.ratio(dimensions, prop, maxDimensions[prop]) : dimensions; });
+        $.each(dimensions, function (prop) { return dimensions = dimensions[prop] > maxDimensions[prop] ? this$1.ratio(dimensions, prop, maxDimensions[prop]) : dimensions; });
 
         return dimensions;
     },
@@ -4085,7 +6967,7 @@ var Dimensions = {
 
         dimensions = this.fit(dimensions, maxDimensions);
 
-        $$1.each(dimensions, function (prop) { return dimensions = dimensions[prop] < maxDimensions[prop] ? this$1.ratio(dimensions, prop, maxDimensions[prop]) : dimensions; });
+        $.each(dimensions, function (prop) { return dimensions = dimensions[prop] < maxDimensions[prop] ? this$1.ratio(dimensions, prop, maxDimensions[prop]) : dimensions; });
 
         return dimensions;
     }
@@ -4111,11 +6993,11 @@ function hasOwn(obj, key) {
 
 function promise(executor) {
 
-    if (!isUndefined(window.Promise)) {
-        return new window.Promise(executor);
+    if (hasPromise) {
+        return new Promise(executor);
     }
 
-    var def = $$1__default.Deferred();
+    var def = $__default.Deferred();
 
     executor(def.resolve, def.reject);
 
@@ -4135,12 +7017,9 @@ promise.reject = function (value) {
 };
 
 promise.all = function (iterable) {
-
-    if (!isUndefined(window.Promise)) {
-        return window.Promise.all(iterable);
-    }
-
-    return $$1__default.when.apply($$1__default, iterable);
+    return hasPromise
+        ? Promise.all(iterable)
+        : $__default.when.apply($__default, iterable);
 };
 
 function classify(str) {
@@ -4195,7 +7074,7 @@ function toJQuery(element, context) {
 
             var fn = contextSelectors[element[0]], selector = element.substr(1);
 
-            context = $$1__default(context);
+            context = $__default(context);
 
             if (fn === 'closest') {
                 context = context.parent();
@@ -4205,7 +7084,7 @@ function toJQuery(element, context) {
             element = context[fn](selector);
 
         } else {
-            element = $$1__default(element, context);
+            element = $__default(element, context);
         }
 
     } catch (e) {
@@ -4235,18 +7114,23 @@ function toNumber(value) {
 }
 
 function toList(value) {
-    return $$1.isArray(value)
+    return $.isArray(value)
         ? value
         : isString(value)
-            ? value.split(',').map(function (value) { return value.trim(); })
+            ? value.split(',').map(function (value) { return toBoolean(value.trim()); })
             : [value];
 }
 
 var vars = {};
 function toMedia(value) {
-    if (isString(value) && value[0] == '@') {
-        var name = "media-" + (value.substr(1));
-        value = vars[name] || (vars[name] = parseFloat(getCssVar(name)));
+
+    if (isString(value)) {
+        if (value[0] == '@') {
+            var name = "media-" + (value.substr(1));
+            value = vars[name] || (vars[name] = parseFloat(getCssVar(name)));
+        } else if (value.match(/^\(min-width:/)) {
+            return value;
+        }
     }
 
     return value && !isNaN(value) ? ("(min-width: " + value + "px)") : false;
@@ -4287,16 +7171,20 @@ var Observer = window.MutationObserver || window.WebKitMutationObserver;
 var requestAnimationFrame = window.requestAnimationFrame || function (fn) { return setTimeout(fn, 1000 / 60); };
 var cancelAnimationFrame = window.cancelAnimationFrame || window.clearTimeout;
 
-var hasTouch = 'ontouchstart' in window
+var hasTouchEvents = 'ontouchstart' in window;
+var hasPointerEvents = window.PointerEvent;
+var hasPromise = 'Promise' in window;
+var hasTouch = hasTouchEvents
     || window.DocumentTouch && document instanceof DocumentTouch
     || navigator.msPointerEnabled && navigator.msMaxTouchPoints > 0 // IE 10
     || navigator.pointerEnabled && navigator.maxTouchPoints > 0; // IE >=11
 
-var pointerDown = !hasTouch ? 'mousedown' : window.PointerEvent ? 'pointerdown' : 'touchstart';
-var pointerMove = !hasTouch ? 'mousemove' : window.PointerEvent ? 'pointermove' : 'touchmove';
-var pointerUp = !hasTouch ? 'mouseup' : window.PointerEvent ? 'pointerup' : 'touchend';
-var pointerEnter = hasTouch && window.PointerEvent ? 'pointerenter' : 'mouseenter';
-var pointerLeave = hasTouch && window.PointerEvent ? 'pointerleave' : 'mouseleave';
+var pointerDown = !hasTouch ? 'mousedown' : hasTouchEvents ? 'touchstart' : 'pointerdown';
+var pointerMove = !hasTouch ? 'mousemove' : hasTouchEvents ? 'touchmove' : 'pointermove';
+var pointerUp = !hasTouch ? 'mouseup' : hasTouchEvents ? 'touchend' : 'pointerup';
+var pointerEnter = hasTouch && hasPointerEvents ? 'pointerenter' : 'mouseenter';
+var pointerLeave = hasTouch && hasPointerEvents ? 'pointerleave' : 'mouseleave';
+var pointerCancel = hasTouch && hasTouchEvents ? 'touchcancel' : 'pointercancel';
 
 var transitionstart = prefix('transition', 'transition-start');
 var transitionend = prefix('transition', 'transition-end');
@@ -4344,197 +7232,66 @@ function prefix(name, event) {
     }
 }
 
-// Copyright (c) 2016 Wilson Page wilsonpage@me.com
-// https://github.com/wilsonpage/fastdom
+/*
+    Based on:
+    Copyright (c) 2016 Wilson Page wilsonpage@me.com
+    https://github.com/wilsonpage/fastdom
+*/
 
-/**
- * Initialize a `FastDom`.
- *
- * @constructor
- */
-function FastDom() {
-    var self = this;
-    self.reads = [];
-    self.writes = [];
-    self.raf = requestAnimationFrame.bind(window); // test hook
-}
+var fastdom = {
 
-FastDom.prototype = {
-    constructor: FastDom,
+    reads: [],
+    writes: [],
 
-    /**
-     * Adds a job to the read batch and
-     * schedules a new frame if need be.
-     *
-     * @param  {Function} fn
-     * @public
-     */
-    measure: function(fn, ctx) {
-        var task = !ctx ? fn : fn.bind(ctx);
+    measure: function(task) {
         this.reads.push(task);
         scheduleFlush(this);
         return task;
     },
 
-    /**
-     * Adds a job to the
-     * write batch and schedules
-     * a new frame if need be.
-     *
-     * @param  {Function} fn
-     * @public
-     */
-    mutate: function(fn, ctx) {
-        var task = !ctx ? fn : fn.bind(ctx);
+    mutate: function(task) {
         this.writes.push(task);
         scheduleFlush(this);
         return task;
     },
 
-    /**
-     * Clears a scheduled 'read' or 'write' task.
-     *
-     * @param {Object} task
-     * @return {Boolean} success
-     * @public
-     */
     clear: function(task) {
         return remove(this.reads, task) || remove(this.writes, task);
-    },
+    }
 
-    /**
-     * Extend this FastDom with some
-     * custom functionality.
-     *
-     * Because fastdom must *always* be a
-     * singleton, we're actually extending
-     * the fastdom instance. This means tasks
-     * scheduled by an extension still enter
-     * fastdom's global task queue.
-     *
-     * The 'super' instance can be accessed
-     * from `this.fastdom`.
-     *
-     * @example
-     *
-     * var myFastdom = fastdom.extend({
-   *   initialize: function() {
-   *     // runs on creation
-   *   },
-   *
-   *   // override a method
-   *   measure: function(fn) {
-   *     // do extra stuff ...
-   *
-   *     // then call the original
-   *     return this.fastdom.measure(fn);
-   *   },
-   *
-   *   ...
-   * });
-     *
-     * @param  {Object} props  properties to mixin
-     * @return {FastDom}
-     */
-    extend: function(props) {
-        if (typeof props != 'object') { throw new Error('expected object'); }
-
-        var child = Object.create(this);
-        mixin(child, props);
-        child.fastdom = this;
-
-        // run optional creation hook
-        if (child.initialize) { child.initialize(); }
-
-        return child;
-    },
-
-    // override this with a function
-    // to prevent Errors in console
-    // when tasks throw
-    catch: null
 };
 
-/**
- * Schedules a new read/write
- * batch if one isn't pending.
- *
- * @private
- */
 function scheduleFlush(fastdom) {
     if (!fastdom.scheduled) {
         fastdom.scheduled = true;
-        fastdom.raf(flush.bind(null, fastdom));
+        requestAnimationFrame(flush.bind(null, fastdom));
     }
 }
 
-/**
- * Runs queued `read` and `write` tasks.
- *
- * Errors are caught and thrown by default.
- * If a `.catch` function has been defined
- * it is called instead.
- *
- * @private
- */
 function flush(fastdom) {
 
-    var error;
-
-    try {
-        runTasks(fastdom.reads);
-        runTasks(fastdom.writes.splice(0, fastdom.writes.length));
-    } catch (e) { error = e; }
+    runTasks(fastdom.reads);
+    runTasks(fastdom.writes.splice(0, fastdom.writes.length));
 
     fastdom.scheduled = false;
 
-    // If the batch errored we may still have tasks queued
-    if (fastdom.reads.length || fastdom.writes.length) { scheduleFlush(fastdom); }
+    if (fastdom.reads.length || fastdom.writes.length) {
+        scheduleFlush(fastdom);
+    }
 
-    if (error) {
-        if (fastdom.catch) { fastdom.catch(error); }
-        else { throw error; }
+}
+
+function runTasks(tasks) {
+    var task;
+    while (task = tasks.shift()) {
+        task();
     }
 }
 
-/**
- * We run this inside a try catch
- * so that if any jobs error, we
- * are able to recover and continue
- * to flush the batch until it's empty.
- *
- * @private
- */
-function runTasks(tasks) {
-    var task; while (task = tasks.shift()) { task(); }
-}
-
-/**
- * Remove an item from an Array.
- *
- * @param  {Array} array
- * @param  {*} item
- * @return {Boolean}
- */
 function remove(array, item) {
     var index = array.indexOf(item);
     return !!~index && !!array.splice(index, 1);
 }
-
-/**
- * Mixin own properties of source
- * object into the target.
- *
- * @param  {Object} target
- * @param  {Object} source
- */
-function mixin(target, source) {
-    for (var key in source) {
-        if (source.hasOwnProperty(key)) { target[key] = source[key]; }
-    }
-}
-
-var fastdom = new FastDom();
 
 function MouseTracker() {}
 
@@ -4638,12 +7395,12 @@ strats.connected =
 strats.disconnected =
 strats.destroy = function (parentVal, childVal) {
 
-    parentVal = parentVal && !$$1.isArray(parentVal) ? [parentVal] : parentVal;
+    parentVal = parentVal && !$.isArray(parentVal) ? [parentVal] : parentVal;
 
     return childVal
         ? parentVal
             ? parentVal.concat(childVal)
-            : $$1.isArray(childVal)
+            : $.isArray(childVal)
                 ? childVal
                 : [childVal]
         : parentVal;
@@ -4651,13 +7408,13 @@ strats.destroy = function (parentVal, childVal) {
 
 // update strategy
 strats.update = function (parentVal, childVal) {
-    return strats.args(parentVal, $$1.isFunction(childVal) ? {write: childVal} : childVal);
+    return strats.args(parentVal, $.isFunction(childVal) ? {write: childVal} : childVal);
 };
 
 // property strategy
 strats.props = function (parentVal, childVal) {
 
-    if ($$1.isArray(childVal)) {
+    if ($.isArray(childVal)) {
         childVal = childVal.reduce(function (value, key) {
             value[key] = String;
             return value;
@@ -4668,11 +7425,12 @@ strats.props = function (parentVal, childVal) {
 };
 
 // extend strategy
+strats.computed =
 strats.defaults =
 strats.methods = function (parentVal, childVal) {
     return childVal
         ? parentVal
-            ? $$1.extend(true, {}, parentVal, childVal)
+            ? $.extend(true, {}, parentVal, childVal)
             : childVal
         : parentVal;
 };
@@ -4716,12 +7474,18 @@ var dirs = {
 
 function position(element, target, attach, targetAttach, offset, targetOffset, flip, boundary) {
 
+    attach = getPos(attach);
+    targetAttach = getPos(targetAttach);
+
+    var flipped = {element: attach, target: targetAttach};
+
+    if (!element) {
+        return flipped;
+    }
+
     var dim = getDimensions(element),
         targetDim = getDimensions(target),
         position = targetDim;
-
-    attach = getPos(attach);
-    targetAttach = getPos(targetAttach);
 
     moveTo(position, attach, dim, -1);
     moveTo(position, targetAttach, targetDim, 1);
@@ -4737,10 +7501,8 @@ function position(element, target, attach, targetAttach, offset, targetOffset, f
 
     boundary = getDimensions(boundary || window);
 
-    var flipped = {element: attach, target: targetAttach};
-
     if (flip) {
-        $$1.each(dirs, function (dir, ref) {
+        $.each(dirs, function (dir, ref) {
             var prop = ref[0];
             var align = ref[1];
             var alignFlip = ref[2];
@@ -4750,8 +7512,16 @@ function position(element, target, attach, targetAttach, offset, targetOffset, f
                 return;
             }
 
-            var elemOffset = attach[dir] === align ? -dim[prop] : attach[dir] === alignFlip ? dim[prop] : 0,
-                targetOffset = targetAttach[dir] === align ? targetDim[prop] : targetAttach[dir] === alignFlip ? -targetDim[prop] : 0;
+            var elemOffset = attach[dir] === align
+                    ? -dim[prop]
+                    : attach[dir] === alignFlip
+                        ? dim[prop]
+                        : 0,
+                targetOffset = targetAttach[dir] === align
+                    ? targetDim[prop]
+                    : targetAttach[dir] === alignFlip
+                        ? -targetDim[prop]
+                        : 0;
 
             if (position[align] < boundary[align] || position[align] + dim[prop] > boundary[alignFlip]) {
 
@@ -4773,7 +7543,7 @@ function position(element, target, attach, targetAttach, offset, targetOffset, f
         });
     }
 
-    $$1__default(element).offset({left: position.left, top: position.top});
+    $__default(element).offset({left: position.left, top: position.top});
 
     return flipped;
 }
@@ -4795,15 +7565,15 @@ function getDimensions(element) {
         }
     }
 
-    var display;
+    var display = false;
     if (!element.offsetHeight) {
-        display = getComputedStyle(element).display;
+        display = element.style.display;
         element.style.display = 'block';
     }
 
     var rect = element.getBoundingClientRect();
 
-    if (display) {
+    if (display !== false) {
         element.style.display = display;
     }
 
@@ -4823,11 +7593,11 @@ function offsetTop(element) {
 }
 
 function getWindow(element) {
-    return element.ownerDocument ? element.ownerDocument.defaultView : window;
+    return element && element.ownerDocument ? element.ownerDocument.defaultView : window;
 }
 
 function moveTo(position, attach, dim, factor) {
-    $$1.each(dirs, function (dir, ref) {
+    $.each(dirs, function (dir, ref) {
         var prop = ref[0];
         var align = ref[1];
         var alignFlip = ref[2];
@@ -4886,46 +7656,31 @@ function flipPosition(pos) {
 }
 
 /*
-Based on:
-Copyright (c) 2010-2016 Thomas Fuchs
-http://zeptojs.com/
+    Based on:
+    Copyright (c) 2010-2016 Thomas Fuchs
+    http://zeptojs.com/
 */
 
 var touch = {};
 var touchTimeout;
 var tapTimeout;
 var swipeTimeout;
-var longTapTimeout;
-var longTapDelay = 750;
 var gesture;
 var clicked;
 function swipeDirection(x1, x2, y1, y2) {
     return Math.abs(x1 - x2) >= Math.abs(y1 - y2) ? (x1 - x2 > 0 ? 'Left' : 'Right') : (y1 - y2 > 0 ? 'Up' : 'Down');
 }
 
-function longTap() {
-    longTapTimeout = null;
-    if (touch.last) {
-        if (touch.el !== undefined) { touch.el.trigger('longTap'); }
-        touch = {};
-    }
-}
-
-function cancelLongTap() {
-    if (longTapTimeout) { clearTimeout(longTapTimeout); }
-    longTapTimeout = null;
-}
-
 function cancelAll() {
-    if (touchTimeout)   { clearTimeout(touchTimeout); }
-    if (tapTimeout)     { clearTimeout(tapTimeout); }
-    if (swipeTimeout)   { clearTimeout(swipeTimeout); }
-    if (longTapTimeout) { clearTimeout(longTapTimeout); }
-    touchTimeout = tapTimeout = swipeTimeout = longTapTimeout = null;
+    if (touchTimeout) { clearTimeout(touchTimeout); }
+    if (tapTimeout) { clearTimeout(tapTimeout); }
+    if (swipeTimeout) { clearTimeout(swipeTimeout); }
+    touchTimeout = tapTimeout = swipeTimeout = null;
     touch = {};
 }
 
 ready(function () {
+
     var now, delta, deltaX = 0, deltaY = 0, firstTouch;
 
     if ('MSGesture' in window) {
@@ -4935,134 +7690,134 @@ ready(function () {
 
     on(document, 'click', function () { return clicked = true; }, true);
 
-    doc
+    var gestureHandler = function (e) {
 
-        .on('MSGestureEnd gestureend', function (e) {
+        var swipeDirectionFromVelocity = e.velocityX > 1 ? 'Right' : e.velocityX < -1 ? 'Left' : e.velocityY > 1 ? 'Down' : e.velocityY < -1 ? 'Up' : null;
 
-            var swipeDirectionFromVelocity = e.originalEvent.velocityX > 1 ? 'Right' : e.originalEvent.velocityX < -1 ? 'Left' : e.originalEvent.velocityY > 1 ? 'Down' : e.originalEvent.velocityY < -1 ? 'Up' : null;
+        if (swipeDirectionFromVelocity && touch.el !== undefined) {
+            touch.el.trigger('swipe');
+            touch.el.trigger(("swipe" + swipeDirectionFromVelocity));
+        }
+    };
 
-            if (swipeDirectionFromVelocity && touch.el !== undefined) {
-                touch.el.trigger('swipe');
-                touch.el.trigger('swipe' + swipeDirectionFromVelocity);
-            }
-        })
-        .on(pointerDown, function (e) {
+    on(document, 'MSGestureEnd', gestureHandler);
+    on(document, 'gestureend', gestureHandler);
 
-            firstTouch = e.originalEvent.touches ? e.originalEvent.touches[0] : e;
+    on(document, pointerDown, function (e) {
 
-            now = Date.now();
-            delta = now - (touch.last || now);
-            touch.el = $$1__default('tagName' in firstTouch.target ? firstTouch.target : firstTouch.target.parentNode);
+        firstTouch = e.touches ? e.touches[0] : e;
 
-            if (touchTimeout) { clearTimeout(touchTimeout); }
+        now = Date.now();
+        delta = now - (touch.last || now);
+        touch.el = $__default('tagName' in firstTouch.target ? firstTouch.target : firstTouch.target.parentNode);
 
-            touch.x1 = firstTouch.pageX;
-            touch.y1 = firstTouch.pageY;
+        if (touchTimeout) { clearTimeout(touchTimeout); }
 
-            if (delta > 0 && delta <= 250) { touch.isDoubleTap = true; }
+        touch.x1 = firstTouch.pageX;
+        touch.y1 = firstTouch.pageY;
 
-            touch.last = now;
-            longTapTimeout = setTimeout(longTap, longTapDelay);
+        if (delta > 0 && delta <= 250) { touch.isDoubleTap = true; }
 
-            // adds the current touch contact for IE gesture recognition
-            if (gesture && ( e.type == 'pointerdown' || e.type == 'touchstart' )) {
-                gesture.addPointer(e.originalEvent.pointerId);
-            }
+        touch.last = now;
 
-            clicked = e.button > 0;
+        // adds the current touch contact for IE gesture recognition
+        if (gesture && ( e.type == 'pointerdown' || e.type == 'touchstart' )) {
+            gesture.addPointer(e.pointerId);
+        }
 
-        })
-        .on(pointerMove, function (e) {
+        clicked = e.button > 0;
 
-            firstTouch = e.originalEvent.touches ? e.originalEvent.touches[0] : e;
+    });
 
-            cancelLongTap();
-            touch.x2 = firstTouch.pageX;
-            touch.y2 = firstTouch.pageY;
+    on(document, pointerMove, function (e) {
 
-            deltaX += Math.abs(touch.x1 - touch.x2);
-            deltaY += Math.abs(touch.y1 - touch.y2);
-        })
-        .on(pointerUp, function () {
+        firstTouch = e.touches ? e.touches[0] : e;
 
-            cancelLongTap();
+        touch.x2 = firstTouch.pageX;
+        touch.y2 = firstTouch.pageY;
 
-            // swipe
-            if ((touch.x2 && Math.abs(touch.x1 - touch.x2) > 30) || (touch.y2 && Math.abs(touch.y1 - touch.y2) > 30)) {
+        deltaX += Math.abs(touch.x1 - touch.x2);
+        deltaY += Math.abs(touch.y1 - touch.y2);
+    });
 
-                swipeTimeout = setTimeout(function () {
-                    if (touch.el !== undefined) {
-                        touch.el.trigger('swipe');
-                        touch.el.trigger('swipe' + (swipeDirection(touch.x1, touch.x2, touch.y1, touch.y2)));
-                    }
-                    touch = {};
-                }, 0);
+    on(document, pointerUp, function () {
 
-                // normal tap
-            } else if ('last' in touch) {
+        // swipe
+        if ((touch.x2 && Math.abs(touch.x1 - touch.x2) > 30) || (touch.y2 && Math.abs(touch.y1 - touch.y2) > 30)) {
 
-                // don't fire tap when delta position changed by more than 30 pixels,
-                // for instance when moving to a point and back to origin
-                if (isNaN(deltaX) || (deltaX < 30 && deltaY < 30)) {
-                    // delay by one tick so we can cancel the 'tap' event if 'scroll' fires
-                    // ('tap' fires before 'scroll')
-                    tapTimeout = setTimeout(function () {
-
-                        // trigger universal 'tap' with the option to cancelTouch()
-                        // (cancelTouch cancels processing of single vs double taps for faster 'tap' response)
-                        var event = $$1__default.Event('tap');
-                        event.cancelTouch = cancelAll;
-
-                        if (touch.el !== undefined) {
-                            touch.el.trigger(event);
-                        }
-
-                        // trigger double tap immediately
-                        if (touch.isDoubleTap) {
-                            if (touch.el !== undefined) { touch.el.trigger('doubleTap'); }
-                            touch = {};
-                        }
-
-                        // trigger single tap after 300ms of inactivity
-                        else {
-                            touchTimeout = setTimeout(function () {
-                                touchTimeout = null;
-                                if (touch.el !== undefined) {
-                                    touch.el.trigger('singleTap');
-
-                                    if (!clicked) {
-                                        touch.el.trigger('click');
-                                    }
-
-                                }
-                                touch = {};
-                            }, 300);
-                        }
-                    });
-                } else {
-                    touch = {};
+            swipeTimeout = setTimeout(function () {
+                if (touch.el !== undefined) {
+                    touch.el.trigger('swipe');
+                    touch.el.trigger(("swipe" + (swipeDirection(touch.x1, touch.x2, touch.y1, touch.y2))));
                 }
-                deltaX = deltaY = 0;
+                touch = {};
+            }, 0);
+
+            // normal tap
+        } else if ('last' in touch) {
+
+            // don't fire tap when delta position changed by more than 30 pixels,
+            // for instance when moving to a point and back to origin
+            if (isNaN(deltaX) || (deltaX < 30 && deltaY < 30)) {
+                // delay by one tick so we can cancel the 'tap' event if 'scroll' fires
+                // ('tap' fires before 'scroll')
+                tapTimeout = setTimeout(function () {
+
+                    // trigger universal 'tap' with the option to cancelTouch()
+                    // (cancelTouch cancels processing of single vs double taps for faster 'tap' response)
+                    var event = $__default.Event('tap');
+                    event.cancelTouch = cancelAll;
+
+                    if (touch.el !== undefined) {
+                        touch.el.trigger(event);
+                    }
+
+                    // trigger double tap immediately
+                    if (touch.isDoubleTap) {
+                        if (touch.el !== undefined) { touch.el.trigger('doubleTap'); }
+                        touch = {};
+                    }
+
+                    // trigger single tap after 300ms of inactivity
+                    else {
+                        touchTimeout = setTimeout(function () {
+                            touchTimeout = null;
+                            if (touch.el !== undefined) {
+                                touch.el.trigger('singleTap');
+
+                                if (!clicked) {
+                                    touch.el.trigger('click');
+                                }
+
+                            }
+                            touch = {};
+                        }, 300);
+                    }
+                });
+            } else {
+                touch = {};
             }
-        })
-        // when the browser window loses focus,
-        // for example when a modal dialog is shown,
-        // cancel all ongoing events
-        .on('touchcancel pointercancel', cancelAll);
+            deltaX = deltaY = 0;
+        }
+    });
+
+    // when the browser window loses focus,
+    // for example when a modal dialog is shown,
+    // cancel all ongoing events
+    on(document, pointerCancel, cancelAll);
 
     // scrolling the window indicates intention of the user
     // to scroll, not tap or swipe, so cancel all ongoing events
-    win.on('scroll', cancelAll);
+    on(window, 'scroll', cancelAll);
 });
 
 var touching = false;
-
 on(document, 'touchstart', function () { return touching = true; }, true);
-on(document, 'click', function () { return touching = false; });
+on(document, 'click', function () {touching = false});
 on(document, 'touchcancel', function () { return touching = false; }, true);
 
 function isTouch(e) {
-    return touching || e.originalEvent && e.originalEvent.pointerType === 'touch';
+    return touching || (e.originalEvent || e).pointerType === 'touch';
 }
 
 
@@ -5093,12 +7848,14 @@ var util = Object.freeze({
 	Observer: Observer,
 	requestAnimationFrame: requestAnimationFrame,
 	cancelAnimationFrame: cancelAnimationFrame,
+	hasPromise: hasPromise,
 	hasTouch: hasTouch,
 	pointerDown: pointerDown,
 	pointerMove: pointerMove,
 	pointerUp: pointerUp,
 	pointerEnter: pointerEnter,
 	pointerLeave: pointerLeave,
+	pointerCancel: pointerCancel,
 	transitionstart: transitionstart,
 	transitionend: transitionend,
 	animationstart: animationstart,
@@ -5106,7 +7863,7 @@ var util = Object.freeze({
 	getStyle: getStyle,
 	getCssVar: getCssVar,
 	fastdom: fastdom,
-	$: $$1__default,
+	$: $__default,
 	bind: bind,
 	hasOwn: hasOwn,
 	promise: promise,
@@ -5127,15 +7884,15 @@ var util = Object.freeze({
 	coerce: coerce,
 	toMs: toMs,
 	swap: swap,
-	ajax: $$1.ajax,
-	each: $$1.each,
-	extend: $$1.extend,
-	map: $$1.map,
-	merge: $$1.merge,
-	isArray: $$1.isArray,
-	isNumeric: $$1.isNumeric,
-	isFunction: $$1.isFunction,
-	isPlainObject: $$1.isPlainObject,
+	ajax: $.ajax,
+	each: $.each,
+	extend: $.extend,
+	map: $.map,
+	merge: $.merge,
+	isArray: $.isArray,
+	isNumeric: $.isNumeric,
+	isFunction: $.isFunction,
+	isPlainObject: $.isPlainObject,
 	MouseTracker: MouseTracker,
 	mergeOptions: mergeOptions,
 	position: position,
@@ -5144,6 +7901,75 @@ var util = Object.freeze({
 	flipPosition: flipPosition,
 	isTouch: isTouch
 });
+
+function boot (UIkit) {
+
+    if (Observer) {
+
+        if (document.body) {
+
+            init();
+
+        } else {
+
+            (new Observer(function () {
+
+                if (document.body) {
+                    this.disconnect();
+                    init();
+                }
+
+            })).observe(document.documentElement, {childList: true, subtree: true});
+
+        }
+
+    } else {
+
+        ready(function () {
+            apply(document.body, UIkit.connect);
+            on(document.documentElement, 'DOMNodeInserted', function (e) { return apply(e.target, UIkit.connect); });
+            on(document.documentElement, 'DOMNodeRemoved', function (e) { return apply(e.target, UIkit.disconnect); });
+        });
+
+    }
+
+    function init() {
+
+        apply(document.body, UIkit.connect);
+
+        (new Observer(function (mutations) { return mutations.forEach(function (mutation) {
+
+                for (var i = 0; i < mutation.addedNodes.length; i++) {
+                    apply(mutation.addedNodes[i], UIkit.connect)
+                }
+
+                for (i = 0; i < mutation.removedNodes.length; i++) {
+                    apply(mutation.removedNodes[i], UIkit.disconnect)
+                }
+
+                UIkit.update('update', mutation.target, true);
+            }); }
+        )).observe(document.documentElement, {childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['href']});
+
+        UIkit._initialized = true;
+    }
+
+    function apply(node, fn) {
+
+        if (node.nodeType !== Node.ELEMENT_NODE || node.hasAttribute('uk-no-boot')) {
+            return;
+        }
+
+        fn(node);
+        node = node.firstChild;
+        while (node) {
+            var next = node.nextSibling;
+            apply(node, fn);
+            node = next;
+        }
+    }
+
+}
 
 function globalAPI (UIkit) {
 
@@ -5265,176 +8091,9 @@ function update(data, e) {
 
 }
 
-function internalAPI (UIkit) {
+function hooksAPI (UIkit) {
 
-    var uid = 0;
-
-    UIkit.prototype.props = {};
-
-    UIkit.prototype._init = function (options) {
-
-        options = options || {};
-        options = this.$options = mergeOptions(this.constructor.options, options, this);
-
-        this.$el = null;
-        this.$name = UIkit.prefix + hyphenate(this.$options.name);
-        this.$props = {};
-
-        this._uid = uid++;
-        this._initData();
-        this._initMethods();
-        this._callHook('created');
-
-        this._frames = {reads: {}, writes: {}};
-
-        if (options.el) {
-            this.$mount(options.el);
-        }
-    };
-
-    UIkit.prototype._initData = function () {
-        var this$1 = this;
-
-
-        var defaults = $$1.extend(true, {}, this.$options.defaults),
-            data = this.$options.data || {},
-            args = this.$options.args || [],
-            props = this.$options.props || {};
-
-        if (!defaults) {
-            return;
-        }
-
-        if (args.length && $$1.isArray(data)) {
-            data = data.slice(0, args.length).reduce(function (data, value, index) {
-                if ($$1.isPlainObject(value)) {
-                    $$1.extend(data, value);
-                } else {
-                    data[args[index]] = value;
-                }
-                return data;
-            }, {});
-        }
-
-        for (var key in defaults) {
-            this$1.$props[key] = this$1[key] = hasOwn(data, key) ? coerce(props[key], data[key], this$1.$options.el) : defaults[key];
-        }
-    };
-
-    UIkit.prototype._initProps = function (props) {
-        props = props || this._getProps();
-        $$1.extend(this, props);
-        $$1.extend(this.$props, props);
-    };
-
-    UIkit.prototype._initMethods = function () {
-        var this$1 = this;
-
-
-        var methods = this.$options.methods;
-
-        if (methods) {
-            for (var key in methods) {
-                this$1[key] = bind(methods[key], this$1);
-            }
-        }
-    };
-
-    UIkit.prototype._initEvents = function (unbind) {
-        var this$1 = this;
-
-
-        var events = this.$options.events,
-            connect = function (event, key) {
-
-                if (!$$1.isPlainObject(event)) {
-                    event = ({name: key, handler: event});
-                }
-
-                var name = event.name;
-                var delegate = event.delegate;
-                var self = event.self;
-                var filter = event.filter;
-                var handler = event.handler;
-
-                name += "." + (this$1.$options.name);
-
-                if (unbind) {
-
-                    this$1.$el.off(name);
-
-                } else {
-
-                    if (filter && !filter.call(this$1)) {
-                        return;
-                    }
-
-                    handler = isString(handler) ? this$1[handler] : bind(handler, this$1);
-
-                    if (self) {
-                        var fn = handler;
-                        handler = function (e) {
-
-                            if (!this$1.$el.is(e.target)) {
-                                return;
-                            }
-
-                            return fn.call(this$1, e);
-                        }
-                    }
-
-                    if (delegate) {
-                        this$1.$el.on(name, isString(delegate) ? delegate : delegate.call(this$1), handler);
-                    } else {
-                        this$1.$el.on(name, handler);
-                    }
-                }
-
-            };
-
-        if (events) {
-            events.forEach(function (event) {
-
-                if (!('handler' in event)) {
-                    for (var key in event) {
-                        connect(event[key], key);
-                    }
-                } else {
-                    connect(event);
-                }
-
-            });
-        }
-    };
-
-    UIkit.prototype._initObserver = function () {
-        var this$1 = this;
-
-
-        if (this._observer || !this.$options.props || !this.$options.attrs || !Observer) {
-            return;
-        }
-
-        this._observer = new Observer(function (mutations) {
-
-            var data = this$1._getProps(true);
-
-            if (mutations
-                .map(function (mutation) { return camelize(mutation.attributeName); })
-                .some(function (key) { return !equals(data[key], this$1.$props[key]); })
-            ) {
-                this$1.$reset(data);
-            }
-
-        });
-
-        this._observer.observe(this.$options.el, {
-            attributes: true,
-            attributeFilter: Object.keys(this.$options.props).map(function (key) { return hyphenate(key); })
-        });
-    };
-
-    UIkit.prototype._callHook = function (hook, params) {
+    UIkit.prototype._callHook = function (hook) {
         var this$1 = this;
 
 
@@ -5464,15 +8123,15 @@ function internalAPI (UIkit) {
             return;
         }
 
-        if (!~UIkit.elements.indexOf(this.$options.$el)) {
-            UIkit.elements.push(this.$options.$el);
+        if (!~UIkit.elements.indexOf(this.$options.el)) {
+            UIkit.elements.push(this.$options.el);
         }
 
         UIkit.instances[this._uid] = this;
 
         this._initEvents();
-        this._callHook('connected');
 
+        this._callHook('connected');
         this._connected = true;
 
         this._initObserver();
@@ -5481,6 +8140,7 @@ function internalAPI (UIkit) {
             ready(function () { return this$1._callReady(); });
         }
 
+        this._callUpdate();
     };
 
     UIkit.prototype._callDisconnected = function () {
@@ -5494,7 +8154,7 @@ function internalAPI (UIkit) {
             this._observer = null;
         }
 
-        var index = UIkit.elements.indexOf(this.$options.$el);
+        var index = UIkit.elements.indexOf(this.$options.el);
 
         if (~index) {
             UIkit.elements.splice(index, 1);
@@ -5514,6 +8174,10 @@ function internalAPI (UIkit) {
 
 
         e = createEvent(e || 'update');
+
+        if (e.type === 'update') {
+            this._computeds = {};
+        }
 
         var updates = this.$options.update;
 
@@ -5551,6 +8215,156 @@ function internalAPI (UIkit) {
 
         });
 
+    };
+
+}
+
+function stateAPI (UIkit) {
+
+    var uid = 0;
+
+    UIkit.prototype.props = {};
+
+    UIkit.prototype._init = function (options) {
+
+        options = options || {};
+        options = this.$options = mergeOptions(this.constructor.options, options, this);
+
+        this.$el = null;
+        this.$name = UIkit.prefix + hyphenate(this.$options.name);
+        this.$props = {};
+
+        this._uid = uid++;
+        this._initData();
+        this._initMethods();
+        this._initComputeds();
+        this._callHook('created');
+
+        this._frames = {reads: {}, writes: {}};
+
+        if (options.el) {
+            this.$mount(options.el);
+        }
+    };
+
+    UIkit.prototype._initData = function () {
+        var this$1 = this;
+
+
+        var defaults = $.extend(true, {}, this.$options.defaults),
+            data = this.$options.data || {},
+            args = this.$options.args || [],
+            props = this.$options.props || {};
+
+        if (!defaults) {
+            return;
+        }
+
+        if (args.length && $.isArray(data)) {
+            data = data.slice(0, args.length).reduce(function (data, value, index) {
+                if ($.isPlainObject(value)) {
+                    $.extend(data, value);
+                } else {
+                    data[args[index]] = value;
+                }
+                return data;
+            }, {});
+        }
+
+        for (var key in defaults) {
+            this$1.$props[key] = this$1[key] = hasOwn(data, key) ? coerce(props[key], data[key], this$1.$options.el) : defaults[key];
+        }
+    };
+
+    UIkit.prototype._initMethods = function () {
+        var this$1 = this;
+
+
+        var methods = this.$options.methods;
+
+        if (methods) {
+            for (var key in methods) {
+                this$1[key] = bind(methods[key], this$1);
+            }
+        }
+    };
+
+    UIkit.prototype._initComputeds = function () {
+        var this$1 = this;
+
+
+        var computed = this.$options.computed;
+
+        this._computeds = {};
+
+        if (computed) {
+            for (var key in computed) {
+                registerComputed(this$1, key, computed[key]);
+            }
+        }
+    };
+
+    UIkit.prototype._initProps = function (props) {
+        var this$1 = this;
+
+
+        this._computeds = {};
+        $.extend(this.$props, props || this._getProps());
+
+        var exclude = [this.$options.computed, this.$options.methods];
+        for (var key in this$1.$props) {
+            if (notIn(exclude, key)) {
+                this$1[key] = this$1.$props[key];
+            }
+        }
+    };
+
+    UIkit.prototype._initEvents = function (unbind) {
+        var this$1 = this;
+
+
+        var events = this.$options.events;
+
+        if (events) {
+            events.forEach(function (event) {
+
+                if (!hasOwn(event, 'handler')) {
+                    for (var key in event) {
+                        registerEvent(this$1, unbind, event[key], key);
+                    }
+                } else {
+                    registerEvent(this$1, unbind, event);
+                }
+
+            });
+        }
+    };
+
+    UIkit.prototype._initObserver = function () {
+        var this$1 = this;
+
+
+        if (this._observer || !this.$options.props || !this.$options.attrs || !Observer) {
+            return;
+        }
+
+        this._observer = new Observer(function (mutations) {
+
+            var data = this$1._getProps(true),
+                changed = mutations
+                    .map(function (mutation) { return camelize(mutation.attributeName); })
+                    .some(function (key) { return !equals(data[key], this$1.$props[key]); });
+
+            if (changed) {
+                this$1.$reset(data);
+            }
+
+        });
+
+        this._observer.observe(this.$options.el, {
+            attributes: true,
+            attributeFilter: $.isArray(this.$options.attrs) ? this.$options.attrs : Object.keys(this.$options.props).map(function (key) { return hyphenate(key); })
+        });
     };
 
     UIkit.prototype._getProps = function (attrs) {
@@ -5621,6 +8435,81 @@ function internalAPI (UIkit) {
 
 }
 
+function registerComputed(component, key, cb) {
+    Object.defineProperty(component, key, {
+
+        enumerable: true,
+
+        get: function get() {
+
+            if (!hasOwn(component._computeds, key)) {
+                component._computeds[key] = cb.call(component);
+            }
+
+            return component._computeds[key];
+        },
+
+        set: function set(value) {
+            component._computeds[key] = value;
+        }
+
+    });
+}
+
+function registerEvent(component, unbind, event, key) {
+
+    if (!$.isPlainObject(event)) {
+        event = ({name: key, handler: event});
+    }
+
+    var name = event.name;
+    var el = event.el;
+    var delegate = event.delegate;
+    var self = event.self;
+    var filter = event.filter;
+    var handler = event.handler;
+
+    el = el && el.call(component) || component.$el;
+
+    name += "." + (component.$options.name) + "." + (component._uid);
+
+    if (unbind) {
+
+        el.off(name);
+
+    } else {
+
+        if (filter && !filter.call(component)) {
+            return;
+        }
+
+        handler = isString(handler) ? component[handler] : bind(handler, component);
+
+        if (self) {
+            var fn = handler;
+            handler = function (e) {
+
+                if (!el.is(e.target)) {
+                    return;
+                }
+
+                return fn.call(component, e);
+            }
+        }
+
+        if (delegate) {
+            el.on(name, isString(delegate) ? delegate : delegate.call(component), handler);
+        } else {
+            el.on(name, handler);
+        }
+    }
+
+}
+
+function notIn(options, key) {
+    return options.every(function (arr) { return !arr || !hasOwn(arr, key); });
+}
+
 function equals(a, b) {
     return isUndefined(a) || a === b || isJQuery(a) && isJQuery(b) && a.is(b);
 }
@@ -5644,7 +8533,7 @@ function instanceAPI (UIkit) {
 
         el[DATA][name] = this;
 
-        this.$el = $$1__default(el);
+        this.$el = $__default(el);
 
         this._initProps();
 
@@ -5668,14 +8557,13 @@ function instanceAPI (UIkit) {
     };
 
     UIkit.prototype.$updateSync = function (e, parents) {
-        UIkit.update(createEvent(e || 'update', true, false, {sync: true}), this.$el, parents);
+        this.$update(createEvent(e || 'update', true, false, {sync: true}), parents);
     };
 
     UIkit.prototype.$reset = function (data) {
         this._callDisconnected();
         this._initProps(data);
         this._callConnected();
-        this._callUpdate();
     };
 
     UIkit.prototype.$destroy = function (remove) {
@@ -5717,7 +8605,7 @@ function componentAPI (UIkit) {
 
         var name = camelize(id);
 
-        if ($$1.isPlainObject(options)) {
+        if ($.isPlainObject(options)) {
             options.name = name;
             options = UIkit.extend(options);
         } else {
@@ -5731,7 +8619,7 @@ function componentAPI (UIkit) {
             while ( i-- ) argsArray[i] = arguments[i];
 
 
-            if ($$1.isPlainObject(element)) {
+            if ($.isPlainObject(element)) {
                 return new UIkit.components[name]({data: element});
             }
 
@@ -5739,18 +8627,12 @@ function componentAPI (UIkit) {
                 return new UIkit.components[name]({data: [].concat( argsArray )});
             }
 
-            data = data || {};
-            element = isString
-                ? $$1__default(element)[0]
-                : isJQuery(element)
-                    ? element[0]
-                    : element;
-
-            return element && element[DATA] && element[DATA][name] || new UIkit.components[name]({el: element, data: data});
+            return $__default(element).toArray().map(function (element) { return UIkit.getComponent(element, name) || new UIkit.components[name]({el: element, data: data || {}}); }
+            )[0];
         };
 
-        if (document.body && !options.options.functional) {
-            $$1__default(("[uk-" + id + "],[data-uk-" + id + "]")).each(function (_, el) { return UIkit[name](el); });
+        if (UIkit._initialized && !options.options.functional) {
+            fastdom.measure(function () { return UIkit[name](("[uk-" + id + "],[data-uk-" + id + "]")); });
         }
 
         return UIkit.components[name];
@@ -5805,7 +8687,8 @@ UIkit.instances = {};
 UIkit.elements = [];
 
 globalAPI(UIkit);
-internalAPI(UIkit);
+hooksAPI(UIkit);
+stateAPI(UIkit);
 instanceAPI(UIkit);
 componentAPI(UIkit);
 
@@ -5856,44 +8739,56 @@ var Toggable = {
 
     },
 
+    computed: {
+
+        hasAnimation: function hasAnimation() {
+            return !!this.animation[0];
+        },
+
+        hasTransition: function hasTransition() {
+            return this.hasAnimation && this.animation[0] === true;
+        }
+
+    },
+
     methods: {
 
         toggleElement: function toggleElement(targets, show, animate) {
             var this$1 = this;
 
 
-            var queued = this.queued && !!this.animation[0], toggles, body = document.body, scroll = body.scrollTop,
+            var toggles, body = document.body, scroll = body.scrollTop,
                 all = function (targets) { return promise.all(targets.toArray().map(function (el) { return this$1._toggleElement(el, show, animate); })).then(null, function () {}); },
                 delay = function (targets) {
                     var def = all(targets);
-                    queued = true;
+                    this$1._queued = null;
                     body.scrollTop = scroll;
                     return def;
                 };
 
-            targets = $$1__default(targets);
+            targets = $__default(targets);
 
-            if (!queued || targets.length < 2) {
+            if (!this.hasAnimation || !this.queued || targets.length < 2) {
                 return all(targets);
             }
 
-            if (queued !== true) {
-                return delay(targets.not(queued));
+            if (this._queued) {
+                return delay(targets.not(this._queued));
             }
 
-            queued = targets.not(toggles = targets.filter(function (_, el) { return this$1.isToggled(el); }));
+            this._queued = targets.not(toggles = targets.filter(function (_, el) { return this$1.isToggled(el); }));
 
-            return all(toggles).then(function () { return queued !== true && delay(queued); });
+            return all(toggles).then(function () { return this$1._queued && delay(this$1._queued); });
         },
 
         toggleNow: function toggleNow(targets, show) {
             var this$1 = this;
 
-            return promise.all($$1__default(targets).toArray().map(function (el) { return this$1._toggleElement(el, show, false); })).then(null, function () {});
+            return promise.all($__default(targets).toArray().map(function (el) { return this$1._toggleElement(el, show, false); })).then(null, function () {});
         },
 
         isToggled: function isToggled(el) {
-            el = $$1__default(el);
+            el = el && $__default(el) || this.$el;
             return this.cls ? el.hasClass(this.cls.split(' ')[0]) : !el.attr('hidden');
         },
 
@@ -5907,7 +8802,7 @@ var Toggable = {
             var this$1 = this;
 
 
-            el = $$1__default(el);
+            el = $__default(el);
 
             if (Animation.inProgress(el)) {
                 return Animation.cancel(el).then(function () { return this$1._toggleElement(el, show, animate); });
@@ -5915,34 +8810,27 @@ var Toggable = {
 
             show = typeof show === 'boolean' ? show : !this.isToggled(el);
 
-            var event = $$1__default.Event(("before" + (show ? 'show' : 'hide')));
+            var event = $__default.Event(("before" + (show ? 'show' : 'hide')));
             el.trigger(event, [this]);
 
-            var delay = false;
             if (event.result === false) {
                 return promise.reject();
-            } else if (event.result && event.result.then) {
-                delay = event.result;
             }
 
-            var promise = (this.animation[0] === true && animate !== false
-                ? this._toggleHeight
-                : this.animation[0] && animate !== false
-                    ? this._toggleAnimation
-                    : this._toggleImmediate
+            var def = (animate === false || !this.hasAnimation
+                ? this._toggleImmediate
+                : this.hasTransition
+                    ? this._toggleHeight
+                    : this._toggleAnimation
             )(el, show);
 
-            var handler = function () {
-                el.trigger(show ? 'show' : 'hide', [this$1]);
-                return promise.then(function () { return el.trigger(show ? 'shown' : 'hidden', [this$1]); });
-            };
-
-            return delay ? delay.then(handler) : handler();
+            el.trigger(show ? 'show' : 'hide', [this]);
+            return def.then(function () { return el.trigger(show ? 'shown' : 'hidden', [this$1]); });
         },
 
         _toggle: function _toggle(el, toggled) {
 
-            el = $$1__default(el);
+            el = $__default(el);
 
             if (this.cls) {
                 el.toggleClass(this.cls, ~this.cls.indexOf(' ') ? undefined : toggled);
@@ -5976,16 +8864,22 @@ var Toggable = {
                     this$1._toggle(el, true);
                 }
 
-                el.css('height', '');
-                endHeight = el.height() + (inProgress ? 0 : inner);
-                el.height(height);
+                el.height('');
 
-                return show
-                    ? Transition.start(el, $$1.extend(this$1.initProps, {overflow: 'hidden', height: endHeight}), Math.round(this$1.duration * (1 - height / endHeight)), this$1.transition)
-                    : Transition.start(el, this$1.hideProps, Math.round(this$1.duration * (height / endHeight)), this$1.transition).then(function () {
-                            this$1._toggle(el, false);
-                            el.css(this$1.initProps);
-                        });
+                return promise(function (resolve) { return requestAnimationFrame(function () {
+
+                        endHeight = el.height() + (inProgress ? 0 : inner);
+                        el.height(height);
+
+                        (show
+                            ? Transition.start(el, $.extend(this$1.initProps, {overflow: 'hidden', height: endHeight}), Math.round(this$1.duration * (1 - height / endHeight)), this$1.transition)
+                            : Transition.start(el, this$1.hideProps, Math.round(this$1.duration * (height / endHeight)), this$1.transition).then(function () {
+                                this$1._toggle(el, false);
+                                el.css(this$1.initProps);
+                            })).then(resolve);
+
+                    }); }
+                );
 
             });
 
@@ -6018,7 +8912,8 @@ var Modal = {
         selClose: String,
         escClose: Boolean,
         bgClose: Boolean,
-        stack: Boolean
+        stack: Boolean,
+        container: Boolean
     },
 
     defaults: {
@@ -6026,13 +8921,31 @@ var Modal = {
         escClose: true,
         bgClose: true,
         overlay: true,
-        stack: false
+        stack: false,
+        container: true
     },
 
-    ready: function ready() {
+    computed: {
 
-        this.body = $$1__default(document.body);
-        this.panel = toJQuery(("." + (this.clsPanel)), this.$el);
+        body: function body() {
+            return $__default(document.body);
+        },
+
+        panel: function panel() {
+            return this.$el.find(("." + (this.clsPanel)));
+        },
+
+        container: function container() {
+            return this.$props.container === true && UIkit.container || this.$props.container && toJQuery(this.$props.container);
+        },
+
+        transitionElement: function transitionElement() {
+            return this.panel;
+        },
+
+        transitionDuration: function transitionDuration() {
+            return toMs(this.transitionElement.css('transition-duration'));
+        }
 
     },
 
@@ -6059,7 +8972,7 @@ var Modal = {
 
             handler: function handler(e) {
                 e.preventDefault();
-                this.toggleNow(this.$el);
+                this.toggle();
             }
 
         },
@@ -6074,15 +8987,11 @@ var Modal = {
                 var this$1 = this;
 
 
-                if (this.isActive()) {
+                if (this.isToggled()) {
                     return false;
                 }
 
                 var prev = active && active !== this && active;
-
-                if (!active) {
-                    this.body.css('overflow-y', this.getScrollbarWidth() && this.overlay ? 'scroll' : '');
-                }
 
                 active = this;
 
@@ -6090,10 +8999,16 @@ var Modal = {
                     if (this.stack) {
                         this.prev = prev;
                     } else {
-                        prev.hide();
+                        prev.hide().then(this.show);
+                        return false;
                     }
                 } else {
                     requestAnimationFrame(function () { return register(this$1.$options.name); });
+                }
+
+                if (!prev) {
+                    this.scrollbarWidth = window.innerWidth - docElement[0].offsetWidth;
+                    this.body.css('overflow-y', this.scrollbarWidth && this.overlay ? 'scroll' : '');
                 }
 
                 docElement.addClass(this.clsPage);
@@ -6109,10 +9024,8 @@ var Modal = {
             self: true,
 
             handler: function handler() {
-                var this$1 = this;
 
-
-                if (!this.isActive()) {
+                if (!this.isToggled()) {
                     return false;
                 }
 
@@ -6122,22 +9035,13 @@ var Modal = {
                     deregister(this.$options.name);
                 }
 
-                var duration = toMs(this.panel.css('transition-duration'));
-
-                return duration ? promise(function (resolve) {
-                        this$1.panel.one(transitionend, resolve);
-                        setTimeout(function () {
-                            resolve();
-                            this$1.panel.off(transitionend, resolve);
-                        }, duration);
-                    }) : undefined;
             }
 
         },
 
         {
 
-            name: 'hide',
+            name: 'hidden',
 
             self: true,
 
@@ -6154,15 +9058,20 @@ var Modal = {
 
     methods: {
 
-        isActive: function isActive() {
-            return this.$el.hasClass(this.cls);
-        },
-
         toggle: function toggle() {
-            return this.isActive() ? this.hide() : this.show();
+            return this.isToggled() ? this.hide() : this.show();
         },
 
         show: function show() {
+            var this$1 = this;
+
+            if (this.container && !this.$el.parent().is(this.container)) {
+                this.$el.appendTo(this.container);
+                return promise(function (resolve) { return requestAnimationFrame(function () { return resolve(this$1.show()); }
+                    ); }
+                )
+            }
+
             return this.toggleNow(this.$el, true);
         },
 
@@ -6174,19 +9083,30 @@ var Modal = {
             return active;
         },
 
-        getScrollbarWidth: function getScrollbarWidth() {
-            var width = docElement[0].style.width;
+        _toggleImmediate: function _toggleImmediate(el, show) {
+            var this$1 = this;
 
-            docElement.css('width', '');
+            this._toggle(el, show);
 
-            var scrollbarWidth = window.innerWidth - docElement.outerWidth(true);
+            return this.transitionDuration ? promise(function (resolve, reject) {
 
-            if (width) {
-                docElement.width(width);
-            }
+                if (this$1._transition) {
+                    this$1.transitionElement.off(transitionend, this$1._transition.handler);
+                    this$1._transition.reject();
+                }
 
-            return scrollbarWidth;
-        }
+                this$1._transition = {
+                    reject: reject,
+                    handler: function () {
+                        resolve();
+                        this$1._transition = null;
+                    }
+                };
+
+                this$1.transitionElement.one(transitionend, this$1._transition.handler);
+
+            }) : promise.resolve();
+        },
     }
 
 }
@@ -6225,20 +9145,27 @@ var Position = {
         clsPos: ''
     },
 
-    init: function init() {
-        this.pos = (this.pos + (!~this.pos.indexOf('-') ? '-center' : '')).split('-');
-        this.dir = this.pos[0];
-        this.align = this.pos[1];
+    computed: {
+
+        pos: function pos() {
+            return (this.$props.pos + (!~this.$props.pos.indexOf('-') ? '-center' : '')).split('-');
+        },
+
+        dir: function dir() {
+            return this.pos[0];
+        },
+
+        align: function align() {
+            return this.pos[1];
+        }
+
     },
 
     methods: {
 
         positionAt: function positionAt(element, target, boundary) {
 
-            removeClass(element, this.clsPos + '-(top|bottom|left|right)(-[a-z]+)?').css({top: '', left: ''});
-
-            this.dir = this.pos[0];
-            this.align = this.pos[1];
+            removeClass(element, ((this.clsPos) + "-(top|bottom|left|right)(-[a-z]+)?")).css({top: '', left: ''});
 
             var offset = toNumber(this.offset) || 0,
                 axis = this.getAxis(),
@@ -6256,19 +9183,19 @@ var Position = {
             this.dir = axis === 'x' ? flipped.target.x : flipped.target.y;
             this.align = axis === 'x' ? flipped.target.y : flipped.target.x;
 
-            element.css('display', '').toggleClass(((this.clsPos) + "-" + (this.dir) + "-" + (this.align)), this.offset === false);
+            element.toggleClass(((this.clsPos) + "-" + (this.dir) + "-" + (this.align)), this.offset === false);
 
         },
 
         getAxis: function getAxis() {
-            return this.pos[0] === 'top' || this.pos[0] === 'bottom' ? 'y' : 'x';
+            return this.dir === 'top' || this.dir === 'bottom' ? 'y' : 'x';
         }
 
     }
 
 }
 
-function mixin$1 (UIkit) {
+function mixin (UIkit) {
 
     UIkit.mixin.class = Class;
     UIkit.mixin.modal = Modal;
@@ -6305,6 +9232,18 @@ function Accordion (UIkit) {
             transition: 'ease'
         },
 
+        computed: {
+
+            items: function items() {
+                var this$1 = this;
+
+                var items = $__default(this.targets, this.$el);
+                this._changed = !this._items || items.length !== this._items.length || items.toArray().some(function (el, i) { return el !== this$1._items.get(i); });
+                return this._items = items;
+            }
+
+        },
+
         connected: function connected() {
             this.$emitSync();
         },
@@ -6316,7 +9255,7 @@ function Accordion (UIkit) {
                 name: 'click',
 
                 delegate: function delegate() {
-                    return ((this.$props.targets) + " " + (this.$props.toggle));
+                    return ((this.targets) + " " + (this.$props.toggle));
                 },
 
                 handler: function handler(e) {
@@ -6332,17 +9271,12 @@ function Accordion (UIkit) {
             var this$1 = this;
 
 
-            var items = $$1__default(this.targets, this.$el),
-                changed = !this.items || items.length !== this.items.length || items.toArray().some(function (el, i) { return el !== this$1.items.get(i); });
-
-            this.items = items;
-
-            if (!changed) {
+            if (!this.items || !this._changed) {
                 return;
             }
 
             this.items.each(function (i, el) {
-                el = $$1__default(el);
+                el = $__default(el);
                 this$1.toggleNow(el.find(this$1.content), el.hasClass(this$1.clsOpen));
             });
 
@@ -6350,6 +9284,7 @@ function Accordion (UIkit) {
             if (active && !active.hasClass(this.clsOpen)) {
                 this.toggle(active, false);
             }
+
         },
 
         methods: {
@@ -6365,7 +9300,7 @@ function Accordion (UIkit) {
 
                 item.add(!this.multiple && active).each(function (i, el) {
 
-                    el = $$1__default(el);
+                    el = $__default(el);
 
                     var isItem = el.is(item), state = isItem && !el.hasClass(this$1.clsOpen);
 
@@ -6469,6 +9404,18 @@ function Cover (UIkit) {
 
         defaults: {automute: true},
 
+        computed: {
+
+            el: function el() {
+                return this.$el[0];
+            },
+
+            parent: function parent() {
+                return this.$el.parent()[0];
+            }
+
+        },
+
         ready: function ready() {
 
             if (!this.$el.is('iframe')) {
@@ -6495,20 +9442,20 @@ function Cover (UIkit) {
 
             write: function write() {
 
-                if (this.$el[0].offsetHeight === 0) {
+                if (this.el.offsetHeight === 0) {
                     return;
                 }
 
                 this.$el
                     .css({width: '', height: ''})
                     .css(Dimensions.cover(
-                        {width: this.width || this.$el.width(), height: this.height || this.$el.height()},
-                        {width: this.$el.parent().outerWidth(), height: this.$el.parent().outerHeight()}
+                        {width: this.width || this.el.clientWidth, height: this.height || this.el.clientHeight},
+                        {width: this.parent.offsetWidth, height: this.parent.offsetHeight}
                     ));
 
             },
 
-            events: ['load', 'resize', 'orientationchange']
+            events: ['load', 'resize']
 
         },
 
@@ -6530,7 +9477,7 @@ function Drop (UIkit) {
 
     doc.on('click', function (e) {
         var prev;
-        while (active && active !== prev && !isWithin(e.target, active.$el) && (!active.toggle || !isWithin(e.target, active.toggle.$el))) {
+        while (active && active !== prev && !isWithin(e.target, active.$el) && !(active.toggle && isWithin(e.target, active.toggle.$el))) {
             prev = active;
             active.hide(false);
         }
@@ -6614,7 +9561,7 @@ function Drop (UIkit) {
                         return;
                     }
 
-                    var id = $(e.target).attr('href');
+                    var id = $__default(e.target).attr('href');
 
                     if (id.length === 1) {
                         e.preventDefault();
@@ -6639,7 +9586,7 @@ function Drop (UIkit) {
 
                     e.preventDefault();
 
-                    if (this.isToggled(this.$el)) {
+                    if (this.isToggled()) {
                         this.hide(false);
                     } else {
                         this.show(toggle, false);
@@ -6680,7 +9627,7 @@ function Drop (UIkit) {
 
             {
 
-                name: 'toggleShow',
+                name: 'toggleshow',
 
                 handler: function handler(e, toggle) {
 
@@ -6696,7 +9643,7 @@ function Drop (UIkit) {
 
             {
 
-                name: ("toggleHide " + pointerLeave),
+                name: ("togglehide " + pointerLeave),
 
                 handler: function handler(e, toggle) {
 
@@ -6759,7 +9706,7 @@ function Drop (UIkit) {
 
 
                     if (!this.$el.is(target)) {
-                        active = active === null && isWithin(target, this.$el) && this.isToggled(this.$el) ? this : active;
+                        active = active === null && isWithin(target, this.$el) && this.isToggled() ? this : active;
                         return;
                     }
 
@@ -6784,9 +9731,6 @@ function Drop (UIkit) {
 
                 this.$el.toggleClass(((this.clsDrop) + "-boundary"), this.boundaryAlign);
 
-                this.dir = this.pos[0];
-                this.align = this.pos[1];
-
                 var boundary = getDimensions(this.boundary), alignTo = this.boundaryAlign ? boundary : getDimensions(this.toggle.$el);
 
                 if (this.align === 'justify') {
@@ -6801,7 +9745,7 @@ function Drop (UIkit) {
 
             },
 
-            events: ['resize', 'orientationchange']
+            events: ['resize']
 
         },
 
@@ -6812,42 +9756,42 @@ function Drop (UIkit) {
                 if ( delay === void 0 ) delay = true;
 
 
-                var show = function () { return !this$1.isToggled(this$1.$el) && this$1.toggleElement(this$1.$el, true); },
+                var show = function () { return !this$1.isToggled() && this$1.toggleElement(this$1.$el, true); },
                     tryShow = function () {
 
-                    this$1.toggle = toggle || this$1.toggle;
+                        this$1.toggle = toggle || this$1.toggle;
 
-                    this$1.clearTimers();
+                        this$1.clearTimers();
 
-                    if (this$1.isActive()) {
-                        return;
-                    } else if (delay && active && active !== this$1 && active.isDelaying) {
-                        this$1.showTimer = setTimeout(this$1.show, 10);
-                        return;
-                    } else if (this$1.isParentOf(active)) {
-
-                        if (active.hideTimer) {
-                            active.hide(false);
-                        } else {
+                        if (this$1.isActive()) {
                             return;
+                        } else if (delay && active && active !== this$1 && active.isDelaying) {
+                            this$1.showTimer = setTimeout(this$1.show, 10);
+                            return;
+                        } else if (this$1.isParentOf(active)) {
+
+                            if (active.hideTimer) {
+                                active.hide(false);
+                            } else {
+                                return;
+                            }
+
+                        } else if (active && !this$1.isChildOf(active) && !this$1.isParentOf(active)) {
+                            var prev;
+                            while (active && active !== prev) {
+                                prev = active;
+                                active.hide(false);
+                            }
                         }
 
-                    } else if (active && !this$1.isChildOf(active) && !this$1.isParentOf(active)) {
-                        var prev;
-                        while (active && active !== prev) {
-                            prev = active;
-                            active.hide(false);
+                        if (delay && this$1.delayShow) {
+                            this$1.showTimer = setTimeout(show, this$1.delayShow);
+                        } else {
+                            show();
                         }
-                    }
 
-                    if (delay && this$1.delayShow) {
-                        this$1.showTimer = setTimeout(show, this$1.delayShow);
-                    } else {
-                        show();
-                    }
-
-                    active = this$1;
-                };
+                        active = this$1;
+                    };
 
                 if (toggle && this.toggle && !this.toggle.$el.is(toggle.$el)) {
 
@@ -6928,11 +9872,23 @@ function FormCustom (UIkit) {
             target: false
         },
 
-        ready: function ready() {
-            this.input = this.$el.find(':input:first');
-            this.state = this.input.next();
-            this.target = this.target && query(this.target === true ? '> :input:first + :first' : this.target, this.$el);
+        computed: {
 
+            input: function input() {
+                return this.$el.find(':input:first');
+            },
+
+            state: function state() {
+                return this.input.next();
+            },
+
+            target: function target() {
+                return this.$props.target && query(this.$props.target === true ? '> :input:first + :first' : this.$props.target, this.$el)
+            }
+
+        },
+
+        connected: function connected() {
             this.input.trigger('change');
         },
 
@@ -6991,7 +9947,7 @@ function Gif (UIkit) {
                 this.isInView = inview;
             },
 
-            events: ['scroll', 'load', 'resize', 'orientationchange']
+            events: ['scroll', 'load', 'resize']
         }
 
     });
@@ -7019,7 +9975,7 @@ function Grid (UIkit) {
 
             },
 
-            events: ['load', 'resize', 'orientationchange']
+            events: ['load', 'resize']
 
         }
 
@@ -7043,8 +9999,12 @@ function HeightMatch (UIkit) {
             row: true
         },
 
-        connected: function connected() {
-            this.$emit();
+        computed: {
+
+            elements: function elements() {
+                return $__default(this.target, this.$el);
+            }
+
         },
 
         update: {
@@ -7053,11 +10013,13 @@ function HeightMatch (UIkit) {
                 var this$1 = this;
 
 
-                var lastOffset = false, elements = $$1__default(this.target, this.$el).css('minHeight', '');
+                var lastOffset = false;
+
+                this.elements.css('minHeight', '');
 
                 this.rows = !this.row
-                    ? [this.match(elements)]
-                    : elements.toArray().reduce(function (rows, el) {
+                    ? [this.match(this.elements)]
+                    : this.elements.toArray().reduce(function (rows, el) {
 
                         if (lastOffset !== el.offsetTop) {
                             rows.push([el]);
@@ -7069,7 +10031,7 @@ function HeightMatch (UIkit) {
 
                         return rows;
 
-                    }, []).map(function (elements) { return this$1.match($$1__default(elements)); });
+                    }, []).map(function (elements) { return this$1.match($__default(elements)); });
             },
 
             write: function write() {
@@ -7078,14 +10040,14 @@ function HeightMatch (UIkit) {
                         var height = ref.height;
                         var elements = ref.elements;
 
-                        return elements.each(function (_, el) { return $$1__default(el).css('minHeight', height); }
+                        return elements && elements.each(function (_, el) { return el.style.minHeight = height + "px"; }
                     );
                 }
                 );
 
             },
 
-            events: ['resize', 'orientationchange']
+            events: ['resize']
 
         },
 
@@ -7094,7 +10056,7 @@ function HeightMatch (UIkit) {
             match: function match(elements) {
 
                 if (elements.length < 2) {
-                    return;
+                    return {};
                 }
 
                 var max = 0, heights = [];
@@ -7105,7 +10067,7 @@ function HeightMatch (UIkit) {
                         var $el, style, hidden;
 
                         if (el.offsetHeight === 0) {
-                            $el = $$1__default(el);
+                            $el = $__default(el);
                             style = $el.attr('style') || null;
                             hidden = $el.attr('hidden') || null;
 
@@ -7150,7 +10112,7 @@ function HeightViewport (UIkit) {
         },
 
         connected: function connected() {
-            this.$emit();
+            this.$emitSync();
         },
 
         update: {
@@ -7183,7 +10145,7 @@ function HeightViewport (UIkit) {
 
                         offset += this.$el.next().outerHeight() || 0;
 
-                    } else if ($$1.isNumeric(this.offsetBottom)) {
+                    } else if ($.isNumeric(this.offsetBottom)) {
 
                         offset += (viewport / 100) * this.offsetBottom;
 
@@ -7203,14 +10165,14 @@ function HeightViewport (UIkit) {
                 }
 
                 // IE 10-11 fix (min-height on a flex container won't apply to its flex items)
-                this.$el.css('height', '');
+                this.$el.height('');
                 if (height && viewport - offset >= this.$el.outerHeight()) {
                     this.$el.css('height', height);
                 }
 
             },
 
-            events: ['load', 'resize', 'orientationchange']
+            events: ['load', 'resize']
 
         }
 
@@ -7231,7 +10193,7 @@ function Hover (UIkit) {
         docElement.on('tap', function (ref) {
             var target = ref.target;
 
-            return $$1__default(("." + cls)).filter(function (_, el) { return !isWithin(target, el); }).removeClass(cls);
+            return $__default(("." + cls)).filter(function (_, el) { return !isWithin(target, el); }).removeClass(cls);
         });
 
         Object.defineProperty(UIkit, 'hoverSelector', {
@@ -7304,6 +10266,8 @@ function Icon (UIkit) {
         };
 
     UIkit.component('icon', UIkit.components.svg.extend({
+
+        attrs: ['icon', 'ratio'],
 
         mixins: [Class],
 
@@ -7444,9 +10408,7 @@ function Icon (UIkit) {
 
     });
 
-    UIkit.icon.add = function (added) {
-        $$1.extend(icons, added)
-    };
+    UIkit.icon.add = function (added) { return $.extend(icons, added); };
 
     function registerComponent(name, mixin) {
 
@@ -7477,10 +10439,6 @@ function Margin (UIkit) {
         defaults: {
             margin: 'uk-margin-small-top',
             firstColumn: 'uk-first-column'
-        },
-
-        connected: function connected() {
-            this.$emit();
         },
 
         update: {
@@ -7545,7 +10503,7 @@ function Margin (UIkit) {
                     return;
                 }
 
-                this.rows.forEach(function (row, i) { return row.forEach(function (el, j) { return $$1__default(el)
+                this.rows.forEach(function (row, i) { return row.forEach(function (el, j) { return $__default(el)
                             .toggleClass(this$1.margin, i !== 0)
                             .toggleClass(this$1.firstColumn, j === 0); }
                     ); }
@@ -7553,7 +10511,7 @@ function Margin (UIkit) {
 
             },
 
-            events: ['load', 'resize', 'orientationchange']
+            events: ['load', 'resize']
 
         }
 
@@ -7568,26 +10526,14 @@ function Modal$1 (UIkit) {
         mixins: [Modal],
 
         props: {
-            center: Boolean,
-            container: Boolean
+            center: Boolean
         },
 
         defaults: {
             center: false,
             clsPage: 'uk-modal-page',
             clsPanel: 'uk-modal-dialog',
-            selClose: '.uk-modal-close, .uk-modal-close-default, .uk-modal-close-outside, .uk-modal-close-full',
-            container: true
-        },
-
-        init: function init() {
-
-            this.container = this.container === true && UIkit.container || this.container && toJQuery(this.container);
-
-            if (this.container && !this.$el.parent().is(this.container)) {
-                this.$el.appendTo(this.container);
-            }
-
+            selClose: '.uk-modal-close, .uk-modal-close-default, .uk-modal-close-outside, .uk-modal-close-full'
         },
 
         update: {
@@ -7604,7 +10550,7 @@ function Modal$1 (UIkit) {
 
             },
 
-            events: ['resize', 'orientationchange']
+            events: ['resize']
 
         },
 
@@ -7621,7 +10567,7 @@ function Modal$1 (UIkit) {
             },
 
             {
-                name: 'hide',
+                name: 'hidden',
 
                 self: true,
 
@@ -7638,8 +10584,15 @@ function Modal$1 (UIkit) {
 
         mixins: [Class],
 
-        ready: function ready() {
-            this.panel = query('!.uk-modal-dialog', this.$el);
+        computed: {
+
+            panel: function panel() {
+                return this.$el.closest('.uk-modal-dialog');
+            }
+
+        },
+
+        connected: function connected() {
             this.$el.css('min-height', 150);
         },
 
@@ -7653,7 +10606,7 @@ function Modal$1 (UIkit) {
                 }
             },
 
-            events: ['load', 'resize', 'orientationchange']
+            events: ['load', 'resize']
 
         }
 
@@ -7665,7 +10618,7 @@ function Modal$1 (UIkit) {
             ("<div class=\"uk-modal\">\n                <div class=\"uk-modal-dialog\">" + content + "</div>\n             </div>")
         , options);
 
-        dialog.$el.on('hide', function () { return dialog.$destroy(true); });
+        dialog.$el.on('hidden', function () { return dialog.$destroy(true); });
         dialog.show();
 
         return dialog;
@@ -7673,30 +10626,30 @@ function Modal$1 (UIkit) {
 
     UIkit.modal.alert = function (message, options) {
 
-        options = $$1.extend({bgClose: false, escClose: false, labels: UIkit.modal.labels}, options);
+        options = $.extend({bgClose: false, escClose: false, labels: UIkit.modal.labels}, options);
 
         return promise(
-            function (resolve) { return UIkit.modal.dialog(("\n                <div class=\"uk-modal-body\">" + (isString(message) ? message : $$1__default(message).html()) + "</div>\n                <div class=\"uk-modal-footer uk-text-right\">\n                    <button class=\"uk-button uk-button-primary uk-modal-close\" autofocus>" + (options.labels.ok) + "</button>\n                </div>\n            "), options).$el.on('hide', resolve); }
+            function (resolve) { return UIkit.modal.dialog(("\n                <div class=\"uk-modal-body\">" + (isString(message) ? message : $__default(message).html()) + "</div>\n                <div class=\"uk-modal-footer uk-text-right\">\n                    <button class=\"uk-button uk-button-primary uk-modal-close\" autofocus>" + (options.labels.ok) + "</button>\n                </div>\n            "), options).$el.on('hide', resolve); }
         );
     };
 
     UIkit.modal.confirm = function (message, options) {
 
-        options = $$1.extend({bgClose: false, escClose: false, labels: UIkit.modal.labels}, options);
+        options = $.extend({bgClose: false, escClose: false, labels: UIkit.modal.labels}, options);
 
         return promise(
-            function (resolve, reject) { return UIkit.modal.dialog(("\n                <div class=\"uk-modal-body\">" + (isString(message) ? message : $$1__default(message).html()) + "</div>\n                <div class=\"uk-modal-footer uk-text-right\">\n                    <button class=\"uk-button uk-button-default uk-modal-close\">" + (options.labels.cancel) + "</button>\n                    <button class=\"uk-button uk-button-primary uk-modal-close\" autofocus>" + (options.labels.ok) + "</button>\n                </div>\n            "), options).$el.on('click', '.uk-modal-footer button', function (e) { return $$1__default(e.target).index() === 0 ? reject() : resolve(); }); }
+            function (resolve, reject) { return UIkit.modal.dialog(("\n                <div class=\"uk-modal-body\">" + (isString(message) ? message : $__default(message).html()) + "</div>\n                <div class=\"uk-modal-footer uk-text-right\">\n                    <button class=\"uk-button uk-button-default uk-modal-close\">" + (options.labels.cancel) + "</button>\n                    <button class=\"uk-button uk-button-primary uk-modal-close\" autofocus>" + (options.labels.ok) + "</button>\n                </div>\n            "), options).$el.on('click', '.uk-modal-footer button', function (e) { return $__default(e.target).index() === 0 ? reject() : resolve(); }); }
         );
     };
 
     UIkit.modal.prompt = function (message, value, options) {
 
-        options = $$1.extend({bgClose: false, escClose: false, labels: UIkit.modal.labels}, options);
+        options = $.extend({bgClose: false, escClose: false, labels: UIkit.modal.labels}, options);
 
-        return promise(function (resolve, reject) {
+        return promise(function (resolve) {
 
             var resolved = false,
-                prompt = UIkit.modal.dialog(("\n                <form class=\"uk-form-stacked\">\n                    <div class=\"uk-modal-body\">\n                        <label>" + (isString(message) ? message : $$1__default(message).html()) + "</label>\n                        <input class=\"uk-input\" type=\"text\" autofocus>\n                    </div>\n                    <div class=\"uk-modal-footer uk-text-right\">\n                        <button class=\"uk-button uk-button-default uk-modal-close\" type=\"button\">" + (options.labels.cancel) + "</button>\n                        <button class=\"uk-button uk-button-primary\" type=\"submit\">" + (options.labels.ok) + "</button>\n                    </div>\n                </form>\n            "), options),
+                prompt = UIkit.modal.dialog(("\n                <form class=\"uk-form-stacked\">\n                    <div class=\"uk-modal-body\">\n                        <label>" + (isString(message) ? message : $__default(message).html()) + "</label>\n                        <input class=\"uk-input\" type=\"text\" autofocus>\n                    </div>\n                    <div class=\"uk-modal-footer uk-text-right\">\n                        <button class=\"uk-button uk-button-default uk-modal-close\" type=\"button\">" + (options.labels.cancel) + "</button>\n                        <button class=\"uk-button uk-button-primary\" type=\"submit\">" + (options.labels.ok) + "</button>\n                    </div>\n                </form>\n            "), options),
                 input = prompt.$el.find('input').val(value);
 
             prompt.$el
@@ -7777,60 +10730,56 @@ function Navbar (UIkit) {
             duration: 200,
         },
 
-        init: function init() {
-            this.boundary = (this.boundary === true || this.boundaryAlign) ? this.$el : this.boundary;
-            this.pos = "bottom-" + (this.align);
+        computed: {
+
+            boundary: function boundary() {
+                return (this.$props.boundary === true || this.boundaryAlign) ? this.$el : this.$props.boundary
+            },
+
+            pos: function pos() {
+                return ("bottom-" + (this.align));
+            }
+
         },
 
         ready: function ready() {
-            var this$1 = this;
-
-
-            this.$el.on(pointerEnter, this.dropdown, function (ref) {
-                var currentTarget = ref.currentTarget;
-
-                var active = this$1.getActive();
-                if (active && active.toggle && !isWithin(active.toggle.$el, currentTarget) && !active.tracker.movesTo(active.$el)) {
-                    active.hide(false);
-                }
-            });
 
             if (this.dropbar) {
-                this.dropbar = query(this.dropbar, this.$el) || $$1__default('<div></div>').insertAfter(this.dropbarAnchor || this.$el);
-                UIkit.navbarDropbar(this.dropbar, {clsDrop: this.clsDrop, mode: this.dropbarMode, duration: this.duration, navbar: this});
+                UIkit.navbarDropbar(
+                    query(this.dropbar, this.$el) || $__default('<div></div>').insertAfter(this.dropbarAnchor || this.$el),
+                    {clsDrop: this.clsDrop, mode: this.dropbarMode, duration: this.duration, navbar: this}
+                );
             }
 
         },
 
         update: function update() {
-            var this$1 = this;
 
-
-            $$1__default(this.dropdown, this.$el).each(function (i, el) {
-
-                var drop = toJQuery(("." + (this$1.clsDrop)), el);
-
-                if (drop) {
-                    UIkit.drop(drop, $$1.extend({}, this$1));
-                }
-
-            });
+            UIkit.drop($__default(((this.dropdown) + " ." + (this.clsDrop)), this.$el), $.extend({}, this))
 
         },
 
-        events: {
+        events: [
 
-            beforeshow: function beforeshow(e, ref) {
-                var $el = ref.$el;
-                var dir = ref.dir;
+            {
+                name: pointerEnter,
 
-                if (this.dropbar && dir === 'bottom' && !isWithin($el, this.dropbar)) {
-                    $el.appendTo(this.dropbar);
-                    this.dropbar.trigger('beforeshow', [{$el: $el}]);
+                delegate: function delegate() {
+                    return this.dropdown;
+                },
+
+                handler: function handler(ref) {
+                    var currentTarget = ref.currentTarget;
+
+                    var active = this.getActive();
+                    if (active && active.toggle && !isWithin(active.toggle.$el, currentTarget) && !active.tracker.movesTo(active.$el)) {
+                        active.hide(false);
+                    }
                 }
+
             }
 
-        },
+        ],
 
         methods: {
 
@@ -7862,47 +10811,80 @@ function Navbar (UIkit) {
 
         },
 
-        events: {
+        events: [
 
-            mouseleave: function mouseleave() {
+            {
+                name: 'beforeshow',
 
-                var active = this.navbar.getActive();
+                el: function el() {
+                    return this.navbar.$el;
+                },
 
-                if (active && !this.$el.is(':hover')) {
-                    active.hide();
+                handler: function handler(_, ref) {
+                    var $el = ref.$el;
+                    var dir = ref.dir;
+
+                    if (dir === 'bottom' && !isWithin($el, this.$el)) {
+                        $el.appendTo(this.$el);
+                        this.$el.trigger('beforeshow', [{$el: $el}]);
+                    }
                 }
             },
 
-            beforeshow: function beforeshow(e, ref) {
-                var $el = ref.$el;
+            {
+                name: 'mouseleave',
 
-                this.clsDrop && $el.addClass(((this.clsDrop) + "-dropbar"));
-                this.transitionTo($el.outerHeight(true));
-            },
+                handler: function handler() {
+                    var active = this.navbar.getActive();
 
-            beforehide: function beforehide(e, ref) {
-                var $el = ref.$el;
-
-
-                var active = this.navbar.getActive();
-
-                if (this.$el.is(':hover') && active && active.$el.is($el)) {
-                    return false;
+                    if (active && !this.$el.is(':hover')) {
+                        active.hide();
+                    }
                 }
             },
 
-            hide: function hide(e, ref) {
-                var $el = ref.$el;
+            {
+                name: 'beforeshow',
+
+                handler: function handler(e, ref) {
+                    var $el = ref.$el;
+
+                    this.clsDrop && $el.addClass(((this.clsDrop) + "-dropbar"));
+                    this.transitionTo($el.outerHeight(true));
+                }
+            },
+
+            {
+                name: 'beforehide',
+
+                handler: function handler(e, ref) {
+                    var $el = ref.$el;
 
 
-                var active = this.navbar.getActive();
+                    var active = this.navbar.getActive();
 
-                if (!active || active && active.$el.is($el)) {
-                    this.transitionTo(0);
+                    if (this.$el.is(':hover') && active && active.$el.is($el)) {
+                        return false;
+                    }
+                }
+            },
+
+            {
+                name: 'hide',
+
+                handler: function handler(e, ref) {
+                    var $el = ref.$el;
+
+
+                    var active = this.navbar.getActive();
+
+                    if (!active || active && active.$el.is($el)) {
+                        this.transitionTo(0);
+                    }
                 }
             }
 
-        },
+        ],
 
         methods: {
 
@@ -7919,6 +10901,8 @@ function Navbar (UIkit) {
 
 }
 
+var scroll;
+
 function Offcanvas (UIkit) {
 
     UIkit.component('offcanvas', {
@@ -7928,39 +10912,57 @@ function Offcanvas (UIkit) {
         args: 'mode',
 
         props: {
+            content: String,
             mode: String,
             flip: Boolean,
             overlay: Boolean
         },
 
         defaults: {
+            content: '.uk-offcanvas-content:first',
             mode: 'slide',
             flip: false,
             overlay: false,
             clsPage: 'uk-offcanvas-page',
+            clsContainer: 'uk-offcanvas-container',
             clsPanel: 'uk-offcanvas-bar',
             clsFlip: 'uk-offcanvas-flip',
-            clsPageAnimation: 'uk-offcanvas-page-animation',
+            clsContent: 'uk-offcanvas-content',
+            clsContentAnimation: 'uk-offcanvas-content-animation',
             clsSidebarAnimation: 'uk-offcanvas-bar-animation',
             clsMode: 'uk-offcanvas',
             clsOverlay: 'uk-offcanvas-overlay',
-            clsPageOverlay: 'uk-offcanvas-page-overlay',
             selClose: '.uk-offcanvas-close'
         },
 
-        init: function init() {
+        computed: {
 
-            this.clsFlip = this.flip ? this.clsFlip : '';
-            this.clsOverlay = this.overlay ? this.clsOverlay : '';
-            this.clsPageOverlay = this.overlay ? this.clsPageOverlay : '';
-            this.clsMode = (this.clsMode) + "-" + (this.mode);
+            content: function content() {
+                return $__default(query(this.$props.content, this.$el));
+            },
 
-            if (this.mode === 'none' || this.mode === 'reveal') {
-                this.clsSidebarAnimation = '';
-            }
+            clsFlip: function clsFlip() {
+                return this.flip ? this.$props.clsFlip : '';
+            },
 
-            if (this.mode !== 'push' && this.mode !== 'reveal') {
-                this.clsPageAnimation = '';
+            clsOverlay: function clsOverlay() {
+                return this.overlay ? this.$props.clsOverlay : '';
+            },
+
+            clsMode: function clsMode() {
+                return ((this.$props.clsMode) + "-" + (this.mode));
+            },
+
+            clsSidebarAnimation: function clsSidebarAnimation() {
+                return this.mode === 'none' || this.mode === 'reveal' ? '' : this.$props.clsSidebarAnimation;
+            },
+
+            clsContentAnimation: function clsContentAnimation() {
+                return this.mode !== 'push' && this.mode !== 'reveal' ? '' : this.$props.clsContentAnimation
+            },
+
+            transitionElement: function transitionElement() {
+                return this.mode === 'reveal' ? this.panel.parent() : this.panel;
             }
 
         },
@@ -7969,13 +10971,23 @@ function Offcanvas (UIkit) {
 
             write: function write() {
 
-                if (this.isActive()) {
-                    docElement.width(window.innerWidth - this.getScrollbarWidth());
+                if (this.isToggled()) {
+
+                    if (this.overlay || this.clsContentAnimation) {
+                        this.content.width(window.innerWidth - this.scrollbarWidth);
+                    }
+
+                    if (this.overlay) {
+                        this.content.height(window.innerHeight);
+                        scroll && this.content.scrollTop(scroll.y);
+                    }
+
+
                 }
 
             },
 
-            events: ['resize', 'orientationchange']
+            events: ['resize']
 
         },
 
@@ -7987,9 +10999,20 @@ function Offcanvas (UIkit) {
                 self: true,
 
                 handler: function handler() {
-                    docElement.addClass(((this.clsFlip) + " " + (this.clsPageAnimation) + " " + (this.clsPageOverlay)));
-                    this.panel.addClass(((this.clsSidebarAnimation) + " " + (this.clsMode)));
+
+                    scroll = scroll || {x: window.pageXOffset, y: window.pageYOffset};
+
+                    if (this.mode === 'reveal' && !this.panel.parent().hasClass(this.clsMode)) {
+                        this.panel.wrap('<div>').parent().addClass(this.clsMode);
+                    }
+
+                    docElement.css('overflow-y', (!this.clsContentAnimation || this.flip) && this.scrollbarWidth && this.overlay ? 'scroll' : '');
+
+                    this.body.addClass(((this.clsContainer) + " " + (this.clsFlip) + " " + (this.clsOverlay))).height();
+                    this.content.addClass(this.clsContentAnimation);
+                    this.panel.addClass(((this.clsSidebarAnimation) + " " + (this.mode !== 'reveal' ? this.clsMode : '')));
                     this.$el.addClass(this.clsOverlay).css('display', 'block').height();
+
                 }
             },
 
@@ -7999,7 +11022,7 @@ function Offcanvas (UIkit) {
                 self: true,
 
                 handler: function handler() {
-                    docElement.removeClass(this.clsPageAnimation);
+                    this.content.removeClass(this.clsContentAnimation);
 
                     if (this.mode === 'none' || this.getActive() && this.getActive() !== this) {
                         this.panel.trigger(transitionend);
@@ -8008,14 +11031,43 @@ function Offcanvas (UIkit) {
             },
 
             {
-                name: 'hide',
+                name: 'hidden',
 
                 self: true,
 
                 handler: function handler() {
-                    docElement.removeClass(((this.clsFlip) + " " + (this.clsPageOverlay))).width('');
+
+                    if (this.mode === 'reveal') {
+                        this.panel.unwrap();
+                    }
+
+                    if (!this.overlay) {
+                        scroll = {x: window.pageXOffset, y: window.pageYOffset}
+                    }
+
                     this.panel.removeClass(((this.clsSidebarAnimation) + " " + (this.clsMode)));
                     this.$el.removeClass(this.clsOverlay).css('display', '');
+                    this.body.removeClass(((this.clsContainer) + " " + (this.clsFlip) + " " + (this.clsOverlay))).scrollTop(scroll.y);
+
+                    docElement.css('overflow-y', '');
+                    this.content.width('').height('');
+
+                    window.scrollTo(scroll.x, scroll.y);
+
+                    scroll = null;
+
+                }
+            },
+
+            {
+                name: 'swipeLeft swipeRight',
+
+                handler: function handler(e) {
+
+                    if (this.isToggled() && isTouch(e) && (e.type === 'swipeLeft' && !this.flip || e.type === 'swipeRight' && this.flip)) {
+                        this.hide();
+                    }
+
                 }
             }
 
@@ -8046,7 +11098,7 @@ function Responsive (UIkit) {
                 }
             },
 
-            events: ['load', 'resize', 'orientationchange']
+            events: ['load', 'resize']
 
         }
 
@@ -8076,7 +11128,7 @@ function Scroll (UIkit) {
                 var this$1 = this;
 
 
-                el = $$1__default(el);
+                el = $__default(el);
 
                 // get / set parameters
                 var target = offsetTop(el) - this.offset,
@@ -8088,7 +11140,7 @@ function Scroll (UIkit) {
                 }
 
                 // animate to target, fire callback when done
-                $$1__default('html,body')
+                $__default('html,body')
                     .stop()
                     .animate({scrollTop: parseInt(target, 10) || 1}, this.duration, this.transition)
                     .promise()
@@ -8107,15 +11159,15 @@ function Scroll (UIkit) {
                 }
 
                 e.preventDefault();
-                this.scrollToElement($$1__default(this.$el[0].hash).length ? this.$el[0].hash : 'body');
+                this.scrollToElement($__default(this.$el[0].hash).length ? this.$el[0].hash : 'body');
             }
 
         }
 
     });
 
-    if (!$$1__default.easing.easeOutExpo) {
-        $$1__default.easing.easeOutExpo = function (x, t, b, c, d) {
+    if (!$__default.easing.easeOutExpo) {
+        $__default.easing.easeOutExpo = function (x, t, b, c, d) {
             return (t == d) ? b + c : c * (-Math.pow(2, -10 * t / d) + 1) + b;
         };
     }
@@ -8150,16 +11202,20 @@ function Scrollspy (UIkit) {
         },
 
         init: function init() {
-            this.$emit();
+            this.$emitSync();
+        },
+
+        computed: {
+
+            elements: function elements() {
+                return this.target && $__default(this.target, this.$el) || this.$el;
+            }
+
         },
 
         update: [
 
             {
-
-                read: function read() {
-                    this.elements = this.target && $$1__default(this.target, this.$el) || this.$el;
-                },
 
                 write: function write() {
                     if (this.hidden) {
@@ -8177,7 +11233,7 @@ function Scrollspy (UIkit) {
                     this.elements.each(function (_, el) {
 
                         if (!el._scrollspy) {
-                            var cls = $$1__default(el).attr('uk-scrollspy-class');
+                            var cls = $__default(el).attr('uk-scrollspy-class');
                             el._scrollspy = {toggles: cls && cls.split(',') || this$1.cls};
                         }
 
@@ -8194,7 +11250,7 @@ function Scrollspy (UIkit) {
 
                     this.elements.each(function (_, el) {
 
-                        var $el = $$1__default(el);
+                        var $el = $__default(el);
 
                         var data = el._scrollspy;
 
@@ -8241,7 +11297,7 @@ function Scrollspy (UIkit) {
 
                 },
 
-                events: ['scroll', 'load', 'resize', 'orientationchange']
+                events: ['scroll', 'load', 'resize']
 
             }
 
@@ -8271,19 +11327,29 @@ function ScrollspyNav (UIkit) {
             offset: 0
         },
 
+        computed: {
+
+            links: function links() {
+                return this.$el.find('a[href^="#"]').filter(function (i, el) { return el.hash; });
+            },
+
+            elements: function elements() {
+                return this.closest ? this.links.closest(this.closest) : this.links;
+            },
+
+            targets: function targets() {
+                return $__default(this.links.toArray().map(function (el) { return el.hash; }).join(','));
+            }
+
+        },
+
         update: [
 
             {
 
                 read: function read() {
-                    var this$1 = this;
-
-                    this.links = this.$el.find('a[href^="#"]').filter(function (i, el) { return el.hash; });
-                    this.elements = (this.closest ? this.links.closest(this.closest) : this.links);
-                    this.targets = $$1__default($$1__default.map(this.links, function (el) { return el.hash; }).join(','));
-
                     if (this.scroll) {
-                        this.links.each(function (_, el) { return UIkit.scroll(el, {offset: this$1.offset || 0}); });
+                        UIkit.scroll(this.links, {offset: this.offset || 0});
                     }
                 }
 
@@ -8301,7 +11367,7 @@ function ScrollspyNav (UIkit) {
 
                     this.targets.each(function (i, el) {
 
-                        el = $$1__default(el);
+                        el = $__default(el);
 
                         var top = offsetTop(el), last = i + 1 === this$1.targets.length;
                         if (!this$1.overflow && (i === 0 && top > scroll || last && top + el[0].offsetTop < scroll)) {
@@ -8341,7 +11407,7 @@ function ScrollspyNav (UIkit) {
 
                 },
 
-                events: ['scroll', 'load', 'resize', 'orientationchange']
+                events: ['scroll', 'load', 'resize']
 
             }
 
@@ -8389,7 +11455,7 @@ function Sticky (UIkit) {
 
         connected: function connected() {
 
-            this.placeholder = $$1__default('<div class="uk-sticky-placeholder"></div>');
+            this.placeholder = $__default('<div class="uk-sticky-placeholder"></div>');
             this.widthElement = this.$props.widthElement || this.placeholder;
 
             if (!this.isActive) {
@@ -8469,7 +11535,7 @@ function Sticky (UIkit) {
                             return;
                         }
 
-                        if ($$1.isNumeric(this$1[prop])) {
+                        if ($.isNumeric(this$1[prop])) {
 
                             this$1[prop] = this$1[(prop + "Offset")] + parseFloat(this$1[prop]);
 
@@ -8500,7 +11566,7 @@ function Sticky (UIkit) {
                     }
                 },
 
-                events: ['load', 'resize', 'orientationchange']
+                events: ['load', 'resize']
 
             },
 
@@ -8622,18 +11688,18 @@ function Svg (UIkit) {
             id: String,
             icon: String,
             src: String,
-            class: String,
             style: String,
             width: Number,
             height: Number,
-            ratio: Number
+            ratio: Number,
+            'class': String
         },
 
         defaults: {
             ratio: 1,
             id: false,
-            class: '',
-            exclude: ['src']
+            exclude: ['src'],
+            'class': ''
         },
 
         init: function init() {
@@ -8711,7 +11777,7 @@ function Svg (UIkit) {
                     this$1.height = this$1.height || dimensions[3];
                 }
 
-                el = $$1__default(el);
+                el = $__default(el);
 
                 this$1.width *= this$1.ratio;
                 this$1.height *= this$1.ratio;
@@ -8743,7 +11809,7 @@ function Svg (UIkit) {
 
                 resolve(el);
 
-            }); }); }).then(null, function () { return this$1.$destroy(); });
+            }); }); }).then(null, function () {});
 
             if (!this._isReady) {
                 this.$emitSync();
@@ -8784,7 +11850,7 @@ function Svg (UIkit) {
                         resolve(this$1.parse(decodeURIComponent(this$1.src.split(',')[1])));
                     } else {
 
-                        $$1__default.ajax(this$1.src, {dataType: 'html'}).then(function (doc) {
+                        $__default.ajax(this$1.src, {dataType: 'html'}).then(function (doc) {
                             resolve(this$1.parse(doc));
                         }, function () {
                             reject('SVG not found.');
@@ -8818,7 +11884,7 @@ function Switcher (UIkit) {
         args: 'connect',
 
         props: {
-            connect: 'jQuery',
+            connect: String,
             toggle: String,
             active: Number,
             swiping: Boolean
@@ -8839,6 +11905,18 @@ function Switcher (UIkit) {
             this.$emitSync();
         },
 
+        computed: {
+
+            connects: function connects() {
+                return query(this.connect, this.$el) || $__default(this.$el.next(("." + (this.clsContainer))));
+            },
+
+            toggles: function toggles() {
+                return $__default(this.toggle, this.$el);
+            }
+
+        },
+
         events: [
 
             {
@@ -8854,40 +11932,57 @@ function Switcher (UIkit) {
                     this.show(e.currentTarget);
                 }
 
-            }
+            },
 
-        ],
+            {
+                name: 'click',
 
-        update: function update() {
-            var this$1 = this;
+                el: function el() {
+                    return this.connects;
+                },
 
+                delegate: function delegate() {
+                    return ("[" + (this.attrItem) + "],[data-" + (this.attrItem) + "]");
+                },
 
-            this.toggles = $$1__default(this.toggle, this.$el);
-            this.connects = this.connect || $$1__default(this.$el.next(("." + (this.clsContainer))));
+                handler: function handler(e) {
+                    e.preventDefault();
+                    this.show($__default(e.currentTarget)[e.currentTarget.hasAttribute(this.attrItem) ? 'attr' : 'data'](this.attrItem));
+                }
+            },
 
-            var click = "click." + (this.$options.name);
-            this.connects.off(click).on(click, ("[" + (this.attrItem) + "],[data-" + (this.attrItem) + "]"), function (e) {
-                e.preventDefault();
-                this$1.show($$1__default(e.currentTarget)[e.currentTarget.hasAttribute(this$1.attrItem) ? 'attr' : 'data'](this$1.attrItem));
-            });
+            {
+                name: 'swipeRight swipeLeft',
 
-            if (this.swiping) {
-                var swipe = "swipeRight." + (this.$options.name) + " swipeLeft." + (this.$options.name);
-                this.connects.off(swipe).on(swipe, function (e) {
+                filter: function filter() {
+                    return this.swiping;
+                },
 
+                el: function el() {
+                    return this.connects;
+                },
+
+                delegate: function delegate() {
+                    return ("[" + (this.attrItem) + "],[data-" + (this.attrItem) + "]");
+                },
+
+                handler: function handler(e) {
                     if (!isTouch(e)) {
                         return;
                     }
 
                     e.preventDefault();
                     if (!window.getSelection().toString()) {
-                        this$1.show(e.type == 'swipeLeft' ? 'next' : 'previous');
+                        this.show(e.type == 'swipeLeft' ? 'next' : 'previous');
                     }
-                });
+                }
             }
 
-            this.updateAria(this.connects.children());
+        ],
 
+        update: function update() {
+
+            this.updateAria(this.connects.children());
             this.show(toJQuery(this.toggles.filter(("." + (this.cls) + ":first"))) || toJQuery(this.toggles.eq(this.active)) || this.toggles.first());
 
         },
@@ -8940,6 +12035,10 @@ function Tab (UIkit) {
 
         name: 'tab',
 
+        props: {
+            media: 'media'
+        },
+
         defaults: {
             media: 960,
             attrItem: 'uk-tab-item'
@@ -8967,8 +12066,8 @@ function Toggle (UIkit) {
         args: 'target',
 
         props: {
-            href: 'jQuery',
-            target: 'jQuery',
+            href: String,
+            target: null,
             mode: 'list',
             media: 'media'
         },
@@ -8979,6 +12078,14 @@ function Toggle (UIkit) {
             mode: 'click',
             queued: true,
             media: false
+        },
+
+        computed: {
+
+            target: function target() {
+                return query(this.$props.target || this.href, this.$el) || this.$el;
+            }
+
         },
 
         events: [
@@ -8993,7 +12100,7 @@ function Toggle (UIkit) {
 
                 handler: function handler(e) {
                     if (!isTouch(e)) {
-                        this.toggle(e.type === pointerEnter ? 'toggleShow' : 'toggleHide');
+                        this.toggle(("toggle" + (e.type === pointerEnter ? 'show' : 'hide')));
                     }
                 }
 
@@ -9014,9 +12121,13 @@ function Toggle (UIkit) {
                     }
 
                     // TODO better isToggled handling
-                    if (this.href
-                        || $$1__default(e.target).closest('a[href="#"], button').length
-                        || $$1__default(e.target).closest('a[href]') && (this.cls || !this.target.is(':visible'))
+                    var link = $__default(e.target).closest('a[href]');
+                    if ($__default(e.target).closest('a[href="#"], button').length
+                        || link.length && (
+                            this.cls
+                            || !this.target.is(':visible')
+                            || this.target.is(link.attr('href'))
+                        )
                     ) {
                         e.preventDefault();
                     }
@@ -9031,8 +12142,6 @@ function Toggle (UIkit) {
 
             write: function write() {
 
-                this.target = this.target || this.href || this.$el;
-
                 if (!~this.mode.indexOf('media') || !this.media) {
                     return;
                 }
@@ -9044,7 +12153,7 @@ function Toggle (UIkit) {
 
             },
 
-            events: ['load', 'resize', 'orientationchange']
+            events: ['load', 'resize']
 
         },
 
@@ -9052,7 +12161,7 @@ function Toggle (UIkit) {
 
             toggle: function toggle(type) {
 
-                var event = $$1__default.Event(type || 'toggle');
+                var event = $__default.Event(type || 'toggle');
                 this.target.triggerHandler(event, [this]);
 
                 if (!event.isDefaultPrevented()) {
@@ -9066,13 +12175,77 @@ function Toggle (UIkit) {
 
 }
 
+function Leader (UIkit) {
+
+    UIkit.component('leader', {
+
+        mixins: [Class],
+
+        props: {
+            fill: String,
+            media: 'media'
+        },
+
+        defaults: {
+            fill: '',
+            media: false,
+            clsWrapper: 'uk-leader-fill',
+            clsHide: 'uk-leader-hide',
+            attrFill: 'data-fill'
+        },
+
+        computed: {
+
+            fill: function fill() {
+                return this.$props.fill || getCssVar('leader-fill');
+            }
+
+        },
+
+        connected: function connected() {
+            this.wrapper = this.$el.wrapInner(("<span class=\"" + (this.clsWrapper) + "\">")).children().first();
+        },
+
+        disconnected: function disconnected() {
+            this.wrapper.contents().unwrap();
+        },
+
+        update: [
+
+            {
+
+                read: function read() {
+                    var prev = this._width;
+                    this._width = Math.floor(this.$el[0].offsetWidth / 2);
+                    this._changed = prev !== this._width;
+                    this._hide = this.media && !window.matchMedia(this.media).matches;
+                },
+
+                write: function write() {
+
+                    this.wrapper.toggleClass(this.clsHide, this._hide);
+
+                    if (this._changed) {
+                        this.wrapper.attr(this.attrFill, Array(this._width).join(this.fill));
+                    }
+
+               },
+
+                events: ['load', 'resize']
+
+            }
+        ]
+    });
+
+}
+
 function core (UIkit) {
 
     var scroll = null, dir, ticking, resizing, started = 0;
 
     win
         .on('load', UIkit.update)
-        .on('resize orientationchange', function (e) {
+        .on('resize', function (e) {
             if (!resizing) {
                 requestAnimationFrame(function () {
                     UIkit.update(e);
@@ -9131,6 +12304,7 @@ function core (UIkit) {
     UIkit.use(Margin);
     UIkit.use(Gif);
     UIkit.use(Grid);
+    UIkit.use(Leader);
     UIkit.use(Modal$1);
     UIkit.use(Nav);
     UIkit.use(Navbar);
@@ -9147,78 +12321,10 @@ function core (UIkit) {
 
 }
 
-function boot (UIkit) {
+UIkit.version = '3.0.0-beta.20';
 
-    if (Observer) {
-
-        if (document.body) {
-
-            init();
-
-        } else {
-
-            (new Observer(function () {
-
-                if (document.body) {
-                    this.disconnect();
-                    init();
-                }
-
-            })).observe(document.documentElement, {childList: true, subtree: true});
-
-        }
-
-    } else {
-
-        ready(function () {
-            apply(document.body, UIkit.connect);
-            on(document.documentElement, 'DOMNodeInserted', function (e) { return apply(e.target, UIkit.connect); });
-            on(document.documentElement, 'DOMNodeRemoved', function (e) { return apply(e.target, UIkit.disconnect); });
-        });
-
-    }
-
-    function init() {
-
-        apply(document.body, UIkit.connect);
-
-        (new Observer(function (mutations) { return mutations.forEach(function (mutation) {
-
-                for (var i = 0; i < mutation.addedNodes.length; i++) {
-                    apply(mutation.addedNodes[i], UIkit.connect)
-                }
-
-                for (i = 0; i < mutation.removedNodes.length; i++) {
-                    apply(mutation.removedNodes[i], UIkit.disconnect)
-                }
-
-                UIkit.update('update', mutation.target, true);
-            }); }
-        )).observe(document.documentElement, {childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['href']});
-    }
-
-    function apply(node, fn) {
-
-        if (node.nodeType !== Node.ELEMENT_NODE || node.hasAttribute('uk-no-boot')) {
-            return;
-        }
-
-        fn(node);
-        node = node.firstChild;
-        while (node) {
-            var next = node.nextSibling;
-            apply(node, fn);
-            node = next;
-        }
-    }
-
-}
-
-UIkit.version = '3.0.0-beta.18';
-
-mixin$1(UIkit);
+mixin(UIkit);
 core(UIkit);
-boot(UIkit);
 
 function plugin(UIkit) {
 
@@ -9269,15 +12375,17 @@ function plugin(UIkit) {
             index: 0
         },
 
-        ready: function ready() {
-            var this$1 = this;
+        computed: {
 
+            toggles: function toggles() {
+                var this$1 = this;
 
-            this.toggles = $(this.toggle, this.$el).each(function (_, el) { return this$1.items.push({
-                source: el.getAttribute('href'),
-                title: el.getAttribute('title'),
-                type: el.getAttribute('type')
-            }); });
+                return $(this.toggle, this.$el).each(function (_, el) { return this$1.items.push({
+                    source: el.getAttribute('href'),
+                    title: el.getAttribute('title'),
+                    type: el.getAttribute('type')
+                }); });
+            }
 
         },
 
@@ -9355,7 +12463,7 @@ function plugin(UIkit) {
 
             },
 
-            events: ['resize', 'orientationchange']
+            events: ['resize']
 
         },
 
@@ -9368,17 +12476,17 @@ function plugin(UIkit) {
                 this.index = getIndex(index, this.items, this.index);
 
                 if (!this.modal) {
-                    this.modal = UIkit.modal.dialog("\n                    <button class=\"uk-modal-close-outside\" uk-transition-hide type=\"button\" uk-close></button>\n                    <span class=\"uk-position-center\" uk-transition-show uk-icon=\"icon: trash\"></span>\n                    ", {center: true});
+                    this.modal = UIkit.modal.dialog("\n                        <button class=\"uk-modal-close-outside\" uk-transition-hide type=\"button\" uk-close></button>\n                        <span class=\"uk-position-center\" uk-transition-show uk-spinner></span>\n                    ", {center: true});
                     this.modal.$el.css('overflow', 'hidden').addClass('uk-modal-lightbox');
                     this.modal.panel.css({width: 200, height: 200});
                     this.modal.caption = $('<div class="uk-modal-caption" uk-transition-hide></div>').appendTo(this.modal.panel);
 
                     if (this.items.length > 1) {
-                        $(("<div class=\"" + (this.dark ? 'uk-dark' : 'uk-light') + "\" uk-transition-hide>\n                            <a href=\"#\" class=\"uk-position-center-left\" uk-slidenav-previous uk-lightbox-item=\"previous\"></a>\n                            <a href=\"#\" class=\"uk-position-center-right\" uk-slidenav-next uk-lightbox-item=\"next\"></a>\n                        </div>\n                    ")).appendTo(this.modal.panel.addClass('uk-slidenav-position'));
+                        $(("<div class=\"" + (this.dark ? 'uk-dark' : 'uk-light') + "\" uk-transition-hide>\n                                <a href=\"#\" class=\"uk-position-center-left\" uk-slidenav-previous uk-lightbox-item=\"previous\"></a>\n                                <a href=\"#\" class=\"uk-position-center-right\" uk-slidenav-next uk-lightbox-item=\"next\"></a>\n                            </div>\n                        ")).appendTo(this.modal.panel.addClass('uk-slidenav-position'));
                     }
 
                     this.modal.$el
-                        .on('hide', this.hide)
+                        .on('hidden', this.hide)
                         .on('click', ("[" + (this.attrItem) + "]"), function (e) {
                             e.preventDefault();
                             this$1.show($(e.currentTarget).attr(this$1.attrItem));
@@ -10382,35 +13490,39 @@ UIkit.use(plugin$2);
 UIkit.use(plugin$3);
 UIkit.use(plugin$4);
 
+if (true) {
+    boot(UIkit);
+}
+
 return UIkit;
 
 })));
 
 /***/ }),
-/* 118 */
+/* 131 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
 /* styles */
-__webpack_require__(313)
+__webpack_require__(360)
 
-var Component = __webpack_require__(311)(
+var Component = __webpack_require__(50)(
   /* script */
-  __webpack_require__(120),
+  __webpack_require__(150),
   /* template */
-  __webpack_require__(312),
+  __webpack_require__(353),
   /* scopeId */
   "data-v-aeae57de",
   /* cssModules */
   null
 )
-Component.options.__file = "/Users/felix/Dropbox/WebProjekte/owc.007.07_core/apps/market/src/App.vue"
+Component.options.__file = "/srv/www/htdocs/owncloud/apps3/market/src/App.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key !== "__esModule"})) {console.error("named exports are not supported in *.vue files.")}
 if (Component.options.functional) {console.error("[vue-loader] App.vue: functional components are not supported with templates, they should use render functions.")}
 
 /* hot reload */
 if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
+  var hotAPI = require("vue-loader/node_modules/vue-hot-reload-api")
   hotAPI.install(require("vue"), false)
   if (!hotAPI.compatible) return
   module.hot.accept()
@@ -10425,7 +13537,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 119 */
+/* 132 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -17259,16 +20371,862 @@ setTimeout(function () {
 
 /* harmony default export */ __webpack_exports__["a"] = (Vue$2);
 
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(114), __webpack_require__(59)))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(64), __webpack_require__(63)))
 
 /***/ }),
-/* 120 */
+/* 133 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var utils = __webpack_require__(16);
+var bind = __webpack_require__(97);
+var Axios = __webpack_require__(135);
+var defaults = __webpack_require__(65);
+
+/**
+ * Create an instance of Axios
+ *
+ * @param {Object} defaultConfig The default config for the instance
+ * @return {Axios} A new instance of Axios
+ */
+function createInstance(defaultConfig) {
+  var context = new Axios(defaultConfig);
+  var instance = bind(Axios.prototype.request, context);
+
+  // Copy axios.prototype to instance
+  utils.extend(instance, Axios.prototype, context);
+
+  // Copy context to instance
+  utils.extend(instance, context);
+
+  return instance;
+}
+
+// Create the default instance to be exported
+var axios = createInstance(defaults);
+
+// Expose Axios class to allow class inheritance
+axios.Axios = Axios;
+
+// Factory for creating new instances
+axios.create = function create(instanceConfig) {
+  return createInstance(utils.merge(defaults, instanceConfig));
+};
+
+// Expose Cancel & CancelToken
+axios.Cancel = __webpack_require__(94);
+axios.CancelToken = __webpack_require__(134);
+axios.isCancel = __webpack_require__(95);
+
+// Expose all/spread
+axios.all = function all(promises) {
+  return Promise.all(promises);
+};
+axios.spread = __webpack_require__(149);
+
+module.exports = axios;
+
+// Allow use of default import syntax in TypeScript
+module.exports.default = axios;
+
+
+/***/ }),
+/* 134 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var Cancel = __webpack_require__(94);
+
+/**
+ * A `CancelToken` is an object that can be used to request cancellation of an operation.
+ *
+ * @class
+ * @param {Function} executor The executor function.
+ */
+function CancelToken(executor) {
+  if (typeof executor !== 'function') {
+    throw new TypeError('executor must be a function.');
+  }
+
+  var resolvePromise;
+  this.promise = new Promise(function promiseExecutor(resolve) {
+    resolvePromise = resolve;
+  });
+
+  var token = this;
+  executor(function cancel(message) {
+    if (token.reason) {
+      // Cancellation has already been requested
+      return;
+    }
+
+    token.reason = new Cancel(message);
+    resolvePromise(token.reason);
+  });
+}
+
+/**
+ * Throws a `Cancel` if cancellation has been requested.
+ */
+CancelToken.prototype.throwIfRequested = function throwIfRequested() {
+  if (this.reason) {
+    throw this.reason;
+  }
+};
+
+/**
+ * Returns an object that contains a new `CancelToken` and a function that, when called,
+ * cancels the `CancelToken`.
+ */
+CancelToken.source = function source() {
+  var cancel;
+  var token = new CancelToken(function executor(c) {
+    cancel = c;
+  });
+  return {
+    token: token,
+    cancel: cancel
+  };
+};
+
+module.exports = CancelToken;
+
+
+/***/ }),
+/* 135 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var defaults = __webpack_require__(65);
+var utils = __webpack_require__(16);
+var InterceptorManager = __webpack_require__(136);
+var dispatchRequest = __webpack_require__(137);
+var isAbsoluteURL = __webpack_require__(145);
+var combineURLs = __webpack_require__(143);
+
+/**
+ * Create a new instance of Axios
+ *
+ * @param {Object} instanceConfig The default config for the instance
+ */
+function Axios(instanceConfig) {
+  this.defaults = instanceConfig;
+  this.interceptors = {
+    request: new InterceptorManager(),
+    response: new InterceptorManager()
+  };
+}
+
+/**
+ * Dispatch a request
+ *
+ * @param {Object} config The config specific for this request (merged with this.defaults)
+ */
+Axios.prototype.request = function request(config) {
+  /*eslint no-param-reassign:0*/
+  // Allow for axios('example/url'[, config]) a la fetch API
+  if (typeof config === 'string') {
+    config = utils.merge({
+      url: arguments[0]
+    }, arguments[1]);
+  }
+
+  config = utils.merge(defaults, this.defaults, { method: 'get' }, config);
+
+  // Support baseURL config
+  if (config.baseURL && !isAbsoluteURL(config.url)) {
+    config.url = combineURLs(config.baseURL, config.url);
+  }
+
+  // Hook up interceptors middleware
+  var chain = [dispatchRequest, undefined];
+  var promise = Promise.resolve(config);
+
+  this.interceptors.request.forEach(function unshiftRequestInterceptors(interceptor) {
+    chain.unshift(interceptor.fulfilled, interceptor.rejected);
+  });
+
+  this.interceptors.response.forEach(function pushResponseInterceptors(interceptor) {
+    chain.push(interceptor.fulfilled, interceptor.rejected);
+  });
+
+  while (chain.length) {
+    promise = promise.then(chain.shift(), chain.shift());
+  }
+
+  return promise;
+};
+
+// Provide aliases for supported request methods
+utils.forEach(['delete', 'get', 'head', 'options'], function forEachMethodNoData(method) {
+  /*eslint func-names:0*/
+  Axios.prototype[method] = function(url, config) {
+    return this.request(utils.merge(config || {}, {
+      method: method,
+      url: url
+    }));
+  };
+});
+
+utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
+  /*eslint func-names:0*/
+  Axios.prototype[method] = function(url, data, config) {
+    return this.request(utils.merge(config || {}, {
+      method: method,
+      url: url,
+      data: data
+    }));
+  };
+});
+
+module.exports = Axios;
+
+
+/***/ }),
+/* 136 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var utils = __webpack_require__(16);
+
+function InterceptorManager() {
+  this.handlers = [];
+}
+
+/**
+ * Add a new interceptor to the stack
+ *
+ * @param {Function} fulfilled The function to handle `then` for a `Promise`
+ * @param {Function} rejected The function to handle `reject` for a `Promise`
+ *
+ * @return {Number} An ID used to remove interceptor later
+ */
+InterceptorManager.prototype.use = function use(fulfilled, rejected) {
+  this.handlers.push({
+    fulfilled: fulfilled,
+    rejected: rejected
+  });
+  return this.handlers.length - 1;
+};
+
+/**
+ * Remove an interceptor from the stack
+ *
+ * @param {Number} id The ID that was returned by `use`
+ */
+InterceptorManager.prototype.eject = function eject(id) {
+  if (this.handlers[id]) {
+    this.handlers[id] = null;
+  }
+};
+
+/**
+ * Iterate over all the registered interceptors
+ *
+ * This method is particularly useful for skipping over any
+ * interceptors that may have become `null` calling `eject`.
+ *
+ * @param {Function} fn The function to call for each interceptor
+ */
+InterceptorManager.prototype.forEach = function forEach(fn) {
+  utils.forEach(this.handlers, function forEachHandler(h) {
+    if (h !== null) {
+      fn(h);
+    }
+  });
+};
+
+module.exports = InterceptorManager;
+
+
+/***/ }),
+/* 137 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var utils = __webpack_require__(16);
+var transformData = __webpack_require__(140);
+var isCancel = __webpack_require__(95);
+var defaults = __webpack_require__(65);
+
+/**
+ * Throws a `Cancel` if cancellation has been requested.
+ */
+function throwIfCancellationRequested(config) {
+  if (config.cancelToken) {
+    config.cancelToken.throwIfRequested();
+  }
+}
+
+/**
+ * Dispatch a request to the server using the configured adapter.
+ *
+ * @param {object} config The config that is to be used for the request
+ * @returns {Promise} The Promise to be fulfilled
+ */
+module.exports = function dispatchRequest(config) {
+  throwIfCancellationRequested(config);
+
+  // Ensure headers exist
+  config.headers = config.headers || {};
+
+  // Transform request data
+  config.data = transformData(
+    config.data,
+    config.headers,
+    config.transformRequest
+  );
+
+  // Flatten headers
+  config.headers = utils.merge(
+    config.headers.common || {},
+    config.headers[config.method] || {},
+    config.headers || {}
+  );
+
+  utils.forEach(
+    ['delete', 'get', 'head', 'post', 'put', 'patch', 'common'],
+    function cleanHeaderConfig(method) {
+      delete config.headers[method];
+    }
+  );
+
+  var adapter = config.adapter || defaults.adapter;
+
+  return adapter(config).then(function onAdapterResolution(response) {
+    throwIfCancellationRequested(config);
+
+    // Transform response data
+    response.data = transformData(
+      response.data,
+      response.headers,
+      config.transformResponse
+    );
+
+    return response;
+  }, function onAdapterRejection(reason) {
+    if (!isCancel(reason)) {
+      throwIfCancellationRequested(config);
+
+      // Transform response data
+      if (reason && reason.response) {
+        reason.response.data = transformData(
+          reason.response.data,
+          reason.response.headers,
+          config.transformResponse
+        );
+      }
+    }
+
+    return Promise.reject(reason);
+  });
+};
+
+
+/***/ }),
+/* 138 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/**
+ * Update an Error with the specified config, error code, and response.
+ *
+ * @param {Error} error The error to update.
+ * @param {Object} config The config.
+ * @param {string} [code] The error code (for example, 'ECONNABORTED').
+ @ @param {Object} [response] The response.
+ * @returns {Error} The error.
+ */
+module.exports = function enhanceError(error, config, code, response) {
+  error.config = config;
+  if (code) {
+    error.code = code;
+  }
+  error.response = response;
+  return error;
+};
+
+
+/***/ }),
+/* 139 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var createError = __webpack_require__(96);
+
+/**
+ * Resolve or reject a Promise based on response status.
+ *
+ * @param {Function} resolve A function that resolves the promise.
+ * @param {Function} reject A function that rejects the promise.
+ * @param {object} response The response.
+ */
+module.exports = function settle(resolve, reject, response) {
+  var validateStatus = response.config.validateStatus;
+  // Note: status is not exposed by XDomainRequest
+  if (!response.status || !validateStatus || validateStatus(response.status)) {
+    resolve(response);
+  } else {
+    reject(createError(
+      'Request failed with status code ' + response.status,
+      response.config,
+      null,
+      response
+    ));
+  }
+};
+
+
+/***/ }),
+/* 140 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var utils = __webpack_require__(16);
+
+/**
+ * Transform the data for a request or a response
+ *
+ * @param {Object|String} data The data to be transformed
+ * @param {Array} headers The headers for the request or response
+ * @param {Array|Function} fns A single function or Array of functions
+ * @returns {*} The resulting transformed data
+ */
+module.exports = function transformData(data, headers, fns) {
+  /*eslint no-param-reassign:0*/
+  utils.forEach(fns, function transform(fn) {
+    data = fn(data, headers);
+  });
+
+  return data;
+};
+
+
+/***/ }),
+/* 141 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+// btoa polyfill for IE<10 courtesy https://github.com/davidchambers/Base64.js
+
+var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+
+function E() {
+  this.message = 'String contains an invalid character';
+}
+E.prototype = new Error;
+E.prototype.code = 5;
+E.prototype.name = 'InvalidCharacterError';
+
+function btoa(input) {
+  var str = String(input);
+  var output = '';
+  for (
+    // initialize result and counter
+    var block, charCode, idx = 0, map = chars;
+    // if the next str index does not exist:
+    //   change the mapping table to "="
+    //   check if d has no fractional digits
+    str.charAt(idx | 0) || (map = '=', idx % 1);
+    // "8 - idx % 1 * 8" generates the sequence 2, 4, 6, 8
+    output += map.charAt(63 & block >> 8 - idx % 1 * 8)
+  ) {
+    charCode = str.charCodeAt(idx += 3 / 4);
+    if (charCode > 0xFF) {
+      throw new E();
+    }
+    block = block << 8 | charCode;
+  }
+  return output;
+}
+
+module.exports = btoa;
+
+
+/***/ }),
+/* 142 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var utils = __webpack_require__(16);
+
+function encode(val) {
+  return encodeURIComponent(val).
+    replace(/%40/gi, '@').
+    replace(/%3A/gi, ':').
+    replace(/%24/g, '$').
+    replace(/%2C/gi, ',').
+    replace(/%20/g, '+').
+    replace(/%5B/gi, '[').
+    replace(/%5D/gi, ']');
+}
+
+/**
+ * Build a URL by appending params to the end
+ *
+ * @param {string} url The base of the url (e.g., http://www.google.com)
+ * @param {object} [params] The params to be appended
+ * @returns {string} The formatted url
+ */
+module.exports = function buildURL(url, params, paramsSerializer) {
+  /*eslint no-param-reassign:0*/
+  if (!params) {
+    return url;
+  }
+
+  var serializedParams;
+  if (paramsSerializer) {
+    serializedParams = paramsSerializer(params);
+  } else if (utils.isURLSearchParams(params)) {
+    serializedParams = params.toString();
+  } else {
+    var parts = [];
+
+    utils.forEach(params, function serialize(val, key) {
+      if (val === null || typeof val === 'undefined') {
+        return;
+      }
+
+      if (utils.isArray(val)) {
+        key = key + '[]';
+      }
+
+      if (!utils.isArray(val)) {
+        val = [val];
+      }
+
+      utils.forEach(val, function parseValue(v) {
+        if (utils.isDate(v)) {
+          v = v.toISOString();
+        } else if (utils.isObject(v)) {
+          v = JSON.stringify(v);
+        }
+        parts.push(encode(key) + '=' + encode(v));
+      });
+    });
+
+    serializedParams = parts.join('&');
+  }
+
+  if (serializedParams) {
+    url += (url.indexOf('?') === -1 ? '?' : '&') + serializedParams;
+  }
+
+  return url;
+};
+
+
+/***/ }),
+/* 143 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/**
+ * Creates a new URL by combining the specified URLs
+ *
+ * @param {string} baseURL The base URL
+ * @param {string} relativeURL The relative URL
+ * @returns {string} The combined URL
+ */
+module.exports = function combineURLs(baseURL, relativeURL) {
+  return relativeURL
+    ? baseURL.replace(/\/+$/, '') + '/' + relativeURL.replace(/^\/+/, '')
+    : baseURL;
+};
+
+
+/***/ }),
+/* 144 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var utils = __webpack_require__(16);
+
+module.exports = (
+  utils.isStandardBrowserEnv() ?
+
+  // Standard browser envs support document.cookie
+  (function standardBrowserEnv() {
+    return {
+      write: function write(name, value, expires, path, domain, secure) {
+        var cookie = [];
+        cookie.push(name + '=' + encodeURIComponent(value));
+
+        if (utils.isNumber(expires)) {
+          cookie.push('expires=' + new Date(expires).toGMTString());
+        }
+
+        if (utils.isString(path)) {
+          cookie.push('path=' + path);
+        }
+
+        if (utils.isString(domain)) {
+          cookie.push('domain=' + domain);
+        }
+
+        if (secure === true) {
+          cookie.push('secure');
+        }
+
+        document.cookie = cookie.join('; ');
+      },
+
+      read: function read(name) {
+        var match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));
+        return (match ? decodeURIComponent(match[3]) : null);
+      },
+
+      remove: function remove(name) {
+        this.write(name, '', Date.now() - 86400000);
+      }
+    };
+  })() :
+
+  // Non standard browser env (web workers, react-native) lack needed support.
+  (function nonStandardBrowserEnv() {
+    return {
+      write: function write() {},
+      read: function read() { return null; },
+      remove: function remove() {}
+    };
+  })()
+);
+
+
+/***/ }),
+/* 145 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/**
+ * Determines whether the specified URL is absolute
+ *
+ * @param {string} url The URL to test
+ * @returns {boolean} True if the specified URL is absolute, otherwise false
+ */
+module.exports = function isAbsoluteURL(url) {
+  // A URL is considered absolute if it begins with "<scheme>://" or "//" (protocol-relative URL).
+  // RFC 3986 defines scheme name as a sequence of characters beginning with a letter and followed
+  // by any combination of letters, digits, plus, period, or hyphen.
+  return /^([a-z][a-z\d\+\-\.]*:)?\/\//i.test(url);
+};
+
+
+/***/ }),
+/* 146 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var utils = __webpack_require__(16);
+
+module.exports = (
+  utils.isStandardBrowserEnv() ?
+
+  // Standard browser envs have full support of the APIs needed to test
+  // whether the request URL is of the same origin as current location.
+  (function standardBrowserEnv() {
+    var msie = /(msie|trident)/i.test(navigator.userAgent);
+    var urlParsingNode = document.createElement('a');
+    var originURL;
+
+    /**
+    * Parse a URL to discover it's components
+    *
+    * @param {String} url The URL to be parsed
+    * @returns {Object}
+    */
+    function resolveURL(url) {
+      var href = url;
+
+      if (msie) {
+        // IE needs attribute set twice to normalize properties
+        urlParsingNode.setAttribute('href', href);
+        href = urlParsingNode.href;
+      }
+
+      urlParsingNode.setAttribute('href', href);
+
+      // urlParsingNode provides the UrlUtils interface - http://url.spec.whatwg.org/#urlutils
+      return {
+        href: urlParsingNode.href,
+        protocol: urlParsingNode.protocol ? urlParsingNode.protocol.replace(/:$/, '') : '',
+        host: urlParsingNode.host,
+        search: urlParsingNode.search ? urlParsingNode.search.replace(/^\?/, '') : '',
+        hash: urlParsingNode.hash ? urlParsingNode.hash.replace(/^#/, '') : '',
+        hostname: urlParsingNode.hostname,
+        port: urlParsingNode.port,
+        pathname: (urlParsingNode.pathname.charAt(0) === '/') ?
+                  urlParsingNode.pathname :
+                  '/' + urlParsingNode.pathname
+      };
+    }
+
+    originURL = resolveURL(window.location.href);
+
+    /**
+    * Determine if a URL shares the same origin as the current location
+    *
+    * @param {String} requestURL The URL to test
+    * @returns {boolean} True if URL shares the same origin, otherwise false
+    */
+    return function isURLSameOrigin(requestURL) {
+      var parsed = (utils.isString(requestURL)) ? resolveURL(requestURL) : requestURL;
+      return (parsed.protocol === originURL.protocol &&
+            parsed.host === originURL.host);
+    };
+  })() :
+
+  // Non standard browser envs (web workers, react-native) lack needed support.
+  (function nonStandardBrowserEnv() {
+    return function isURLSameOrigin() {
+      return true;
+    };
+  })()
+);
+
+
+/***/ }),
+/* 147 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var utils = __webpack_require__(16);
+
+module.exports = function normalizeHeaderName(headers, normalizedName) {
+  utils.forEach(headers, function processHeader(value, name) {
+    if (name !== normalizedName && name.toUpperCase() === normalizedName.toUpperCase()) {
+      headers[normalizedName] = value;
+      delete headers[name];
+    }
+  });
+};
+
+
+/***/ }),
+/* 148 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var utils = __webpack_require__(16);
+
+/**
+ * Parse headers into an object
+ *
+ * ```
+ * Date: Wed, 27 Aug 2014 08:58:49 GMT
+ * Content-Type: application/json
+ * Connection: keep-alive
+ * Transfer-Encoding: chunked
+ * ```
+ *
+ * @param {String} headers Headers needing to be parsed
+ * @returns {Object} Headers parsed into an object
+ */
+module.exports = function parseHeaders(headers) {
+  var parsed = {};
+  var key;
+  var val;
+  var i;
+
+  if (!headers) { return parsed; }
+
+  utils.forEach(headers.split('\n'), function parser(line) {
+    i = line.indexOf(':');
+    key = utils.trim(line.substr(0, i)).toLowerCase();
+    val = utils.trim(line.substr(i + 1));
+
+    if (key) {
+      parsed[key] = parsed[key] ? parsed[key] + ', ' + val : val;
+    }
+  });
+
+  return parsed;
+};
+
+
+/***/ }),
+/* 149 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/**
+ * Syntactic sugar for invoking a function and expanding an array for arguments.
+ *
+ * Common use case would be to use `Function.prototype.apply`.
+ *
+ *  ```js
+ *  function f(x, y, z) {}
+ *  var args = [1, 2, 3];
+ *  f.apply(null, args);
+ *  ```
+ *
+ * With `spread` this example can be re-written.
+ *
+ *  ```js
+ *  spread(function(x, y, z) {})([1, 2, 3]);
+ *  ```
+ *
+ * @param {Function} callback
+ * @returns {Function}
+ */
+module.exports = function spread(callback) {
+  return function wrap(arr) {
+    return callback.apply(null, arr);
+  };
+};
+
+
+/***/ }),
+/* 150 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios__ = __webpack_require__(323);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios__ = __webpack_require__(92);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_axios__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_app_tile_vue__ = __webpack_require__(347);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_app_tile_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__components_app_tile_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__components_nav_main_vue__ = __webpack_require__(349);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__components_nav_main_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__components_nav_main_vue__);
+//
+//
+//
+//
+//
 //
 //
 //
@@ -17276,13 +21234,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 
+
+
+
+// Components
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
+	components: {
+		AppTile: __WEBPACK_IMPORTED_MODULE_1__components_app_tile_vue___default.a,
+		NavMain: __WEBPACK_IMPORTED_MODULE_2__components_nav_main_vue___default.a
+	},
 	data() {
 		return {
-			list: 'loading'
+			menu: null,
+			endpoint: OC.generateUrl('/apps/market/apps'),
+			appList: null
 		};
 	},
 	mounted: function () {
@@ -17290,13 +21258,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 	},
 	methods: {
 		get: function () {
-
 			let self = this;
-			//				let endpoint = '/demo.json';
-			let endpoint = '/index.php/apps/market/apps';
-
-			__WEBPACK_IMPORTED_MODULE_0_axios___default.a.get(endpoint).then(function (response) {
-				self.list = response.data.list;
+			__WEBPACK_IMPORTED_MODULE_0_axios___default.a.get(this.endpoint).then(function (response) {
+				self.appList = response.data;
 			}).catch(function (error) {
 				console.log(error);
 			});
@@ -17305,19 +21269,192 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 121 */
+/* 151 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_polyfill__ = __webpack_require__(115);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__star_rating_vue__ = __webpack_require__(350);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__star_rating_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__star_rating_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__detail_modal_vue__ = __webpack_require__(348);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__detail_modal_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__detail_modal_vue__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	components: {
+		StarRating: __WEBPACK_IMPORTED_MODULE_0__star_rating_vue___default.a,
+		DetailModal: __WEBPACK_IMPORTED_MODULE_1__detail_modal_vue___default.a
+	},
+	props: ['app'],
+	data() {
+		return {
+			title: this.app.name,
+			stars: this.app
+		};
+	},
+	methods: {
+		openDetails: function () {}
+	},
+	computed: {
+		image: function () {
+
+			// TODO: replace with actual screenshot when available
+
+			let x = 0;
+			let y = 1000;
+			let no = Math.floor(Math.random() * (y - x + 1) + x);
+			let image = 'https://unsplash.it/800/450/?image=' + no;
+
+			return image;
+
+			// this is the correct screenshot
+			// return this.app.screenshots[0];
+		}
+	}
+
+});
+
+/***/ }),
+/* 152 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	data() {
+		return {
+			msg: 'Hello world!'
+		};
+	}
+});
+
+/***/ }),
+/* 153 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios__ = __webpack_require__(92);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_axios__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	data() {
+		return { categories: null };
+	},
+	mounted: function () {
+		let self = this;
+		__WEBPACK_IMPORTED_MODULE_0_axios___default.a.get(OC.generateUrl('/apps/market/categories')).then(function (response) {
+			self.categories = response.data;
+		}).catch(function (error) {
+			console.log(error);
+		});
+	}
+});
+
+/***/ }),
+/* 154 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	props: ['rating'],
+	data() {
+		return {
+			classOn: "on",
+			classOff: "off",
+			overall: this.rating.mean,
+			stars: {
+				min: 0,
+				max: 5
+			}
+		};
+	},
+	filter: {
+		textRating: function (value) {
+			return "Rating: " + value;
+		}
+	},
+	computed: {
+		rounded: function () {
+			return Math.round(this.overall);
+		}
+	}
+});
+
+/***/ }),
+/* 155 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_polyfill__ = __webpack_require__(127);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_polyfill___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_babel_polyfill__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_uikit__ = __webpack_require__(117);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_uikit__ = __webpack_require__(130);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_uikit___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_uikit__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_uikit_dist_js_uikit_icons__ = __webpack_require__(116);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_uikit_dist_js_uikit_icons__ = __webpack_require__(129);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_uikit_dist_js_uikit_icons___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_uikit_dist_js_uikit_icons__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_vue__ = __webpack_require__(119);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__App_vue__ = __webpack_require__(118);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_vue__ = __webpack_require__(132);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__App_vue__ = __webpack_require__(131);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__App_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__App_vue__);
 
 
@@ -17333,6 +21470,8 @@ __WEBPACK_IMPORTED_MODULE_1_uikit___default.a.use(__WEBPACK_IMPORTED_MODULE_2_ui
 // -------------------------------------------------------------------------------------------------- App components ---
 
 
+__webpack_require__(128);
+
 window.onload = function () {
 
 	new __WEBPACK_IMPORTED_MODULE_3_vue__["a" /* default */]({
@@ -17342,1936 +21481,18 @@ window.onload = function () {
 };
 
 /***/ }),
-/* 122 */
+/* 156 */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-
-
-exports.byteLength = byteLength
-exports.toByteArray = toByteArray
-exports.fromByteArray = fromByteArray
-
-var lookup = []
-var revLookup = []
-var Arr = typeof Uint8Array !== 'undefined' ? Uint8Array : Array
-
-var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-for (var i = 0, len = code.length; i < len; ++i) {
-  lookup[i] = code[i]
-  revLookup[code.charCodeAt(i)] = i
-}
-
-revLookup['-'.charCodeAt(0)] = 62
-revLookup['_'.charCodeAt(0)] = 63
-
-function placeHoldersCount (b64) {
-  var len = b64.length
-  if (len % 4 > 0) {
-    throw new Error('Invalid string. Length must be a multiple of 4')
-  }
-
-  // the number of equal signs (place holders)
-  // if there are two placeholders, than the two characters before it
-  // represent one byte
-  // if there is only one, then the three characters before it represent 2 bytes
-  // this is just a cheap hack to not do indexOf twice
-  return b64[len - 2] === '=' ? 2 : b64[len - 1] === '=' ? 1 : 0
-}
-
-function byteLength (b64) {
-  // base64 is 4/3 + up to two characters of the original data
-  return b64.length * 3 / 4 - placeHoldersCount(b64)
-}
-
-function toByteArray (b64) {
-  var i, j, l, tmp, placeHolders, arr
-  var len = b64.length
-  placeHolders = placeHoldersCount(b64)
-
-  arr = new Arr(len * 3 / 4 - placeHolders)
-
-  // if there are placeholders, only get up to the last complete 4 chars
-  l = placeHolders > 0 ? len - 4 : len
-
-  var L = 0
-
-  for (i = 0, j = 0; i < l; i += 4, j += 3) {
-    tmp = (revLookup[b64.charCodeAt(i)] << 18) | (revLookup[b64.charCodeAt(i + 1)] << 12) | (revLookup[b64.charCodeAt(i + 2)] << 6) | revLookup[b64.charCodeAt(i + 3)]
-    arr[L++] = (tmp >> 16) & 0xFF
-    arr[L++] = (tmp >> 8) & 0xFF
-    arr[L++] = tmp & 0xFF
-  }
-
-  if (placeHolders === 2) {
-    tmp = (revLookup[b64.charCodeAt(i)] << 2) | (revLookup[b64.charCodeAt(i + 1)] >> 4)
-    arr[L++] = tmp & 0xFF
-  } else if (placeHolders === 1) {
-    tmp = (revLookup[b64.charCodeAt(i)] << 10) | (revLookup[b64.charCodeAt(i + 1)] << 4) | (revLookup[b64.charCodeAt(i + 2)] >> 2)
-    arr[L++] = (tmp >> 8) & 0xFF
-    arr[L++] = tmp & 0xFF
-  }
-
-  return arr
-}
-
-function tripletToBase64 (num) {
-  return lookup[num >> 18 & 0x3F] + lookup[num >> 12 & 0x3F] + lookup[num >> 6 & 0x3F] + lookup[num & 0x3F]
-}
-
-function encodeChunk (uint8, start, end) {
-  var tmp
-  var output = []
-  for (var i = start; i < end; i += 3) {
-    tmp = (uint8[i] << 16) + (uint8[i + 1] << 8) + (uint8[i + 2])
-    output.push(tripletToBase64(tmp))
-  }
-  return output.join('')
-}
-
-function fromByteArray (uint8) {
-  var tmp
-  var len = uint8.length
-  var extraBytes = len % 3 // if we have 1 byte left, pad 2 bytes
-  var output = ''
-  var parts = []
-  var maxChunkLength = 16383 // must be multiple of 3
-
-  // go through the array every three bytes, we'll deal with trailing stuff later
-  for (var i = 0, len2 = len - extraBytes; i < len2; i += maxChunkLength) {
-    parts.push(encodeChunk(uint8, i, (i + maxChunkLength) > len2 ? len2 : (i + maxChunkLength)))
-  }
-
-  // pad the end with zeros, but make sure to not forget the extra bytes
-  if (extraBytes === 1) {
-    tmp = uint8[len - 1]
-    output += lookup[tmp >> 2]
-    output += lookup[(tmp << 4) & 0x3F]
-    output += '=='
-  } else if (extraBytes === 2) {
-    tmp = (uint8[len - 2] << 8) + (uint8[len - 1])
-    output += lookup[tmp >> 10]
-    output += lookup[(tmp >> 4) & 0x3F]
-    output += lookup[(tmp << 2) & 0x3F]
-    output += '='
-  }
-
-  parts.push(output)
-
-  return parts.join('')
-}
-
+__webpack_require__(165);
+module.exports = __webpack_require__(25).RegExp.escape;
 
 /***/ }),
-/* 123 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(global) {/*!
- * The buffer module from node.js, for the browser.
- *
- * @author   Feross Aboukhadijeh <feross@feross.org> <http://feross.org>
- * @license  MIT
- */
-/* eslint-disable no-proto */
-
-
-
-var base64 = __webpack_require__(122)
-var ieee754 = __webpack_require__(307)
-var isArray = __webpack_require__(308)
-
-exports.Buffer = Buffer
-exports.SlowBuffer = SlowBuffer
-exports.INSPECT_MAX_BYTES = 50
-
-/**
- * If `Buffer.TYPED_ARRAY_SUPPORT`:
- *   === true    Use Uint8Array implementation (fastest)
- *   === false   Use Object implementation (most compatible, even IE6)
- *
- * Browsers that support typed arrays are IE 10+, Firefox 4+, Chrome 7+, Safari 5.1+,
- * Opera 11.6+, iOS 4.2+.
- *
- * Due to various browser bugs, sometimes the Object implementation will be used even
- * when the browser supports typed arrays.
- *
- * Note:
- *
- *   - Firefox 4-29 lacks support for adding new properties to `Uint8Array` instances,
- *     See: https://bugzilla.mozilla.org/show_bug.cgi?id=695438.
- *
- *   - Chrome 9-10 is missing the `TypedArray.prototype.subarray` function.
- *
- *   - IE10 has a broken `TypedArray.prototype.subarray` function which returns arrays of
- *     incorrect length in some situations.
-
- * We detect these buggy browsers and set `Buffer.TYPED_ARRAY_SUPPORT` to `false` so they
- * get the Object implementation, which is slower but behaves correctly.
- */
-Buffer.TYPED_ARRAY_SUPPORT = global.TYPED_ARRAY_SUPPORT !== undefined
-  ? global.TYPED_ARRAY_SUPPORT
-  : typedArraySupport()
-
-/*
- * Export kMaxLength after typed array support is determined.
- */
-exports.kMaxLength = kMaxLength()
-
-function typedArraySupport () {
-  try {
-    var arr = new Uint8Array(1)
-    arr.__proto__ = {__proto__: Uint8Array.prototype, foo: function () { return 42 }}
-    return arr.foo() === 42 && // typed array instances can be augmented
-        typeof arr.subarray === 'function' && // chrome 9-10 lack `subarray`
-        arr.subarray(1, 1).byteLength === 0 // ie10 has broken `subarray`
-  } catch (e) {
-    return false
-  }
-}
-
-function kMaxLength () {
-  return Buffer.TYPED_ARRAY_SUPPORT
-    ? 0x7fffffff
-    : 0x3fffffff
-}
-
-function createBuffer (that, length) {
-  if (kMaxLength() < length) {
-    throw new RangeError('Invalid typed array length')
-  }
-  if (Buffer.TYPED_ARRAY_SUPPORT) {
-    // Return an augmented `Uint8Array` instance, for best performance
-    that = new Uint8Array(length)
-    that.__proto__ = Buffer.prototype
-  } else {
-    // Fallback: Return an object instance of the Buffer class
-    if (that === null) {
-      that = new Buffer(length)
-    }
-    that.length = length
-  }
-
-  return that
-}
-
-/**
- * The Buffer constructor returns instances of `Uint8Array` that have their
- * prototype changed to `Buffer.prototype`. Furthermore, `Buffer` is a subclass of
- * `Uint8Array`, so the returned instances will have all the node `Buffer` methods
- * and the `Uint8Array` methods. Square bracket notation works as expected -- it
- * returns a single octet.
- *
- * The `Uint8Array` prototype remains unmodified.
- */
-
-function Buffer (arg, encodingOrOffset, length) {
-  if (!Buffer.TYPED_ARRAY_SUPPORT && !(this instanceof Buffer)) {
-    return new Buffer(arg, encodingOrOffset, length)
-  }
-
-  // Common case.
-  if (typeof arg === 'number') {
-    if (typeof encodingOrOffset === 'string') {
-      throw new Error(
-        'If encoding is specified then the first argument must be a string'
-      )
-    }
-    return allocUnsafe(this, arg)
-  }
-  return from(this, arg, encodingOrOffset, length)
-}
-
-Buffer.poolSize = 8192 // not used by this implementation
-
-// TODO: Legacy, not needed anymore. Remove in next major version.
-Buffer._augment = function (arr) {
-  arr.__proto__ = Buffer.prototype
-  return arr
-}
-
-function from (that, value, encodingOrOffset, length) {
-  if (typeof value === 'number') {
-    throw new TypeError('"value" argument must not be a number')
-  }
-
-  if (typeof ArrayBuffer !== 'undefined' && value instanceof ArrayBuffer) {
-    return fromArrayBuffer(that, value, encodingOrOffset, length)
-  }
-
-  if (typeof value === 'string') {
-    return fromString(that, value, encodingOrOffset)
-  }
-
-  return fromObject(that, value)
-}
-
-/**
- * Functionally equivalent to Buffer(arg, encoding) but throws a TypeError
- * if value is a number.
- * Buffer.from(str[, encoding])
- * Buffer.from(array)
- * Buffer.from(buffer)
- * Buffer.from(arrayBuffer[, byteOffset[, length]])
- **/
-Buffer.from = function (value, encodingOrOffset, length) {
-  return from(null, value, encodingOrOffset, length)
-}
-
-if (Buffer.TYPED_ARRAY_SUPPORT) {
-  Buffer.prototype.__proto__ = Uint8Array.prototype
-  Buffer.__proto__ = Uint8Array
-  if (typeof Symbol !== 'undefined' && Symbol.species &&
-      Buffer[Symbol.species] === Buffer) {
-    // Fix subarray() in ES2016. See: https://github.com/feross/buffer/pull/97
-    Object.defineProperty(Buffer, Symbol.species, {
-      value: null,
-      configurable: true
-    })
-  }
-}
-
-function assertSize (size) {
-  if (typeof size !== 'number') {
-    throw new TypeError('"size" argument must be a number')
-  } else if (size < 0) {
-    throw new RangeError('"size" argument must not be negative')
-  }
-}
-
-function alloc (that, size, fill, encoding) {
-  assertSize(size)
-  if (size <= 0) {
-    return createBuffer(that, size)
-  }
-  if (fill !== undefined) {
-    // Only pay attention to encoding if it's a string. This
-    // prevents accidentally sending in a number that would
-    // be interpretted as a start offset.
-    return typeof encoding === 'string'
-      ? createBuffer(that, size).fill(fill, encoding)
-      : createBuffer(that, size).fill(fill)
-  }
-  return createBuffer(that, size)
-}
-
-/**
- * Creates a new filled Buffer instance.
- * alloc(size[, fill[, encoding]])
- **/
-Buffer.alloc = function (size, fill, encoding) {
-  return alloc(null, size, fill, encoding)
-}
-
-function allocUnsafe (that, size) {
-  assertSize(size)
-  that = createBuffer(that, size < 0 ? 0 : checked(size) | 0)
-  if (!Buffer.TYPED_ARRAY_SUPPORT) {
-    for (var i = 0; i < size; ++i) {
-      that[i] = 0
-    }
-  }
-  return that
-}
-
-/**
- * Equivalent to Buffer(num), by default creates a non-zero-filled Buffer instance.
- * */
-Buffer.allocUnsafe = function (size) {
-  return allocUnsafe(null, size)
-}
-/**
- * Equivalent to SlowBuffer(num), by default creates a non-zero-filled Buffer instance.
- */
-Buffer.allocUnsafeSlow = function (size) {
-  return allocUnsafe(null, size)
-}
-
-function fromString (that, string, encoding) {
-  if (typeof encoding !== 'string' || encoding === '') {
-    encoding = 'utf8'
-  }
-
-  if (!Buffer.isEncoding(encoding)) {
-    throw new TypeError('"encoding" must be a valid string encoding')
-  }
-
-  var length = byteLength(string, encoding) | 0
-  that = createBuffer(that, length)
-
-  var actual = that.write(string, encoding)
-
-  if (actual !== length) {
-    // Writing a hex string, for example, that contains invalid characters will
-    // cause everything after the first invalid character to be ignored. (e.g.
-    // 'abxxcd' will be treated as 'ab')
-    that = that.slice(0, actual)
-  }
-
-  return that
-}
-
-function fromArrayLike (that, array) {
-  var length = array.length < 0 ? 0 : checked(array.length) | 0
-  that = createBuffer(that, length)
-  for (var i = 0; i < length; i += 1) {
-    that[i] = array[i] & 255
-  }
-  return that
-}
-
-function fromArrayBuffer (that, array, byteOffset, length) {
-  array.byteLength // this throws if `array` is not a valid ArrayBuffer
-
-  if (byteOffset < 0 || array.byteLength < byteOffset) {
-    throw new RangeError('\'offset\' is out of bounds')
-  }
-
-  if (array.byteLength < byteOffset + (length || 0)) {
-    throw new RangeError('\'length\' is out of bounds')
-  }
-
-  if (byteOffset === undefined && length === undefined) {
-    array = new Uint8Array(array)
-  } else if (length === undefined) {
-    array = new Uint8Array(array, byteOffset)
-  } else {
-    array = new Uint8Array(array, byteOffset, length)
-  }
-
-  if (Buffer.TYPED_ARRAY_SUPPORT) {
-    // Return an augmented `Uint8Array` instance, for best performance
-    that = array
-    that.__proto__ = Buffer.prototype
-  } else {
-    // Fallback: Return an object instance of the Buffer class
-    that = fromArrayLike(that, array)
-  }
-  return that
-}
-
-function fromObject (that, obj) {
-  if (Buffer.isBuffer(obj)) {
-    var len = checked(obj.length) | 0
-    that = createBuffer(that, len)
-
-    if (that.length === 0) {
-      return that
-    }
-
-    obj.copy(that, 0, 0, len)
-    return that
-  }
-
-  if (obj) {
-    if ((typeof ArrayBuffer !== 'undefined' &&
-        obj.buffer instanceof ArrayBuffer) || 'length' in obj) {
-      if (typeof obj.length !== 'number' || isnan(obj.length)) {
-        return createBuffer(that, 0)
-      }
-      return fromArrayLike(that, obj)
-    }
-
-    if (obj.type === 'Buffer' && isArray(obj.data)) {
-      return fromArrayLike(that, obj.data)
-    }
-  }
-
-  throw new TypeError('First argument must be a string, Buffer, ArrayBuffer, Array, or array-like object.')
-}
-
-function checked (length) {
-  // Note: cannot use `length < kMaxLength()` here because that fails when
-  // length is NaN (which is otherwise coerced to zero.)
-  if (length >= kMaxLength()) {
-    throw new RangeError('Attempt to allocate Buffer larger than maximum ' +
-                         'size: 0x' + kMaxLength().toString(16) + ' bytes')
-  }
-  return length | 0
-}
-
-function SlowBuffer (length) {
-  if (+length != length) { // eslint-disable-line eqeqeq
-    length = 0
-  }
-  return Buffer.alloc(+length)
-}
-
-Buffer.isBuffer = function isBuffer (b) {
-  return !!(b != null && b._isBuffer)
-}
-
-Buffer.compare = function compare (a, b) {
-  if (!Buffer.isBuffer(a) || !Buffer.isBuffer(b)) {
-    throw new TypeError('Arguments must be Buffers')
-  }
-
-  if (a === b) return 0
-
-  var x = a.length
-  var y = b.length
-
-  for (var i = 0, len = Math.min(x, y); i < len; ++i) {
-    if (a[i] !== b[i]) {
-      x = a[i]
-      y = b[i]
-      break
-    }
-  }
-
-  if (x < y) return -1
-  if (y < x) return 1
-  return 0
-}
-
-Buffer.isEncoding = function isEncoding (encoding) {
-  switch (String(encoding).toLowerCase()) {
-    case 'hex':
-    case 'utf8':
-    case 'utf-8':
-    case 'ascii':
-    case 'latin1':
-    case 'binary':
-    case 'base64':
-    case 'ucs2':
-    case 'ucs-2':
-    case 'utf16le':
-    case 'utf-16le':
-      return true
-    default:
-      return false
-  }
-}
-
-Buffer.concat = function concat (list, length) {
-  if (!isArray(list)) {
-    throw new TypeError('"list" argument must be an Array of Buffers')
-  }
-
-  if (list.length === 0) {
-    return Buffer.alloc(0)
-  }
-
-  var i
-  if (length === undefined) {
-    length = 0
-    for (i = 0; i < list.length; ++i) {
-      length += list[i].length
-    }
-  }
-
-  var buffer = Buffer.allocUnsafe(length)
-  var pos = 0
-  for (i = 0; i < list.length; ++i) {
-    var buf = list[i]
-    if (!Buffer.isBuffer(buf)) {
-      throw new TypeError('"list" argument must be an Array of Buffers')
-    }
-    buf.copy(buffer, pos)
-    pos += buf.length
-  }
-  return buffer
-}
-
-function byteLength (string, encoding) {
-  if (Buffer.isBuffer(string)) {
-    return string.length
-  }
-  if (typeof ArrayBuffer !== 'undefined' && typeof ArrayBuffer.isView === 'function' &&
-      (ArrayBuffer.isView(string) || string instanceof ArrayBuffer)) {
-    return string.byteLength
-  }
-  if (typeof string !== 'string') {
-    string = '' + string
-  }
-
-  var len = string.length
-  if (len === 0) return 0
-
-  // Use a for loop to avoid recursion
-  var loweredCase = false
-  for (;;) {
-    switch (encoding) {
-      case 'ascii':
-      case 'latin1':
-      case 'binary':
-        return len
-      case 'utf8':
-      case 'utf-8':
-      case undefined:
-        return utf8ToBytes(string).length
-      case 'ucs2':
-      case 'ucs-2':
-      case 'utf16le':
-      case 'utf-16le':
-        return len * 2
-      case 'hex':
-        return len >>> 1
-      case 'base64':
-        return base64ToBytes(string).length
-      default:
-        if (loweredCase) return utf8ToBytes(string).length // assume utf8
-        encoding = ('' + encoding).toLowerCase()
-        loweredCase = true
-    }
-  }
-}
-Buffer.byteLength = byteLength
-
-function slowToString (encoding, start, end) {
-  var loweredCase = false
-
-  // No need to verify that "this.length <= MAX_UINT32" since it's a read-only
-  // property of a typed array.
-
-  // This behaves neither like String nor Uint8Array in that we set start/end
-  // to their upper/lower bounds if the value passed is out of range.
-  // undefined is handled specially as per ECMA-262 6th Edition,
-  // Section 13.3.3.7 Runtime Semantics: KeyedBindingInitialization.
-  if (start === undefined || start < 0) {
-    start = 0
-  }
-  // Return early if start > this.length. Done here to prevent potential uint32
-  // coercion fail below.
-  if (start > this.length) {
-    return ''
-  }
-
-  if (end === undefined || end > this.length) {
-    end = this.length
-  }
-
-  if (end <= 0) {
-    return ''
-  }
-
-  // Force coersion to uint32. This will also coerce falsey/NaN values to 0.
-  end >>>= 0
-  start >>>= 0
-
-  if (end <= start) {
-    return ''
-  }
-
-  if (!encoding) encoding = 'utf8'
-
-  while (true) {
-    switch (encoding) {
-      case 'hex':
-        return hexSlice(this, start, end)
-
-      case 'utf8':
-      case 'utf-8':
-        return utf8Slice(this, start, end)
-
-      case 'ascii':
-        return asciiSlice(this, start, end)
-
-      case 'latin1':
-      case 'binary':
-        return latin1Slice(this, start, end)
-
-      case 'base64':
-        return base64Slice(this, start, end)
-
-      case 'ucs2':
-      case 'ucs-2':
-      case 'utf16le':
-      case 'utf-16le':
-        return utf16leSlice(this, start, end)
-
-      default:
-        if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding)
-        encoding = (encoding + '').toLowerCase()
-        loweredCase = true
-    }
-  }
-}
-
-// The property is used by `Buffer.isBuffer` and `is-buffer` (in Safari 5-7) to detect
-// Buffer instances.
-Buffer.prototype._isBuffer = true
-
-function swap (b, n, m) {
-  var i = b[n]
-  b[n] = b[m]
-  b[m] = i
-}
-
-Buffer.prototype.swap16 = function swap16 () {
-  var len = this.length
-  if (len % 2 !== 0) {
-    throw new RangeError('Buffer size must be a multiple of 16-bits')
-  }
-  for (var i = 0; i < len; i += 2) {
-    swap(this, i, i + 1)
-  }
-  return this
-}
-
-Buffer.prototype.swap32 = function swap32 () {
-  var len = this.length
-  if (len % 4 !== 0) {
-    throw new RangeError('Buffer size must be a multiple of 32-bits')
-  }
-  for (var i = 0; i < len; i += 4) {
-    swap(this, i, i + 3)
-    swap(this, i + 1, i + 2)
-  }
-  return this
-}
-
-Buffer.prototype.swap64 = function swap64 () {
-  var len = this.length
-  if (len % 8 !== 0) {
-    throw new RangeError('Buffer size must be a multiple of 64-bits')
-  }
-  for (var i = 0; i < len; i += 8) {
-    swap(this, i, i + 7)
-    swap(this, i + 1, i + 6)
-    swap(this, i + 2, i + 5)
-    swap(this, i + 3, i + 4)
-  }
-  return this
-}
-
-Buffer.prototype.toString = function toString () {
-  var length = this.length | 0
-  if (length === 0) return ''
-  if (arguments.length === 0) return utf8Slice(this, 0, length)
-  return slowToString.apply(this, arguments)
-}
-
-Buffer.prototype.equals = function equals (b) {
-  if (!Buffer.isBuffer(b)) throw new TypeError('Argument must be a Buffer')
-  if (this === b) return true
-  return Buffer.compare(this, b) === 0
-}
-
-Buffer.prototype.inspect = function inspect () {
-  var str = ''
-  var max = exports.INSPECT_MAX_BYTES
-  if (this.length > 0) {
-    str = this.toString('hex', 0, max).match(/.{2}/g).join(' ')
-    if (this.length > max) str += ' ... '
-  }
-  return '<Buffer ' + str + '>'
-}
-
-Buffer.prototype.compare = function compare (target, start, end, thisStart, thisEnd) {
-  if (!Buffer.isBuffer(target)) {
-    throw new TypeError('Argument must be a Buffer')
-  }
-
-  if (start === undefined) {
-    start = 0
-  }
-  if (end === undefined) {
-    end = target ? target.length : 0
-  }
-  if (thisStart === undefined) {
-    thisStart = 0
-  }
-  if (thisEnd === undefined) {
-    thisEnd = this.length
-  }
-
-  if (start < 0 || end > target.length || thisStart < 0 || thisEnd > this.length) {
-    throw new RangeError('out of range index')
-  }
-
-  if (thisStart >= thisEnd && start >= end) {
-    return 0
-  }
-  if (thisStart >= thisEnd) {
-    return -1
-  }
-  if (start >= end) {
-    return 1
-  }
-
-  start >>>= 0
-  end >>>= 0
-  thisStart >>>= 0
-  thisEnd >>>= 0
-
-  if (this === target) return 0
-
-  var x = thisEnd - thisStart
-  var y = end - start
-  var len = Math.min(x, y)
-
-  var thisCopy = this.slice(thisStart, thisEnd)
-  var targetCopy = target.slice(start, end)
-
-  for (var i = 0; i < len; ++i) {
-    if (thisCopy[i] !== targetCopy[i]) {
-      x = thisCopy[i]
-      y = targetCopy[i]
-      break
-    }
-  }
-
-  if (x < y) return -1
-  if (y < x) return 1
-  return 0
-}
-
-// Finds either the first index of `val` in `buffer` at offset >= `byteOffset`,
-// OR the last index of `val` in `buffer` at offset <= `byteOffset`.
-//
-// Arguments:
-// - buffer - a Buffer to search
-// - val - a string, Buffer, or number
-// - byteOffset - an index into `buffer`; will be clamped to an int32
-// - encoding - an optional encoding, relevant is val is a string
-// - dir - true for indexOf, false for lastIndexOf
-function bidirectionalIndexOf (buffer, val, byteOffset, encoding, dir) {
-  // Empty buffer means no match
-  if (buffer.length === 0) return -1
-
-  // Normalize byteOffset
-  if (typeof byteOffset === 'string') {
-    encoding = byteOffset
-    byteOffset = 0
-  } else if (byteOffset > 0x7fffffff) {
-    byteOffset = 0x7fffffff
-  } else if (byteOffset < -0x80000000) {
-    byteOffset = -0x80000000
-  }
-  byteOffset = +byteOffset  // Coerce to Number.
-  if (isNaN(byteOffset)) {
-    // byteOffset: it it's undefined, null, NaN, "foo", etc, search whole buffer
-    byteOffset = dir ? 0 : (buffer.length - 1)
-  }
-
-  // Normalize byteOffset: negative offsets start from the end of the buffer
-  if (byteOffset < 0) byteOffset = buffer.length + byteOffset
-  if (byteOffset >= buffer.length) {
-    if (dir) return -1
-    else byteOffset = buffer.length - 1
-  } else if (byteOffset < 0) {
-    if (dir) byteOffset = 0
-    else return -1
-  }
-
-  // Normalize val
-  if (typeof val === 'string') {
-    val = Buffer.from(val, encoding)
-  }
-
-  // Finally, search either indexOf (if dir is true) or lastIndexOf
-  if (Buffer.isBuffer(val)) {
-    // Special case: looking for empty string/buffer always fails
-    if (val.length === 0) {
-      return -1
-    }
-    return arrayIndexOf(buffer, val, byteOffset, encoding, dir)
-  } else if (typeof val === 'number') {
-    val = val & 0xFF // Search for a byte value [0-255]
-    if (Buffer.TYPED_ARRAY_SUPPORT &&
-        typeof Uint8Array.prototype.indexOf === 'function') {
-      if (dir) {
-        return Uint8Array.prototype.indexOf.call(buffer, val, byteOffset)
-      } else {
-        return Uint8Array.prototype.lastIndexOf.call(buffer, val, byteOffset)
-      }
-    }
-    return arrayIndexOf(buffer, [ val ], byteOffset, encoding, dir)
-  }
-
-  throw new TypeError('val must be string, number or Buffer')
-}
-
-function arrayIndexOf (arr, val, byteOffset, encoding, dir) {
-  var indexSize = 1
-  var arrLength = arr.length
-  var valLength = val.length
-
-  if (encoding !== undefined) {
-    encoding = String(encoding).toLowerCase()
-    if (encoding === 'ucs2' || encoding === 'ucs-2' ||
-        encoding === 'utf16le' || encoding === 'utf-16le') {
-      if (arr.length < 2 || val.length < 2) {
-        return -1
-      }
-      indexSize = 2
-      arrLength /= 2
-      valLength /= 2
-      byteOffset /= 2
-    }
-  }
-
-  function read (buf, i) {
-    if (indexSize === 1) {
-      return buf[i]
-    } else {
-      return buf.readUInt16BE(i * indexSize)
-    }
-  }
-
-  var i
-  if (dir) {
-    var foundIndex = -1
-    for (i = byteOffset; i < arrLength; i++) {
-      if (read(arr, i) === read(val, foundIndex === -1 ? 0 : i - foundIndex)) {
-        if (foundIndex === -1) foundIndex = i
-        if (i - foundIndex + 1 === valLength) return foundIndex * indexSize
-      } else {
-        if (foundIndex !== -1) i -= i - foundIndex
-        foundIndex = -1
-      }
-    }
-  } else {
-    if (byteOffset + valLength > arrLength) byteOffset = arrLength - valLength
-    for (i = byteOffset; i >= 0; i--) {
-      var found = true
-      for (var j = 0; j < valLength; j++) {
-        if (read(arr, i + j) !== read(val, j)) {
-          found = false
-          break
-        }
-      }
-      if (found) return i
-    }
-  }
-
-  return -1
-}
-
-Buffer.prototype.includes = function includes (val, byteOffset, encoding) {
-  return this.indexOf(val, byteOffset, encoding) !== -1
-}
-
-Buffer.prototype.indexOf = function indexOf (val, byteOffset, encoding) {
-  return bidirectionalIndexOf(this, val, byteOffset, encoding, true)
-}
-
-Buffer.prototype.lastIndexOf = function lastIndexOf (val, byteOffset, encoding) {
-  return bidirectionalIndexOf(this, val, byteOffset, encoding, false)
-}
-
-function hexWrite (buf, string, offset, length) {
-  offset = Number(offset) || 0
-  var remaining = buf.length - offset
-  if (!length) {
-    length = remaining
-  } else {
-    length = Number(length)
-    if (length > remaining) {
-      length = remaining
-    }
-  }
-
-  // must be an even number of digits
-  var strLen = string.length
-  if (strLen % 2 !== 0) throw new TypeError('Invalid hex string')
-
-  if (length > strLen / 2) {
-    length = strLen / 2
-  }
-  for (var i = 0; i < length; ++i) {
-    var parsed = parseInt(string.substr(i * 2, 2), 16)
-    if (isNaN(parsed)) return i
-    buf[offset + i] = parsed
-  }
-  return i
-}
-
-function utf8Write (buf, string, offset, length) {
-  return blitBuffer(utf8ToBytes(string, buf.length - offset), buf, offset, length)
-}
-
-function asciiWrite (buf, string, offset, length) {
-  return blitBuffer(asciiToBytes(string), buf, offset, length)
-}
-
-function latin1Write (buf, string, offset, length) {
-  return asciiWrite(buf, string, offset, length)
-}
-
-function base64Write (buf, string, offset, length) {
-  return blitBuffer(base64ToBytes(string), buf, offset, length)
-}
-
-function ucs2Write (buf, string, offset, length) {
-  return blitBuffer(utf16leToBytes(string, buf.length - offset), buf, offset, length)
-}
-
-Buffer.prototype.write = function write (string, offset, length, encoding) {
-  // Buffer#write(string)
-  if (offset === undefined) {
-    encoding = 'utf8'
-    length = this.length
-    offset = 0
-  // Buffer#write(string, encoding)
-  } else if (length === undefined && typeof offset === 'string') {
-    encoding = offset
-    length = this.length
-    offset = 0
-  // Buffer#write(string, offset[, length][, encoding])
-  } else if (isFinite(offset)) {
-    offset = offset | 0
-    if (isFinite(length)) {
-      length = length | 0
-      if (encoding === undefined) encoding = 'utf8'
-    } else {
-      encoding = length
-      length = undefined
-    }
-  // legacy write(string, encoding, offset, length) - remove in v0.13
-  } else {
-    throw new Error(
-      'Buffer.write(string, encoding, offset[, length]) is no longer supported'
-    )
-  }
-
-  var remaining = this.length - offset
-  if (length === undefined || length > remaining) length = remaining
-
-  if ((string.length > 0 && (length < 0 || offset < 0)) || offset > this.length) {
-    throw new RangeError('Attempt to write outside buffer bounds')
-  }
-
-  if (!encoding) encoding = 'utf8'
-
-  var loweredCase = false
-  for (;;) {
-    switch (encoding) {
-      case 'hex':
-        return hexWrite(this, string, offset, length)
-
-      case 'utf8':
-      case 'utf-8':
-        return utf8Write(this, string, offset, length)
-
-      case 'ascii':
-        return asciiWrite(this, string, offset, length)
-
-      case 'latin1':
-      case 'binary':
-        return latin1Write(this, string, offset, length)
-
-      case 'base64':
-        // Warning: maxLength not taken into account in base64Write
-        return base64Write(this, string, offset, length)
-
-      case 'ucs2':
-      case 'ucs-2':
-      case 'utf16le':
-      case 'utf-16le':
-        return ucs2Write(this, string, offset, length)
-
-      default:
-        if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding)
-        encoding = ('' + encoding).toLowerCase()
-        loweredCase = true
-    }
-  }
-}
-
-Buffer.prototype.toJSON = function toJSON () {
-  return {
-    type: 'Buffer',
-    data: Array.prototype.slice.call(this._arr || this, 0)
-  }
-}
-
-function base64Slice (buf, start, end) {
-  if (start === 0 && end === buf.length) {
-    return base64.fromByteArray(buf)
-  } else {
-    return base64.fromByteArray(buf.slice(start, end))
-  }
-}
-
-function utf8Slice (buf, start, end) {
-  end = Math.min(buf.length, end)
-  var res = []
-
-  var i = start
-  while (i < end) {
-    var firstByte = buf[i]
-    var codePoint = null
-    var bytesPerSequence = (firstByte > 0xEF) ? 4
-      : (firstByte > 0xDF) ? 3
-      : (firstByte > 0xBF) ? 2
-      : 1
-
-    if (i + bytesPerSequence <= end) {
-      var secondByte, thirdByte, fourthByte, tempCodePoint
-
-      switch (bytesPerSequence) {
-        case 1:
-          if (firstByte < 0x80) {
-            codePoint = firstByte
-          }
-          break
-        case 2:
-          secondByte = buf[i + 1]
-          if ((secondByte & 0xC0) === 0x80) {
-            tempCodePoint = (firstByte & 0x1F) << 0x6 | (secondByte & 0x3F)
-            if (tempCodePoint > 0x7F) {
-              codePoint = tempCodePoint
-            }
-          }
-          break
-        case 3:
-          secondByte = buf[i + 1]
-          thirdByte = buf[i + 2]
-          if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80) {
-            tempCodePoint = (firstByte & 0xF) << 0xC | (secondByte & 0x3F) << 0x6 | (thirdByte & 0x3F)
-            if (tempCodePoint > 0x7FF && (tempCodePoint < 0xD800 || tempCodePoint > 0xDFFF)) {
-              codePoint = tempCodePoint
-            }
-          }
-          break
-        case 4:
-          secondByte = buf[i + 1]
-          thirdByte = buf[i + 2]
-          fourthByte = buf[i + 3]
-          if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80 && (fourthByte & 0xC0) === 0x80) {
-            tempCodePoint = (firstByte & 0xF) << 0x12 | (secondByte & 0x3F) << 0xC | (thirdByte & 0x3F) << 0x6 | (fourthByte & 0x3F)
-            if (tempCodePoint > 0xFFFF && tempCodePoint < 0x110000) {
-              codePoint = tempCodePoint
-            }
-          }
-      }
-    }
-
-    if (codePoint === null) {
-      // we did not generate a valid codePoint so insert a
-      // replacement char (U+FFFD) and advance only 1 byte
-      codePoint = 0xFFFD
-      bytesPerSequence = 1
-    } else if (codePoint > 0xFFFF) {
-      // encode to utf16 (surrogate pair dance)
-      codePoint -= 0x10000
-      res.push(codePoint >>> 10 & 0x3FF | 0xD800)
-      codePoint = 0xDC00 | codePoint & 0x3FF
-    }
-
-    res.push(codePoint)
-    i += bytesPerSequence
-  }
-
-  return decodeCodePointsArray(res)
-}
-
-// Based on http://stackoverflow.com/a/22747272/680742, the browser with
-// the lowest limit is Chrome, with 0x10000 args.
-// We go 1 magnitude less, for safety
-var MAX_ARGUMENTS_LENGTH = 0x1000
-
-function decodeCodePointsArray (codePoints) {
-  var len = codePoints.length
-  if (len <= MAX_ARGUMENTS_LENGTH) {
-    return String.fromCharCode.apply(String, codePoints) // avoid extra slice()
-  }
-
-  // Decode in chunks to avoid "call stack size exceeded".
-  var res = ''
-  var i = 0
-  while (i < len) {
-    res += String.fromCharCode.apply(
-      String,
-      codePoints.slice(i, i += MAX_ARGUMENTS_LENGTH)
-    )
-  }
-  return res
-}
-
-function asciiSlice (buf, start, end) {
-  var ret = ''
-  end = Math.min(buf.length, end)
-
-  for (var i = start; i < end; ++i) {
-    ret += String.fromCharCode(buf[i] & 0x7F)
-  }
-  return ret
-}
-
-function latin1Slice (buf, start, end) {
-  var ret = ''
-  end = Math.min(buf.length, end)
-
-  for (var i = start; i < end; ++i) {
-    ret += String.fromCharCode(buf[i])
-  }
-  return ret
-}
-
-function hexSlice (buf, start, end) {
-  var len = buf.length
-
-  if (!start || start < 0) start = 0
-  if (!end || end < 0 || end > len) end = len
-
-  var out = ''
-  for (var i = start; i < end; ++i) {
-    out += toHex(buf[i])
-  }
-  return out
-}
-
-function utf16leSlice (buf, start, end) {
-  var bytes = buf.slice(start, end)
-  var res = ''
-  for (var i = 0; i < bytes.length; i += 2) {
-    res += String.fromCharCode(bytes[i] + bytes[i + 1] * 256)
-  }
-  return res
-}
-
-Buffer.prototype.slice = function slice (start, end) {
-  var len = this.length
-  start = ~~start
-  end = end === undefined ? len : ~~end
-
-  if (start < 0) {
-    start += len
-    if (start < 0) start = 0
-  } else if (start > len) {
-    start = len
-  }
-
-  if (end < 0) {
-    end += len
-    if (end < 0) end = 0
-  } else if (end > len) {
-    end = len
-  }
-
-  if (end < start) end = start
-
-  var newBuf
-  if (Buffer.TYPED_ARRAY_SUPPORT) {
-    newBuf = this.subarray(start, end)
-    newBuf.__proto__ = Buffer.prototype
-  } else {
-    var sliceLen = end - start
-    newBuf = new Buffer(sliceLen, undefined)
-    for (var i = 0; i < sliceLen; ++i) {
-      newBuf[i] = this[i + start]
-    }
-  }
-
-  return newBuf
-}
-
-/*
- * Need to make sure that buffer isn't trying to write out of bounds.
- */
-function checkOffset (offset, ext, length) {
-  if ((offset % 1) !== 0 || offset < 0) throw new RangeError('offset is not uint')
-  if (offset + ext > length) throw new RangeError('Trying to access beyond buffer length')
-}
-
-Buffer.prototype.readUIntLE = function readUIntLE (offset, byteLength, noAssert) {
-  offset = offset | 0
-  byteLength = byteLength | 0
-  if (!noAssert) checkOffset(offset, byteLength, this.length)
-
-  var val = this[offset]
-  var mul = 1
-  var i = 0
-  while (++i < byteLength && (mul *= 0x100)) {
-    val += this[offset + i] * mul
-  }
-
-  return val
-}
-
-Buffer.prototype.readUIntBE = function readUIntBE (offset, byteLength, noAssert) {
-  offset = offset | 0
-  byteLength = byteLength | 0
-  if (!noAssert) {
-    checkOffset(offset, byteLength, this.length)
-  }
-
-  var val = this[offset + --byteLength]
-  var mul = 1
-  while (byteLength > 0 && (mul *= 0x100)) {
-    val += this[offset + --byteLength] * mul
-  }
-
-  return val
-}
-
-Buffer.prototype.readUInt8 = function readUInt8 (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 1, this.length)
-  return this[offset]
-}
-
-Buffer.prototype.readUInt16LE = function readUInt16LE (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 2, this.length)
-  return this[offset] | (this[offset + 1] << 8)
-}
-
-Buffer.prototype.readUInt16BE = function readUInt16BE (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 2, this.length)
-  return (this[offset] << 8) | this[offset + 1]
-}
-
-Buffer.prototype.readUInt32LE = function readUInt32LE (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 4, this.length)
-
-  return ((this[offset]) |
-      (this[offset + 1] << 8) |
-      (this[offset + 2] << 16)) +
-      (this[offset + 3] * 0x1000000)
-}
-
-Buffer.prototype.readUInt32BE = function readUInt32BE (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 4, this.length)
-
-  return (this[offset] * 0x1000000) +
-    ((this[offset + 1] << 16) |
-    (this[offset + 2] << 8) |
-    this[offset + 3])
-}
-
-Buffer.prototype.readIntLE = function readIntLE (offset, byteLength, noAssert) {
-  offset = offset | 0
-  byteLength = byteLength | 0
-  if (!noAssert) checkOffset(offset, byteLength, this.length)
-
-  var val = this[offset]
-  var mul = 1
-  var i = 0
-  while (++i < byteLength && (mul *= 0x100)) {
-    val += this[offset + i] * mul
-  }
-  mul *= 0x80
-
-  if (val >= mul) val -= Math.pow(2, 8 * byteLength)
-
-  return val
-}
-
-Buffer.prototype.readIntBE = function readIntBE (offset, byteLength, noAssert) {
-  offset = offset | 0
-  byteLength = byteLength | 0
-  if (!noAssert) checkOffset(offset, byteLength, this.length)
-
-  var i = byteLength
-  var mul = 1
-  var val = this[offset + --i]
-  while (i > 0 && (mul *= 0x100)) {
-    val += this[offset + --i] * mul
-  }
-  mul *= 0x80
-
-  if (val >= mul) val -= Math.pow(2, 8 * byteLength)
-
-  return val
-}
-
-Buffer.prototype.readInt8 = function readInt8 (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 1, this.length)
-  if (!(this[offset] & 0x80)) return (this[offset])
-  return ((0xff - this[offset] + 1) * -1)
-}
-
-Buffer.prototype.readInt16LE = function readInt16LE (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 2, this.length)
-  var val = this[offset] | (this[offset + 1] << 8)
-  return (val & 0x8000) ? val | 0xFFFF0000 : val
-}
-
-Buffer.prototype.readInt16BE = function readInt16BE (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 2, this.length)
-  var val = this[offset + 1] | (this[offset] << 8)
-  return (val & 0x8000) ? val | 0xFFFF0000 : val
-}
-
-Buffer.prototype.readInt32LE = function readInt32LE (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 4, this.length)
-
-  return (this[offset]) |
-    (this[offset + 1] << 8) |
-    (this[offset + 2] << 16) |
-    (this[offset + 3] << 24)
-}
-
-Buffer.prototype.readInt32BE = function readInt32BE (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 4, this.length)
-
-  return (this[offset] << 24) |
-    (this[offset + 1] << 16) |
-    (this[offset + 2] << 8) |
-    (this[offset + 3])
-}
-
-Buffer.prototype.readFloatLE = function readFloatLE (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 4, this.length)
-  return ieee754.read(this, offset, true, 23, 4)
-}
-
-Buffer.prototype.readFloatBE = function readFloatBE (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 4, this.length)
-  return ieee754.read(this, offset, false, 23, 4)
-}
-
-Buffer.prototype.readDoubleLE = function readDoubleLE (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 8, this.length)
-  return ieee754.read(this, offset, true, 52, 8)
-}
-
-Buffer.prototype.readDoubleBE = function readDoubleBE (offset, noAssert) {
-  if (!noAssert) checkOffset(offset, 8, this.length)
-  return ieee754.read(this, offset, false, 52, 8)
-}
-
-function checkInt (buf, value, offset, ext, max, min) {
-  if (!Buffer.isBuffer(buf)) throw new TypeError('"buffer" argument must be a Buffer instance')
-  if (value > max || value < min) throw new RangeError('"value" argument is out of bounds')
-  if (offset + ext > buf.length) throw new RangeError('Index out of range')
-}
-
-Buffer.prototype.writeUIntLE = function writeUIntLE (value, offset, byteLength, noAssert) {
-  value = +value
-  offset = offset | 0
-  byteLength = byteLength | 0
-  if (!noAssert) {
-    var maxBytes = Math.pow(2, 8 * byteLength) - 1
-    checkInt(this, value, offset, byteLength, maxBytes, 0)
-  }
-
-  var mul = 1
-  var i = 0
-  this[offset] = value & 0xFF
-  while (++i < byteLength && (mul *= 0x100)) {
-    this[offset + i] = (value / mul) & 0xFF
-  }
-
-  return offset + byteLength
-}
-
-Buffer.prototype.writeUIntBE = function writeUIntBE (value, offset, byteLength, noAssert) {
-  value = +value
-  offset = offset | 0
-  byteLength = byteLength | 0
-  if (!noAssert) {
-    var maxBytes = Math.pow(2, 8 * byteLength) - 1
-    checkInt(this, value, offset, byteLength, maxBytes, 0)
-  }
-
-  var i = byteLength - 1
-  var mul = 1
-  this[offset + i] = value & 0xFF
-  while (--i >= 0 && (mul *= 0x100)) {
-    this[offset + i] = (value / mul) & 0xFF
-  }
-
-  return offset + byteLength
-}
-
-Buffer.prototype.writeUInt8 = function writeUInt8 (value, offset, noAssert) {
-  value = +value
-  offset = offset | 0
-  if (!noAssert) checkInt(this, value, offset, 1, 0xff, 0)
-  if (!Buffer.TYPED_ARRAY_SUPPORT) value = Math.floor(value)
-  this[offset] = (value & 0xff)
-  return offset + 1
-}
-
-function objectWriteUInt16 (buf, value, offset, littleEndian) {
-  if (value < 0) value = 0xffff + value + 1
-  for (var i = 0, j = Math.min(buf.length - offset, 2); i < j; ++i) {
-    buf[offset + i] = (value & (0xff << (8 * (littleEndian ? i : 1 - i)))) >>>
-      (littleEndian ? i : 1 - i) * 8
-  }
-}
-
-Buffer.prototype.writeUInt16LE = function writeUInt16LE (value, offset, noAssert) {
-  value = +value
-  offset = offset | 0
-  if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0)
-  if (Buffer.TYPED_ARRAY_SUPPORT) {
-    this[offset] = (value & 0xff)
-    this[offset + 1] = (value >>> 8)
-  } else {
-    objectWriteUInt16(this, value, offset, true)
-  }
-  return offset + 2
-}
-
-Buffer.prototype.writeUInt16BE = function writeUInt16BE (value, offset, noAssert) {
-  value = +value
-  offset = offset | 0
-  if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0)
-  if (Buffer.TYPED_ARRAY_SUPPORT) {
-    this[offset] = (value >>> 8)
-    this[offset + 1] = (value & 0xff)
-  } else {
-    objectWriteUInt16(this, value, offset, false)
-  }
-  return offset + 2
-}
-
-function objectWriteUInt32 (buf, value, offset, littleEndian) {
-  if (value < 0) value = 0xffffffff + value + 1
-  for (var i = 0, j = Math.min(buf.length - offset, 4); i < j; ++i) {
-    buf[offset + i] = (value >>> (littleEndian ? i : 3 - i) * 8) & 0xff
-  }
-}
-
-Buffer.prototype.writeUInt32LE = function writeUInt32LE (value, offset, noAssert) {
-  value = +value
-  offset = offset | 0
-  if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0)
-  if (Buffer.TYPED_ARRAY_SUPPORT) {
-    this[offset + 3] = (value >>> 24)
-    this[offset + 2] = (value >>> 16)
-    this[offset + 1] = (value >>> 8)
-    this[offset] = (value & 0xff)
-  } else {
-    objectWriteUInt32(this, value, offset, true)
-  }
-  return offset + 4
-}
-
-Buffer.prototype.writeUInt32BE = function writeUInt32BE (value, offset, noAssert) {
-  value = +value
-  offset = offset | 0
-  if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0)
-  if (Buffer.TYPED_ARRAY_SUPPORT) {
-    this[offset] = (value >>> 24)
-    this[offset + 1] = (value >>> 16)
-    this[offset + 2] = (value >>> 8)
-    this[offset + 3] = (value & 0xff)
-  } else {
-    objectWriteUInt32(this, value, offset, false)
-  }
-  return offset + 4
-}
-
-Buffer.prototype.writeIntLE = function writeIntLE (value, offset, byteLength, noAssert) {
-  value = +value
-  offset = offset | 0
-  if (!noAssert) {
-    var limit = Math.pow(2, 8 * byteLength - 1)
-
-    checkInt(this, value, offset, byteLength, limit - 1, -limit)
-  }
-
-  var i = 0
-  var mul = 1
-  var sub = 0
-  this[offset] = value & 0xFF
-  while (++i < byteLength && (mul *= 0x100)) {
-    if (value < 0 && sub === 0 && this[offset + i - 1] !== 0) {
-      sub = 1
-    }
-    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
-  }
-
-  return offset + byteLength
-}
-
-Buffer.prototype.writeIntBE = function writeIntBE (value, offset, byteLength, noAssert) {
-  value = +value
-  offset = offset | 0
-  if (!noAssert) {
-    var limit = Math.pow(2, 8 * byteLength - 1)
-
-    checkInt(this, value, offset, byteLength, limit - 1, -limit)
-  }
-
-  var i = byteLength - 1
-  var mul = 1
-  var sub = 0
-  this[offset + i] = value & 0xFF
-  while (--i >= 0 && (mul *= 0x100)) {
-    if (value < 0 && sub === 0 && this[offset + i + 1] !== 0) {
-      sub = 1
-    }
-    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
-  }
-
-  return offset + byteLength
-}
-
-Buffer.prototype.writeInt8 = function writeInt8 (value, offset, noAssert) {
-  value = +value
-  offset = offset | 0
-  if (!noAssert) checkInt(this, value, offset, 1, 0x7f, -0x80)
-  if (!Buffer.TYPED_ARRAY_SUPPORT) value = Math.floor(value)
-  if (value < 0) value = 0xff + value + 1
-  this[offset] = (value & 0xff)
-  return offset + 1
-}
-
-Buffer.prototype.writeInt16LE = function writeInt16LE (value, offset, noAssert) {
-  value = +value
-  offset = offset | 0
-  if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000)
-  if (Buffer.TYPED_ARRAY_SUPPORT) {
-    this[offset] = (value & 0xff)
-    this[offset + 1] = (value >>> 8)
-  } else {
-    objectWriteUInt16(this, value, offset, true)
-  }
-  return offset + 2
-}
-
-Buffer.prototype.writeInt16BE = function writeInt16BE (value, offset, noAssert) {
-  value = +value
-  offset = offset | 0
-  if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000)
-  if (Buffer.TYPED_ARRAY_SUPPORT) {
-    this[offset] = (value >>> 8)
-    this[offset + 1] = (value & 0xff)
-  } else {
-    objectWriteUInt16(this, value, offset, false)
-  }
-  return offset + 2
-}
-
-Buffer.prototype.writeInt32LE = function writeInt32LE (value, offset, noAssert) {
-  value = +value
-  offset = offset | 0
-  if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000)
-  if (Buffer.TYPED_ARRAY_SUPPORT) {
-    this[offset] = (value & 0xff)
-    this[offset + 1] = (value >>> 8)
-    this[offset + 2] = (value >>> 16)
-    this[offset + 3] = (value >>> 24)
-  } else {
-    objectWriteUInt32(this, value, offset, true)
-  }
-  return offset + 4
-}
-
-Buffer.prototype.writeInt32BE = function writeInt32BE (value, offset, noAssert) {
-  value = +value
-  offset = offset | 0
-  if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000)
-  if (value < 0) value = 0xffffffff + value + 1
-  if (Buffer.TYPED_ARRAY_SUPPORT) {
-    this[offset] = (value >>> 24)
-    this[offset + 1] = (value >>> 16)
-    this[offset + 2] = (value >>> 8)
-    this[offset + 3] = (value & 0xff)
-  } else {
-    objectWriteUInt32(this, value, offset, false)
-  }
-  return offset + 4
-}
-
-function checkIEEE754 (buf, value, offset, ext, max, min) {
-  if (offset + ext > buf.length) throw new RangeError('Index out of range')
-  if (offset < 0) throw new RangeError('Index out of range')
-}
-
-function writeFloat (buf, value, offset, littleEndian, noAssert) {
-  if (!noAssert) {
-    checkIEEE754(buf, value, offset, 4, 3.4028234663852886e+38, -3.4028234663852886e+38)
-  }
-  ieee754.write(buf, value, offset, littleEndian, 23, 4)
-  return offset + 4
-}
-
-Buffer.prototype.writeFloatLE = function writeFloatLE (value, offset, noAssert) {
-  return writeFloat(this, value, offset, true, noAssert)
-}
-
-Buffer.prototype.writeFloatBE = function writeFloatBE (value, offset, noAssert) {
-  return writeFloat(this, value, offset, false, noAssert)
-}
-
-function writeDouble (buf, value, offset, littleEndian, noAssert) {
-  if (!noAssert) {
-    checkIEEE754(buf, value, offset, 8, 1.7976931348623157E+308, -1.7976931348623157E+308)
-  }
-  ieee754.write(buf, value, offset, littleEndian, 52, 8)
-  return offset + 8
-}
-
-Buffer.prototype.writeDoubleLE = function writeDoubleLE (value, offset, noAssert) {
-  return writeDouble(this, value, offset, true, noAssert)
-}
-
-Buffer.prototype.writeDoubleBE = function writeDoubleBE (value, offset, noAssert) {
-  return writeDouble(this, value, offset, false, noAssert)
-}
-
-// copy(targetBuffer, targetStart=0, sourceStart=0, sourceEnd=buffer.length)
-Buffer.prototype.copy = function copy (target, targetStart, start, end) {
-  if (!start) start = 0
-  if (!end && end !== 0) end = this.length
-  if (targetStart >= target.length) targetStart = target.length
-  if (!targetStart) targetStart = 0
-  if (end > 0 && end < start) end = start
-
-  // Copy 0 bytes; we're done
-  if (end === start) return 0
-  if (target.length === 0 || this.length === 0) return 0
-
-  // Fatal error conditions
-  if (targetStart < 0) {
-    throw new RangeError('targetStart out of bounds')
-  }
-  if (start < 0 || start >= this.length) throw new RangeError('sourceStart out of bounds')
-  if (end < 0) throw new RangeError('sourceEnd out of bounds')
-
-  // Are we oob?
-  if (end > this.length) end = this.length
-  if (target.length - targetStart < end - start) {
-    end = target.length - targetStart + start
-  }
-
-  var len = end - start
-  var i
-
-  if (this === target && start < targetStart && targetStart < end) {
-    // descending copy from end
-    for (i = len - 1; i >= 0; --i) {
-      target[i + targetStart] = this[i + start]
-    }
-  } else if (len < 1000 || !Buffer.TYPED_ARRAY_SUPPORT) {
-    // ascending copy from start
-    for (i = 0; i < len; ++i) {
-      target[i + targetStart] = this[i + start]
-    }
-  } else {
-    Uint8Array.prototype.set.call(
-      target,
-      this.subarray(start, start + len),
-      targetStart
-    )
-  }
-
-  return len
-}
-
-// Usage:
-//    buffer.fill(number[, offset[, end]])
-//    buffer.fill(buffer[, offset[, end]])
-//    buffer.fill(string[, offset[, end]][, encoding])
-Buffer.prototype.fill = function fill (val, start, end, encoding) {
-  // Handle string cases:
-  if (typeof val === 'string') {
-    if (typeof start === 'string') {
-      encoding = start
-      start = 0
-      end = this.length
-    } else if (typeof end === 'string') {
-      encoding = end
-      end = this.length
-    }
-    if (val.length === 1) {
-      var code = val.charCodeAt(0)
-      if (code < 256) {
-        val = code
-      }
-    }
-    if (encoding !== undefined && typeof encoding !== 'string') {
-      throw new TypeError('encoding must be a string')
-    }
-    if (typeof encoding === 'string' && !Buffer.isEncoding(encoding)) {
-      throw new TypeError('Unknown encoding: ' + encoding)
-    }
-  } else if (typeof val === 'number') {
-    val = val & 255
-  }
-
-  // Invalid ranges are not set to a default, so can range check early.
-  if (start < 0 || this.length < start || this.length < end) {
-    throw new RangeError('Out of range index')
-  }
-
-  if (end <= start) {
-    return this
-  }
-
-  start = start >>> 0
-  end = end === undefined ? this.length : end >>> 0
-
-  if (!val) val = 0
-
-  var i
-  if (typeof val === 'number') {
-    for (i = start; i < end; ++i) {
-      this[i] = val
-    }
-  } else {
-    var bytes = Buffer.isBuffer(val)
-      ? val
-      : utf8ToBytes(new Buffer(val, encoding).toString())
-    var len = bytes.length
-    for (i = 0; i < end - start; ++i) {
-      this[i + start] = bytes[i % len]
-    }
-  }
-
-  return this
-}
-
-// HELPER FUNCTIONS
-// ================
-
-var INVALID_BASE64_RE = /[^+\/0-9A-Za-z-_]/g
-
-function base64clean (str) {
-  // Node strips out invalid characters like \n and \t from the string, base64-js does not
-  str = stringtrim(str).replace(INVALID_BASE64_RE, '')
-  // Node converts strings with length < 2 to ''
-  if (str.length < 2) return ''
-  // Node allows for non-padded base64 strings (missing trailing ===), base64-js does not
-  while (str.length % 4 !== 0) {
-    str = str + '='
-  }
-  return str
-}
-
-function stringtrim (str) {
-  if (str.trim) return str.trim()
-  return str.replace(/^\s+|\s+$/g, '')
-}
-
-function toHex (n) {
-  if (n < 16) return '0' + n.toString(16)
-  return n.toString(16)
-}
-
-function utf8ToBytes (string, units) {
-  units = units || Infinity
-  var codePoint
-  var length = string.length
-  var leadSurrogate = null
-  var bytes = []
-
-  for (var i = 0; i < length; ++i) {
-    codePoint = string.charCodeAt(i)
-
-    // is surrogate component
-    if (codePoint > 0xD7FF && codePoint < 0xE000) {
-      // last char was a lead
-      if (!leadSurrogate) {
-        // no lead yet
-        if (codePoint > 0xDBFF) {
-          // unexpected trail
-          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
-          continue
-        } else if (i + 1 === length) {
-          // unpaired lead
-          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
-          continue
-        }
-
-        // valid lead
-        leadSurrogate = codePoint
-
-        continue
-      }
-
-      // 2 leads in a row
-      if (codePoint < 0xDC00) {
-        if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
-        leadSurrogate = codePoint
-        continue
-      }
-
-      // valid surrogate pair
-      codePoint = (leadSurrogate - 0xD800 << 10 | codePoint - 0xDC00) + 0x10000
-    } else if (leadSurrogate) {
-      // valid bmp char, but last char was a lead
-      if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
-    }
-
-    leadSurrogate = null
-
-    // encode utf8
-    if (codePoint < 0x80) {
-      if ((units -= 1) < 0) break
-      bytes.push(codePoint)
-    } else if (codePoint < 0x800) {
-      if ((units -= 2) < 0) break
-      bytes.push(
-        codePoint >> 0x6 | 0xC0,
-        codePoint & 0x3F | 0x80
-      )
-    } else if (codePoint < 0x10000) {
-      if ((units -= 3) < 0) break
-      bytes.push(
-        codePoint >> 0xC | 0xE0,
-        codePoint >> 0x6 & 0x3F | 0x80,
-        codePoint & 0x3F | 0x80
-      )
-    } else if (codePoint < 0x110000) {
-      if ((units -= 4) < 0) break
-      bytes.push(
-        codePoint >> 0x12 | 0xF0,
-        codePoint >> 0xC & 0x3F | 0x80,
-        codePoint >> 0x6 & 0x3F | 0x80,
-        codePoint & 0x3F | 0x80
-      )
-    } else {
-      throw new Error('Invalid code point')
-    }
-  }
-
-  return bytes
-}
-
-function asciiToBytes (str) {
-  var byteArray = []
-  for (var i = 0; i < str.length; ++i) {
-    // Node's code seems to be doing this and not & 0x7F..
-    byteArray.push(str.charCodeAt(i) & 0xFF)
-  }
-  return byteArray
-}
-
-function utf16leToBytes (str, units) {
-  var c, hi, lo
-  var byteArray = []
-  for (var i = 0; i < str.length; ++i) {
-    if ((units -= 2) < 0) break
-
-    c = str.charCodeAt(i)
-    hi = c >> 8
-    lo = c % 256
-    byteArray.push(lo)
-    byteArray.push(hi)
-  }
-
-  return byteArray
-}
-
-function base64ToBytes (str) {
-  return base64.toByteArray(base64clean(str))
-}
-
-function blitBuffer (src, dst, offset, length) {
-  for (var i = 0; i < length; ++i) {
-    if ((i + offset >= dst.length) || (i >= src.length)) break
-    dst[i + offset] = src[i]
-  }
-  return i
-}
-
-function isnan (val) {
-  return val !== val // eslint-disable-line no-self-compare
-}
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(59)))
-
-/***/ }),
-/* 124 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(133);
-module.exports = __webpack_require__(24).RegExp.escape;
-
-/***/ }),
-/* 125 */
+/* 157 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(4)
-  , isArray  = __webpack_require__(68)
+  , isArray  = __webpack_require__(74)
   , SPECIES  = __webpack_require__(5)('species');
 
 module.exports = function(original){
@@ -19288,24 +21509,24 @@ module.exports = function(original){
 };
 
 /***/ }),
-/* 126 */
+/* 158 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 9.4.2.3 ArraySpeciesCreate(originalArray, length)
-var speciesConstructor = __webpack_require__(125);
+var speciesConstructor = __webpack_require__(157);
 
 module.exports = function(original, length){
   return new (speciesConstructor(original))(length);
 };
 
 /***/ }),
-/* 127 */
+/* 159 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var anObject    = __webpack_require__(1)
-  , toPrimitive = __webpack_require__(23)
+  , toPrimitive = __webpack_require__(24)
   , NUMBER      = 'number';
 
 module.exports = function(hint){
@@ -19314,13 +21535,13 @@ module.exports = function(hint){
 };
 
 /***/ }),
-/* 128 */
+/* 160 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // all enumerable object keys, includes symbols
-var getKeys = __webpack_require__(35)
-  , gOPS    = __webpack_require__(56)
-  , pIE     = __webpack_require__(47);
+var getKeys = __webpack_require__(36)
+  , gOPS    = __webpack_require__(59)
+  , pIE     = __webpack_require__(49);
 module.exports = function(it){
   var result     = getKeys(it)
     , getSymbols = gOPS.f;
@@ -19334,10 +21555,10 @@ module.exports = function(it){
 };
 
 /***/ }),
-/* 129 */
+/* 161 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getKeys   = __webpack_require__(35)
+var getKeys   = __webpack_require__(36)
   , toIObject = __webpack_require__(15);
 module.exports = function(object, el){
   var O      = toIObject(object)
@@ -19349,13 +21570,13 @@ module.exports = function(object, el){
 };
 
 /***/ }),
-/* 130 */
+/* 162 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var path      = __webpack_require__(131)
-  , invoke    = __webpack_require__(52)
+var path      = __webpack_require__(163)
+  , invoke    = __webpack_require__(55)
   , aFunction = __webpack_require__(11);
 module.exports = function(/* ...pargs */){
   var fn     = aFunction(this)
@@ -19378,13 +21599,13 @@ module.exports = function(/* ...pargs */){
 };
 
 /***/ }),
-/* 131 */
+/* 163 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(2);
 
 /***/ }),
-/* 132 */
+/* 164 */
 /***/ (function(module, exports) {
 
 module.exports = function(regExp, replace){
@@ -19397,37 +21618,37 @@ module.exports = function(regExp, replace){
 };
 
 /***/ }),
-/* 133 */
+/* 165 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://github.com/benjamingr/RexExp.escape
 var $export = __webpack_require__(0)
-  , $re     = __webpack_require__(132)(/[\\^$*+?.()|[\]{}]/g, '\\$&');
+  , $re     = __webpack_require__(164)(/[\\^$*+?.()|[\]{}]/g, '\\$&');
 
 $export($export.S, 'RegExp', {escape: function escape(it){ return $re(it); }});
 
 
 /***/ }),
-/* 134 */
+/* 166 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 22.1.3.3 Array.prototype.copyWithin(target, start, end = this.length)
 var $export = __webpack_require__(0);
 
-$export($export.P, 'Array', {copyWithin: __webpack_require__(87)});
+$export($export.P, 'Array', {copyWithin: __webpack_require__(99)});
 
-__webpack_require__(40)('copyWithin');
+__webpack_require__(41)('copyWithin');
 
 /***/ }),
-/* 135 */
+/* 167 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var $export = __webpack_require__(0)
-  , $every  = __webpack_require__(21)(4);
+  , $every  = __webpack_require__(22)(4);
 
-$export($export.P + $export.F * !__webpack_require__(20)([].every, true), 'Array', {
+$export($export.P + $export.F * !__webpack_require__(21)([].every, true), 'Array', {
   // 22.1.3.5 / 15.4.4.16 Array.prototype.every(callbackfn [, thisArg])
   every: function every(callbackfn /* , thisArg */){
     return $every(this, callbackfn, arguments[1]);
@@ -19435,26 +21656,26 @@ $export($export.P + $export.F * !__webpack_require__(20)([].every, true), 'Array
 });
 
 /***/ }),
-/* 136 */
+/* 168 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 22.1.3.6 Array.prototype.fill(value, start = 0, end = this.length)
 var $export = __webpack_require__(0);
 
-$export($export.P, 'Array', {fill: __webpack_require__(60)});
+$export($export.P, 'Array', {fill: __webpack_require__(66)});
 
-__webpack_require__(40)('fill');
+__webpack_require__(41)('fill');
 
 /***/ }),
-/* 137 */
+/* 169 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var $export = __webpack_require__(0)
-  , $filter = __webpack_require__(21)(2);
+  , $filter = __webpack_require__(22)(2);
 
-$export($export.P + $export.F * !__webpack_require__(20)([].filter, true), 'Array', {
+$export($export.P + $export.F * !__webpack_require__(21)([].filter, true), 'Array', {
   // 22.1.3.7 / 15.4.4.20 Array.prototype.filter(callbackfn [, thisArg])
   filter: function filter(callbackfn /* , thisArg */){
     return $filter(this, callbackfn, arguments[1]);
@@ -19462,14 +21683,14 @@ $export($export.P + $export.F * !__webpack_require__(20)([].filter, true), 'Arra
 });
 
 /***/ }),
-/* 138 */
+/* 170 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 // 22.1.3.9 Array.prototype.findIndex(predicate, thisArg = undefined)
 var $export = __webpack_require__(0)
-  , $find   = __webpack_require__(21)(6)
+  , $find   = __webpack_require__(22)(6)
   , KEY     = 'findIndex'
   , forced  = true;
 // Shouldn't skip holes
@@ -19479,17 +21700,17 @@ $export($export.P + $export.F * forced, 'Array', {
     return $find(this, callbackfn, arguments.length > 1 ? arguments[1] : undefined);
   }
 });
-__webpack_require__(40)(KEY);
+__webpack_require__(41)(KEY);
 
 /***/ }),
-/* 139 */
+/* 171 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 // 22.1.3.8 Array.prototype.find(predicate, thisArg = undefined)
 var $export = __webpack_require__(0)
-  , $find   = __webpack_require__(21)(5)
+  , $find   = __webpack_require__(22)(5)
   , KEY     = 'find'
   , forced  = true;
 // Shouldn't skip holes
@@ -19499,17 +21720,17 @@ $export($export.P + $export.F * forced, 'Array', {
     return $find(this, callbackfn, arguments.length > 1 ? arguments[1] : undefined);
   }
 });
-__webpack_require__(40)(KEY);
+__webpack_require__(41)(KEY);
 
 /***/ }),
-/* 140 */
+/* 172 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var $export  = __webpack_require__(0)
-  , $forEach = __webpack_require__(21)(0)
-  , STRICT   = __webpack_require__(20)([].forEach, true);
+  , $forEach = __webpack_require__(22)(0)
+  , STRICT   = __webpack_require__(21)([].forEach, true);
 
 $export($export.P + $export.F * !STRICT, 'Array', {
   // 22.1.3.10 / 15.4.4.18 Array.prototype.forEach(callbackfn [, thisArg])
@@ -19519,21 +21740,21 @@ $export($export.P + $export.F * !STRICT, 'Array', {
 });
 
 /***/ }),
-/* 141 */
+/* 173 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var ctx            = __webpack_require__(25)
+var ctx            = __webpack_require__(26)
   , $export        = __webpack_require__(0)
   , toObject       = __webpack_require__(9)
-  , call           = __webpack_require__(96)
-  , isArrayIter    = __webpack_require__(67)
+  , call           = __webpack_require__(108)
+  , isArrayIter    = __webpack_require__(73)
   , toLength       = __webpack_require__(8)
-  , createProperty = __webpack_require__(61)
-  , getIterFn      = __webpack_require__(84);
+  , createProperty = __webpack_require__(67)
+  , getIterFn      = __webpack_require__(90);
 
-$export($export.S + $export.F * !__webpack_require__(54)(function(iter){ Array.from(iter); }), 'Array', {
+$export($export.S + $export.F * !__webpack_require__(57)(function(iter){ Array.from(iter); }), 'Array', {
   // 22.1.2.1 Array.from(arrayLike, mapfn = undefined, thisArg = undefined)
   from: function from(arrayLike/*, mapfn = undefined, thisArg = undefined*/){
     var O       = toObject(arrayLike)
@@ -19563,17 +21784,17 @@ $export($export.S + $export.F * !__webpack_require__(54)(function(iter){ Array.f
 
 
 /***/ }),
-/* 142 */
+/* 174 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var $export       = __webpack_require__(0)
-  , $indexOf      = __webpack_require__(48)(false)
+  , $indexOf      = __webpack_require__(51)(false)
   , $native       = [].indexOf
   , NEGATIVE_ZERO = !!$native && 1 / [1].indexOf(1, -0) < 0;
 
-$export($export.P + $export.F * (NEGATIVE_ZERO || !__webpack_require__(20)($native)), 'Array', {
+$export($export.P + $export.F * (NEGATIVE_ZERO || !__webpack_require__(21)($native)), 'Array', {
   // 22.1.3.11 / 15.4.4.14 Array.prototype.indexOf(searchElement [, fromIndex])
   indexOf: function indexOf(searchElement /*, fromIndex = 0 */){
     return NEGATIVE_ZERO
@@ -19584,16 +21805,16 @@ $export($export.P + $export.F * (NEGATIVE_ZERO || !__webpack_require__(20)($nati
 });
 
 /***/ }),
-/* 143 */
+/* 175 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 22.1.2.2 / 15.4.3.2 Array.isArray(arg)
 var $export = __webpack_require__(0);
 
-$export($export.S, 'Array', {isArray: __webpack_require__(68)});
+$export($export.S, 'Array', {isArray: __webpack_require__(74)});
 
 /***/ }),
-/* 144 */
+/* 176 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19604,26 +21825,26 @@ var $export   = __webpack_require__(0)
   , arrayJoin = [].join;
 
 // fallback for not array-like strings
-$export($export.P + $export.F * (__webpack_require__(46) != Object || !__webpack_require__(20)(arrayJoin)), 'Array', {
+$export($export.P + $export.F * (__webpack_require__(48) != Object || !__webpack_require__(21)(arrayJoin)), 'Array', {
   join: function join(separator){
     return arrayJoin.call(toIObject(this), separator === undefined ? ',' : separator);
   }
 });
 
 /***/ }),
-/* 145 */
+/* 177 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var $export       = __webpack_require__(0)
   , toIObject     = __webpack_require__(15)
-  , toInteger     = __webpack_require__(30)
+  , toInteger     = __webpack_require__(31)
   , toLength      = __webpack_require__(8)
   , $native       = [].lastIndexOf
   , NEGATIVE_ZERO = !!$native && 1 / [1].lastIndexOf(1, -0) < 0;
 
-$export($export.P + $export.F * (NEGATIVE_ZERO || !__webpack_require__(20)($native)), 'Array', {
+$export($export.P + $export.F * (NEGATIVE_ZERO || !__webpack_require__(21)($native)), 'Array', {
   // 22.1.3.14 / 15.4.4.15 Array.prototype.lastIndexOf(searchElement [, fromIndex])
   lastIndexOf: function lastIndexOf(searchElement /*, fromIndex = @[*-1] */){
     // convert -0 to +0
@@ -19639,15 +21860,15 @@ $export($export.P + $export.F * (NEGATIVE_ZERO || !__webpack_require__(20)($nati
 });
 
 /***/ }),
-/* 146 */
+/* 178 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var $export = __webpack_require__(0)
-  , $map    = __webpack_require__(21)(1);
+  , $map    = __webpack_require__(22)(1);
 
-$export($export.P + $export.F * !__webpack_require__(20)([].map, true), 'Array', {
+$export($export.P + $export.F * !__webpack_require__(21)([].map, true), 'Array', {
   // 22.1.3.15 / 15.4.4.19 Array.prototype.map(callbackfn [, thisArg])
   map: function map(callbackfn /* , thisArg */){
     return $map(this, callbackfn, arguments[1]);
@@ -19655,13 +21876,13 @@ $export($export.P + $export.F * !__webpack_require__(20)([].map, true), 'Array',
 });
 
 /***/ }),
-/* 147 */
+/* 179 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var $export        = __webpack_require__(0)
-  , createProperty = __webpack_require__(61);
+  , createProperty = __webpack_require__(67);
 
 // WebKit Array.of isn't generic
 $export($export.S + $export.F * __webpack_require__(3)(function(){
@@ -19680,15 +21901,15 @@ $export($export.S + $export.F * __webpack_require__(3)(function(){
 });
 
 /***/ }),
-/* 148 */
+/* 180 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var $export = __webpack_require__(0)
-  , $reduce = __webpack_require__(89);
+  , $reduce = __webpack_require__(101);
 
-$export($export.P + $export.F * !__webpack_require__(20)([].reduceRight, true), 'Array', {
+$export($export.P + $export.F * !__webpack_require__(21)([].reduceRight, true), 'Array', {
   // 22.1.3.19 / 15.4.4.22 Array.prototype.reduceRight(callbackfn [, initialValue])
   reduceRight: function reduceRight(callbackfn /* , initialValue */){
     return $reduce(this, callbackfn, arguments.length, arguments[1], true);
@@ -19696,15 +21917,15 @@ $export($export.P + $export.F * !__webpack_require__(20)([].reduceRight, true), 
 });
 
 /***/ }),
-/* 149 */
+/* 181 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var $export = __webpack_require__(0)
-  , $reduce = __webpack_require__(89);
+  , $reduce = __webpack_require__(101);
 
-$export($export.P + $export.F * !__webpack_require__(20)([].reduce, true), 'Array', {
+$export($export.P + $export.F * !__webpack_require__(21)([].reduce, true), 'Array', {
   // 22.1.3.18 / 15.4.4.21 Array.prototype.reduce(callbackfn [, initialValue])
   reduce: function reduce(callbackfn /* , initialValue */){
     return $reduce(this, callbackfn, arguments.length, arguments[1], false);
@@ -19712,15 +21933,15 @@ $export($export.P + $export.F * !__webpack_require__(20)([].reduce, true), 'Arra
 });
 
 /***/ }),
-/* 150 */
+/* 182 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var $export    = __webpack_require__(0)
-  , html       = __webpack_require__(65)
-  , cof        = __webpack_require__(18)
-  , toIndex    = __webpack_require__(38)
+  , html       = __webpack_require__(71)
+  , cof        = __webpack_require__(19)
+  , toIndex    = __webpack_require__(39)
   , toLength   = __webpack_require__(8)
   , arraySlice = [].slice;
 
@@ -19746,15 +21967,15 @@ $export($export.P + $export.F * __webpack_require__(3)(function(){
 });
 
 /***/ }),
-/* 151 */
+/* 183 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var $export = __webpack_require__(0)
-  , $some   = __webpack_require__(21)(3);
+  , $some   = __webpack_require__(22)(3);
 
-$export($export.P + $export.F * !__webpack_require__(20)([].some, true), 'Array', {
+$export($export.P + $export.F * !__webpack_require__(21)([].some, true), 'Array', {
   // 22.1.3.23 / 15.4.4.17 Array.prototype.some(callbackfn [, thisArg])
   some: function some(callbackfn /* , thisArg */){
     return $some(this, callbackfn, arguments[1]);
@@ -19762,7 +21983,7 @@ $export($export.P + $export.F * !__webpack_require__(20)([].some, true), 'Array'
 });
 
 /***/ }),
-/* 152 */
+/* 184 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19781,7 +22002,7 @@ $export($export.P + $export.F * (fails(function(){
   // V8 bug
   test.sort(null);
   // Old WebKit
-}) || !__webpack_require__(20)($sort)), 'Array', {
+}) || !__webpack_require__(21)($sort)), 'Array', {
   // 22.1.3.25 Array.prototype.sort(comparefn)
   sort: function sort(comparefn){
     return comparefn === undefined
@@ -19791,13 +22012,13 @@ $export($export.P + $export.F * (fails(function(){
 });
 
 /***/ }),
-/* 153 */
+/* 185 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(37)('Array');
+__webpack_require__(38)('Array');
 
 /***/ }),
-/* 154 */
+/* 186 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.3.3.1 / 15.9.4.4 Date.now()
@@ -19806,7 +22027,7 @@ var $export = __webpack_require__(0);
 $export($export.S, 'Date', {now: function(){ return new Date().getTime(); }});
 
 /***/ }),
-/* 155 */
+/* 187 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19840,14 +22061,14 @@ $export($export.P + $export.F * (fails(function(){
 });
 
 /***/ }),
-/* 156 */
+/* 188 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var $export     = __webpack_require__(0)
   , toObject    = __webpack_require__(9)
-  , toPrimitive = __webpack_require__(23);
+  , toPrimitive = __webpack_require__(24);
 
 $export($export.P + $export.F * __webpack_require__(3)(function(){
   return new Date(NaN).toJSON() !== null || Date.prototype.toJSON.call({toISOString: function(){ return 1; }}) !== 1;
@@ -19860,16 +22081,16 @@ $export($export.P + $export.F * __webpack_require__(3)(function(){
 });
 
 /***/ }),
-/* 157 */
+/* 189 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var TO_PRIMITIVE = __webpack_require__(5)('toPrimitive')
   , proto        = Date.prototype;
 
-if(!(TO_PRIMITIVE in proto))__webpack_require__(12)(proto, TO_PRIMITIVE, __webpack_require__(127));
+if(!(TO_PRIMITIVE in proto))__webpack_require__(12)(proto, TO_PRIMITIVE, __webpack_require__(159));
 
 /***/ }),
-/* 158 */
+/* 190 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var DateProto    = Date.prototype
@@ -19885,22 +22106,22 @@ if(new Date(NaN) + '' != INVALID_DATE){
 }
 
 /***/ }),
-/* 159 */
+/* 191 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.2.3.2 / 15.3.4.5 Function.prototype.bind(thisArg, args...)
 var $export = __webpack_require__(0);
 
-$export($export.P, 'Function', {bind: __webpack_require__(90)});
+$export($export.P, 'Function', {bind: __webpack_require__(102)});
 
 /***/ }),
-/* 160 */
+/* 192 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var isObject       = __webpack_require__(4)
-  , getPrototypeOf = __webpack_require__(17)
+  , getPrototypeOf = __webpack_require__(18)
   , HAS_INSTANCE   = __webpack_require__(5)('hasInstance')
   , FunctionProto  = Function.prototype;
 // 19.2.3.6 Function.prototype[@@hasInstance](V)
@@ -19913,11 +22134,11 @@ if(!(HAS_INSTANCE in FunctionProto))__webpack_require__(7).f(FunctionProto, HAS_
 }});
 
 /***/ }),
-/* 161 */
+/* 193 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var dP         = __webpack_require__(7).f
-  , createDesc = __webpack_require__(29)
+  , createDesc = __webpack_require__(30)
   , has        = __webpack_require__(10)
   , FProto     = Function.prototype
   , nameRE     = /^\s*function ([^ (]*)/
@@ -19943,12 +22164,12 @@ NAME in FProto || __webpack_require__(6) && dP(FProto, NAME, {
 });
 
 /***/ }),
-/* 162 */
+/* 194 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.2.2.3 Math.acosh(x)
 var $export = __webpack_require__(0)
-  , log1p   = __webpack_require__(98)
+  , log1p   = __webpack_require__(110)
   , sqrt    = Math.sqrt
   , $acosh  = Math.acosh;
 
@@ -19966,7 +22187,7 @@ $export($export.S + $export.F * !($acosh
 });
 
 /***/ }),
-/* 163 */
+/* 195 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.2.2.5 Math.asinh(x)
@@ -19981,7 +22202,7 @@ function asinh(x){
 $export($export.S + $export.F * !($asinh && 1 / $asinh(0) > 0), 'Math', {asinh: asinh});
 
 /***/ }),
-/* 164 */
+/* 196 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.2.2.7 Math.atanh(x)
@@ -19996,12 +22217,12 @@ $export($export.S + $export.F * !($atanh && 1 / $atanh(-0) < 0), 'Math', {
 });
 
 /***/ }),
-/* 165 */
+/* 197 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.2.2.9 Math.cbrt(x)
 var $export = __webpack_require__(0)
-  , sign    = __webpack_require__(72);
+  , sign    = __webpack_require__(78);
 
 $export($export.S, 'Math', {
   cbrt: function cbrt(x){
@@ -20010,7 +22231,7 @@ $export($export.S, 'Math', {
 });
 
 /***/ }),
-/* 166 */
+/* 198 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.2.2.11 Math.clz32(x)
@@ -20023,7 +22244,7 @@ $export($export.S, 'Math', {
 });
 
 /***/ }),
-/* 167 */
+/* 199 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.2.2.12 Math.cosh(x)
@@ -20037,22 +22258,22 @@ $export($export.S, 'Math', {
 });
 
 /***/ }),
-/* 168 */
+/* 200 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.2.2.14 Math.expm1(x)
 var $export = __webpack_require__(0)
-  , $expm1  = __webpack_require__(71);
+  , $expm1  = __webpack_require__(77);
 
 $export($export.S + $export.F * ($expm1 != Math.expm1), 'Math', {expm1: $expm1});
 
 /***/ }),
-/* 169 */
+/* 201 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.2.2.16 Math.fround(x)
 var $export   = __webpack_require__(0)
-  , sign      = __webpack_require__(72)
+  , sign      = __webpack_require__(78)
   , pow       = Math.pow
   , EPSILON   = pow(2, -52)
   , EPSILON32 = pow(2, -23)
@@ -20078,7 +22299,7 @@ $export($export.S, 'Math', {
 });
 
 /***/ }),
-/* 170 */
+/* 202 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.2.2.17 Math.hypot([value1[, value2[, … ]]])
@@ -20108,7 +22329,7 @@ $export($export.S, 'Math', {
 });
 
 /***/ }),
-/* 171 */
+/* 203 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.2.2.18 Math.imul(x, y)
@@ -20130,7 +22351,7 @@ $export($export.S + $export.F * __webpack_require__(3)(function(){
 });
 
 /***/ }),
-/* 172 */
+/* 204 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.2.2.21 Math.log10(x)
@@ -20143,16 +22364,16 @@ $export($export.S, 'Math', {
 });
 
 /***/ }),
-/* 173 */
+/* 205 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.2.2.20 Math.log1p(x)
 var $export = __webpack_require__(0);
 
-$export($export.S, 'Math', {log1p: __webpack_require__(98)});
+$export($export.S, 'Math', {log1p: __webpack_require__(110)});
 
 /***/ }),
-/* 174 */
+/* 206 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.2.2.22 Math.log2(x)
@@ -20165,21 +22386,21 @@ $export($export.S, 'Math', {
 });
 
 /***/ }),
-/* 175 */
+/* 207 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.2.2.28 Math.sign(x)
 var $export = __webpack_require__(0);
 
-$export($export.S, 'Math', {sign: __webpack_require__(72)});
+$export($export.S, 'Math', {sign: __webpack_require__(78)});
 
 /***/ }),
-/* 176 */
+/* 208 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.2.2.30 Math.sinh(x)
 var $export = __webpack_require__(0)
-  , expm1   = __webpack_require__(71)
+  , expm1   = __webpack_require__(77)
   , exp     = Math.exp;
 
 // V8 near Chromium 38 has a problem with very small numbers
@@ -20194,12 +22415,12 @@ $export($export.S + $export.F * __webpack_require__(3)(function(){
 });
 
 /***/ }),
-/* 177 */
+/* 209 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.2.2.33 Math.tanh(x)
 var $export = __webpack_require__(0)
-  , expm1   = __webpack_require__(71)
+  , expm1   = __webpack_require__(77)
   , exp     = Math.exp;
 
 $export($export.S, 'Math', {
@@ -20211,7 +22432,7 @@ $export($export.S, 'Math', {
 });
 
 /***/ }),
-/* 178 */
+/* 210 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.2.2.34 Math.trunc(x)
@@ -20224,27 +22445,27 @@ $export($export.S, 'Math', {
 });
 
 /***/ }),
-/* 179 */
+/* 211 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var global            = __webpack_require__(2)
   , has               = __webpack_require__(10)
-  , cof               = __webpack_require__(18)
-  , inheritIfRequired = __webpack_require__(66)
-  , toPrimitive       = __webpack_require__(23)
+  , cof               = __webpack_require__(19)
+  , inheritIfRequired = __webpack_require__(72)
+  , toPrimitive       = __webpack_require__(24)
   , fails             = __webpack_require__(3)
-  , gOPN              = __webpack_require__(34).f
-  , gOPD              = __webpack_require__(16).f
+  , gOPN              = __webpack_require__(35).f
+  , gOPD              = __webpack_require__(17).f
   , dP                = __webpack_require__(7).f
-  , $trim             = __webpack_require__(44).trim
+  , $trim             = __webpack_require__(45).trim
   , NUMBER            = 'Number'
   , $Number           = global[NUMBER]
   , Base              = $Number
   , proto             = $Number.prototype
   // Opera ~12 has broken Object#toString
-  , BROKEN_COF        = cof(__webpack_require__(33)(proto)) == NUMBER
+  , BROKEN_COF        = cof(__webpack_require__(34)(proto)) == NUMBER
   , TRIM              = 'trim' in String.prototype;
 
 // 7.1.3 ToNumber(argument)
@@ -20299,7 +22520,7 @@ if(!$Number(' 0o1') || !$Number('0b1') || $Number('+0x1')){
 }
 
 /***/ }),
-/* 180 */
+/* 212 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.1.2.1 Number.EPSILON
@@ -20308,7 +22529,7 @@ var $export = __webpack_require__(0);
 $export($export.S, 'Number', {EPSILON: Math.pow(2, -52)});
 
 /***/ }),
-/* 181 */
+/* 213 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.1.2.2 Number.isFinite(number)
@@ -20322,16 +22543,16 @@ $export($export.S, 'Number', {
 });
 
 /***/ }),
-/* 182 */
+/* 214 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.1.2.3 Number.isInteger(number)
 var $export = __webpack_require__(0);
 
-$export($export.S, 'Number', {isInteger: __webpack_require__(95)});
+$export($export.S, 'Number', {isInteger: __webpack_require__(107)});
 
 /***/ }),
-/* 183 */
+/* 215 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.1.2.4 Number.isNaN(number)
@@ -20344,12 +22565,12 @@ $export($export.S, 'Number', {
 });
 
 /***/ }),
-/* 184 */
+/* 216 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.1.2.5 Number.isSafeInteger(number)
 var $export   = __webpack_require__(0)
-  , isInteger = __webpack_require__(95)
+  , isInteger = __webpack_require__(107)
   , abs       = Math.abs;
 
 $export($export.S, 'Number', {
@@ -20359,7 +22580,7 @@ $export($export.S, 'Number', {
 });
 
 /***/ }),
-/* 185 */
+/* 217 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.1.2.6 Number.MAX_SAFE_INTEGER
@@ -20368,7 +22589,7 @@ var $export = __webpack_require__(0);
 $export($export.S, 'Number', {MAX_SAFE_INTEGER: 0x1fffffffffffff});
 
 /***/ }),
-/* 186 */
+/* 218 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.1.2.10 Number.MIN_SAFE_INTEGER
@@ -20377,33 +22598,33 @@ var $export = __webpack_require__(0);
 $export($export.S, 'Number', {MIN_SAFE_INTEGER: -0x1fffffffffffff});
 
 /***/ }),
-/* 187 */
+/* 219 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $export     = __webpack_require__(0)
-  , $parseFloat = __webpack_require__(105);
+  , $parseFloat = __webpack_require__(117);
 // 20.1.2.12 Number.parseFloat(string)
 $export($export.S + $export.F * (Number.parseFloat != $parseFloat), 'Number', {parseFloat: $parseFloat});
 
 /***/ }),
-/* 188 */
+/* 220 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $export   = __webpack_require__(0)
-  , $parseInt = __webpack_require__(106);
+  , $parseInt = __webpack_require__(118);
 // 20.1.2.13 Number.parseInt(string, radix)
 $export($export.S + $export.F * (Number.parseInt != $parseInt), 'Number', {parseInt: $parseInt});
 
 /***/ }),
-/* 189 */
+/* 221 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var $export      = __webpack_require__(0)
-  , toInteger    = __webpack_require__(30)
-  , aNumberValue = __webpack_require__(86)
-  , repeat       = __webpack_require__(79)
+  , toInteger    = __webpack_require__(31)
+  , aNumberValue = __webpack_require__(98)
+  , repeat       = __webpack_require__(85)
   , $toFixed     = 1..toFixed
   , floor        = Math.floor
   , data         = [0, 0, 0, 0, 0, 0]
@@ -20514,14 +22735,14 @@ $export($export.P + $export.F * (!!$toFixed && (
 });
 
 /***/ }),
-/* 190 */
+/* 222 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var $export      = __webpack_require__(0)
   , $fails       = __webpack_require__(3)
-  , aNumberValue = __webpack_require__(86)
+  , aNumberValue = __webpack_require__(98)
   , $toPrecision = 1..toPrecision;
 
 $export($export.P + $export.F * ($fails(function(){
@@ -20538,32 +22759,32 @@ $export($export.P + $export.F * ($fails(function(){
 });
 
 /***/ }),
-/* 191 */
+/* 223 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.3.1 Object.assign(target, source)
 var $export = __webpack_require__(0);
 
-$export($export.S + $export.F, 'Object', {assign: __webpack_require__(99)});
+$export($export.S + $export.F, 'Object', {assign: __webpack_require__(111)});
 
 /***/ }),
-/* 192 */
+/* 224 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $export = __webpack_require__(0)
 // 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
-$export($export.S, 'Object', {create: __webpack_require__(33)});
+$export($export.S, 'Object', {create: __webpack_require__(34)});
 
 /***/ }),
-/* 193 */
+/* 225 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $export = __webpack_require__(0);
 // 19.1.2.3 / 15.2.3.7 Object.defineProperties(O, Properties)
-$export($export.S + $export.F * !__webpack_require__(6), 'Object', {defineProperties: __webpack_require__(100)});
+$export($export.S + $export.F * !__webpack_require__(6), 'Object', {defineProperties: __webpack_require__(112)});
 
 /***/ }),
-/* 194 */
+/* 226 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $export = __webpack_require__(0);
@@ -20571,161 +22792,161 @@ var $export = __webpack_require__(0);
 $export($export.S + $export.F * !__webpack_require__(6), 'Object', {defineProperty: __webpack_require__(7).f});
 
 /***/ }),
-/* 195 */
+/* 227 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.5 Object.freeze(O)
 var isObject = __webpack_require__(4)
-  , meta     = __webpack_require__(28).onFreeze;
+  , meta     = __webpack_require__(29).onFreeze;
 
-__webpack_require__(22)('freeze', function($freeze){
+__webpack_require__(23)('freeze', function($freeze){
   return function freeze(it){
     return $freeze && isObject(it) ? $freeze(meta(it)) : it;
   };
 });
 
 /***/ }),
-/* 196 */
+/* 228 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.6 Object.getOwnPropertyDescriptor(O, P)
 var toIObject                 = __webpack_require__(15)
-  , $getOwnPropertyDescriptor = __webpack_require__(16).f;
+  , $getOwnPropertyDescriptor = __webpack_require__(17).f;
 
-__webpack_require__(22)('getOwnPropertyDescriptor', function(){
+__webpack_require__(23)('getOwnPropertyDescriptor', function(){
   return function getOwnPropertyDescriptor(it, key){
     return $getOwnPropertyDescriptor(toIObject(it), key);
   };
 });
 
 /***/ }),
-/* 197 */
+/* 229 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.7 Object.getOwnPropertyNames(O)
-__webpack_require__(22)('getOwnPropertyNames', function(){
-  return __webpack_require__(101).f;
+__webpack_require__(23)('getOwnPropertyNames', function(){
+  return __webpack_require__(113).f;
 });
 
 /***/ }),
-/* 198 */
+/* 230 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.9 Object.getPrototypeOf(O)
 var toObject        = __webpack_require__(9)
-  , $getPrototypeOf = __webpack_require__(17);
+  , $getPrototypeOf = __webpack_require__(18);
 
-__webpack_require__(22)('getPrototypeOf', function(){
+__webpack_require__(23)('getPrototypeOf', function(){
   return function getPrototypeOf(it){
     return $getPrototypeOf(toObject(it));
   };
 });
 
 /***/ }),
-/* 199 */
+/* 231 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.11 Object.isExtensible(O)
 var isObject = __webpack_require__(4);
 
-__webpack_require__(22)('isExtensible', function($isExtensible){
+__webpack_require__(23)('isExtensible', function($isExtensible){
   return function isExtensible(it){
     return isObject(it) ? $isExtensible ? $isExtensible(it) : true : false;
   };
 });
 
 /***/ }),
-/* 200 */
+/* 232 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.12 Object.isFrozen(O)
 var isObject = __webpack_require__(4);
 
-__webpack_require__(22)('isFrozen', function($isFrozen){
+__webpack_require__(23)('isFrozen', function($isFrozen){
   return function isFrozen(it){
     return isObject(it) ? $isFrozen ? $isFrozen(it) : false : true;
   };
 });
 
 /***/ }),
-/* 201 */
+/* 233 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.13 Object.isSealed(O)
 var isObject = __webpack_require__(4);
 
-__webpack_require__(22)('isSealed', function($isSealed){
+__webpack_require__(23)('isSealed', function($isSealed){
   return function isSealed(it){
     return isObject(it) ? $isSealed ? $isSealed(it) : false : true;
   };
 });
 
 /***/ }),
-/* 202 */
+/* 234 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.3.10 Object.is(value1, value2)
 var $export = __webpack_require__(0);
-$export($export.S, 'Object', {is: __webpack_require__(107)});
+$export($export.S, 'Object', {is: __webpack_require__(119)});
 
 /***/ }),
-/* 203 */
+/* 235 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.14 Object.keys(O)
 var toObject = __webpack_require__(9)
-  , $keys    = __webpack_require__(35);
+  , $keys    = __webpack_require__(36);
 
-__webpack_require__(22)('keys', function(){
+__webpack_require__(23)('keys', function(){
   return function keys(it){
     return $keys(toObject(it));
   };
 });
 
 /***/ }),
-/* 204 */
+/* 236 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.15 Object.preventExtensions(O)
 var isObject = __webpack_require__(4)
-  , meta     = __webpack_require__(28).onFreeze;
+  , meta     = __webpack_require__(29).onFreeze;
 
-__webpack_require__(22)('preventExtensions', function($preventExtensions){
+__webpack_require__(23)('preventExtensions', function($preventExtensions){
   return function preventExtensions(it){
     return $preventExtensions && isObject(it) ? $preventExtensions(meta(it)) : it;
   };
 });
 
 /***/ }),
-/* 205 */
+/* 237 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.17 Object.seal(O)
 var isObject = __webpack_require__(4)
-  , meta     = __webpack_require__(28).onFreeze;
+  , meta     = __webpack_require__(29).onFreeze;
 
-__webpack_require__(22)('seal', function($seal){
+__webpack_require__(23)('seal', function($seal){
   return function seal(it){
     return $seal && isObject(it) ? $seal(meta(it)) : it;
   };
 });
 
 /***/ }),
-/* 206 */
+/* 238 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.3.19 Object.setPrototypeOf(O, proto)
 var $export = __webpack_require__(0);
-$export($export.S, 'Object', {setPrototypeOf: __webpack_require__(74).set});
+$export($export.S, 'Object', {setPrototypeOf: __webpack_require__(80).set});
 
 /***/ }),
-/* 207 */
+/* 239 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 // 19.1.3.6 Object.prototype.toString()
-var classof = __webpack_require__(45)
+var classof = __webpack_require__(47)
   , test    = {};
 test[__webpack_require__(5)('toStringTag')] = 'z';
 if(test + '' != '[object z]'){
@@ -20735,41 +22956,41 @@ if(test + '' != '[object z]'){
 }
 
 /***/ }),
-/* 208 */
+/* 240 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $export     = __webpack_require__(0)
-  , $parseFloat = __webpack_require__(105);
+  , $parseFloat = __webpack_require__(117);
 // 18.2.4 parseFloat(string)
 $export($export.G + $export.F * (parseFloat != $parseFloat), {parseFloat: $parseFloat});
 
 /***/ }),
-/* 209 */
+/* 241 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $export   = __webpack_require__(0)
-  , $parseInt = __webpack_require__(106);
+  , $parseInt = __webpack_require__(118);
 // 18.2.5 parseInt(string, radix)
 $export($export.G + $export.F * (parseInt != $parseInt), {parseInt: $parseInt});
 
 /***/ }),
-/* 210 */
+/* 242 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var LIBRARY            = __webpack_require__(32)
+var LIBRARY            = __webpack_require__(33)
   , global             = __webpack_require__(2)
-  , ctx                = __webpack_require__(25)
-  , classof            = __webpack_require__(45)
+  , ctx                = __webpack_require__(26)
+  , classof            = __webpack_require__(47)
   , $export            = __webpack_require__(0)
   , isObject           = __webpack_require__(4)
   , aFunction          = __webpack_require__(11)
-  , anInstance         = __webpack_require__(31)
-  , forOf              = __webpack_require__(41)
-  , speciesConstructor = __webpack_require__(76)
-  , task               = __webpack_require__(81).set
-  , microtask          = __webpack_require__(73)()
+  , anInstance         = __webpack_require__(32)
+  , forOf              = __webpack_require__(42)
+  , speciesConstructor = __webpack_require__(82)
+  , task               = __webpack_require__(87).set
+  , microtask          = __webpack_require__(79)()
   , PROMISE            = 'Promise'
   , TypeError          = global.TypeError
   , process            = global.process
@@ -20961,7 +23182,7 @@ if(!USE_NATIVE){
     this._h = 0;              // <- rejection state, 0 - default, 1 - handled, 2 - unhandled
     this._n = false;          // <- notify
   };
-  Internal.prototype = __webpack_require__(36)($Promise.prototype, {
+  Internal.prototype = __webpack_require__(37)($Promise.prototype, {
     // 25.4.5.3 Promise.prototype.then(onFulfilled, onRejected)
     then: function then(onFulfilled, onRejected){
       var reaction    = newPromiseCapability(speciesConstructor(this, $Promise));
@@ -20987,9 +23208,9 @@ if(!USE_NATIVE){
 }
 
 $export($export.G + $export.W + $export.F * !USE_NATIVE, {Promise: $Promise});
-__webpack_require__(43)($Promise, PROMISE);
-__webpack_require__(37)(PROMISE);
-Wrapper = __webpack_require__(24)[PROMISE];
+__webpack_require__(44)($Promise, PROMISE);
+__webpack_require__(38)(PROMISE);
+Wrapper = __webpack_require__(25)[PROMISE];
 
 // statics
 $export($export.S + $export.F * !USE_NATIVE, PROMISE, {
@@ -21012,7 +23233,7 @@ $export($export.S + $export.F * (LIBRARY || !USE_NATIVE), PROMISE, {
     return capability.promise;
   }
 });
-$export($export.S + $export.F * !(USE_NATIVE && __webpack_require__(54)(function(iter){
+$export($export.S + $export.F * !(USE_NATIVE && __webpack_require__(57)(function(iter){
   $Promise.all(iter)['catch'](empty);
 })), PROMISE, {
   // 25.4.4.1 Promise.all(iterable)
@@ -21058,7 +23279,7 @@ $export($export.S + $export.F * !(USE_NATIVE && __webpack_require__(54)(function
 });
 
 /***/ }),
-/* 211 */
+/* 243 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 26.1.1 Reflect.apply(target, thisArgument, argumentsList)
@@ -21079,17 +23300,17 @@ $export($export.S + $export.F * !__webpack_require__(3)(function(){
 });
 
 /***/ }),
-/* 212 */
+/* 244 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 26.1.2 Reflect.construct(target, argumentsList [, newTarget])
 var $export    = __webpack_require__(0)
-  , create     = __webpack_require__(33)
+  , create     = __webpack_require__(34)
   , aFunction  = __webpack_require__(11)
   , anObject   = __webpack_require__(1)
   , isObject   = __webpack_require__(4)
   , fails      = __webpack_require__(3)
-  , bind       = __webpack_require__(90)
+  , bind       = __webpack_require__(102)
   , rConstruct = (__webpack_require__(2).Reflect || {}).construct;
 
 // MS Edge supports only 2 arguments and argumentsList argument is optional
@@ -21131,14 +23352,14 @@ $export($export.S + $export.F * (NEW_TARGET_BUG || ARGS_BUG), 'Reflect', {
 });
 
 /***/ }),
-/* 213 */
+/* 245 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 26.1.3 Reflect.defineProperty(target, propertyKey, attributes)
 var dP          = __webpack_require__(7)
   , $export     = __webpack_require__(0)
   , anObject    = __webpack_require__(1)
-  , toPrimitive = __webpack_require__(23);
+  , toPrimitive = __webpack_require__(24);
 
 // MS Edge has broken Reflect.defineProperty - throwing instead of returning false
 $export($export.S + $export.F * __webpack_require__(3)(function(){
@@ -21158,12 +23379,12 @@ $export($export.S + $export.F * __webpack_require__(3)(function(){
 });
 
 /***/ }),
-/* 214 */
+/* 246 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 26.1.4 Reflect.deleteProperty(target, propertyKey)
 var $export  = __webpack_require__(0)
-  , gOPD     = __webpack_require__(16).f
+  , gOPD     = __webpack_require__(17).f
   , anObject = __webpack_require__(1);
 
 $export($export.S, 'Reflect', {
@@ -21174,7 +23395,7 @@ $export($export.S, 'Reflect', {
 });
 
 /***/ }),
-/* 215 */
+/* 247 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21189,7 +23410,7 @@ var Enumerate = function(iterated){
     , key;
   for(key in iterated)keys.push(key);
 };
-__webpack_require__(69)(Enumerate, 'Object', function(){
+__webpack_require__(75)(Enumerate, 'Object', function(){
   var that = this
     , keys = that._k
     , key;
@@ -21206,11 +23427,11 @@ $export($export.S, 'Reflect', {
 });
 
 /***/ }),
-/* 216 */
+/* 248 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 26.1.7 Reflect.getOwnPropertyDescriptor(target, propertyKey)
-var gOPD     = __webpack_require__(16)
+var gOPD     = __webpack_require__(17)
   , $export  = __webpack_require__(0)
   , anObject = __webpack_require__(1);
 
@@ -21221,12 +23442,12 @@ $export($export.S, 'Reflect', {
 });
 
 /***/ }),
-/* 217 */
+/* 249 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 26.1.8 Reflect.getPrototypeOf(target)
 var $export  = __webpack_require__(0)
-  , getProto = __webpack_require__(17)
+  , getProto = __webpack_require__(18)
   , anObject = __webpack_require__(1);
 
 $export($export.S, 'Reflect', {
@@ -21236,12 +23457,12 @@ $export($export.S, 'Reflect', {
 });
 
 /***/ }),
-/* 218 */
+/* 250 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 26.1.6 Reflect.get(target, propertyKey [, receiver])
-var gOPD           = __webpack_require__(16)
-  , getPrototypeOf = __webpack_require__(17)
+var gOPD           = __webpack_require__(17)
+  , getPrototypeOf = __webpack_require__(18)
   , has            = __webpack_require__(10)
   , $export        = __webpack_require__(0)
   , isObject       = __webpack_require__(4)
@@ -21262,7 +23483,7 @@ function get(target, propertyKey/*, receiver*/){
 $export($export.S, 'Reflect', {get: get});
 
 /***/ }),
-/* 219 */
+/* 251 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 26.1.9 Reflect.has(target, propertyKey)
@@ -21275,7 +23496,7 @@ $export($export.S, 'Reflect', {
 });
 
 /***/ }),
-/* 220 */
+/* 252 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 26.1.10 Reflect.isExtensible(target)
@@ -21291,16 +23512,16 @@ $export($export.S, 'Reflect', {
 });
 
 /***/ }),
-/* 221 */
+/* 253 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 26.1.11 Reflect.ownKeys(target)
 var $export = __webpack_require__(0);
 
-$export($export.S, 'Reflect', {ownKeys: __webpack_require__(104)});
+$export($export.S, 'Reflect', {ownKeys: __webpack_require__(116)});
 
 /***/ }),
-/* 222 */
+/* 254 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 26.1.12 Reflect.preventExtensions(target)
@@ -21321,12 +23542,12 @@ $export($export.S, 'Reflect', {
 });
 
 /***/ }),
-/* 223 */
+/* 255 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 26.1.14 Reflect.setPrototypeOf(target, proto)
 var $export  = __webpack_require__(0)
-  , setProto = __webpack_require__(74);
+  , setProto = __webpack_require__(80);
 
 if(setProto)$export($export.S, 'Reflect', {
   setPrototypeOf: function setPrototypeOf(target, proto){
@@ -21341,16 +23562,16 @@ if(setProto)$export($export.S, 'Reflect', {
 });
 
 /***/ }),
-/* 224 */
+/* 256 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 26.1.13 Reflect.set(target, propertyKey, V [, receiver])
 var dP             = __webpack_require__(7)
-  , gOPD           = __webpack_require__(16)
-  , getPrototypeOf = __webpack_require__(17)
+  , gOPD           = __webpack_require__(17)
+  , getPrototypeOf = __webpack_require__(18)
   , has            = __webpack_require__(10)
   , $export        = __webpack_require__(0)
-  , createDesc     = __webpack_require__(29)
+  , createDesc     = __webpack_require__(30)
   , anObject       = __webpack_require__(1)
   , isObject       = __webpack_require__(4);
 
@@ -21377,15 +23598,15 @@ function set(target, propertyKey, V/*, receiver*/){
 $export($export.S, 'Reflect', {set: set});
 
 /***/ }),
-/* 225 */
+/* 257 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var global            = __webpack_require__(2)
-  , inheritIfRequired = __webpack_require__(66)
+  , inheritIfRequired = __webpack_require__(72)
   , dP                = __webpack_require__(7).f
-  , gOPN              = __webpack_require__(34).f
-  , isRegExp          = __webpack_require__(53)
-  , $flags            = __webpack_require__(51)
+  , gOPN              = __webpack_require__(35).f
+  , isRegExp          = __webpack_require__(56)
+  , $flags            = __webpack_require__(54)
   , $RegExp           = global.RegExp
   , Base              = $RegExp
   , proto             = $RegExp.prototype
@@ -21422,14 +23643,14 @@ if(__webpack_require__(6) && (!CORRECT_NEW || __webpack_require__(3)(function(){
   __webpack_require__(13)(global, 'RegExp', $RegExp);
 }
 
-__webpack_require__(37)('RegExp');
+__webpack_require__(38)('RegExp');
 
 /***/ }),
-/* 226 */
+/* 258 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // @@match logic
-__webpack_require__(50)('match', 1, function(defined, MATCH, $match){
+__webpack_require__(53)('match', 1, function(defined, MATCH, $match){
   // 21.1.3.11 String.prototype.match(regexp)
   return [function match(regexp){
     'use strict';
@@ -21440,11 +23661,11 @@ __webpack_require__(50)('match', 1, function(defined, MATCH, $match){
 });
 
 /***/ }),
-/* 227 */
+/* 259 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // @@replace logic
-__webpack_require__(50)('replace', 2, function(defined, REPLACE, $replace){
+__webpack_require__(53)('replace', 2, function(defined, REPLACE, $replace){
   // 21.1.3.14 String.prototype.replace(searchValue, replaceValue)
   return [function replace(searchValue, replaceValue){
     'use strict';
@@ -21457,11 +23678,11 @@ __webpack_require__(50)('replace', 2, function(defined, REPLACE, $replace){
 });
 
 /***/ }),
-/* 228 */
+/* 260 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // @@search logic
-__webpack_require__(50)('search', 1, function(defined, SEARCH, $search){
+__webpack_require__(53)('search', 1, function(defined, SEARCH, $search){
   // 21.1.3.15 String.prototype.search(regexp)
   return [function search(regexp){
     'use strict';
@@ -21472,13 +23693,13 @@ __webpack_require__(50)('search', 1, function(defined, SEARCH, $search){
 });
 
 /***/ }),
-/* 229 */
+/* 261 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // @@split logic
-__webpack_require__(50)('split', 2, function(defined, SPLIT, $split){
+__webpack_require__(53)('split', 2, function(defined, SPLIT, $split){
   'use strict';
-  var isRegExp   = __webpack_require__(53)
+  var isRegExp   = __webpack_require__(56)
     , _split     = $split
     , $push      = [].push
     , $SPLIT     = 'split'
@@ -21547,14 +23768,14 @@ __webpack_require__(50)('split', 2, function(defined, SPLIT, $split){
 });
 
 /***/ }),
-/* 230 */
+/* 262 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-__webpack_require__(111);
+__webpack_require__(123);
 var anObject    = __webpack_require__(1)
-  , $flags      = __webpack_require__(51)
+  , $flags      = __webpack_require__(54)
   , DESCRIPTORS = __webpack_require__(6)
   , TO_STRING   = 'toString'
   , $toString   = /./[TO_STRING];
@@ -21578,7 +23799,7 @@ if(__webpack_require__(3)(function(){ return $toString.call({source: 'a', flags:
 }
 
 /***/ }),
-/* 231 */
+/* 263 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21591,7 +23812,7 @@ __webpack_require__(14)('anchor', function(createHTML){
 });
 
 /***/ }),
-/* 232 */
+/* 264 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21604,7 +23825,7 @@ __webpack_require__(14)('big', function(createHTML){
 });
 
 /***/ }),
-/* 233 */
+/* 265 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21617,7 +23838,7 @@ __webpack_require__(14)('blink', function(createHTML){
 });
 
 /***/ }),
-/* 234 */
+/* 266 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21630,13 +23851,13 @@ __webpack_require__(14)('bold', function(createHTML){
 });
 
 /***/ }),
-/* 235 */
+/* 267 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var $export = __webpack_require__(0)
-  , $at     = __webpack_require__(77)(false);
+  , $at     = __webpack_require__(83)(false);
 $export($export.P, 'String', {
   // 21.1.3.3 String.prototype.codePointAt(pos)
   codePointAt: function codePointAt(pos){
@@ -21645,7 +23866,7 @@ $export($export.P, 'String', {
 });
 
 /***/ }),
-/* 236 */
+/* 268 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21653,11 +23874,11 @@ $export($export.P, 'String', {
 
 var $export   = __webpack_require__(0)
   , toLength  = __webpack_require__(8)
-  , context   = __webpack_require__(78)
+  , context   = __webpack_require__(84)
   , ENDS_WITH = 'endsWith'
   , $endsWith = ''[ENDS_WITH];
 
-$export($export.P + $export.F * __webpack_require__(64)(ENDS_WITH), 'String', {
+$export($export.P + $export.F * __webpack_require__(70)(ENDS_WITH), 'String', {
   endsWith: function endsWith(searchString /*, endPosition = @length */){
     var that = context(this, searchString, ENDS_WITH)
       , endPosition = arguments.length > 1 ? arguments[1] : undefined
@@ -21671,7 +23892,7 @@ $export($export.P + $export.F * __webpack_require__(64)(ENDS_WITH), 'String', {
 });
 
 /***/ }),
-/* 237 */
+/* 269 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21684,7 +23905,7 @@ __webpack_require__(14)('fixed', function(createHTML){
 });
 
 /***/ }),
-/* 238 */
+/* 270 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21697,7 +23918,7 @@ __webpack_require__(14)('fontcolor', function(createHTML){
 });
 
 /***/ }),
-/* 239 */
+/* 271 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21710,11 +23931,11 @@ __webpack_require__(14)('fontsize', function(createHTML){
 });
 
 /***/ }),
-/* 240 */
+/* 272 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $export        = __webpack_require__(0)
-  , toIndex        = __webpack_require__(38)
+  , toIndex        = __webpack_require__(39)
   , fromCharCode   = String.fromCharCode
   , $fromCodePoint = String.fromCodePoint;
 
@@ -21738,17 +23959,17 @@ $export($export.S + $export.F * (!!$fromCodePoint && $fromCodePoint.length != 1)
 });
 
 /***/ }),
-/* 241 */
+/* 273 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 // 21.1.3.7 String.prototype.includes(searchString, position = 0)
 
 var $export  = __webpack_require__(0)
-  , context  = __webpack_require__(78)
+  , context  = __webpack_require__(84)
   , INCLUDES = 'includes';
 
-$export($export.P + $export.F * __webpack_require__(64)(INCLUDES), 'String', {
+$export($export.P + $export.F * __webpack_require__(70)(INCLUDES), 'String', {
   includes: function includes(searchString /*, position = 0 */){
     return !!~context(this, searchString, INCLUDES)
       .indexOf(searchString, arguments.length > 1 ? arguments[1] : undefined);
@@ -21756,7 +23977,7 @@ $export($export.P + $export.F * __webpack_require__(64)(INCLUDES), 'String', {
 });
 
 /***/ }),
-/* 242 */
+/* 274 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21769,15 +23990,15 @@ __webpack_require__(14)('italics', function(createHTML){
 });
 
 /***/ }),
-/* 243 */
+/* 275 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var $at  = __webpack_require__(77)(true);
+var $at  = __webpack_require__(83)(true);
 
 // 21.1.3.27 String.prototype[@@iterator]()
-__webpack_require__(70)(String, 'String', function(iterated){
+__webpack_require__(76)(String, 'String', function(iterated){
   this._t = String(iterated); // target
   this._i = 0;                // next index
 // 21.1.5.2.1 %StringIteratorPrototype%.next()
@@ -21792,7 +24013,7 @@ __webpack_require__(70)(String, 'String', function(iterated){
 });
 
 /***/ }),
-/* 244 */
+/* 276 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21805,7 +24026,7 @@ __webpack_require__(14)('link', function(createHTML){
 });
 
 /***/ }),
-/* 245 */
+/* 277 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $export   = __webpack_require__(0)
@@ -21828,18 +24049,18 @@ $export($export.S, 'String', {
 });
 
 /***/ }),
-/* 246 */
+/* 278 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $export = __webpack_require__(0);
 
 $export($export.P, 'String', {
   // 21.1.3.13 String.prototype.repeat(count)
-  repeat: __webpack_require__(79)
+  repeat: __webpack_require__(85)
 });
 
 /***/ }),
-/* 247 */
+/* 279 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21852,7 +24073,7 @@ __webpack_require__(14)('small', function(createHTML){
 });
 
 /***/ }),
-/* 248 */
+/* 280 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21860,11 +24081,11 @@ __webpack_require__(14)('small', function(createHTML){
 
 var $export     = __webpack_require__(0)
   , toLength    = __webpack_require__(8)
-  , context     = __webpack_require__(78)
+  , context     = __webpack_require__(84)
   , STARTS_WITH = 'startsWith'
   , $startsWith = ''[STARTS_WITH];
 
-$export($export.P + $export.F * __webpack_require__(64)(STARTS_WITH), 'String', {
+$export($export.P + $export.F * __webpack_require__(70)(STARTS_WITH), 'String', {
   startsWith: function startsWith(searchString /*, position = 0 */){
     var that   = context(this, searchString, STARTS_WITH)
       , index  = toLength(Math.min(arguments.length > 1 ? arguments[1] : undefined, that.length))
@@ -21876,7 +24097,7 @@ $export($export.P + $export.F * __webpack_require__(64)(STARTS_WITH), 'String', 
 });
 
 /***/ }),
-/* 249 */
+/* 281 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21889,7 +24110,7 @@ __webpack_require__(14)('strike', function(createHTML){
 });
 
 /***/ }),
-/* 250 */
+/* 282 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21902,7 +24123,7 @@ __webpack_require__(14)('sub', function(createHTML){
 });
 
 /***/ }),
-/* 251 */
+/* 283 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21915,20 +24136,20 @@ __webpack_require__(14)('sup', function(createHTML){
 });
 
 /***/ }),
-/* 252 */
+/* 284 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 // 21.1.3.25 String.prototype.trim()
-__webpack_require__(44)('trim', function($trim){
+__webpack_require__(45)('trim', function($trim){
   return function trim(){
     return $trim(this, 3);
   };
 });
 
 /***/ }),
-/* 253 */
+/* 285 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21939,26 +24160,26 @@ var global         = __webpack_require__(2)
   , DESCRIPTORS    = __webpack_require__(6)
   , $export        = __webpack_require__(0)
   , redefine       = __webpack_require__(13)
-  , META           = __webpack_require__(28).KEY
+  , META           = __webpack_require__(29).KEY
   , $fails         = __webpack_require__(3)
-  , shared         = __webpack_require__(57)
-  , setToStringTag = __webpack_require__(43)
-  , uid            = __webpack_require__(39)
+  , shared         = __webpack_require__(60)
+  , setToStringTag = __webpack_require__(44)
+  , uid            = __webpack_require__(40)
   , wks            = __webpack_require__(5)
-  , wksExt         = __webpack_require__(109)
-  , wksDefine      = __webpack_require__(83)
-  , keyOf          = __webpack_require__(129)
-  , enumKeys       = __webpack_require__(128)
-  , isArray        = __webpack_require__(68)
+  , wksExt         = __webpack_require__(121)
+  , wksDefine      = __webpack_require__(89)
+  , keyOf          = __webpack_require__(161)
+  , enumKeys       = __webpack_require__(160)
+  , isArray        = __webpack_require__(74)
   , anObject       = __webpack_require__(1)
   , toIObject      = __webpack_require__(15)
-  , toPrimitive    = __webpack_require__(23)
-  , createDesc     = __webpack_require__(29)
-  , _create        = __webpack_require__(33)
-  , gOPNExt        = __webpack_require__(101)
-  , $GOPD          = __webpack_require__(16)
+  , toPrimitive    = __webpack_require__(24)
+  , createDesc     = __webpack_require__(30)
+  , _create        = __webpack_require__(34)
+  , gOPNExt        = __webpack_require__(113)
+  , $GOPD          = __webpack_require__(17)
   , $DP            = __webpack_require__(7)
-  , $keys          = __webpack_require__(35)
+  , $keys          = __webpack_require__(36)
   , gOPD           = $GOPD.f
   , dP             = $DP.f
   , gOPN           = gOPNExt.f
@@ -22081,11 +24302,11 @@ if(!USE_NATIVE){
 
   $GOPD.f = $getOwnPropertyDescriptor;
   $DP.f   = $defineProperty;
-  __webpack_require__(34).f = gOPNExt.f = $getOwnPropertyNames;
-  __webpack_require__(47).f  = $propertyIsEnumerable;
-  __webpack_require__(56).f = $getOwnPropertySymbols;
+  __webpack_require__(35).f = gOPNExt.f = $getOwnPropertyNames;
+  __webpack_require__(49).f  = $propertyIsEnumerable;
+  __webpack_require__(59).f = $getOwnPropertySymbols;
 
-  if(DESCRIPTORS && !__webpack_require__(32)){
+  if(DESCRIPTORS && !__webpack_require__(33)){
     redefine(ObjectProto, 'propertyIsEnumerable', $propertyIsEnumerable, true);
   }
 
@@ -22169,20 +24390,20 @@ setToStringTag(Math, 'Math', true);
 setToStringTag(global.JSON, 'JSON', true);
 
 /***/ }),
-/* 254 */
+/* 286 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var $export      = __webpack_require__(0)
-  , $typed       = __webpack_require__(58)
-  , buffer       = __webpack_require__(82)
+  , $typed       = __webpack_require__(61)
+  , buffer       = __webpack_require__(88)
   , anObject     = __webpack_require__(1)
-  , toIndex      = __webpack_require__(38)
+  , toIndex      = __webpack_require__(39)
   , toLength     = __webpack_require__(8)
   , isObject     = __webpack_require__(4)
   , ArrayBuffer  = __webpack_require__(2).ArrayBuffer
-  , speciesConstructor = __webpack_require__(76)
+  , speciesConstructor = __webpack_require__(82)
   , $ArrayBuffer = buffer.ArrayBuffer
   , $DataView    = buffer.DataView
   , $isView      = $typed.ABV && ArrayBuffer.isView
@@ -22218,117 +24439,117 @@ $export($export.P + $export.U + $export.F * __webpack_require__(3)(function(){
   }
 });
 
-__webpack_require__(37)(ARRAY_BUFFER);
+__webpack_require__(38)(ARRAY_BUFFER);
 
 /***/ }),
-/* 255 */
+/* 287 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $export = __webpack_require__(0);
-$export($export.G + $export.W + $export.F * !__webpack_require__(58).ABV, {
-  DataView: __webpack_require__(82).DataView
+$export($export.G + $export.W + $export.F * !__webpack_require__(61).ABV, {
+  DataView: __webpack_require__(88).DataView
 });
 
 /***/ }),
-/* 256 */
+/* 288 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(27)('Float32', 4, function(init){
+__webpack_require__(28)('Float32', 4, function(init){
   return function Float32Array(data, byteOffset, length){
     return init(this, data, byteOffset, length);
   };
 });
 
 /***/ }),
-/* 257 */
+/* 289 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(27)('Float64', 8, function(init){
+__webpack_require__(28)('Float64', 8, function(init){
   return function Float64Array(data, byteOffset, length){
     return init(this, data, byteOffset, length);
   };
 });
 
 /***/ }),
-/* 258 */
+/* 290 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(27)('Int16', 2, function(init){
+__webpack_require__(28)('Int16', 2, function(init){
   return function Int16Array(data, byteOffset, length){
     return init(this, data, byteOffset, length);
   };
 });
 
 /***/ }),
-/* 259 */
+/* 291 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(27)('Int32', 4, function(init){
+__webpack_require__(28)('Int32', 4, function(init){
   return function Int32Array(data, byteOffset, length){
     return init(this, data, byteOffset, length);
   };
 });
 
 /***/ }),
-/* 260 */
+/* 292 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(27)('Int8', 1, function(init){
+__webpack_require__(28)('Int8', 1, function(init){
   return function Int8Array(data, byteOffset, length){
     return init(this, data, byteOffset, length);
   };
 });
 
 /***/ }),
-/* 261 */
+/* 293 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(27)('Uint16', 2, function(init){
+__webpack_require__(28)('Uint16', 2, function(init){
   return function Uint16Array(data, byteOffset, length){
     return init(this, data, byteOffset, length);
   };
 });
 
 /***/ }),
-/* 262 */
+/* 294 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(27)('Uint32', 4, function(init){
+__webpack_require__(28)('Uint32', 4, function(init){
   return function Uint32Array(data, byteOffset, length){
     return init(this, data, byteOffset, length);
   };
 });
 
 /***/ }),
-/* 263 */
+/* 295 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(27)('Uint8', 1, function(init){
+__webpack_require__(28)('Uint8', 1, function(init){
   return function Uint8Array(data, byteOffset, length){
     return init(this, data, byteOffset, length);
   };
 });
 
 /***/ }),
-/* 264 */
+/* 296 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(27)('Uint8', 1, function(init){
+__webpack_require__(28)('Uint8', 1, function(init){
   return function Uint8ClampedArray(data, byteOffset, length){
     return init(this, data, byteOffset, length);
   };
 }, true);
 
 /***/ }),
-/* 265 */
+/* 297 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var weak = __webpack_require__(93);
+var weak = __webpack_require__(105);
 
 // 23.4 WeakSet Objects
-__webpack_require__(49)('WeakSet', function(get){
+__webpack_require__(52)('WeakSet', function(get){
   return function WeakSet(){ return get(this, arguments.length > 0 ? arguments[0] : undefined); };
 }, {
   // 23.4.3.1 WeakSet.prototype.add(value)
@@ -22338,14 +24559,14 @@ __webpack_require__(49)('WeakSet', function(get){
 }, weak, false, true);
 
 /***/ }),
-/* 266 */
+/* 298 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 // https://github.com/tc39/Array.prototype.includes
 var $export   = __webpack_require__(0)
-  , $includes = __webpack_require__(48)(true);
+  , $includes = __webpack_require__(51)(true);
 
 $export($export.P, 'Array', {
   includes: function includes(el /*, fromIndex = 0 */){
@@ -22353,17 +24574,17 @@ $export($export.P, 'Array', {
   }
 });
 
-__webpack_require__(40)('includes');
+__webpack_require__(41)('includes');
 
 /***/ }),
-/* 267 */
+/* 299 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://github.com/rwaldron/tc39-notes/blob/master/es6/2014-09/sept-25.md#510-globalasap-for-enqueuing-a-microtask
 var $export   = __webpack_require__(0)
-  , microtask = __webpack_require__(73)()
+  , microtask = __webpack_require__(79)()
   , process   = __webpack_require__(2).process
-  , isNode    = __webpack_require__(18)(process) == 'process';
+  , isNode    = __webpack_require__(19)(process) == 'process';
 
 $export($export.G, {
   asap: function asap(fn){
@@ -22373,12 +24594,12 @@ $export($export.G, {
 });
 
 /***/ }),
-/* 268 */
+/* 300 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://github.com/ljharb/proposal-is-error
 var $export = __webpack_require__(0)
-  , cof     = __webpack_require__(18);
+  , cof     = __webpack_require__(19);
 
 $export($export.S, 'Error', {
   isError: function isError(it){
@@ -22387,16 +24608,16 @@ $export($export.S, 'Error', {
 });
 
 /***/ }),
-/* 269 */
+/* 301 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://github.com/DavidBruant/Map-Set.prototype.toJSON
 var $export  = __webpack_require__(0);
 
-$export($export.P + $export.R, 'Map', {toJSON: __webpack_require__(92)('Map')});
+$export($export.P + $export.R, 'Map', {toJSON: __webpack_require__(104)('Map')});
 
 /***/ }),
-/* 270 */
+/* 302 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://gist.github.com/BrendanEich/4294d5c212a6d2254703
@@ -22412,7 +24633,7 @@ $export($export.S, 'Math', {
 });
 
 /***/ }),
-/* 271 */
+/* 303 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://gist.github.com/BrendanEich/4294d5c212a6d2254703
@@ -22433,7 +24654,7 @@ $export($export.S, 'Math', {
 });
 
 /***/ }),
-/* 272 */
+/* 304 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://gist.github.com/BrendanEich/4294d5c212a6d2254703
@@ -22449,7 +24670,7 @@ $export($export.S, 'Math', {
 });
 
 /***/ }),
-/* 273 */
+/* 305 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://gist.github.com/BrendanEich/4294d5c212a6d2254703
@@ -22470,7 +24691,7 @@ $export($export.S, 'Math', {
 });
 
 /***/ }),
-/* 274 */
+/* 306 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22481,14 +24702,14 @@ var $export         = __webpack_require__(0)
   , $defineProperty = __webpack_require__(7);
 
 // B.2.2.2 Object.prototype.__defineGetter__(P, getter)
-__webpack_require__(6) && $export($export.P + __webpack_require__(55), 'Object', {
+__webpack_require__(6) && $export($export.P + __webpack_require__(58), 'Object', {
   __defineGetter__: function __defineGetter__(P, getter){
     $defineProperty.f(toObject(this), P, {get: aFunction(getter), enumerable: true, configurable: true});
   }
 });
 
 /***/ }),
-/* 275 */
+/* 307 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22499,19 +24720,19 @@ var $export         = __webpack_require__(0)
   , $defineProperty = __webpack_require__(7);
 
 // B.2.2.3 Object.prototype.__defineSetter__(P, setter)
-__webpack_require__(6) && $export($export.P + __webpack_require__(55), 'Object', {
+__webpack_require__(6) && $export($export.P + __webpack_require__(58), 'Object', {
   __defineSetter__: function __defineSetter__(P, setter){
     $defineProperty.f(toObject(this), P, {set: aFunction(setter), enumerable: true, configurable: true});
   }
 });
 
 /***/ }),
-/* 276 */
+/* 308 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://github.com/tc39/proposal-object-values-entries
 var $export  = __webpack_require__(0)
-  , $entries = __webpack_require__(103)(true);
+  , $entries = __webpack_require__(115)(true);
 
 $export($export.S, 'Object', {
   entries: function entries(it){
@@ -22520,15 +24741,15 @@ $export($export.S, 'Object', {
 });
 
 /***/ }),
-/* 277 */
+/* 309 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://github.com/tc39/proposal-object-getownpropertydescriptors
 var $export        = __webpack_require__(0)
-  , ownKeys        = __webpack_require__(104)
+  , ownKeys        = __webpack_require__(116)
   , toIObject      = __webpack_require__(15)
-  , gOPD           = __webpack_require__(16)
-  , createProperty = __webpack_require__(61);
+  , gOPD           = __webpack_require__(17)
+  , createProperty = __webpack_require__(67);
 
 $export($export.S, 'Object', {
   getOwnPropertyDescriptors: function getOwnPropertyDescriptors(object){
@@ -22544,19 +24765,19 @@ $export($export.S, 'Object', {
 });
 
 /***/ }),
-/* 278 */
+/* 310 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var $export                  = __webpack_require__(0)
   , toObject                 = __webpack_require__(9)
-  , toPrimitive              = __webpack_require__(23)
-  , getPrototypeOf           = __webpack_require__(17)
-  , getOwnPropertyDescriptor = __webpack_require__(16).f;
+  , toPrimitive              = __webpack_require__(24)
+  , getPrototypeOf           = __webpack_require__(18)
+  , getOwnPropertyDescriptor = __webpack_require__(17).f;
 
 // B.2.2.4 Object.prototype.__lookupGetter__(P)
-__webpack_require__(6) && $export($export.P + __webpack_require__(55), 'Object', {
+__webpack_require__(6) && $export($export.P + __webpack_require__(58), 'Object', {
   __lookupGetter__: function __lookupGetter__(P){
     var O = toObject(this)
       , K = toPrimitive(P, true)
@@ -22568,19 +24789,19 @@ __webpack_require__(6) && $export($export.P + __webpack_require__(55), 'Object',
 });
 
 /***/ }),
-/* 279 */
+/* 311 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var $export                  = __webpack_require__(0)
   , toObject                 = __webpack_require__(9)
-  , toPrimitive              = __webpack_require__(23)
-  , getPrototypeOf           = __webpack_require__(17)
-  , getOwnPropertyDescriptor = __webpack_require__(16).f;
+  , toPrimitive              = __webpack_require__(24)
+  , getPrototypeOf           = __webpack_require__(18)
+  , getOwnPropertyDescriptor = __webpack_require__(17).f;
 
 // B.2.2.5 Object.prototype.__lookupSetter__(P)
-__webpack_require__(6) && $export($export.P + __webpack_require__(55), 'Object', {
+__webpack_require__(6) && $export($export.P + __webpack_require__(58), 'Object', {
   __lookupSetter__: function __lookupSetter__(P){
     var O = toObject(this)
       , K = toPrimitive(P, true)
@@ -22592,12 +24813,12 @@ __webpack_require__(6) && $export($export.P + __webpack_require__(55), 'Object',
 });
 
 /***/ }),
-/* 280 */
+/* 312 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://github.com/tc39/proposal-object-values-entries
 var $export = __webpack_require__(0)
-  , $values = __webpack_require__(103)(false);
+  , $values = __webpack_require__(115)(false);
 
 $export($export.S, 'Object', {
   values: function values(it){
@@ -22606,7 +24827,7 @@ $export($export.S, 'Object', {
 });
 
 /***/ }),
-/* 281 */
+/* 313 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22614,15 +24835,15 @@ $export($export.S, 'Object', {
 // https://github.com/zenparsing/es-observable
 var $export     = __webpack_require__(0)
   , global      = __webpack_require__(2)
-  , core        = __webpack_require__(24)
-  , microtask   = __webpack_require__(73)()
+  , core        = __webpack_require__(25)
+  , microtask   = __webpack_require__(79)()
   , OBSERVABLE  = __webpack_require__(5)('observable')
   , aFunction   = __webpack_require__(11)
   , anObject    = __webpack_require__(1)
-  , anInstance  = __webpack_require__(31)
-  , redefineAll = __webpack_require__(36)
+  , anInstance  = __webpack_require__(32)
+  , redefineAll = __webpack_require__(37)
   , hide        = __webpack_require__(12)
-  , forOf       = __webpack_require__(41)
+  , forOf       = __webpack_require__(42)
   , RETURN      = forOf.RETURN;
 
 var getMethod = function(fn){
@@ -22808,13 +25029,13 @@ hide($Observable.prototype, OBSERVABLE, function(){ return this; });
 
 $export($export.G, {Observable: $Observable});
 
-__webpack_require__(37)('Observable');
+__webpack_require__(38)('Observable');
 
 /***/ }),
-/* 282 */
+/* 314 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var metadata                  = __webpack_require__(26)
+var metadata                  = __webpack_require__(27)
   , anObject                  = __webpack_require__(1)
   , toMetaKey                 = metadata.key
   , ordinaryDefineOwnMetadata = metadata.set;
@@ -22824,10 +25045,10 @@ metadata.exp({defineMetadata: function defineMetadata(metadataKey, metadataValue
 }});
 
 /***/ }),
-/* 283 */
+/* 315 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var metadata               = __webpack_require__(26)
+var metadata               = __webpack_require__(27)
   , anObject               = __webpack_require__(1)
   , toMetaKey              = metadata.key
   , getOrCreateMetadataMap = metadata.map
@@ -22844,14 +25065,14 @@ metadata.exp({deleteMetadata: function deleteMetadata(metadataKey, target /*, ta
 }});
 
 /***/ }),
-/* 284 */
+/* 316 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Set                     = __webpack_require__(112)
-  , from                    = __webpack_require__(88)
-  , metadata                = __webpack_require__(26)
+var Set                     = __webpack_require__(124)
+  , from                    = __webpack_require__(100)
+  , metadata                = __webpack_require__(27)
   , anObject                = __webpack_require__(1)
-  , getPrototypeOf          = __webpack_require__(17)
+  , getPrototypeOf          = __webpack_require__(18)
   , ordinaryOwnMetadataKeys = metadata.keys
   , toMetaKey               = metadata.key;
 
@@ -22868,12 +25089,12 @@ metadata.exp({getMetadataKeys: function getMetadataKeys(target /*, targetKey */)
 }});
 
 /***/ }),
-/* 285 */
+/* 317 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var metadata               = __webpack_require__(26)
+var metadata               = __webpack_require__(27)
   , anObject               = __webpack_require__(1)
-  , getPrototypeOf         = __webpack_require__(17)
+  , getPrototypeOf         = __webpack_require__(18)
   , ordinaryHasOwnMetadata = metadata.has
   , ordinaryGetOwnMetadata = metadata.get
   , toMetaKey              = metadata.key;
@@ -22890,10 +25111,10 @@ metadata.exp({getMetadata: function getMetadata(metadataKey, target /*, targetKe
 }});
 
 /***/ }),
-/* 286 */
+/* 318 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var metadata                = __webpack_require__(26)
+var metadata                = __webpack_require__(27)
   , anObject                = __webpack_require__(1)
   , ordinaryOwnMetadataKeys = metadata.keys
   , toMetaKey               = metadata.key;
@@ -22903,10 +25124,10 @@ metadata.exp({getOwnMetadataKeys: function getOwnMetadataKeys(target /*, targetK
 }});
 
 /***/ }),
-/* 287 */
+/* 319 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var metadata               = __webpack_require__(26)
+var metadata               = __webpack_require__(27)
   , anObject               = __webpack_require__(1)
   , ordinaryGetOwnMetadata = metadata.get
   , toMetaKey              = metadata.key;
@@ -22917,12 +25138,12 @@ metadata.exp({getOwnMetadata: function getOwnMetadata(metadataKey, target /*, ta
 }});
 
 /***/ }),
-/* 288 */
+/* 320 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var metadata               = __webpack_require__(26)
+var metadata               = __webpack_require__(27)
   , anObject               = __webpack_require__(1)
-  , getPrototypeOf         = __webpack_require__(17)
+  , getPrototypeOf         = __webpack_require__(18)
   , ordinaryHasOwnMetadata = metadata.has
   , toMetaKey              = metadata.key;
 
@@ -22938,10 +25159,10 @@ metadata.exp({hasMetadata: function hasMetadata(metadataKey, target /*, targetKe
 }});
 
 /***/ }),
-/* 289 */
+/* 321 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var metadata               = __webpack_require__(26)
+var metadata               = __webpack_require__(27)
   , anObject               = __webpack_require__(1)
   , ordinaryHasOwnMetadata = metadata.has
   , toMetaKey              = metadata.key;
@@ -22952,10 +25173,10 @@ metadata.exp({hasOwnMetadata: function hasOwnMetadata(metadataKey, target /*, ta
 }});
 
 /***/ }),
-/* 290 */
+/* 322 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var metadata                  = __webpack_require__(26)
+var metadata                  = __webpack_require__(27)
   , anObject                  = __webpack_require__(1)
   , aFunction                 = __webpack_require__(11)
   , toMetaKey                 = metadata.key
@@ -22972,23 +25193,23 @@ metadata.exp({metadata: function metadata(metadataKey, metadataValue){
 }});
 
 /***/ }),
-/* 291 */
+/* 323 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://github.com/DavidBruant/Map-Set.prototype.toJSON
 var $export  = __webpack_require__(0);
 
-$export($export.P + $export.R, 'Set', {toJSON: __webpack_require__(92)('Set')});
+$export($export.P + $export.R, 'Set', {toJSON: __webpack_require__(104)('Set')});
 
 /***/ }),
-/* 292 */
+/* 324 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 // https://github.com/mathiasbynens/String.prototype.at
 var $export = __webpack_require__(0)
-  , $at     = __webpack_require__(77)(true);
+  , $at     = __webpack_require__(83)(true);
 
 $export($export.P, 'String', {
   at: function at(pos){
@@ -22997,17 +25218,17 @@ $export($export.P, 'String', {
 });
 
 /***/ }),
-/* 293 */
+/* 325 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 // https://tc39.github.io/String.prototype.matchAll/
 var $export     = __webpack_require__(0)
-  , defined     = __webpack_require__(19)
+  , defined     = __webpack_require__(20)
   , toLength    = __webpack_require__(8)
-  , isRegExp    = __webpack_require__(53)
-  , getFlags    = __webpack_require__(51)
+  , isRegExp    = __webpack_require__(56)
+  , getFlags    = __webpack_require__(54)
   , RegExpProto = RegExp.prototype;
 
 var $RegExpStringIterator = function(regexp, string){
@@ -23015,7 +25236,7 @@ var $RegExpStringIterator = function(regexp, string){
   this._s = string;
 };
 
-__webpack_require__(69)($RegExpStringIterator, 'RegExp String', function next(){
+__webpack_require__(75)($RegExpStringIterator, 'RegExp String', function next(){
   var match = this._r.exec(this._s);
   return {value: match, done: match === null};
 });
@@ -23033,14 +25254,14 @@ $export($export.P, 'String', {
 });
 
 /***/ }),
-/* 294 */
+/* 326 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 // https://github.com/tc39/proposal-string-pad-start-end
 var $export = __webpack_require__(0)
-  , $pad    = __webpack_require__(108);
+  , $pad    = __webpack_require__(120);
 
 $export($export.P, 'String', {
   padEnd: function padEnd(maxLength /*, fillString = ' ' */){
@@ -23049,14 +25270,14 @@ $export($export.P, 'String', {
 });
 
 /***/ }),
-/* 295 */
+/* 327 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 // https://github.com/tc39/proposal-string-pad-start-end
 var $export = __webpack_require__(0)
-  , $pad    = __webpack_require__(108);
+  , $pad    = __webpack_require__(120);
 
 $export($export.P, 'String', {
   padStart: function padStart(maxLength /*, fillString = ' ' */){
@@ -23065,45 +25286,45 @@ $export($export.P, 'String', {
 });
 
 /***/ }),
-/* 296 */
+/* 328 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 // https://github.com/sebmarkbage/ecmascript-string-left-right-trim
-__webpack_require__(44)('trimLeft', function($trim){
+__webpack_require__(45)('trimLeft', function($trim){
   return function trimLeft(){
     return $trim(this, 1);
   };
 }, 'trimStart');
 
 /***/ }),
-/* 297 */
+/* 329 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 // https://github.com/sebmarkbage/ecmascript-string-left-right-trim
-__webpack_require__(44)('trimRight', function($trim){
+__webpack_require__(45)('trimRight', function($trim){
   return function trimRight(){
     return $trim(this, 2);
   };
 }, 'trimEnd');
 
 /***/ }),
-/* 298 */
+/* 330 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(83)('asyncIterator');
+__webpack_require__(89)('asyncIterator');
 
 /***/ }),
-/* 299 */
+/* 331 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(83)('observable');
+__webpack_require__(89)('observable');
 
 /***/ }),
-/* 300 */
+/* 332 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://github.com/ljharb/proposal-global
@@ -23112,14 +25333,14 @@ var $export = __webpack_require__(0);
 $export($export.S, 'System', {global: __webpack_require__(2)});
 
 /***/ }),
-/* 301 */
+/* 333 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var $iterators    = __webpack_require__(85)
+var $iterators    = __webpack_require__(91)
   , redefine      = __webpack_require__(13)
   , global        = __webpack_require__(2)
   , hide          = __webpack_require__(12)
-  , Iterators     = __webpack_require__(42)
+  , Iterators     = __webpack_require__(43)
   , wks           = __webpack_require__(5)
   , ITERATOR      = wks('iterator')
   , TO_STRING_TAG = wks('toStringTag')
@@ -23139,25 +25360,25 @@ for(var collections = ['NodeList', 'DOMTokenList', 'MediaList', 'StyleSheetList'
 }
 
 /***/ }),
-/* 302 */
+/* 334 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $export = __webpack_require__(0)
-  , $task   = __webpack_require__(81);
+  , $task   = __webpack_require__(87);
 $export($export.G + $export.B, {
   setImmediate:   $task.set,
   clearImmediate: $task.clear
 });
 
 /***/ }),
-/* 303 */
+/* 335 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // ie9- setTimeout & setInterval additional parameters fix
 var global     = __webpack_require__(2)
   , $export    = __webpack_require__(0)
-  , invoke     = __webpack_require__(52)
-  , partial    = __webpack_require__(130)
+  , invoke     = __webpack_require__(55)
+  , partial    = __webpack_require__(162)
   , navigator  = global.navigator
   , MSIE       = !!navigator && /MSIE .\./.test(navigator.userAgent); // <- dirty ie9- check
 var wrap = function(set){
@@ -23175,191 +25396,991 @@ $export($export.G + $export.B + $export.F * MSIE, {
 });
 
 /***/ }),
-/* 304 */
+/* 336 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(253);
-__webpack_require__(192);
-__webpack_require__(194);
-__webpack_require__(193);
-__webpack_require__(196);
-__webpack_require__(198);
-__webpack_require__(203);
-__webpack_require__(197);
-__webpack_require__(195);
-__webpack_require__(205);
-__webpack_require__(204);
-__webpack_require__(200);
-__webpack_require__(201);
-__webpack_require__(199);
-__webpack_require__(191);
-__webpack_require__(202);
-__webpack_require__(206);
-__webpack_require__(207);
-__webpack_require__(159);
-__webpack_require__(161);
-__webpack_require__(160);
-__webpack_require__(209);
-__webpack_require__(208);
-__webpack_require__(179);
-__webpack_require__(189);
-__webpack_require__(190);
-__webpack_require__(180);
-__webpack_require__(181);
-__webpack_require__(182);
-__webpack_require__(183);
-__webpack_require__(184);
-__webpack_require__(185);
-__webpack_require__(186);
-__webpack_require__(187);
-__webpack_require__(188);
-__webpack_require__(162);
-__webpack_require__(163);
-__webpack_require__(164);
-__webpack_require__(165);
-__webpack_require__(166);
-__webpack_require__(167);
-__webpack_require__(168);
-__webpack_require__(169);
-__webpack_require__(170);
-__webpack_require__(171);
-__webpack_require__(172);
-__webpack_require__(173);
-__webpack_require__(174);
-__webpack_require__(175);
-__webpack_require__(176);
-__webpack_require__(177);
-__webpack_require__(178);
-__webpack_require__(240);
-__webpack_require__(245);
-__webpack_require__(252);
-__webpack_require__(243);
+__webpack_require__(285);
+__webpack_require__(224);
+__webpack_require__(226);
+__webpack_require__(225);
+__webpack_require__(228);
+__webpack_require__(230);
 __webpack_require__(235);
+__webpack_require__(229);
+__webpack_require__(227);
+__webpack_require__(237);
 __webpack_require__(236);
-__webpack_require__(241);
-__webpack_require__(246);
-__webpack_require__(248);
-__webpack_require__(231);
 __webpack_require__(232);
 __webpack_require__(233);
+__webpack_require__(231);
+__webpack_require__(223);
 __webpack_require__(234);
-__webpack_require__(237);
 __webpack_require__(238);
 __webpack_require__(239);
-__webpack_require__(242);
-__webpack_require__(244);
-__webpack_require__(247);
-__webpack_require__(249);
-__webpack_require__(250);
-__webpack_require__(251);
-__webpack_require__(154);
-__webpack_require__(156);
-__webpack_require__(155);
-__webpack_require__(158);
-__webpack_require__(157);
-__webpack_require__(143);
-__webpack_require__(141);
-__webpack_require__(147);
-__webpack_require__(144);
-__webpack_require__(150);
-__webpack_require__(152);
-__webpack_require__(140);
-__webpack_require__(146);
-__webpack_require__(137);
-__webpack_require__(151);
-__webpack_require__(135);
-__webpack_require__(149);
-__webpack_require__(148);
-__webpack_require__(142);
-__webpack_require__(145);
-__webpack_require__(134);
-__webpack_require__(136);
-__webpack_require__(139);
-__webpack_require__(138);
-__webpack_require__(153);
-__webpack_require__(85);
-__webpack_require__(225);
-__webpack_require__(230);
-__webpack_require__(111);
-__webpack_require__(226);
-__webpack_require__(227);
-__webpack_require__(228);
-__webpack_require__(229);
-__webpack_require__(210);
-__webpack_require__(110);
-__webpack_require__(112);
-__webpack_require__(113);
-__webpack_require__(265);
-__webpack_require__(254);
-__webpack_require__(255);
-__webpack_require__(260);
-__webpack_require__(263);
-__webpack_require__(264);
-__webpack_require__(258);
-__webpack_require__(261);
-__webpack_require__(259);
-__webpack_require__(262);
-__webpack_require__(256);
-__webpack_require__(257);
+__webpack_require__(191);
+__webpack_require__(193);
+__webpack_require__(192);
+__webpack_require__(241);
+__webpack_require__(240);
 __webpack_require__(211);
+__webpack_require__(221);
+__webpack_require__(222);
 __webpack_require__(212);
 __webpack_require__(213);
 __webpack_require__(214);
 __webpack_require__(215);
-__webpack_require__(218);
 __webpack_require__(216);
 __webpack_require__(217);
+__webpack_require__(218);
 __webpack_require__(219);
 __webpack_require__(220);
-__webpack_require__(221);
-__webpack_require__(222);
-__webpack_require__(224);
-__webpack_require__(223);
-__webpack_require__(266);
-__webpack_require__(292);
-__webpack_require__(295);
-__webpack_require__(294);
-__webpack_require__(296);
-__webpack_require__(297);
-__webpack_require__(293);
-__webpack_require__(298);
-__webpack_require__(299);
-__webpack_require__(277);
-__webpack_require__(280);
-__webpack_require__(276);
-__webpack_require__(274);
-__webpack_require__(275);
-__webpack_require__(278);
-__webpack_require__(279);
-__webpack_require__(269);
-__webpack_require__(291);
-__webpack_require__(300);
-__webpack_require__(268);
-__webpack_require__(270);
+__webpack_require__(194);
+__webpack_require__(195);
+__webpack_require__(196);
+__webpack_require__(197);
+__webpack_require__(198);
+__webpack_require__(199);
+__webpack_require__(200);
+__webpack_require__(201);
+__webpack_require__(202);
+__webpack_require__(203);
+__webpack_require__(204);
+__webpack_require__(205);
+__webpack_require__(206);
+__webpack_require__(207);
+__webpack_require__(208);
+__webpack_require__(209);
+__webpack_require__(210);
 __webpack_require__(272);
-__webpack_require__(271);
+__webpack_require__(277);
+__webpack_require__(284);
+__webpack_require__(275);
+__webpack_require__(267);
+__webpack_require__(268);
 __webpack_require__(273);
+__webpack_require__(278);
+__webpack_require__(280);
+__webpack_require__(263);
+__webpack_require__(264);
+__webpack_require__(265);
+__webpack_require__(266);
+__webpack_require__(269);
+__webpack_require__(270);
+__webpack_require__(271);
+__webpack_require__(274);
+__webpack_require__(276);
+__webpack_require__(279);
+__webpack_require__(281);
 __webpack_require__(282);
 __webpack_require__(283);
-__webpack_require__(285);
-__webpack_require__(284);
-__webpack_require__(287);
+__webpack_require__(186);
+__webpack_require__(188);
+__webpack_require__(187);
+__webpack_require__(190);
+__webpack_require__(189);
+__webpack_require__(175);
+__webpack_require__(173);
+__webpack_require__(179);
+__webpack_require__(176);
+__webpack_require__(182);
+__webpack_require__(184);
+__webpack_require__(172);
+__webpack_require__(178);
+__webpack_require__(169);
+__webpack_require__(183);
+__webpack_require__(167);
+__webpack_require__(181);
+__webpack_require__(180);
+__webpack_require__(174);
+__webpack_require__(177);
+__webpack_require__(166);
+__webpack_require__(168);
+__webpack_require__(171);
+__webpack_require__(170);
+__webpack_require__(185);
+__webpack_require__(91);
+__webpack_require__(257);
+__webpack_require__(262);
+__webpack_require__(123);
+__webpack_require__(258);
+__webpack_require__(259);
+__webpack_require__(260);
+__webpack_require__(261);
+__webpack_require__(242);
+__webpack_require__(122);
+__webpack_require__(124);
+__webpack_require__(125);
+__webpack_require__(297);
 __webpack_require__(286);
+__webpack_require__(287);
+__webpack_require__(292);
+__webpack_require__(295);
+__webpack_require__(296);
+__webpack_require__(290);
+__webpack_require__(293);
+__webpack_require__(291);
+__webpack_require__(294);
 __webpack_require__(288);
 __webpack_require__(289);
-__webpack_require__(290);
-__webpack_require__(267);
-__webpack_require__(281);
-__webpack_require__(303);
-__webpack_require__(302);
+__webpack_require__(243);
+__webpack_require__(244);
+__webpack_require__(245);
+__webpack_require__(246);
+__webpack_require__(247);
+__webpack_require__(250);
+__webpack_require__(248);
+__webpack_require__(249);
+__webpack_require__(251);
+__webpack_require__(252);
+__webpack_require__(253);
+__webpack_require__(254);
+__webpack_require__(256);
+__webpack_require__(255);
+__webpack_require__(298);
+__webpack_require__(324);
+__webpack_require__(327);
+__webpack_require__(326);
+__webpack_require__(328);
+__webpack_require__(329);
+__webpack_require__(325);
+__webpack_require__(330);
+__webpack_require__(331);
+__webpack_require__(309);
+__webpack_require__(312);
+__webpack_require__(308);
+__webpack_require__(306);
+__webpack_require__(307);
+__webpack_require__(310);
+__webpack_require__(311);
 __webpack_require__(301);
-module.exports = __webpack_require__(24);
+__webpack_require__(323);
+__webpack_require__(332);
+__webpack_require__(300);
+__webpack_require__(302);
+__webpack_require__(304);
+__webpack_require__(303);
+__webpack_require__(305);
+__webpack_require__(314);
+__webpack_require__(315);
+__webpack_require__(317);
+__webpack_require__(316);
+__webpack_require__(319);
+__webpack_require__(318);
+__webpack_require__(320);
+__webpack_require__(321);
+__webpack_require__(322);
+__webpack_require__(299);
+__webpack_require__(313);
+__webpack_require__(335);
+__webpack_require__(334);
+__webpack_require__(333);
+module.exports = __webpack_require__(25);
 
 /***/ }),
-/* 305 */
+/* 337 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(306)(undefined);
+/* WEBPACK VAR INJECTION */(function(global, process) {/**
+ * Copyright (c) 2014, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * https://raw.github.com/facebook/regenerator/master/LICENSE file. An
+ * additional grant of patent rights can be found in the PATENTS file in
+ * the same directory.
+ */
+
+!(function(global) {
+  "use strict";
+
+  var Op = Object.prototype;
+  var hasOwn = Op.hasOwnProperty;
+  var undefined; // More compressible than void 0.
+  var $Symbol = typeof Symbol === "function" ? Symbol : {};
+  var iteratorSymbol = $Symbol.iterator || "@@iterator";
+  var toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
+
+  var inModule = typeof module === "object";
+  var runtime = global.regeneratorRuntime;
+  if (runtime) {
+    if (inModule) {
+      // If regeneratorRuntime is defined globally and we're in a module,
+      // make the exports object identical to regeneratorRuntime.
+      module.exports = runtime;
+    }
+    // Don't bother evaluating the rest of this file if the runtime was
+    // already defined globally.
+    return;
+  }
+
+  // Define the runtime globally (as expected by generated code) as either
+  // module.exports (if we're in a module) or a new, empty object.
+  runtime = global.regeneratorRuntime = inModule ? module.exports : {};
+
+  function wrap(innerFn, outerFn, self, tryLocsList) {
+    // If outerFn provided and outerFn.prototype is a Generator, then outerFn.prototype instanceof Generator.
+    var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator;
+    var generator = Object.create(protoGenerator.prototype);
+    var context = new Context(tryLocsList || []);
+
+    // The ._invoke method unifies the implementations of the .next,
+    // .throw, and .return methods.
+    generator._invoke = makeInvokeMethod(innerFn, self, context);
+
+    return generator;
+  }
+  runtime.wrap = wrap;
+
+  // Try/catch helper to minimize deoptimizations. Returns a completion
+  // record like context.tryEntries[i].completion. This interface could
+  // have been (and was previously) designed to take a closure to be
+  // invoked without arguments, but in all the cases we care about we
+  // already have an existing method we want to call, so there's no need
+  // to create a new function object. We can even get away with assuming
+  // the method takes exactly one argument, since that happens to be true
+  // in every case, so we don't have to touch the arguments object. The
+  // only additional allocation required is the completion record, which
+  // has a stable shape and so hopefully should be cheap to allocate.
+  function tryCatch(fn, obj, arg) {
+    try {
+      return { type: "normal", arg: fn.call(obj, arg) };
+    } catch (err) {
+      return { type: "throw", arg: err };
+    }
+  }
+
+  var GenStateSuspendedStart = "suspendedStart";
+  var GenStateSuspendedYield = "suspendedYield";
+  var GenStateExecuting = "executing";
+  var GenStateCompleted = "completed";
+
+  // Returning this object from the innerFn has the same effect as
+  // breaking out of the dispatch switch statement.
+  var ContinueSentinel = {};
+
+  // Dummy constructor functions that we use as the .constructor and
+  // .constructor.prototype properties for functions that return Generator
+  // objects. For full spec compliance, you may wish to configure your
+  // minifier not to mangle the names of these two functions.
+  function Generator() {}
+  function GeneratorFunction() {}
+  function GeneratorFunctionPrototype() {}
+
+  // This is a polyfill for %IteratorPrototype% for environments that
+  // don't natively support it.
+  var IteratorPrototype = {};
+  IteratorPrototype[iteratorSymbol] = function () {
+    return this;
+  };
+
+  var getProto = Object.getPrototypeOf;
+  var NativeIteratorPrototype = getProto && getProto(getProto(values([])));
+  if (NativeIteratorPrototype &&
+      NativeIteratorPrototype !== Op &&
+      hasOwn.call(NativeIteratorPrototype, iteratorSymbol)) {
+    // This environment has a native %IteratorPrototype%; use it instead
+    // of the polyfill.
+    IteratorPrototype = NativeIteratorPrototype;
+  }
+
+  var Gp = GeneratorFunctionPrototype.prototype =
+    Generator.prototype = Object.create(IteratorPrototype);
+  GeneratorFunction.prototype = Gp.constructor = GeneratorFunctionPrototype;
+  GeneratorFunctionPrototype.constructor = GeneratorFunction;
+  GeneratorFunctionPrototype[toStringTagSymbol] =
+    GeneratorFunction.displayName = "GeneratorFunction";
+
+  // Helper for defining the .next, .throw, and .return methods of the
+  // Iterator interface in terms of a single ._invoke method.
+  function defineIteratorMethods(prototype) {
+    ["next", "throw", "return"].forEach(function(method) {
+      prototype[method] = function(arg) {
+        return this._invoke(method, arg);
+      };
+    });
+  }
+
+  runtime.isGeneratorFunction = function(genFun) {
+    var ctor = typeof genFun === "function" && genFun.constructor;
+    return ctor
+      ? ctor === GeneratorFunction ||
+        // For the native GeneratorFunction constructor, the best we can
+        // do is to check its .name property.
+        (ctor.displayName || ctor.name) === "GeneratorFunction"
+      : false;
+  };
+
+  runtime.mark = function(genFun) {
+    if (Object.setPrototypeOf) {
+      Object.setPrototypeOf(genFun, GeneratorFunctionPrototype);
+    } else {
+      genFun.__proto__ = GeneratorFunctionPrototype;
+      if (!(toStringTagSymbol in genFun)) {
+        genFun[toStringTagSymbol] = "GeneratorFunction";
+      }
+    }
+    genFun.prototype = Object.create(Gp);
+    return genFun;
+  };
+
+  // Within the body of any async function, `await x` is transformed to
+  // `yield regeneratorRuntime.awrap(x)`, so that the runtime can test
+  // `hasOwn.call(value, "__await")` to determine if the yielded value is
+  // meant to be awaited.
+  runtime.awrap = function(arg) {
+    return { __await: arg };
+  };
+
+  function AsyncIterator(generator) {
+    function invoke(method, arg, resolve, reject) {
+      var record = tryCatch(generator[method], generator, arg);
+      if (record.type === "throw") {
+        reject(record.arg);
+      } else {
+        var result = record.arg;
+        var value = result.value;
+        if (value &&
+            typeof value === "object" &&
+            hasOwn.call(value, "__await")) {
+          return Promise.resolve(value.__await).then(function(value) {
+            invoke("next", value, resolve, reject);
+          }, function(err) {
+            invoke("throw", err, resolve, reject);
+          });
+        }
+
+        return Promise.resolve(value).then(function(unwrapped) {
+          // When a yielded Promise is resolved, its final value becomes
+          // the .value of the Promise<{value,done}> result for the
+          // current iteration. If the Promise is rejected, however, the
+          // result for this iteration will be rejected with the same
+          // reason. Note that rejections of yielded Promises are not
+          // thrown back into the generator function, as is the case
+          // when an awaited Promise is rejected. This difference in
+          // behavior between yield and await is important, because it
+          // allows the consumer to decide what to do with the yielded
+          // rejection (swallow it and continue, manually .throw it back
+          // into the generator, abandon iteration, whatever). With
+          // await, by contrast, there is no opportunity to examine the
+          // rejection reason outside the generator function, so the
+          // only option is to throw it from the await expression, and
+          // let the generator function handle the exception.
+          result.value = unwrapped;
+          resolve(result);
+        }, reject);
+      }
+    }
+
+    if (typeof process === "object" && process.domain) {
+      invoke = process.domain.bind(invoke);
+    }
+
+    var previousPromise;
+
+    function enqueue(method, arg) {
+      function callInvokeWithMethodAndArg() {
+        return new Promise(function(resolve, reject) {
+          invoke(method, arg, resolve, reject);
+        });
+      }
+
+      return previousPromise =
+        // If enqueue has been called before, then we want to wait until
+        // all previous Promises have been resolved before calling invoke,
+        // so that results are always delivered in the correct order. If
+        // enqueue has not been called before, then it is important to
+        // call invoke immediately, without waiting on a callback to fire,
+        // so that the async generator function has the opportunity to do
+        // any necessary setup in a predictable way. This predictability
+        // is why the Promise constructor synchronously invokes its
+        // executor callback, and why async functions synchronously
+        // execute code before the first await. Since we implement simple
+        // async functions in terms of async generators, it is especially
+        // important to get this right, even though it requires care.
+        previousPromise ? previousPromise.then(
+          callInvokeWithMethodAndArg,
+          // Avoid propagating failures to Promises returned by later
+          // invocations of the iterator.
+          callInvokeWithMethodAndArg
+        ) : callInvokeWithMethodAndArg();
+    }
+
+    // Define the unified helper method that is used to implement .next,
+    // .throw, and .return (see defineIteratorMethods).
+    this._invoke = enqueue;
+  }
+
+  defineIteratorMethods(AsyncIterator.prototype);
+  runtime.AsyncIterator = AsyncIterator;
+
+  // Note that simple async functions are implemented on top of
+  // AsyncIterator objects; they just return a Promise for the value of
+  // the final result produced by the iterator.
+  runtime.async = function(innerFn, outerFn, self, tryLocsList) {
+    var iter = new AsyncIterator(
+      wrap(innerFn, outerFn, self, tryLocsList)
+    );
+
+    return runtime.isGeneratorFunction(outerFn)
+      ? iter // If outerFn is a generator, return the full iterator.
+      : iter.next().then(function(result) {
+          return result.done ? result.value : iter.next();
+        });
+  };
+
+  function makeInvokeMethod(innerFn, self, context) {
+    var state = GenStateSuspendedStart;
+
+    return function invoke(method, arg) {
+      if (state === GenStateExecuting) {
+        throw new Error("Generator is already running");
+      }
+
+      if (state === GenStateCompleted) {
+        if (method === "throw") {
+          throw arg;
+        }
+
+        // Be forgiving, per 25.3.3.3.3 of the spec:
+        // https://people.mozilla.org/~jorendorff/es6-draft.html#sec-generatorresume
+        return doneResult();
+      }
+
+      context.method = method;
+      context.arg = arg;
+
+      while (true) {
+        var delegate = context.delegate;
+        if (delegate) {
+          var delegateResult = maybeInvokeDelegate(delegate, context);
+          if (delegateResult) {
+            if (delegateResult === ContinueSentinel) continue;
+            return delegateResult;
+          }
+        }
+
+        if (context.method === "next") {
+          // Setting context._sent for legacy support of Babel's
+          // function.sent implementation.
+          context.sent = context._sent = context.arg;
+
+        } else if (context.method === "throw") {
+          if (state === GenStateSuspendedStart) {
+            state = GenStateCompleted;
+            throw context.arg;
+          }
+
+          context.dispatchException(context.arg);
+
+        } else if (context.method === "return") {
+          context.abrupt("return", context.arg);
+        }
+
+        state = GenStateExecuting;
+
+        var record = tryCatch(innerFn, self, context);
+        if (record.type === "normal") {
+          // If an exception is thrown from innerFn, we leave state ===
+          // GenStateExecuting and loop back for another invocation.
+          state = context.done
+            ? GenStateCompleted
+            : GenStateSuspendedYield;
+
+          if (record.arg === ContinueSentinel) {
+            continue;
+          }
+
+          return {
+            value: record.arg,
+            done: context.done
+          };
+
+        } else if (record.type === "throw") {
+          state = GenStateCompleted;
+          // Dispatch the exception by looping back around to the
+          // context.dispatchException(context.arg) call above.
+          context.method = "throw";
+          context.arg = record.arg;
+        }
+      }
+    };
+  }
+
+  // Call delegate.iterator[context.method](context.arg) and handle the
+  // result, either by returning a { value, done } result from the
+  // delegate iterator, or by modifying context.method and context.arg,
+  // setting context.delegate to null, and returning the ContinueSentinel.
+  function maybeInvokeDelegate(delegate, context) {
+    var method = delegate.iterator[context.method];
+    if (method === undefined) {
+      // A .throw or .return when the delegate iterator has no .throw
+      // method always terminates the yield* loop.
+      context.delegate = null;
+
+      if (context.method === "throw") {
+        if (delegate.iterator.return) {
+          // If the delegate iterator has a return method, give it a
+          // chance to clean up.
+          context.method = "return";
+          context.arg = undefined;
+          maybeInvokeDelegate(delegate, context);
+
+          if (context.method === "throw") {
+            // If maybeInvokeDelegate(context) changed context.method from
+            // "return" to "throw", let that override the TypeError below.
+            return ContinueSentinel;
+          }
+        }
+
+        context.method = "throw";
+        context.arg = new TypeError(
+          "The iterator does not provide a 'throw' method");
+      }
+
+      return ContinueSentinel;
+    }
+
+    var record = tryCatch(method, delegate.iterator, context.arg);
+
+    if (record.type === "throw") {
+      context.method = "throw";
+      context.arg = record.arg;
+      context.delegate = null;
+      return ContinueSentinel;
+    }
+
+    var info = record.arg;
+
+    if (! info) {
+      context.method = "throw";
+      context.arg = new TypeError("iterator result is not an object");
+      context.delegate = null;
+      return ContinueSentinel;
+    }
+
+    if (info.done) {
+      // Assign the result of the finished delegate to the temporary
+      // variable specified by delegate.resultName (see delegateYield).
+      context[delegate.resultName] = info.value;
+
+      // Resume execution at the desired location (see delegateYield).
+      context.next = delegate.nextLoc;
+
+      // If context.method was "throw" but the delegate handled the
+      // exception, let the outer generator proceed normally. If
+      // context.method was "next", forget context.arg since it has been
+      // "consumed" by the delegate iterator. If context.method was
+      // "return", allow the original .return call to continue in the
+      // outer generator.
+      if (context.method !== "return") {
+        context.method = "next";
+        context.arg = undefined;
+      }
+
+    } else {
+      // Re-yield the result returned by the delegate method.
+      return info;
+    }
+
+    // The delegate iterator is finished, so forget it and continue with
+    // the outer generator.
+    context.delegate = null;
+    return ContinueSentinel;
+  }
+
+  // Define Generator.prototype.{next,throw,return} in terms of the
+  // unified ._invoke helper method.
+  defineIteratorMethods(Gp);
+
+  Gp[toStringTagSymbol] = "Generator";
+
+  Gp.toString = function() {
+    return "[object Generator]";
+  };
+
+  function pushTryEntry(locs) {
+    var entry = { tryLoc: locs[0] };
+
+    if (1 in locs) {
+      entry.catchLoc = locs[1];
+    }
+
+    if (2 in locs) {
+      entry.finallyLoc = locs[2];
+      entry.afterLoc = locs[3];
+    }
+
+    this.tryEntries.push(entry);
+  }
+
+  function resetTryEntry(entry) {
+    var record = entry.completion || {};
+    record.type = "normal";
+    delete record.arg;
+    entry.completion = record;
+  }
+
+  function Context(tryLocsList) {
+    // The root entry object (effectively a try statement without a catch
+    // or a finally block) gives us a place to store values thrown from
+    // locations where there is no enclosing try statement.
+    this.tryEntries = [{ tryLoc: "root" }];
+    tryLocsList.forEach(pushTryEntry, this);
+    this.reset(true);
+  }
+
+  runtime.keys = function(object) {
+    var keys = [];
+    for (var key in object) {
+      keys.push(key);
+    }
+    keys.reverse();
+
+    // Rather than returning an object with a next method, we keep
+    // things simple and return the next function itself.
+    return function next() {
+      while (keys.length) {
+        var key = keys.pop();
+        if (key in object) {
+          next.value = key;
+          next.done = false;
+          return next;
+        }
+      }
+
+      // To avoid creating an additional object, we just hang the .value
+      // and .done properties off the next function object itself. This
+      // also ensures that the minifier will not anonymize the function.
+      next.done = true;
+      return next;
+    };
+  };
+
+  function values(iterable) {
+    if (iterable) {
+      var iteratorMethod = iterable[iteratorSymbol];
+      if (iteratorMethod) {
+        return iteratorMethod.call(iterable);
+      }
+
+      if (typeof iterable.next === "function") {
+        return iterable;
+      }
+
+      if (!isNaN(iterable.length)) {
+        var i = -1, next = function next() {
+          while (++i < iterable.length) {
+            if (hasOwn.call(iterable, i)) {
+              next.value = iterable[i];
+              next.done = false;
+              return next;
+            }
+          }
+
+          next.value = undefined;
+          next.done = true;
+
+          return next;
+        };
+
+        return next.next = next;
+      }
+    }
+
+    // Return an iterator with no values.
+    return { next: doneResult };
+  }
+  runtime.values = values;
+
+  function doneResult() {
+    return { value: undefined, done: true };
+  }
+
+  Context.prototype = {
+    constructor: Context,
+
+    reset: function(skipTempReset) {
+      this.prev = 0;
+      this.next = 0;
+      // Resetting context._sent for legacy support of Babel's
+      // function.sent implementation.
+      this.sent = this._sent = undefined;
+      this.done = false;
+      this.delegate = null;
+
+      this.method = "next";
+      this.arg = undefined;
+
+      this.tryEntries.forEach(resetTryEntry);
+
+      if (!skipTempReset) {
+        for (var name in this) {
+          // Not sure about the optimal order of these conditions:
+          if (name.charAt(0) === "t" &&
+              hasOwn.call(this, name) &&
+              !isNaN(+name.slice(1))) {
+            this[name] = undefined;
+          }
+        }
+      }
+    },
+
+    stop: function() {
+      this.done = true;
+
+      var rootEntry = this.tryEntries[0];
+      var rootRecord = rootEntry.completion;
+      if (rootRecord.type === "throw") {
+        throw rootRecord.arg;
+      }
+
+      return this.rval;
+    },
+
+    dispatchException: function(exception) {
+      if (this.done) {
+        throw exception;
+      }
+
+      var context = this;
+      function handle(loc, caught) {
+        record.type = "throw";
+        record.arg = exception;
+        context.next = loc;
+
+        if (caught) {
+          // If the dispatched exception was caught by a catch block,
+          // then let that catch block handle the exception normally.
+          context.method = "next";
+          context.arg = undefined;
+        }
+
+        return !! caught;
+      }
+
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        var record = entry.completion;
+
+        if (entry.tryLoc === "root") {
+          // Exception thrown outside of any try block that could handle
+          // it, so set the completion value of the entire function to
+          // throw the exception.
+          return handle("end");
+        }
+
+        if (entry.tryLoc <= this.prev) {
+          var hasCatch = hasOwn.call(entry, "catchLoc");
+          var hasFinally = hasOwn.call(entry, "finallyLoc");
+
+          if (hasCatch && hasFinally) {
+            if (this.prev < entry.catchLoc) {
+              return handle(entry.catchLoc, true);
+            } else if (this.prev < entry.finallyLoc) {
+              return handle(entry.finallyLoc);
+            }
+
+          } else if (hasCatch) {
+            if (this.prev < entry.catchLoc) {
+              return handle(entry.catchLoc, true);
+            }
+
+          } else if (hasFinally) {
+            if (this.prev < entry.finallyLoc) {
+              return handle(entry.finallyLoc);
+            }
+
+          } else {
+            throw new Error("try statement without catch or finally");
+          }
+        }
+      }
+    },
+
+    abrupt: function(type, arg) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.tryLoc <= this.prev &&
+            hasOwn.call(entry, "finallyLoc") &&
+            this.prev < entry.finallyLoc) {
+          var finallyEntry = entry;
+          break;
+        }
+      }
+
+      if (finallyEntry &&
+          (type === "break" ||
+           type === "continue") &&
+          finallyEntry.tryLoc <= arg &&
+          arg <= finallyEntry.finallyLoc) {
+        // Ignore the finally entry if control is not jumping to a
+        // location outside the try/catch block.
+        finallyEntry = null;
+      }
+
+      var record = finallyEntry ? finallyEntry.completion : {};
+      record.type = type;
+      record.arg = arg;
+
+      if (finallyEntry) {
+        this.method = "next";
+        this.next = finallyEntry.finallyLoc;
+        return ContinueSentinel;
+      }
+
+      return this.complete(record);
+    },
+
+    complete: function(record, afterLoc) {
+      if (record.type === "throw") {
+        throw record.arg;
+      }
+
+      if (record.type === "break" ||
+          record.type === "continue") {
+        this.next = record.arg;
+      } else if (record.type === "return") {
+        this.rval = this.arg = record.arg;
+        this.method = "return";
+        this.next = "end";
+      } else if (record.type === "normal" && afterLoc) {
+        this.next = afterLoc;
+      }
+
+      return ContinueSentinel;
+    },
+
+    finish: function(finallyLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.finallyLoc === finallyLoc) {
+          this.complete(entry.completion, entry.afterLoc);
+          resetTryEntry(entry);
+          return ContinueSentinel;
+        }
+      }
+    },
+
+    "catch": function(tryLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.tryLoc === tryLoc) {
+          var record = entry.completion;
+          if (record.type === "throw") {
+            var thrown = record.arg;
+            resetTryEntry(entry);
+          }
+          return thrown;
+        }
+      }
+
+      // The context.catch method must only be called with a location
+      // argument that corresponds to a known catch block.
+      throw new Error("illegal catch attempt");
+    },
+
+    delegateYield: function(iterable, resultName, nextLoc) {
+      this.delegate = {
+        iterator: values(iterable),
+        resultName: resultName,
+        nextLoc: nextLoc
+      };
+
+      if (this.method === "next") {
+        // Deliberately forget the last sent value so that we don't
+        // accidentally pass it on to the delegate.
+        this.arg = undefined;
+      }
+
+      return ContinueSentinel;
+    }
+  };
+})(
+  // Among the various tricks for obtaining a reference to the global
+  // object, this seems to be the most reliable technique that does not
+  // use indirect eval (which violates Content Security Policy).
+  typeof global === "object" ? global :
+  typeof window === "object" ? window :
+  typeof self === "object" ? self : this
+);
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(63), __webpack_require__(64)))
+
+/***/ }),
+/* 338 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(46)(undefined);
+// imports
+
+
+// module
+exports.push([module.i, "@charset \"UTF-8\";\n/* ========================================================================\n   Component: Base\n ========================================================================== */\n/*\n * 1. Set `font-size` to support `rem` units\n *    Not using `font` property because a leading hyphen (e.g. -apple-system) causes the font to break in IE11 and Edge\n * 2. Prevent adjustments of font size after orientation changes in IE and iOS.\n * 3. Style\n */\nhtml {\n  /* 1 */\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif;\n  font-size: 16px;\n  font-weight: normal;\n  line-height: 1.5;\n  /* 2 */\n  -webkit-text-size-adjust: 100%;\n  -ms-text-size-adjust: 100%;\n  /* 3 */\n  background: #fff;\n  color: #666;\n  font-size: \"Open Sans\", Frutiger, Calibri, \"Myriad Pro\", Myriad, sans-serif; }\n\n/*\n * Removes default margin.\n */\nbody {\n  margin: 0; }\n\n/* Links\n ========================================================================== */\n/*\n * 1. Remove the gray background on active links in IE 10.\n * 2. Remove gaps in links underline in iOS 8+ and Safari 8+.\n */\na {\n  /* 1 */\n  background-color: transparent;\n  /* 2 */\n  -webkit-text-decoration-skip: objects; }\n\n/*\n * Remove the outline on focused links when they are also active or hovered\n */\na:active,\na:hover {\n  outline: 0; }\n\n/*\n * Style\n */\na,\n.uk-link {\n  color: #DA7D02;\n  text-decoration: none;\n  cursor: pointer; }\n\na:hover,\n.uk-link:hover {\n  color: #0f6ecd;\n  text-decoration: underline; }\n\n/* Text-level semantics\n ========================================================================== */\n/*\n * 1. Remove the bottom border in Firefox 39-.\n * 2. Add the correct text decoration in Chrome, Edge, IE, Opera, and Safari.\n */\nabbr[title] {\n  border-bottom: none;\n  /* 1 */\n  text-decoration: underline;\n  /* 2 */\n  text-decoration: underline dotted;\n  /* 2 */ }\n\n/*\n * 1. Prevent the duplicate application of `bolder` by the next rule in Safari 6.\n * 2. Add the correct font weight in Chrome, Edge, and Safari.\n */\n/* 1 */\nb,\nstrong {\n  font-weight: inherit; }\n\n/* 2 */\nb,\nstrong {\n  font-weight: bolder; }\n\n/*\n * 1. Correct the odd `em` font sizing in all browsers.\n * 2. Consolas has a better baseline in running text compared to `Courier`\n * 3. Style\n */\n:not(pre) > code,\n:not(pre) > kbd,\n:not(pre) > samp {\n  /* 1 */\n  font-size: 0.875rem;\n  /* 2 */\n  font-family: Consolas, monaco, monospace;\n  /* 3 */\n  color: #f0506e;\n  white-space: nowrap;\n  padding: 2px 6px;\n  background: #f8f8f8; }\n\n/*\n * Emphasize\n */\nem {\n  color: #f0506e; }\n\n/*\n * Insert\n */\nins {\n  background: #ffd;\n  color: #666;\n  text-decoration: none; }\n\n/*\n * Mark\n */\nmark {\n  background: #ffd;\n  color: #666; }\n\n/*\n * Quote\n */\nq {\n  font-style: italic; }\n\n/*\n * Add the correct font size in all browsers.\n */\nsmall {\n  font-size: 80%; }\n\n/*\n * Prevents `sub` and `sup` affecting `line-height` in all browsers.\n */\nsub,\nsup {\n  font-size: 75%;\n  line-height: 0;\n  position: relative;\n  vertical-align: baseline; }\n\nsup {\n  top: -0.5em; }\n\nsub {\n  bottom: -0.25em; }\n\n/* Embedded content\n ========================================================================== */\n/*\n * Remove the gap between embedded content and the bottom of their containers.\n */\naudio,\ncanvas,\niframe,\nimg,\nsvg,\nvideo {\n  vertical-align: middle; }\n\n/*\n * Responsiveness\n * 1. Set a maximum width\n * 2. Auto scale the height. Only needed if `height` attribute is present\n * 2. Corrects `max-width` behavior if padding and border are used\n */\naudio,\ncanvas,\nimg,\nvideo {\n  /* 1 */\n  max-width: 100%;\n  /* 2 */\n  height: auto;\n  /* 3 */\n  box-sizing: border-box; }\n\n/*\n * Remove the border on images inside links in IE 10-.\n */\nimg {\n  border-style: none; }\n\n/*\n * Hide the overflow in IE.\n */\nsvg:not(:root) {\n  overflow: hidden; }\n\n/* Block elements\n ========================================================================== */\n/*\n * Margins\n */\np,\nul,\nol,\ndl,\npre,\naddress,\nfieldset,\nfigure {\n  margin: 0 0 20px 0; }\n\n/* Add margin if adjacent element */\n* + p,\n* + ul,\n* + ol,\n* + dl,\n* + pre,\n* + address,\n* + fieldset,\n* + figure {\n  margin-top: 20px; }\n\n/* Headings\n ========================================================================== */\nh1, .uk-h1,\nh2, .uk-h2,\nh3, .uk-h3,\nh4, .uk-h4,\nh5, .uk-h5,\nh6, .uk-h6 {\n  margin: 0 0 20px 0;\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif;\n  font-weight: normal;\n  color: #333;\n  text-transform: none; }\n\n/* Add margin if adjacent element */\n* + h1, * + .uk-h1,\n* + h2, * + .uk-h2,\n* + h3, * + .uk-h3,\n* + h4, * + .uk-h4,\n* + h5, * + .uk-h5,\n* + h6, * + .uk-h6 {\n  margin-top: 40px; }\n\n/*\n * Sizes\n */\nh1, .uk-h1 {\n  font-size: 2.625rem;\n  line-height: 1.2; }\n\nh2, .uk-h2 {\n  font-size: 2rem;\n  line-height: 1.3; }\n\nh3, .uk-h3 {\n  font-size: 1.5rem;\n  line-height: 1.4; }\n\nh4, .uk-h4 {\n  font-size: 1.25rem;\n  line-height: 1.4; }\n\nh5, .uk-h5 {\n  font-size: 16px;\n  line-height: 1.4; }\n\nh6, .uk-h6 {\n  font-size: 0.875rem;\n  line-height: 1.4; }\n\n/* Lists\n ========================================================================== */\nul,\nol {\n  padding-left: 30px; }\n\n/*\n * Reset margin for nested lists\n */\nul > li > ul,\nul > li > ol,\nol > li > ol,\nol > li > ul {\n  margin: 0; }\n\n/* Description lists\n ========================================================================== */\ndt {\n  font-weight: bold; }\n\ndd {\n  margin-left: 0; }\n\n/* Horizontal rules\n ========================================================================== */\n/*\n * 1. Add the correct box sizing and height in Firefox.\n * 2. Show the overflow in Edge and IE.\n * 3. Style\n */\nhr, .uk-hr {\n  /* 1 */\n  box-sizing: content-box;\n  height: 0;\n  /* 2 */\n  overflow: visible;\n  /* 3 */\n  margin: 0 0 20px 0;\n  border: 0;\n  border-top: 1px solid #e5e5e5; }\n\n/* Add margin if adjacent element */\n* + hr,\n* + .uk-hr {\n  margin-top: 20px; }\n\n/* Address\n ========================================================================== */\naddress {\n  font-style: normal; }\n\n/* Blockquotes\n ========================================================================== */\nblockquote {\n  margin: 0 0 20px 0;\n  font-size: 1.25rem;\n  line-height: 1.5;\n  font-style: italic;\n  color: #333; }\n\n/* Add margin if adjacent element */\n* + blockquote {\n  margin-top: 20px; }\n\n/*\n * Content\n */\nblockquote p:last-of-type {\n  margin-bottom: 0; }\n\nblockquote footer {\n  margin-top: 10px;\n  font-size: 0.875rem;\n  line-height: 1.5;\n  color: #666; }\n  blockquote footer::before {\n    content: \"\\2014   \"; }\n\n/* Preformatted text\n ========================================================================== */\n/*\n * 1. Contain overflow in all browsers.\n * 2. Override UA\n */\npre {\n  font: 0.875rem / 1.5 Consolas, monaco, monospace;\n  color: #666;\n  -moz-tab-size: 4;\n  tab-size: 4;\n  /* 1 */\n  overflow: auto;\n  padding: 10px;\n  border: 1px solid #e5e5e5;\n  border-radius: 3px;\n  background: #fff; }\n\npre code {\n  font-family: Consolas, monaco, monospace; }\n\n/* Selection pseudo-element\n ========================================================================== */\n::-moz-selection {\n  background: #39f;\n  color: #fff;\n  text-shadow: none; }\n\n::selection {\n  background: #39f;\n  color: #fff;\n  text-shadow: none; }\n\n/* HTML5 elements\n ========================================================================== */\n/*\n * Add the correct display in IE 9-.\n * 1. Add the correct display in Edge, IE, and Firefox.\n * 2. Add the correct display in IE.\n */\narticle,\naside,\ndetails,\nfigcaption,\nfigure,\nfooter,\nheader,\nmain,\nnav,\nsection,\nsummary {\n  /* 1 */\n  display: block; }\n\n/*\n * Add the correct vertical alignment in Chrome, Firefox, and Opera.\n */\nprogress {\n  vertical-align: baseline; }\n\n/*\n * Add the correct display in IE 10-.\n * 1. Add the correct display in IE.\n */\ntemplate,\n[hidden] {\n  display: none; }\n\n/* Iframe\n ========================================================================== */\niframe {\n  border: 0; }\n\n/* Prevent the 300ms delay for touchscreen interactions\n ========================================================================== */\n/*\n * Most browsers prevent the 300ms delay automatically for sites that use the `width=device-width` property.\n * For Safari on iOS 9.3+, IE 11 and Edge on desktops and IE 11 on Windows Phone 8.1 it must be applied manually.\n */\na,\narea,\nbutton,\ninput,\nlabel,\nselect,\nsummary,\ntextarea {\n  touch-action: manipulation; }\n\n/* Pass media breakpoints to JS\n ========================================================================== */\n/*\n * Breakpoints\n */\n.var-media-s:before {\n  content: \"640px\"; }\n\n.var-media-m:before {\n  content: \"960px\"; }\n\n.var-media-l:before {\n  content: \"1200px\"; }\n\n.var-media-xl:before {\n  content: \"1600px\"; }\n\n/* ========================================================================\n   Component: Link\n ========================================================================== */\n/* Muted\n ========================================================================== */\na.uk-link-muted,\n.uk-link-muted a {\n  color: #999; }\n\na.uk-link-muted:hover,\n.uk-link-muted a:hover {\n  color: #666; }\n\n/* Reset\n ========================================================================== */\n/*\n * `!important` needed to override inverse component\n */\na.uk-link-reset,\na.uk-link-reset:hover,\na.uk-link-reset:focus,\n.uk-link-reset a,\n.uk-link-reset a:hover,\n.uk-link-reset a:focus {\n  color: inherit !important;\n  text-decoration: none !important; }\n\n/* ========================================================================\n   Component: Heading\n ========================================================================== */\n/* Primary\n ========================================================================== */\n.uk-heading-primary {\n  font-size: 2.625rem;\n  line-height: 1.2; }\n\n/* Tablet landscape and bigger */\n@media (min-width: 960px) {\n  .uk-heading-primary {\n    font-size: 3.75rem;\n    line-height: 1.1; } }\n\n/* Hero\n ========================================================================== */\n.uk-heading-hero {\n  font-size: 4rem;\n  line-height: 1.1; }\n\n/* Phone landscape and bigger */\n@media (min-width: 640px) {\n  .uk-heading-hero {\n    font-size: 6rem;\n    line-height: 1; } }\n\n/* Tablet landscape and bigger */\n@media (min-width: 960px) {\n  .uk-heading-hero {\n    font-size: 8rem;\n    line-height: 1; } }\n\n/* Divider\n ========================================================================== */\n.uk-heading-divider {\n  padding-bottom: 10px;\n  border-bottom: 1px solid #e5e5e5; }\n\n/* Bullet\n ========================================================================== */\n.uk-heading-bullet {\n  position: relative; }\n\n/*\n * 1. Using `inline-block` to make it work with text alignment\n * 2. Center vertically\n * 3. Style\n */\n.uk-heading-bullet::before {\n  content: \"\";\n  /* 1 */\n  display: inline-block;\n  /* 2 */\n  position: relative;\n  top: calc(-0.1 * 1em);\n  vertical-align: middle;\n  /* 3 */\n  height: 0.9em;\n  margin-right: 10px;\n  border-left: 5px solid #e5e5e5; }\n\n/* Line\n ========================================================================== */\n/*\n * Clip the child element\n */\n.uk-heading-line {\n  overflow: hidden; }\n\n/*\n * Extra markup is needed to make it work with text align\n */\n.uk-heading-line > * {\n  display: inline-block;\n  position: relative; }\n\n/*\n * 1. Center vertically\n * 2. Make the element as large as possible. It's clipped by the container.\n * 3. Style\n */\n.uk-heading-line > :before,\n.uk-heading-line > :after {\n  content: \"\";\n  /* 1 */\n  position: absolute;\n  top: calc(50% - (1px / 2));\n  /* 2 */\n  width: 2000px;\n  /* 3 */\n  border-bottom: 1px solid #e5e5e5; }\n\n.uk-heading-line > :before {\n  right: 100%;\n  margin-right: 0.6em; }\n\n.uk-heading-line > :after {\n  left: 100%;\n  margin-left: 0.6em; }\n\n/* ========================================================================\n   Component: Divider\n ========================================================================== */\n/*\n * 1. Reset default `hr`\n * 2. Set margin if a `div` is used for semantical reason\n */\n[class*='uk-divider'] {\n  /* 1 */\n  border: none;\n  /* 2 */\n  margin-bottom: 20px; }\n\n/* Add margin if adjacent element */\n* + [class*='uk-divider'] {\n  margin-top: 20px; }\n\n/* Icon\n ========================================================================== */\n.uk-divider-icon {\n  position: relative;\n  height: 20px;\n  background-image: url(\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2020%2020%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Ccircle%20fill%3D%22none%22%20stroke%3D%22%23e5e5e5%22%20stroke-width%3D%222%22%20cx%3D%2210%22%20cy%3D%2210%22%20r%3D%227%22%3E%3C%2Fcircle%3E%0A%3C%2Fsvg%3E%0A\");\n  background-repeat: no-repeat;\n  background-position: 50% 50%; }\n\n.uk-divider-icon::before,\n.uk-divider-icon::after {\n  content: \"\";\n  position: absolute;\n  top: 50%;\n  max-width: calc(50% - (50px / 2));\n  border-bottom: 1px solid #e5e5e5; }\n\n.uk-divider-icon::before {\n  right: calc(50% + (50px / 2));\n  width: 100%; }\n\n.uk-divider-icon::after {\n  left: calc(50% + (50px / 2));\n  width: 100%; }\n\n/* Small\n ========================================================================== */\n/*\n * Reset child height, caused by `inline-block`\n */\n.uk-divider-small {\n  line-height: 0; }\n\n.uk-divider-small::after {\n  content: \"\";\n  display: inline-block;\n  width: 100px;\n  max-width: 100%;\n  border-top: 1px solid #e5e5e5;\n  vertical-align: top; }\n\n/* ========================================================================\n   Component: List\n ========================================================================== */\n.uk-list {\n  padding: 0;\n  list-style: none; }\n\n/*\n * Micro clearfix\n */\n.uk-list > li::before,\n.uk-list > li::after {\n  content: \"\";\n  display: table; }\n\n.uk-list > li::after {\n  clear: both; }\n\n/*\n * Remove margin from the last-child\n */\n.uk-list > li > :last-child {\n  margin-bottom: 0; }\n\n/*\n * Nested lists\n */\n.uk-list ul {\n  margin: 0;\n  padding-left: 30px;\n  list-style: none; }\n\n/*\n * Style\n */\n.uk-list > li:nth-child(n+2),\n.uk-list > li > ul {\n  margin-top: 10px; }\n\n/* Style modifiers\n ========================================================================== */\n/*\n * Divider\n */\n.uk-list-divider > li:nth-child(n+2) {\n  margin-top: 10px;\n  padding-top: 10px;\n  border-top: 1px solid #e5e5e5; }\n\n/*\n * Striped\n */\n.uk-list-striped > li {\n  padding: 10px 10px;\n  border-bottom: 1px solid #e5e5e5; }\n\n.uk-list-striped > li:nth-of-type(odd) {\n  background: #f8f8f8; }\n\n.uk-list-striped > li:nth-child(n+2) {\n  margin-top: 0; }\n\n/*\n * Bullet\n */\n.uk-list-bullet > li {\n  position: relative;\n  padding-left: calc(1.5em + 10px); }\n\n.uk-list-bullet > li::before {\n  content: \"\";\n  position: absolute;\n  top: 0;\n  left: 0;\n  width: 1.5em;\n  height: 1.5em;\n  background-image: url(\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%226%22%20height%3D%226%22%20viewBox%3D%220%200%206%206%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Ccircle%20fill%3D%22%23666%22%20cx%3D%223%22%20cy%3D%223%22%20r%3D%223%22%3E%3C%2Fcircle%3E%0A%3C%2Fsvg%3E\");\n  background-repeat: no-repeat;\n  background-position: 50% 50%;\n  float: left; }\n\n/* Size modifier\n ========================================================================== */\n.uk-list-large > li:nth-child(n+2),\n.uk-list-large > li > ul {\n  margin-top: 20px; }\n\n/*\n * Divider\n */\n.uk-list-large.uk-list-divider > li:nth-child(n+2) {\n  margin-top: 20px;\n  padding-top: 20px; }\n\n/*\n * Striped\n */\n.uk-list-large.uk-list-striped > li {\n  padding: 20px 10px;\n  border-bottom: 1px solid #e5e5e5; }\n\n.uk-list-large.uk-list-striped > li:nth-child(n+2) {\n  margin-top: 0; }\n\n.uk-list-striped > li:first-child {\n  border-top: 1px solid #e5e5e5; }\n\n/* ========================================================================\n   Component: Description list\n ========================================================================== */\n/*\n * Term\n */\n.uk-description-list > dt {\n  color: #333;\n  font-size: 0.875rem;\n  font-weight: normal;\n  text-transform: uppercase; }\n\n.uk-description-list > dt:nth-child(n+2) {\n  margin-top: 20px; }\n\n/*\n * Description\n */\n/* Style modifier\n ========================================================================== */\n/*\n * Line\n */\n.uk-description-list-divider > dt:nth-child(n+2) {\n  margin-top: 20px;\n  padding-top: 20px;\n  border-top: 1px solid #e5e5e5; }\n\n/* ========================================================================\n   Component: Table\n ========================================================================== */\n/*\n * 1. Remove most spacing between table cells.\n * 2. Behave like a block element\n * 3. Style\n */\n.uk-table {\n  /* 1 */\n  border-collapse: collapse;\n  border-spacing: 0;\n  /* 2 */\n  width: 100%;\n  /* 3 */\n  margin-bottom: 20px; }\n\n/* Add margin if adjacent element */\n* + .uk-table {\n  margin-top: 20px; }\n\n/* Header cell\n ========================================================================== */\n/*\n * 1. Style\n */\n.uk-table th {\n  padding: 16px 12px;\n  text-align: left;\n  vertical-align: bottom;\n  /* 1 */\n  font-size: 0.875rem;\n  font-weight: normal;\n  color: #999;\n  border-bottom: 1px solid #e5e5e5;\n  text-transform: uppercase; }\n\n/* Cell\n ========================================================================== */\n.uk-table td {\n  padding: 16px 12px;\n  vertical-align: top; }\n\n/* Footer\n ========================================================================== */\n.uk-table tfoot {\n  font-size: 0.875rem;\n  border-top: 1px solid #e5e5e5; }\n\n/* Caption\n ========================================================================== */\n.uk-table caption {\n  font-size: 0.875rem;\n  text-align: left;\n  color: #999; }\n\n/* Row\n ========================================================================== */\n.uk-table > tr.uk-active,\n.uk-table tbody tr.uk-active {\n  background: #ffd; }\n\n/* Alignment modifier\n ========================================================================== */\n.uk-table-middle,\n.uk-table-middle td {\n  vertical-align: middle !important; }\n\n/* Style modifiers\n ========================================================================== */\n/*\n * Striped\n */\n.uk-table-striped > tr:nth-of-type(odd),\n.uk-table-striped tbody tr:nth-of-type(odd) {\n  background: #f8f8f8; }\n\n/*\n * Hover\n */\n.uk-table-hover > tr:hover,\n.uk-table-hover tbody tr:hover {\n  background: #ffd; }\n\n/* Size modifier\n ========================================================================== */\n.uk-table-small th,\n.uk-table-small td {\n  padding: 10px 12px; }\n\n/* Cell size modifier\n ========================================================================== */\n.uk-table-shrink {\n  width: 1px; }\n\n.uk-table-expand {\n  min-width: 300px; }\n\n/* Cell link modifier\n ========================================================================== */\n.uk-table-link {\n  padding: 0 !important; }\n\n.uk-table-link > a {\n  display: block;\n  padding: 16px 12px; }\n\n.uk-table-small .uk-table-link > a {\n  padding: 10px 12px; }\n\n.uk-table :not(:last-child) > td {\n  border-bottom: 1px solid #e5e5e5; }\n\n.uk-table tbody tr {\n  -webkit-transition: background-color 0.1s linear;\n  transition: background-color 0.1s linear; }\n\n/* ========================================================================\n   Component: Icon\n ========================================================================== */\n/*\n * 1. Fill all SVG elements with the current text color if no `fill` attribute is set\n * 2. Let the container fit the height of the icon\n */\n.uk-icon {\n  display: inline-block;\n  /* 1 */\n  fill: currentcolor;\n  /* 2 */\n  line-height: 0; }\n\n/*\n * Set the fill and stroke color of all SVG elements to the current text color\n */\n.uk-icon [fill*='#']:not(.uk-preserve) {\n  fill: currentcolor; }\n\n.uk-icon [stroke*='#']:not(.uk-preserve) {\n  stroke: currentcolor; }\n\n/*\n * Fix Firefox blurry SVG rendering: https://bugzilla.mozilla.org/show_bug.cgi?id=1046835\n */\n.uk-icon > * {\n  transform: translate(0, 0); }\n\n/* Image modifier\n ========================================================================== */\n/*\n * Display images in icon dimensions\n */\n.uk-icon-image {\n  width: 20px;\n  height: 20px;\n  background-position: 50% 50%;\n  background-repeat: no-repeat;\n  background-size: contain;\n  vertical-align: middle; }\n\n/* Style modifiers\n ========================================================================== */\n/*\n * Link\n */\n.uk-icon-link {\n  color: #999; }\n\n.uk-icon-link:hover,\n.uk-icon-link:focus {\n  color: #666;\n  outline: none; }\n\n/* OnClick + Active */\n.uk-icon-link:active,\n.uk-active > .uk-icon-link {\n  color: #595959; }\n\n/*\n * Button\n * 1. Center icon vertically and horizontally\n */\n.uk-icon-button {\n  box-sizing: border-box;\n  width: 36px;\n  height: 36px;\n  border-radius: 500px;\n  background: #f8f8f8;\n  color: #999;\n  vertical-align: middle;\n  /* 1 */\n  display: -ms-inline-flexbox;\n  display: -webkit-inline-flex;\n  display: inline-flex;\n  -ms-flex-pack: center;\n  -webkit-justify-content: center;\n  justify-content: center;\n  -ms-flex-align: center;\n  -webkit-align-items: center;\n  align-items: center;\n  -webkit-transition: 0.1s ease-in-out;\n  transition: 0.1s ease-in-out;\n  -webkit-transition-property: color, background-color;\n  transition-property: color, background-color; }\n\n/* Hover + Focus */\n.uk-icon-button:hover,\n.uk-icon-button:focus {\n  background-color: #ebebeb;\n  color: #666;\n  outline: none; }\n\n/* OnClick + Active */\n.uk-icon-button:active,\n.uk-active > .uk-icon-button {\n  background-color: #dfdfdf;\n  color: #666; }\n\n/* ========================================================================\n   Component: Form\n ========================================================================== */\n/*\n * 1. Define consistent box sizing.\n *    Default is `content-box` with following exceptions set to `border-box`\n *    `select`, `input[type=\"checkbox\"]` and `input[type=\"radio\"]`\n *    `input[type=\"search\"]` in Chrome, Safari and Opera\n *    `input[type=\"color\"]` in Firefox\n * 2. Address margins set differently in Firefox/IE and Chrome/Safari/Opera.\n * 3. Remove `border-radius` in iOS.\n * 4. Change font properties to `inherit` in all browsers\n */\n.uk-input,\n.uk-select,\n.uk-textarea,\n.uk-radio,\n.uk-checkbox {\n  /* 1 */\n  box-sizing: border-box;\n  /* 2 */\n  margin: 0;\n  /* 3 */\n  border-radius: 0;\n  /* 4 */\n  font: inherit; }\n\n/*\n * Show the overflow in Edge.\n */\n.uk-input {\n  overflow: visible; }\n\n/*\n * Remove the inheritance of text transform in Firefox.\n */\n.uk-select {\n  text-transform: none; }\n\n/*\n * 1. Change font properties to `inherit` in all browsers\n * 2. Don't inherit the `font-weight` and use `bold` instead.\n * NOTE: Both declarations don't work in Chrome, Safari and Opera.\n */\n.uk-select optgroup {\n  /* 1 */\n  font: inherit;\n  /* 2 */\n  font-weight: bold; }\n\n/*\n * Remove the default vertical scrollbar in IE.\n */\n.uk-textarea {\n  overflow: auto; }\n\n/*\n * Remove the inner padding and cancel buttons in Chrome on OS X and Safari on OS X.\n */\n.uk-input[type=\"search\"]::-webkit-search-cancel-button,\n.uk-input[type=\"search\"]::-webkit-search-decoration {\n  -webkit-appearance: none; }\n\n/*\n * Correct the cursor style of increment and decrement buttons in Chrome.\n */\n.uk-input[type=\"number\"]::-webkit-inner-spin-button,\n.uk-input[type=\"number\"]::-webkit-outer-spin-button {\n  height: auto; }\n\n/*\n * Removes placeholder transparency in Firefox.\n */\n.uk-input::-moz-placeholder,\n.uk-textarea::-moz-placeholder {\n  opacity: 1; }\n\n/*\n * Remove the padding in IE 10-.\n */\n.uk-radio,\n.uk-checkbox {\n  padding: 0; }\n\n/*\n * Improves consistency of cursor style for clickable elements\n */\n.uk-radio:not(:disabled),\n.uk-checkbox:not(:disabled) {\n  cursor: pointer; }\n\n/*\n * Define consistent border, margin, and padding.\n */\n.uk-fieldset {\n  border: none;\n  margin: 0;\n  padding: 0; }\n\n/* Input, select and textarea\n * Allowed: `text`, `password`, `datetime`, `datetime-local`, `date`,  `month`,\n            `time`, `week`, `number`, `email`, `url`, `search`, `tel`, `color`\n * Disallowed: `range`, `radio`, `checkbox`, `file`, `submit`, `reset` and `image`\n ========================================================================== */\n/*\n * Remove default style in iOS.\n */\n.uk-input,\n.uk-textarea {\n  -webkit-appearance: none; }\n\n/*\n * 1. Prevent content overflow if a fixed width is used\n * 2. Take the full width\n * 3. Reset default\n * 4. Style\n */\n.uk-input,\n.uk-select,\n.uk-textarea {\n  /* 1 */\n  max-width: 100%;\n  /* 2 */\n  width: 100%;\n  /* 3 */\n  border: 0 none;\n  /* 4 */\n  padding: 0 6px;\n  background: #fff;\n  color: #666;\n  border: 1px solid #e5e5e5;\n  -webkit-transition: 0.2s ease-in-out;\n  transition: 0.2s ease-in-out;\n  -webkit-transition-property: color, background-color, border;\n  transition-property: color, background-color, border; }\n\n/*\n * Single-line\n * 1. Allow an `a` element to look like a `input` or `select` element\n * 2. Make sure line-height is not larger than height\n *    Also needed to center the text vertically if `a` element is used\n */\n.uk-input,\n.uk-select:not([multiple]):not([size]) {\n  height: 40px;\n  vertical-align: middle;\n  /* 1 */\n  display: inline-block;\n  /* 2 */\n  line-height: 38px; }\n\n/*\n * Multi-line\n */\n.uk-select[multiple],\n.uk-select[size],\n.uk-textarea {\n  padding-top: 4px;\n  padding-bottom: 4px;\n  vertical-align: top; }\n\n/* Focus */\n.uk-input:focus,\n.uk-select:focus,\n.uk-textarea:focus {\n  outline: 0;\n  background-color: #fff;\n  color: #666;\n  border-color: #1e87f0; }\n\n/* Disabled */\n.uk-input:disabled,\n.uk-select:disabled,\n.uk-textarea:disabled {\n  background-color: #f8f8f8;\n  color: #999;\n  border-color: #e5e5e5; }\n\n/*\n * Placeholder\n */\n.uk-input:-ms-input-placeholder {\n  color: #999 !important; }\n\n.uk-input::-moz-placeholder {\n  color: #999; }\n\n.uk-input::-webkit-input-placeholder {\n  color: #999; }\n\n.uk-textarea:-ms-input-placeholder {\n  color: #999 !important; }\n\n.uk-textarea::-moz-placeholder {\n  color: #999; }\n\n.uk-textarea::-webkit-input-placeholder {\n  color: #999; }\n\n/* Style modifier (`uk-input`, `uk-select` and `uk-textarea`)\n ========================================================================== */\n/*\n * Small\n */\n.uk-form-small {\n  font-size: 0.875rem; }\n\n.uk-form-small:not(textarea):not([multiple]):not([size]) {\n  height: 30px;\n  line-height: 28px; }\n\n/*\n * Large\n */\n.uk-form-large {\n  font-size: 1.25rem; }\n\n.uk-form-large:not(textarea):not([multiple]):not([size]) {\n  height: 55px;\n  line-height: 53px; }\n\n/* Style modifier (`uk-input`, `uk-select` and `uk-textarea`)\n ========================================================================== */\n/*\n * Error\n */\n.uk-form-danger,\n.uk-form-danger:focus {\n  color: #f0506e;\n  border-color: #f0506e; }\n\n/*\n * Success\n */\n.uk-form-success,\n.uk-form-success:focus {\n  color: #32d296;\n  border-color: #32d296; }\n\n/*\n * Blank\n */\n.uk-form-blank {\n  background: none;\n  border-color: transparent; }\n\n.uk-form-blank:focus {\n  border-color: #e5e5e5;\n  border-style: dashed; }\n\n/* Width modifiers (`uk-input`, `uk-select` and `uk-textarea`)\n ========================================================================== */\n/*\n * Fixed widths\n * Different widths for mini sized `input` and `select` elements\n */\ninput.uk-form-width-xsmall {\n  width: 40px; }\n\nselect.uk-form-width-xsmall {\n  width: 65px; }\n\n.uk-form-width-small {\n  width: 130px; }\n\n.uk-form-width-medium {\n  width: 200px; }\n\n.uk-form-width-large {\n  width: 500px; }\n\n/* Select\n ========================================================================== */\n/*\n * 1. Remove default style. Also works in Firefox\n * 2. Style\n * 3. Remove default style in IE 10/11\n */\n.uk-select:not([multiple]):not([size]) {\n  /* 1 */\n  -webkit-appearance: none;\n  -moz-appearance: none;\n  /* 2 */\n  padding-right: 20px;\n  background-image: url(\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Cpolygon%20fill%3D%22%23666%22%20points%3D%224%201%201%206%207%206%22%3E%3C%2Fpolygon%3E%0A%20%20%20%20%3Cpolygon%20fill%3D%22%23666%22%20points%3D%224%2013%201%208%207%208%22%3E%3C%2Fpolygon%3E%0A%3C%2Fsvg%3E\");\n  background-repeat: no-repeat;\n  background-position: 100% 50%; }\n\n/* 3 */\n.uk-select:not([multiple]):not([size])::-ms-expand {\n  display: none; }\n\n/*\n * Disabled\n */\n.uk-select:not([multiple]):not([size]):disabled {\n  background-image: url(\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Cpolygon%20fill%3D%22%23999%22%20points%3D%224%201%201%206%207%206%22%3E%3C%2Fpolygon%3E%0A%20%20%20%20%3Cpolygon%20fill%3D%22%23999%22%20points%3D%224%2013%201%208%207%208%22%3E%3C%2Fpolygon%3E%0A%3C%2Fsvg%3E\"); }\n\n/* Radio and checkbox\n * Note: Only works in Chrome, Safari, Opera and Edge\n ========================================================================== */\n/*\n * 1. Style\n * 2. Make box more robust so it clips the child element\n * 3. Vertical alignment\n * 4. Remove default style\n * 5. Fix black background on iOS\n * 6. Center icons\n */\n.uk-radio,\n.uk-checkbox {\n  /* 1 */\n  display: inline-block;\n  height: 16px;\n  width: 16px;\n  /* 2 */\n  overflow: hidden;\n  /* 3 */\n  margin-top: -4px;\n  vertical-align: middle;\n  /* 4 */\n  -webkit-appearance: none;\n  /* 5 */\n  background-color: transparent;\n  /* 6 */\n  background-repeat: no-repeat;\n  background-position: 50% 50%;\n  border: 1px solid #cccccc;\n  -webkit-transition: 0.2s ease-in-out;\n  transition: 0.2s ease-in-out;\n  -webkit-transition-property: background-color, border;\n  transition-property: background-color, border; }\n\n.uk-radio {\n  border-radius: 50%; }\n\n/* Focus */\n.uk-radio:focus,\n.uk-checkbox:focus {\n  outline: none;\n  border-color: #1e87f0; }\n\n/*\n * Checked\n */\n.uk-radio:checked,\n.uk-checkbox:checked,\n.uk-checkbox:indeterminate {\n  background-color: #1e87f0;\n  border-color: transparent; }\n\n/* Focus */\n.uk-radio:checked:focus,\n.uk-checkbox:checked:focus,\n.uk-checkbox:indeterminate:focus {\n  background-color: #0e6ecd; }\n\n/*\n * Icons\n */\n.uk-radio:checked {\n  background-image: url(\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Ccircle%20fill%3D%22%23fff%22%20cx%3D%228%22%20cy%3D%228%22%20r%3D%222%22%3E%3C%2Fcircle%3E%0A%3C%2Fsvg%3E\"); }\n\n.uk-checkbox:checked {\n  background-image: url(\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2214%22%20height%3D%2211%22%20viewBox%3D%220%200%2014%2011%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Cpolygon%20fill%3D%22%23fff%22%20points%3D%2212%201%205%207.5%202%205%201%205.5%205%2010%2013%201.5%22%2F%3E%0A%3C%2Fsvg%3E\"); }\n\n.uk-checkbox:indeterminate {\n  background-image: url(\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Crect%20fill%3D%22%23fff%22%20x%3D%223%22%20y%3D%228%22%20width%3D%2210%22%20height%3D%221%22%3E%3C%2Frect%3E%0A%3C%2Fsvg%3E\"); }\n\n/*\n * Disabled\n */\n.uk-radio:disabled,\n.uk-checkbox:disabled {\n  background-color: #f8f8f8;\n  border-color: #e5e5e5; }\n\n.uk-radio:disabled:checked {\n  background-image: url(\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Ccircle%20fill%3D%22%23999%22%20cx%3D%228%22%20cy%3D%228%22%20r%3D%222%22%3E%3C%2Fcircle%3E%0A%3C%2Fsvg%3E\"); }\n\n.uk-checkbox:disabled:checked {\n  background-image: url(\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2214%22%20height%3D%2211%22%20viewBox%3D%220%200%2014%2011%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Cpolygon%20fill%3D%22%23999%22%20points%3D%2212%201%205%207.5%202%205%201%205.5%205%2010%2013%201.5%22%2F%3E%0A%3C%2Fsvg%3E\"); }\n\n.uk-checkbox:disabled:indeterminate {\n  background-image: url(\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Crect%20fill%3D%22%23999%22%20x%3D%223%22%20y%3D%228%22%20width%3D%2210%22%20height%3D%221%22%3E%3C%2Frect%3E%0A%3C%2Fsvg%3E\"); }\n\n/* Legend\n ========================================================================== */\n/*\n * Legend\n * 1. Behave like block element\n * 2. Correct the color inheritance from `fieldset` elements in IE.\n * 3. Remove padding so people aren't caught out if they zero out fieldsets.\n * 4. Style\n */\n.uk-legend {\n  /* 1 */\n  width: 100%;\n  /* 2 */\n  color: inherit;\n  /* 3 */\n  padding: 0;\n  /* 4 */\n  font-size: 1.5rem;\n  line-height: 1.4; }\n\n/* Custom controls\n ========================================================================== */\n/*\n * 1. Container fits its content\n * 2. Create position context\n * 3. Prevent content overflow\n * 4. Behave like most inline-block elements\n */\n.uk-form-custom {\n  /* 1 */\n  display: inline-block;\n  /* 2 */\n  position: relative;\n  /* 3 */\n  max-width: 100%;\n  /* 4 */\n  vertical-align: middle; }\n\n/*\n * 1. Position and resize the form control to always cover its container\n * 2. Required for Firefox for positioning to the left\n * 3. Required for Webkit to make `height` work\n * 4. Hide controle and show cursor\n * 5. Needed for the cursor\n * 6. Clip height caused by 5. Needed for Webkit only\n */\n.uk-form-custom select,\n.uk-form-custom input[type=\"file\"] {\n  /* 1 */\n  position: absolute;\n  top: 0;\n  z-index: 1;\n  width: 100%;\n  height: 100%;\n  /* 2 */\n  left: 0;\n  /* 3 */\n  -webkit-appearance: none;\n  /* 4 */\n  opacity: 0;\n  cursor: pointer; }\n\n.uk-form-custom input[type=\"file\"] {\n  /* 5 */\n  font-size: 500px;\n  /* 6 */\n  overflow: hidden; }\n\n/* Label\n ========================================================================== */\n.uk-form-label {\n  color: #333;\n  font-size: 0.875rem; }\n\n/* Layout\n ========================================================================== */\n/*\n * Stacked\n */\n.uk-form-stacked .uk-form-label {\n  display: block;\n  margin-bottom: 5px; }\n\n/*\n * Horizontal\n */\n/* Tablet portrait and smaller */\n@media (max-width: 959px) {\n  /* Behave like `uk-form-stacked` */\n  .uk-form-horizontal .uk-form-label {\n    display: block;\n    margin-bottom: 5px; } }\n\n/* Tablet landscape and bigger */\n@media (min-width: 960px) {\n  .uk-form-horizontal .uk-form-label {\n    width: 200px;\n    margin-top: 7px;\n    float: left; }\n  .uk-form-horizontal .uk-form-controls {\n    margin-left: 215px; }\n  /* Better vertical alignment if controls are checkboxes and radio buttons with text */\n  .uk-form-horizontal .uk-form-controls-text {\n    padding-top: 7px; } }\n\n/* Icons\n ========================================================================== */\n/*\n * 1. Set position\n * 2. Set width\n * 3. Center icon vertically and horizontally\n * 4. Style\n */\n.uk-form-icon {\n  /* 1 */\n  position: absolute;\n  top: 0;\n  bottom: 0;\n  left: 0;\n  /* 2 */\n  width: 30px;\n  /* 3 */\n  display: -ms-inline-flexbox;\n  display: -webkit-inline-flex;\n  display: inline-flex;\n  -ms-flex-pack: center;\n  -webkit-justify-content: center;\n  justify-content: center;\n  -ms-flex-align: center;\n  -webkit-align-items: center;\n  align-items: center;\n  /* 4 */\n  color: #999; }\n\n/*\n * Required for `a`.\n */\n.uk-form-icon:hover {\n  color: #666; }\n\n/*\n * Make `input` element clickable through icon, e.g. if it's a `span`\n */\n.uk-form-icon:not(a):not(button):not(input) {\n  pointer-events: none; }\n\n/*\n * Input padding\n */\n.uk-form-icon:not(.uk-form-icon-flip) + .uk-input {\n  padding-left: 30px; }\n\n/*\n * Position modifier\n */\n.uk-form-icon-flip {\n  right: 0;\n  left: auto; }\n\n.uk-form-icon-flip + .uk-input {\n  padding-right: 30px; }\n\n/* ========================================================================\n   Component: Button\n ========================================================================== */\n/*\n * 1. Remove margins in Chrome, Safari and Opera.\n * 2. Remove borders for `button`.\n * 3. Address `overflow` set to `hidden` in IE.\n * 4. Correct `font` properties and `color` not being inherited for `button`.\n * 5. Remove the inheritance of text transform in Edge, Firefox, and IE.\n * 6. Style\n * 7. `line-height` is used to create a height because it also centers the text vertically for `a` elements.\n *    Better would be to use height and flexbox to center the text vertically but flexbox doesn't work in Firefox on `button` elements.\n * 8. Align text if button has a width\n * 9. Required for `a`.\n */\n.uk-button {\n  /* 1 */\n  margin: 0;\n  /* 2 */\n  border: none;\n  /* 3 */\n  overflow: visible;\n  /* 4 */\n  font: inherit;\n  color: inherit;\n  /* 5 */\n  text-transform: none;\n  /* 6 */\n  display: inline-block;\n  box-sizing: border-box;\n  padding: 0 30px;\n  vertical-align: middle;\n  font-size: 0.875rem;\n  /* 7 */\n  line-height: 38px;\n  /* 8 */\n  text-align: center;\n  /* 9 */\n  text-decoration: none;\n  text-transform: uppercase;\n  -webkit-transition: 0.1s ease-in-out;\n  transition: 0.1s ease-in-out;\n  -webkit-transition-property: color, background-color, border-color;\n  transition-property: color, background-color, border-color; }\n\n.uk-button:not(:disabled) {\n  cursor: pointer; }\n\n/*\n * Remove the inner border and padding in Firefox.\n */\n.uk-button::-moz-focus-inner {\n  border: 0;\n  padding: 0; }\n\n/* Hover */\n.uk-button:hover {\n  /* 8 */\n  text-decoration: none; }\n\n/* Focus */\n.uk-button:focus {\n  outline: none; }\n\n/* OnClick + Active */\n/* Style modifiers\n ========================================================================== */\n/*\n * Default\n */\n.uk-button-default {\n  background-color: transparent;\n  color: #333;\n  border: 1px solid #e5e5e5; }\n\n/* Hover + Focus */\n.uk-button-default:hover,\n.uk-button-default:focus {\n  background-color: transparent;\n  color: #333;\n  border-color: #b2b2b2; }\n\n/* OnClick + Active */\n.uk-button-default:active,\n.uk-button-default.uk-active {\n  background-color: transparent;\n  color: #333;\n  border-color: #999999; }\n\n/*\n * Primary\n */\n.uk-button-primary {\n  background-color: #1e87f0;\n  color: #fff;\n  border: 1px solid transparent; }\n\n/* Hover + Focus */\n.uk-button-primary:hover,\n.uk-button-primary:focus {\n  background-color: #0f7ae5;\n  color: #fff; }\n\n/* OnClick + Active */\n.uk-button-primary:active,\n.uk-button-primary.uk-active {\n  background-color: #0e6ecd;\n  color: #fff; }\n\n/*\n * Secondary\n */\n.uk-button-secondary {\n  background-color: #222;\n  color: #fff;\n  border: 1px solid transparent; }\n\n/* Hover + Focus */\n.uk-button-secondary:hover,\n.uk-button-secondary:focus {\n  background-color: #151515;\n  color: #fff; }\n\n/* OnClick + Active */\n.uk-button-secondary:active,\n.uk-button-secondary.uk-active {\n  background-color: #090909;\n  color: #fff; }\n\n/*\n * Danger\n */\n.uk-button-danger {\n  background-color: #f0506e;\n  color: #fff;\n  border: 1px solid transparent; }\n\n/* Hover + Focus */\n.uk-button-danger:hover,\n.uk-button-danger:focus {\n  background-color: #ee395b;\n  color: #fff; }\n\n/* OnClick + Active */\n.uk-button-danger:active,\n.uk-button-danger.uk-active {\n  background-color: #ec2147;\n  color: #fff; }\n\n/*\n * Disabled\n * The same for all style modifiers\n */\n.uk-button-default:disabled,\n.uk-button-primary:disabled,\n.uk-button-secondary:disabled,\n.uk-button-danger:disabled {\n  background-color: transparent;\n  color: #999;\n  border-color: #e5e5e5; }\n\n/* Size modifiers\n ========================================================================== */\n.uk-button-small {\n  padding: 0 15px;\n  line-height: 28px;\n  font-size: 0.875rem; }\n\n.uk-button-large {\n  padding: 0 40px;\n  line-height: 53px;\n  font-size: 0.875rem; }\n\n/* Text modifiers\n ========================================================================== */\n/*\n * Text\n * 1. Reset\n * 2. Style\n */\n.uk-button-text {\n  /* 1 */\n  padding: 0;\n  line-height: 1.5;\n  background: none;\n  /* 2 */\n  color: #333;\n  position: relative; }\n  .uk-button-text::before {\n    content: \"\";\n    position: absolute;\n    bottom: 0;\n    left: 0;\n    right: 100%;\n    border-bottom: 1px solid #333;\n    -webkit-transition: right 0.3s ease-out;\n    transition: right 0.3s ease-out; }\n\n/* Hover + Focus */\n.uk-button-text:hover,\n.uk-button-text:focus {\n  color: #333; }\n  .uk-button-text:hover::before,\n  .uk-button-text:focus::before {\n    right: 0; }\n\n/* Disabled */\n.uk-button-text:disabled {\n  color: #999; }\n  .uk-button-text:disabled::before {\n    display: none; }\n\n/*\n * Link\n * 1. Reset\n * 2. Style\n */\n.uk-button-link {\n  /* 1 */\n  padding: 0;\n  line-height: 1.5;\n  background: none;\n  /* 2 */\n  color: #DA7D02; }\n\n/* Hover + Focus */\n.uk-button-link:hover,\n.uk-button-link:focus {\n  color: #0f6ecd;\n  text-decoration: underline; }\n\n/* Disabled */\n.uk-button-link:disabled {\n  color: #999;\n  text-decoration: none; }\n\n/* Group\n ========================================================================== */\n/*\n * 1. Using `flex` instead of `inline-block` to prevent whitespace betweent child elements\n * 2. Behave like button\n * 3. Create position context\n */\n.uk-button-group {\n  /* 1 */\n  display: -ms-inline-flexbox;\n  display: -webkit-inline-flex;\n  display: inline-flex;\n  /* 2 */\n  vertical-align: middle;\n  /* 3 */\n  position: relative; }\n\n/* Group\n     ========================================================================== */\n/*\n     * Collapse border\n     */\n.uk-button-group > .uk-button:nth-child(n+2),\n.uk-button-group > div:nth-child(n+2) .uk-button {\n  margin-left: -1px; }\n\n/*\n     * Create position context to superimpose the successor elements border\n     * Known issue: If you use an `a` element as button and an icon inside,\n     * the active state will not work if you click the icon inside the button\n     * Workaround: Just use a `button` or `input` element as button\n     */\n.uk-button-group .uk-button:hover,\n.uk-button-group .uk-button:focus,\n.uk-button-group .uk-button:active,\n.uk-button-group .uk-button.uk-active {\n  position: relative;\n  z-index: 1; }\n\n/* ========================================================================\n   Component: Section\n ========================================================================== */\n/*\n * 1. Make it work with `100vh` and height in general\n */\n.uk-section {\n  box-sizing: border-box;\n  /* 1 */\n  padding-top: 40px;\n  padding-bottom: 40px; }\n\n/* Desktop and bigger */\n@media (min-width: 960px) {\n  .uk-section {\n    padding-top: 70px;\n    padding-bottom: 70px; } }\n\n/*\n * Micro clearfix\n */\n.uk-section::before,\n.uk-section::after {\n  content: \"\";\n  display: table; }\n\n.uk-section::after {\n  clear: both; }\n\n/*\n * Remove margin from the last-child\n */\n.uk-section > :last-child {\n  margin-bottom: 0; }\n\n/* Size modifiers\n ========================================================================== */\n/*\n * XSmall\n */\n.uk-section-xsmall {\n  padding-top: 20px;\n  padding-bottom: 20px; }\n\n/*\n * Small\n */\n.uk-section-small {\n  padding-top: 40px;\n  padding-bottom: 40px; }\n\n/*\n * Large\n */\n.uk-section-large {\n  padding-top: 70px;\n  padding-bottom: 70px; }\n\n/* Tablet landscape and bigger */\n@media (min-width: 960px) {\n  .uk-section-large {\n    padding-top: 140px;\n    padding-bottom: 140px; } }\n\n/*\n * XLarge\n */\n.uk-section-xlarge {\n  padding-top: 140px;\n  padding-bottom: 140px; }\n\n/* Tablet landscape and bigger */\n@media (min-width: 960px) {\n  .uk-section-xlarge {\n    padding-top: 210px;\n    padding-bottom: 210px; } }\n\n/* Style modifiers\n ========================================================================== */\n/*\n * Default\n */\n.uk-section-default {\n  background: #fff; }\n\n/*\n * Muted\n */\n.uk-section-muted {\n  background: #f8f8f8; }\n\n/*\n * Primary\n */\n.uk-section-primary {\n  background: #1e87f0; }\n\n/*\n * Secondary\n */\n.uk-section-secondary {\n  background: #222; }\n\n/*\n * Indicate that an image or video is used as background\n */\n/* Overlap modifier\n ========================================================================== */\n/*\n * Reserved modifier to make a section overlap another section with an border image\n * Implemented by the theme\n */\n/* ========================================================================\n   Component: Container\n ========================================================================== */\n/*\n * 1. Box sizing has to be `content-box` so the max-width is always the same and\n *    unaffected by the padding on different breakpoints. It's important for the size modifiers.\n */\n.uk-container {\n  box-sizing: content-box;\n  /* 1 */\n  max-width: 1200px;\n  margin-left: auto;\n  margin-right: auto;\n  padding-left: 15px;\n  padding-right: 15px; }\n\n/* Phone landscape and bigger */\n@media (min-width: 640px) {\n  .uk-container {\n    padding-left: 30px;\n    padding-right: 30px; } }\n\n/* Tablet landscape and bigger */\n@media (min-width: 960px) {\n  .uk-container {\n    padding-left: 40px;\n    padding-right: 40px; } }\n\n/*\n * Micro clearfix\n */\n.uk-container::before,\n.uk-container::after {\n  content: \"\";\n  display: table; }\n\n.uk-container::after {\n  clear: both; }\n\n/*\n * Remove margin from the last-child\n */\n.uk-container > :last-child {\n  margin-bottom: 0; }\n\n/*\n * Remove padding from nested containers\n */\n.uk-container .uk-container {\n  padding-left: 0;\n  padding-right: 0; }\n\n/* Size modifier\n ========================================================================== */\n.uk-container-small {\n  max-width: 900px; }\n\n.uk-container-large {\n  max-width: 1600px; }\n\n.uk-container-expand {\n  max-width: none; }\n\n/* ========================================================================\n   Component: Grid\n ========================================================================== */\n/*\n * 1. Allow cells to wrap into the next line\n * 2. Reset lists\n */\n.uk-grid {\n  display: -ms-flexbox;\n  display: -webkit-flex;\n  display: flex;\n  /* 1 */\n  -ms-flex-wrap: wrap;\n  -webkit-flex-wrap: wrap;\n  flex-wrap: wrap;\n  /* 2 */\n  margin: 0;\n  padding: 0;\n  list-style: none; }\n\n/*\n * Grid cell\n * Note: Space is allocated solely based on content dimensions, but shrinks: 0 1 auto\n * Reset margin for e.g. paragraphs\n */\n.uk-grid > * {\n  margin: 0; }\n\n/*\n * Remove margin from the last-child\n */\n.uk-grid > * > :last-child {\n  margin-bottom: 0; }\n\n/* Gutter\n ========================================================================== */\n/*\n * Default\n */\n/* Horizontal */\n.uk-grid {\n  margin-left: -30px; }\n\n.uk-grid > * {\n  padding-left: 30px; }\n\n/* Vertical */\n.uk-grid + .uk-grid,\n.uk-grid > .uk-grid-margin,\n* + .uk-grid-margin {\n  margin-top: 30px; }\n\n/* Desktop and bigger */\n@media (min-width: 1200px) {\n  /* Horizontal */\n  .uk-grid {\n    margin-left: -40px; }\n  .uk-grid > * {\n    padding-left: 40px; }\n  /* Vertical */\n  .uk-grid + .uk-grid,\n  .uk-grid > .uk-grid-margin,\n  * + .uk-grid-margin {\n    margin-top: 40px; } }\n\n/*\n * Small\n */\n/* Horizontal */\n.uk-grid-small {\n  margin-left: -15px; }\n\n.uk-grid-small > * {\n  padding-left: 15px; }\n\n/* Vertical */\n.uk-grid + .uk-grid-small,\n.uk-grid-small > .uk-grid-margin,\n* + .uk-grid-margin-small {\n  margin-top: 15px; }\n\n/*\n * Medium\n */\n/* Horizontal */\n.uk-grid-medium {\n  margin-left: -30px; }\n\n.uk-grid-medium > * {\n  padding-left: 30px; }\n\n/* Vertical */\n.uk-grid + .uk-grid-medium,\n.uk-grid-medium > .uk-grid-margin,\n* + .uk-grid-margin-medium {\n  margin-top: 30px; }\n\n/*\n * Large\n */\n/* Horizontal */\n.uk-grid-large {\n  margin-left: -40px; }\n\n.uk-grid-large > * {\n  padding-left: 40px; }\n\n/* Vertical */\n.uk-grid + .uk-grid-large,\n.uk-grid-large > .uk-grid-margin,\n* + .uk-grid-margin-large {\n  margin-top: 40px; }\n\n/* Desktop and bigger */\n@media (min-width: 1200px) {\n  /* Horizontal */\n  .uk-grid-large {\n    margin-left: -70px; }\n  .uk-grid-large > * {\n    padding-left: 70px; }\n  /* Vertical */\n  .uk-grid + .uk-grid-large,\n  .uk-grid-large > .uk-grid-margin,\n  * + .uk-grid-margin-large {\n    margin-top: 70px; } }\n\n/*\n * Collapse\n */\n/* Horizontal */\n.uk-grid-collapse {\n  margin-left: 0; }\n\n.uk-grid-collapse > * {\n  padding-left: 0; }\n\n/* Vertical */\n.uk-grid + .uk-grid-collapse,\n.uk-grid-collapse > .uk-grid-margin {\n  margin-top: 0; }\n\n/* Divider\n ========================================================================== */\n.uk-grid-divider > * {\n  position: relative; }\n\n.uk-grid-divider > :not(.uk-first-column)::before {\n  content: \"\";\n  position: absolute;\n  top: 0;\n  bottom: 0;\n  border-left: 1px solid #e5e5e5; }\n\n/* Vertical */\n.uk-grid-divider.uk-grid-stack > .uk-grid-margin::before {\n  content: \"\";\n  position: absolute;\n  left: 0;\n  right: 0;\n  border-top: 1px solid #e5e5e5; }\n\n/*\n * Default\n */\n/* Horizontal */\n.uk-grid-divider {\n  margin-left: -60px; }\n\n.uk-grid-divider > * {\n  padding-left: 60px; }\n\n.uk-grid-divider > :not(.uk-first-column)::before {\n  left: 30px; }\n\n/* Vertical */\n.uk-grid-divider.uk-grid-stack > .uk-grid-margin {\n  margin-top: 60px; }\n\n.uk-grid-divider.uk-grid-stack > .uk-grid-margin::before {\n  top: -30px;\n  left: 60px; }\n\n/* Desktop and bigger */\n@media (min-width: 1200px) {\n  /* Horizontal */\n  .uk-grid-divider {\n    margin-left: -80px; }\n  .uk-grid-divider > * {\n    padding-left: 80px; }\n  .uk-grid-divider > :not(.uk-first-column)::before {\n    left: 40px; }\n  /* Vertical */\n  .uk-grid-divider.uk-grid-stack > .uk-grid-margin {\n    margin-top: 80px; }\n  .uk-grid-divider.uk-grid-stack > .uk-grid-margin::before {\n    top: -40px;\n    left: 80px; } }\n\n/*\n * Small\n */\n/* Horizontal */\n.uk-grid-divider.uk-grid-small {\n  margin-left: -30px; }\n\n.uk-grid-divider.uk-grid-small > * {\n  padding-left: 30px; }\n\n.uk-grid-divider.uk-grid-small > :not(.uk-first-column)::before {\n  left: 15px; }\n\n/* Vertical */\n.uk-grid-divider.uk-grid-small.uk-grid-stack > .uk-grid-margin {\n  margin-top: 30px; }\n\n.uk-grid-divider.uk-grid-small.uk-grid-stack > .uk-grid-margin::before {\n  top: -15px;\n  left: 30px; }\n\n/*\n * Medium\n */\n/* Horizontal */\n.uk-grid-divider.uk-grid-medium {\n  margin-left: -60px; }\n\n.uk-grid-divider.uk-grid-medium > * {\n  padding-left: 60px; }\n\n.uk-grid-divider.uk-grid-medium > :not(.uk-first-column)::before {\n  left: 30px; }\n\n/* Vertical */\n.uk-grid-divider.uk-grid-medium.uk-grid-stack > .uk-grid-margin {\n  margin-top: 60px; }\n\n.uk-grid-divider.uk-grid-medium.uk-grid-stack > .uk-grid-margin::before {\n  top: -30px;\n  left: 60px; }\n\n/*\n * Large\n */\n/* Horizontal */\n.uk-grid-divider.uk-grid-large {\n  margin-left: -80px; }\n\n.uk-grid-divider.uk-grid-large > * {\n  padding-left: 80px; }\n\n.uk-grid-divider.uk-grid-large > :not(.uk-first-column)::before {\n  left: 40px; }\n\n/* Vertical */\n.uk-grid-divider.uk-grid-large.uk-grid-stack > .uk-grid-margin {\n  margin-top: 80px; }\n\n.uk-grid-divider.uk-grid-large.uk-grid-stack > .uk-grid-margin::before {\n  top: -40px;\n  left: 80px; }\n\n/* Desktop and bigger */\n@media (min-width: 1200px) {\n  /* Horizontal */\n  .uk-grid-divider.uk-grid-large {\n    margin-left: -140px; }\n  .uk-grid-divider.uk-grid-large > * {\n    padding-left: 140px; }\n  .uk-grid-divider.uk-grid-large > :not(.uk-first-column)::before {\n    left: 70px; }\n  /* Vertical */\n  .uk-grid-divider.uk-grid-large.uk-grid-stack > .uk-grid-margin {\n    margin-top: 140px; }\n  .uk-grid-divider.uk-grid-large.uk-grid-stack > .uk-grid-margin::before {\n    top: -70px;\n    left: 140px; } }\n\n/* Match child of a grid cell\n ========================================================================== */\n/*\n * Behave like a block element\n * 1. Wrap into the next line\n * 2. Take the full width, at least 100%. Only if no class from the Width component is set.\n * 3. Expand width even if larger than 100%, e.g. because of negative margin (Needed for nested grids)\n */\n.uk-grid-match > *,\n.uk-grid-item-match {\n  display: -ms-flexbox;\n  display: -webkit-flex;\n  display: flex;\n  /* 1 */\n  -ms-flex-wrap: wrap;\n  -webkit-flex-wrap: wrap;\n  flex-wrap: wrap; }\n\n.uk-grid-match > * > :not([class*='uk-width']),\n.uk-grid-item-match > :not([class*='uk-width']) {\n  /* 2 */\n  box-sizing: border-box;\n  width: 100%;\n  /* 3 */\n  -ms-flex: auto;\n  -webkit-flex: auto;\n  flex: auto; }\n\n/* ========================================================================\n   Component: Tile\n ========================================================================== */\n.uk-tile {\n  position: relative;\n  box-sizing: border-box;\n  padding: 30px 30px; }\n\n/* Desktop and bigger */\n@media (min-width: 1200px) {\n  .uk-tile {\n    padding: 40px 40px; } }\n\n/*\n * Micro clearfix\n */\n.uk-tile::before,\n.uk-tile::after {\n  content: \"\";\n  display: table; }\n\n.uk-tile::after {\n  clear: both; }\n\n/*\n * Remove margin from the last-child\n */\n.uk-tile > :last-child {\n  margin-bottom: 0; }\n\n/* Style modifiers\n ========================================================================== */\n/*\n * Default\n */\n.uk-tile-default {\n  background: #fff; }\n\n/*\n * Muted\n */\n.uk-tile-muted {\n  background: #f8f8f8; }\n\n/*\n * Primary\n */\n.uk-tile-primary {\n  background: #1e87f0; }\n\n/*\n * Secondary\n */\n.uk-tile-secondary {\n  background: #222; }\n\n/* ========================================================================\n   Component: Card\n ========================================================================== */\n.uk-card {\n  position: relative;\n  box-sizing: border-box;\n  -webkit-transition: box-shadow 0.1s ease-in-out;\n  transition: box-shadow 0.1s ease-in-out; }\n\n/* Sections\n ========================================================================== */\n.uk-card-body {\n  padding: 30px 30px; }\n\n.uk-card-header {\n  padding: 15px 30px; }\n\n.uk-card-footer {\n  padding: 15px 30px; }\n\n/* Desktop and bigger */\n@media (min-width: 1200px) {\n  .uk-card-body {\n    padding: 40px 40px; }\n  .uk-card-header {\n    padding: 20px 40px; }\n  .uk-card-footer {\n    padding: 20px 40px; } }\n\n/*\n * Micro clearfix\n */\n.uk-card-body::before,\n.uk-card-body::after,\n.uk-card-header::before,\n.uk-card-header::after,\n.uk-card-footer::before,\n.uk-card-footer::after {\n  content: \"\";\n  display: table; }\n\n.uk-card-body::after,\n.uk-card-header::after,\n.uk-card-footer::after {\n  clear: both; }\n\n/*\n * Remove margin from the last-child\n */\n.uk-card-body > :last-child,\n.uk-card-header > :last-child,\n.uk-card-footer > :last-child {\n  margin-bottom: 0; }\n\n/* Media\n ========================================================================== */\n/*\n * Reserved alignment modifier to style the media element, e.g. with `border-radius`\n * Implemented by the theme\n */\n/* Title\n ========================================================================== */\n.uk-card-title {\n  font-size: 1.5rem;\n  line-height: 1.4; }\n\n/* Badge\n ========================================================================== */\n.uk-card-badge {\n  position: absolute;\n  top: 30px;\n  right: 30px;\n  z-index: 1; }\n\n/*\n * Remove margin from adjacent element\n */\n.uk-card-badge:first-child + * {\n  margin-top: 0; }\n\n/* Hover modifier\n ========================================================================== */\n.uk-card-hover:not(.uk-card-default):not(.uk-card-primary):not(.uk-card-secondary):hover {\n  background: #fff;\n  box-shadow: 0 14px 25px rgba(0, 0, 0, 0.16); }\n\n/* Style modifiers\n ========================================================================== */\n/*\n * Default\n * Note: Header and Footer are only implemented for the default style\n */\n.uk-card-default {\n  background: #fff;\n  color: #666;\n  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); }\n\n.uk-card-default .uk-card-title {\n  color: #333; }\n\n.uk-card-default.uk-card-hover:hover {\n  background-color: #fff;\n  box-shadow: 0 14px 25px rgba(0, 0, 0, 0.16); }\n\n.uk-card-default .uk-card-header {\n  border-bottom: 1px solid #e5e5e5; }\n\n.uk-card-default .uk-card-footer {\n  border-top: 1px solid #e5e5e5; }\n\n/*\n * Primary\n */\n.uk-card-primary {\n  background: #1e87f0;\n  color: #fff;\n  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); }\n\n.uk-card-primary .uk-card-title {\n  color: #fff; }\n\n.uk-card-primary.uk-card-hover:hover {\n  background-color: #1e87f0;\n  box-shadow: 0 14px 25px rgba(0, 0, 0, 0.16); }\n\n/*\n * Secondary\n */\n.uk-card-secondary {\n  background: #222;\n  color: #fff;\n  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); }\n\n.uk-card-secondary .uk-card-title {\n  color: #fff; }\n\n.uk-card-secondary.uk-card-hover:hover {\n  background-color: #222;\n  box-shadow: 0 14px 25px rgba(0, 0, 0, 0.16); }\n\n/* Size modifier\n ========================================================================== */\n/*\n * Small\n */\n.uk-card-small.uk-card-body,\n.uk-card-small .uk-card-body {\n  padding: 20px 20px; }\n\n.uk-card-small .uk-card-header {\n  padding: 13px 20px; }\n\n.uk-card-small .uk-card-footer {\n  padding: 13px 20px; }\n\n/*\n * Large\n */\n/* Desktop and bigger */\n@media (min-width: 1200px) {\n  .uk-card-large.uk-card-body,\n  .uk-card-large .uk-card-body {\n    padding: 70px 70px; }\n  .uk-card-large .uk-card-header {\n    padding: 35px 70px; }\n  .uk-card-large .uk-card-footer {\n    padding: 35px 70px; } }\n\n/*\n     * Default\n     */\n.uk-card-body .uk-nav-default {\n  margin: -15px -30px; }\n\n.uk-card-title + .uk-nav-default {\n  margin-top: 0; }\n\n.uk-card-body .uk-nav-default > li > a,\n.uk-card-body .uk-nav-default .uk-nav-header,\n.uk-card-body .uk-nav-default .uk-nav-divider {\n  padding-left: 30px;\n  padding-right: 30px; }\n\n.uk-card-body .uk-nav-default .uk-nav-sub {\n  padding-left: 45px; }\n\n/* Desktop and bigger */\n@media (min-width: 1200px) {\n  .uk-card-body .uk-nav-default {\n    margin: -25px -40px; }\n  .uk-card-title + .uk-nav-default {\n    margin-top: 0; }\n  .uk-card-body .uk-nav-default > li > a,\n  .uk-card-body .uk-nav-default .uk-nav-header,\n  .uk-card-body .uk-nav-default .uk-nav-divider {\n    padding-left: 40px;\n    padding-right: 40px; }\n  .uk-card-body .uk-nav-default .uk-nav-sub {\n    padding-left: 55px; } }\n\n/*\n     * Small\n     */\n.uk-card-small .uk-nav-default {\n  margin: -5px -20px; }\n\n.uk-card-small .uk-card-title + .uk-nav-default {\n  margin-top: 0; }\n\n.uk-card-small .uk-nav-default > li > a,\n.uk-card-small .uk-nav-default .uk-nav-header,\n.uk-card-small .uk-nav-default .uk-nav-divider {\n  padding-left: 20px;\n  padding-right: 20px; }\n\n.uk-card-small .uk-nav-default .uk-nav-sub {\n  padding-left: 35px; }\n\n/*\n     * Large\n     */\n/* Desktop and bigger */\n@media (min-width: 1200px) {\n  .uk-card-large .uk-nav-default {\n    margin: -55px -70px; }\n  .uk-card-large .uk-card-title + .uk-nav-default {\n    margin-top: 0; } }\n\n/* ========================================================================\n   Component: Close\n ========================================================================== */\n/*\n * Adopts `uk-icon`\n * 1. Remove margins in Chrome, Safari and Opera.\n * 2. Remove borders for `button`.\n * 3. Address `overflow` set to `hidden` in IE.\n * 4. Correct `font` properties and `color` not being inherited for `button`.\n * 5. Remove the inheritance of text transform in Edge, Firefox, and IE.\n * 6. Remove default `button` padding and background color\n * 7. Required for `button`.\n * 8. Re-reset `line-height` for icon\n */\n.uk-close {\n  /* 1 */\n  margin: 0;\n  /* 2 */\n  border: none;\n  /* 3 */\n  overflow: visible;\n  /* 4 */\n  font: inherit;\n  color: #999;\n  /* 5 */\n  text-transform: none;\n  /* 6. */\n  padding: 0;\n  background-color: transparent;\n  /* 7 */\n  cursor: pointer;\n  /* 8 */\n  line-height: 0;\n  -webkit-transition: 0.1s ease-in-out;\n  transition: 0.1s ease-in-out;\n  -webkit-transition-property: color, opacity;\n  transition-property: color, opacity; }\n\n/*\n * Remove the inner border and padding in Firefox.\n */\n.uk-close::-moz-focus-inner {\n  border: 0;\n  padding: 0; }\n\n/* Hover + Focus */\n.uk-close:hover,\n.uk-close:focus {\n  color: #666;\n  outline: none; }\n\n/* ========================================================================\n   Component: Spinner\n ========================================================================== */\n/*\n * Adopts `uk-icon`\n */\n/* SVG\n ========================================================================== */\n.uk-spinner > * {\n  -webkit-animation: uk-spinner-rotate 1.4s linear infinite;\n  animation: uk-spinner-rotate 1.4s linear infinite; }\n\n@-webkit-keyframes uk-spinner-rotate {\n  0% {\n    -webkit-transform: rotate(0deg); }\n  100% {\n    -webkit-transform: rotate(270deg); } }\n\n@keyframes uk-spinner-rotate {\n  0% {\n    transform: rotate(0deg); }\n  100% {\n    transform: rotate(270deg); } }\n\n/*\n * Circle\n */\n.uk-spinner > * > * {\n  stroke-dasharray: 88px;\n  stroke-dashoffset: 0;\n  transform-origin: center;\n  -webkit-animation: uk-spinner-dash 1.4s ease-in-out infinite;\n  animation: uk-spinner-dash 1.4s ease-in-out infinite;\n  stroke-width: 1;\n  stroke-linecap: round; }\n\n@-webkit-keyframes uk-spinner-dash {\n  0% {\n    stroke-dashoffset: 88px; }\n  50% {\n    stroke-dashoffset: 22px;\n    -webkit-transform: rotate(135deg); }\n  100% {\n    stroke-dashoffset: 88px;\n    -webkit-transform: rotate(450deg); } }\n\n@keyframes uk-spinner-dash {\n  0% {\n    stroke-dashoffset: 88px; }\n  50% {\n    stroke-dashoffset: 22px;\n    transform: rotate(135deg); }\n  100% {\n    stroke-dashoffset: 88px;\n    transform: rotate(450deg); } }\n\n/* ========================================================================\n   Component: Totop\n ========================================================================== */\n/*\n * Addopts `uk-icon`\n */\n.uk-totop {\n  padding: 5px;\n  color: #999;\n  -webkit-transition: color 0.1s ease-in-out;\n  transition: color 0.1s ease-in-out; }\n\n/* Hover + Focus */\n.uk-totop:hover,\n.uk-totop:focus {\n  color: #666;\n  outline: none; }\n\n/* OnClick */\n.uk-totop:active {\n  color: #333; }\n\n/* ========================================================================\n   Component: Alert\n ========================================================================== */\n.uk-alert {\n  position: relative;\n  margin-bottom: 20px;\n  padding: 15px 29px 15px 15px;\n  background: #f8f8f8;\n  color: #666; }\n\n/* Add margin if adjacent element */\n* + .uk-alert {\n  margin-top: 20px; }\n\n/*\n * Remove margin from the last-child\n */\n.uk-alert > :last-child {\n  margin-bottom: 0; }\n\n/* Close\n * Adopts `uk-close`\n ========================================================================== */\n.uk-alert-close {\n  position: absolute;\n  top: 20px;\n  right: 15px;\n  color: inherit;\n  opacity: 0.4; }\n\n/*\n * Remove margin from adjacent element\n */\n.uk-alert-close:first-child + * {\n  margin-top: 0; }\n\n/*\n * Hover + Focus\n */\n.uk-alert-close:hover,\n.uk-alert-close:focus {\n  color: inherit;\n  opacity: 0.8; }\n\n/* Style modifiers\n ========================================================================== */\n/*\n * Primary\n */\n.uk-alert-primary {\n  background: #d8eafc;\n  color: #1e87f0; }\n\n/*\n * Success\n */\n.uk-alert-success {\n  background: #edfbf6;\n  color: #32d296; }\n\n/*\n * Warning\n */\n.uk-alert-warning {\n  background: #fef5ee;\n  color: #faa05a; }\n\n/*\n * Danger\n */\n.uk-alert-danger {\n  background: #fef4f6;\n  color: #f0506e; }\n\n/*\n     * Content\n     */\n.uk-alert h1,\n.uk-alert h2,\n.uk-alert h3,\n.uk-alert h4,\n.uk-alert h5,\n.uk-alert h6 {\n  color: inherit; }\n\n.uk-alert a:not([class]) {\n  color: inherit;\n  text-decoration: underline; }\n\n.uk-alert a:not([class]):hover {\n  color: inherit;\n  text-decoration: underline; }\n\n/* ========================================================================\n   Component: Badge\n ========================================================================== */\n/*\n * 1. Style\n * 2. Center child vertically and horizontally\n */\n.uk-badge {\n  box-sizing: border-box;\n  min-width: 22px;\n  height: 22px;\n  line-height: 22px;\n  padding: 0 5px;\n  border-radius: 500px;\n  vertical-align: middle;\n  /* 1 */\n  background: #1e87f0;\n  color: #fff;\n  font-size: 0.875rem;\n  /* 2 */\n  display: -ms-inline-flexbox;\n  display: -webkit-inline-flex;\n  display: inline-flex;\n  -ms-flex-pack: center;\n  -webkit-justify-content: center;\n  justify-content: center;\n  -ms-flex-align: center;\n  -webkit-align-items: center;\n  align-items: center; }\n\n/*\n * Required for `a`\n */\n.uk-badge:hover,\n.uk-badge:focus {\n  color: #fff;\n  text-decoration: none;\n  outline: none; }\n\n/* ========================================================================\n   Component: Label\n ========================================================================== */\n.uk-label {\n  display: inline-block;\n  padding: 0 10px;\n  background: #1e87f0;\n  line-height: 1.5;\n  font-size: 0.875rem;\n  color: #fff;\n  vertical-align: middle;\n  white-space: nowrap;\n  border-radius: 2px;\n  text-transform: uppercase; }\n\n/* Color modifiers\n ========================================================================== */\n/*\n * Success\n */\n.uk-label-success {\n  background-color: #32d296;\n  color: #fff; }\n\n/*\n * Warning\n */\n.uk-label-warning {\n  background-color: #faa05a;\n  color: #fff; }\n\n/*\n * Danger\n */\n.uk-label-danger {\n  background-color: #f0506e;\n  color: #fff; }\n\n/* ========================================================================\n   Component: Overlay\n ========================================================================== */\n.uk-overlay {\n  padding: 30px 30px; }\n\n/*\n * Remove margin from the last-child\n */\n.uk-overlay > :last-child {\n  margin-bottom: 0; }\n\n/* Icon\n ========================================================================== */\n/* Style modifiers\n ========================================================================== */\n/*\n * Default\n */\n.uk-overlay-default {\n  background: rgba(255, 255, 255, 0.8); }\n\n/*\n * Primary\n */\n.uk-overlay-primary {\n  background: rgba(34, 34, 34, 0.8); }\n\n/* ========================================================================\n   Component: Article\n ========================================================================== */\n/*\n * Micro clearfix\n */\n.uk-article::before,\n.uk-article::after {\n  content: \"\";\n  display: table; }\n\n.uk-article::after {\n  clear: both; }\n\n/*\n * Remove margin from the last-child\n */\n.uk-article > :last-child {\n  margin-bottom: 0; }\n\n/* Adjacent sibling\n ========================================================================== */\n.uk-article + .uk-article {\n  margin-top: 70px; }\n\n/* Title\n ========================================================================== */\n.uk-article-title {\n  font-size: 2.625rem;\n  line-height: 1.2; }\n\n/* Meta\n ========================================================================== */\n.uk-article-meta {\n  font-size: 0.875rem;\n  line-height: 1.4;\n  color: #999; }\n  .uk-article-meta a {\n    color: #999; }\n  .uk-article-meta a:hover {\n    color: #666;\n    text-decoration: none; }\n\n/* ========================================================================\n   Component: Comment\n ========================================================================== */\n/* Sections\n ========================================================================== */\n.uk-comment-header {\n  margin-bottom: 20px; }\n\n/*\n * Micro clearfix\n */\n.uk-comment-body::before,\n.uk-comment-body::after,\n.uk-comment-header::before,\n.uk-comment-header::after {\n  content: \"\";\n  display: table; }\n\n.uk-comment-body::after,\n.uk-comment-header::after {\n  clear: both; }\n\n/*\n * Remove margin from the last-child\n */\n.uk-comment-body > :last-child,\n.uk-comment-header > :last-child {\n  margin-bottom: 0; }\n\n/* Title\n ========================================================================== */\n.uk-comment-title {\n  font-size: 1.25rem;\n  line-height: 1.4; }\n\n/* Meta\n ========================================================================== */\n.uk-comment-meta {\n  font-size: 0.875rem;\n  line-height: 1.4;\n  color: #999; }\n\n/* Avatar\n ========================================================================== */\n/* List\n ========================================================================== */\n.uk-comment-list {\n  padding: 0;\n  list-style: none; }\n\n/* Adjacent siblings */\n.uk-comment-list > :nth-child(n+2) {\n  margin-top: 70px; }\n\n/*\n * Sublists\n * Note: General sibling selector allows reply block between comment and sublist\n */\n.uk-comment-list .uk-comment ~ ul {\n  margin: 70px 0 0 0;\n  padding-left: 30px;\n  list-style: none; }\n\n/* Tablet and bigger */\n@media (min-width: 960px) {\n  .uk-comment-list .uk-comment ~ ul {\n    padding-left: 100px; } }\n\n/* Adjacent siblings */\n.uk-comment-list .uk-comment ~ ul > :nth-child(n+2) {\n  margin-top: 70px; }\n\n/* Style modifier\n ========================================================================== */\n.uk-comment-primary {\n  padding: 30px;\n  background-color: #f8f8f8; }\n\n/* ========================================================================\n   Component: Search\n ========================================================================== */\n/*\n * 1. Container fits its content\n * 2. Create position context\n * 3. Prevent content overflow\n * 4. Reset `form`\n */\n.uk-search {\n  /* 1 */\n  display: inline-block;\n  /* 2 */\n  position: relative;\n  /* 3 */\n  max-width: 100%;\n  /* 4 */\n  margin: 0; }\n\n/* Input\n ========================================================================== */\n/*\n * Remove the inner padding and cancel buttons in Chrome on OS X and Safari on OS X.\n */\n.uk-search-input::-webkit-search-cancel-button,\n.uk-search-input::-webkit-search-decoration {\n  -webkit-appearance: none; }\n\n/*\n * Removes placeholder transparency in Firefox.\n */\n.uk-search-input::-moz-placeholder {\n  opacity: 1; }\n\n/*\n * 1. Define consistent box sizing.\n * 2. Address margins set differently in Firefox/IE and Chrome/Safari/Opera.\n * 3. Remove `border-radius` in iOS.\n * 4. Change font properties to `inherit` in all browsers\n * 5. Show the overflow in Edge.\n * 6. Remove default style in iOS.\n * 7. Vertical alignment\n * 8. Take the full container width\n * 9. Style\n */\n.uk-search-input {\n  /* 1 */\n  box-sizing: border-box;\n  /* 2 */\n  margin: 0;\n  /* 3 */\n  border-radius: 0;\n  /* 4 */\n  font: inherit;\n  /* 5 */\n  overflow: visible;\n  /* 6 */\n  -webkit-appearance: none;\n  /* 7 */\n  vertical-align: middle;\n  /* 8 */\n  width: 100%;\n  /* 9 */\n  border: none;\n  color: #666; }\n\n.uk-search-input:focus {\n  outline: 0; }\n\n/* Placeholder */\n.uk-search-input:-ms-input-placeholder {\n  color: #999 !important; }\n\n.uk-search-input::-moz-placeholder {\n  color: #999; }\n\n.uk-search-input::-webkit-input-placeholder {\n  color: #999; }\n\n/* Icon\n ========================================================================== */\n/*\n * Adopts `uk-icon`\n * Required for `button`\n * 1. Remove margins in Chrome, Safari and Opera.\n * 2. Remove borders for `button`.\n * 3. Address `overflow` set to `hidden` in IE.\n * 4. Correct `font` properties and `color` not being inherited for `button`.\n * 5. Remove the inheritance of text transform in Edge, Firefox, and IE.\n * 6. Remove default `button` padding and background color\n * 7. Required for `button`.\n */\n.uk-search-icon {\n  /* 1 */\n  margin: 0;\n  /* 2 */\n  border: none;\n  /* 3 */\n  overflow: visible;\n  /* 4 */\n  font: inherit;\n  color: inherit;\n  /* 5 */\n  text-transform: none;\n  /* 6. */\n  padding: 0;\n  background-color: transparent;\n  /* 7 */\n  cursor: pointer; }\n\n/*\n * Remove the inner border and padding in Firefox. Required for `button`.\n */\n.uk-search-icon::-moz-focus-inner {\n  border: 0;\n  padding: 0; }\n\n/*\n * Remove default focus style\n */\n.uk-search-icon:focus {\n  outline: none; }\n\n/*\n * Position above input\n * 1. Set position\n * 2. Center icon vertically and horizontally\n * 3. Style\n */\n.uk-search .uk-search-icon {\n  /* 1 */\n  position: absolute;\n  top: 0;\n  bottom: 0;\n  left: 0;\n  /* 2 */\n  display: -ms-inline-flexbox;\n  display: -webkit-inline-flex;\n  display: inline-flex;\n  -ms-flex-pack: center;\n  -webkit-justify-content: center;\n  justify-content: center;\n  -ms-flex-align: center;\n  -webkit-align-items: center;\n  align-items: center;\n  /* 3 */\n  color: #999; }\n\n/*\n * Required for `a`.\n */\n.uk-search .uk-search-icon:hover {\n  color: #999; }\n\n/*\n * Make `input` element clickable through icon, e.g. if it's a `span`\n */\n.uk-search .uk-search-icon:not(a):not(button):not(input) {\n  pointer-events: none; }\n\n/*\n * Position modifier\n */\n.uk-search .uk-search-icon-flip {\n  right: 0;\n  left: auto; }\n\n/* Default modifier\n ========================================================================== */\n.uk-search-default {\n  width: 180px; }\n\n/*\n * Input\n */\n.uk-search-default .uk-search-input {\n  height: 40px;\n  padding-left: 6px;\n  padding-right: 6px;\n  background: transparent;\n  border: 1px solid #e5e5e5; }\n\n/* Focus */\n.uk-search-default .uk-search-input:focus {\n  background-color: transparent; }\n\n/*\n * Icon\n */\n.uk-search-default .uk-search-icon {\n  width: 40px; }\n\n.uk-search-default .uk-search-icon:not(.uk-search-icon-flip) + .uk-search-input {\n  padding-left: 40px; }\n\n.uk-search-default .uk-search-icon-flip + .uk-search-input {\n  padding-right: 40px; }\n\n/* Navbar modifier\n ========================================================================== */\n.uk-search-navbar {\n  width: 400px; }\n\n/*\n * Input\n */\n.uk-search-navbar .uk-search-input {\n  height: 40px;\n  background: transparent;\n  font-size: 1.5rem; }\n\n/*\n * Icon\n */\n.uk-search-navbar .uk-search-icon {\n  width: 40px; }\n\n.uk-search-navbar .uk-search-icon:not(.uk-search-icon-flip) + .uk-search-input {\n  padding-left: 40px; }\n\n.uk-search-navbar .uk-search-icon-flip + .uk-search-input {\n  padding-right: 40px; }\n\n/* Large modifier\n ========================================================================== */\n.uk-search-large {\n  width: 500px; }\n\n/*\n * Input\n */\n.uk-search-large .uk-search-input {\n  height: 80px;\n  background: transparent;\n  font-size: 2.625rem; }\n\n/*\n * Icon\n */\n.uk-search-large .uk-search-icon {\n  width: 80px; }\n\n.uk-search-large .uk-search-icon:not(.uk-search-icon-flip) + .uk-search-input {\n  padding-left: 80px; }\n\n.uk-search-large .uk-search-icon-flip + .uk-search-input {\n  padding-right: 80px; }\n\n/* Toggle\n ========================================================================== */\n.uk-search-toggle {\n  color: #999; }\n\n/* Hover + Focus */\n.uk-search-toggle:hover,\n.uk-search-toggle:focus {\n  color: #666; }\n\n/* ========================================================================\n   Component: Nav\n ========================================================================== */\n/*\n * Reset\n * 1. Prepare lists\n * 2. Prepare links\n * 3. Remove default focus style\n */\n/* 1 */\n.uk-nav,\n.uk-nav ul {\n  margin: 0;\n  padding: 0;\n  list-style: none; }\n\n/* 2 */\n.uk-nav li > a {\n  display: block;\n  text-decoration: none; }\n\n/* 3 */\n.uk-nav li > a:focus {\n  outline: none; }\n\n/*\n * Items\n * Must target `a` elements to exclude other elements (e.g. lists)\n */\n.uk-nav > li > a {\n  padding: 5px 0; }\n\n/* Sublists\n ========================================================================== */\n/*\n * Level 2\n * `ul` needed for higher specificity to override padding\n */\nul.uk-nav-sub {\n  padding: 5px 0 5px 15px; }\n\n/*\n * Level 3 and deeper\n */\n.uk-nav-sub ul {\n  padding-left: 15px; }\n\n/*\n * Items\n */\n.uk-nav-sub a {\n  padding: 2px 0; }\n\n/* Parent icon modifier\n ========================================================================== */\n.uk-nav-parent-icon > .uk-parent > a::after {\n  content: \"\";\n  width: 1.5em;\n  height: 1.5em;\n  float: right;\n  background-image: url(\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2214%22%20height%3D%2214%22%20viewBox%3D%220%200%2014%2014%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Cpolyline%20fill%3D%22none%22%20stroke%3D%22%23666%22%20stroke-width%3D%221.1%22%20points%3D%2210%201%204%207%2010%2013%22%3E%3C%2Fpolyline%3E%0A%3C%2Fsvg%3E\");\n  background-repeat: no-repeat;\n  background-position: 50% 50%; }\n\n.uk-nav-parent-icon > .uk-parent.uk-open > a::after {\n  background-image: url(\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2214%22%20height%3D%2214%22%20viewBox%3D%220%200%2014%2014%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Cpolyline%20fill%3D%22none%22%20stroke%3D%22%23666%22%20stroke-width%3D%221.1%22%20points%3D%221%204%207%2010%2013%204%22%3E%3C%2Fpolyline%3E%0A%3C%2Fsvg%3E\"); }\n\n/* Header\n ========================================================================== */\n.uk-nav-header {\n  padding: 5px 0;\n  text-transform: uppercase;\n  font-size: 0.875rem; }\n\n.uk-nav-header:not(:first-child) {\n  margin-top: 20px; }\n\n/* Divider\n ========================================================================== */\n.uk-nav-divider {\n  margin: 5px 0; }\n\n/* Default modifier\n ========================================================================== */\n.uk-nav-default {\n  font-size: 0.875rem; }\n\n/*\n * Items\n */\n.uk-nav-default > li > a {\n  color: #999; }\n\n/* Hover + Focus */\n.uk-nav-default > li > a:hover,\n.uk-nav-default > li > a:focus {\n  color: #666; }\n\n/* Active */\n.uk-nav-default > li.uk-active > a {\n  color: #333; }\n\n/*\n * Header\n */\n.uk-nav-default .uk-nav-header {\n  color: #333; }\n\n/*\n * Divider\n */\n.uk-nav-default .uk-nav-divider {\n  border-top: 1px solid #e5e5e5; }\n\n/*\n * Sublists\n */\n.uk-nav-default .uk-nav-sub a {\n  color: #999; }\n\n.uk-nav-default .uk-nav-sub a:hover,\n.uk-nav-default .uk-nav-sub a:focus {\n  color: #666; }\n\n/* Primary modifier\n ========================================================================== */\n/*\n * Items\n */\n.uk-nav-primary > li > a {\n  font-size: 1.5rem;\n  line-height: 1.5;\n  color: #999; }\n\n/* Hover + Focus */\n.uk-nav-primary > li > a:hover,\n.uk-nav-primary > li > a:focus {\n  color: #666; }\n\n/* Active */\n.uk-nav-primary > li.uk-active > a {\n  color: #333; }\n\n/*\n * Header\n */\n.uk-nav-primary .uk-nav-header {\n  color: #333; }\n\n/*\n * Divider\n */\n.uk-nav-primary .uk-nav-divider {\n  border-top: 1px solid #e5e5e5; }\n\n/*\n * Sublists\n */\n.uk-nav-primary .uk-nav-sub a {\n  color: #999; }\n\n.uk-nav-primary .uk-nav-sub a:hover,\n.uk-nav-primary .uk-nav-sub a:focus {\n  color: #666; }\n\n/* Alignment modifier\n ========================================================================== */\n.uk-nav-center {\n  text-align: center; }\n\n/* Sublists */\n.uk-nav-center .uk-nav-sub,\n.uk-nav-center .uk-nav-sub ul {\n  padding-left: 0; }\n\n/* Parent icon modifier  */\n.uk-nav-center.uk-nav-parent-icon > .uk-parent > a::after {\n  position: absolute; }\n\n/* ========================================================================\n   Component: Navbar\n ========================================================================== */\n/*\n * 1. Create position context to center navbar group\n */\n.uk-navbar {\n  display: -ms-flexbox;\n  display: -webkit-flex;\n  display: flex;\n  /* 1 */\n  position: relative; }\n\n/* Container\n ========================================================================== */\n.uk-navbar-container:not(.uk-navbar-transparent) {\n  background: #f8f8f8; }\n\n/*\n * Remove pseudo elements created by micro clearfix as precaution (if Container component is used)\n */\n.uk-navbar-container > ::before,\n.uk-navbar-container > ::after {\n  display: none !important; }\n\n/* Groups\n ========================================================================== */\n/*\n * 1. Align navs and items vertically if they have a different height\n * 2. Note: IE 11 requires an extra `div` which affects the center selector\n */\n.uk-navbar-left,\n.uk-navbar-right,\n.uk-navbar-center,\n.uk-navbar-center-left > *,\n.uk-navbar-center-right > * {\n  display: -ms-flexbox;\n  display: -webkit-flex;\n  display: flex;\n  /* 1 */\n  -ms-flex-align: center;\n  -webkit-align-items: center;\n  align-items: center; }\n\n/*\n * Horizontal alignment\n * 1. Create position context for centered navbar with sub groups (left/right)\n * 2. Needed for dropdowns because a new position context is created\n *    `z-index` must be smaller than off-canvas\n * 3. Fix text wrapping if the centered section is larger than 50% of the navbar\n * 4. Align sub groups for centered navbar\n */\n.uk-navbar-right {\n  margin-left: auto; }\n\n.uk-navbar-center:only-child {\n  margin-left: auto;\n  margin-right: auto;\n  /* 1 */\n  position: relative; }\n\n.uk-navbar-center:not(:only-child) {\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  -webkit-transform: translate(-50%, -50%);\n  transform: translate(-50%, -50%);\n  /* 2 */\n  z-index: 990; }\n\n/* 3 */\n.uk-navbar-center:not(:only-child) .uk-navbar-nav > li > a,\n.uk-navbar-center:not(:only-child) .uk-navbar-item,\n.uk-navbar-center:not(:only-child) .uk-navbar-toggle {\n  white-space: nowrap; }\n\n/* 4 */\n.uk-navbar-center-left,\n.uk-navbar-center-right {\n  position: absolute;\n  top: 0; }\n\n.uk-navbar-center-left {\n  right: 100%; }\n\n.uk-navbar-center-right {\n  left: 100%; }\n\n[class*='uk-navbar-center-'] .uk-navbar-nav > li > a,\n[class*='uk-navbar-center-'] .uk-navbar-item,\n[class*='uk-navbar-center-'] .uk-navbar-toggle {\n  white-space: nowrap; }\n\n/* Nav\n ========================================================================== */\n/*\n * 1. Reset lists\n */\n.uk-navbar-nav {\n  display: -ms-flexbox;\n  display: -webkit-flex;\n  display: flex;\n  /* 1 */\n  margin: 0;\n  padding: 0;\n  list-style: none; }\n\n/*\n * Allow items to wrap into the next line\n * Only not `absolute` positioned groups\n */\n.uk-navbar-left,\n.uk-navbar-right,\n.uk-navbar-center:only-child {\n  -ms-flex-wrap: wrap;\n  -webkit-flex-wrap: wrap;\n  flex-wrap: wrap; }\n\n/*\n * Items\n * 1. Center content vertically and horizontally\n * 2. Dimensions\n * 3. Style\n * 4. Required for `a`\n */\n.uk-navbar-nav > li > a,\n.uk-navbar-item,\n.uk-navbar-toggle {\n  /* 1 */\n  display: -ms-flexbox;\n  display: -webkit-flex;\n  display: flex;\n  -ms-flex-pack: center;\n  -webkit-justify-content: center;\n  justify-content: center;\n  -ms-flex-align: center;\n  -webkit-align-items: center;\n  align-items: center;\n  /* 2 */\n  box-sizing: border-box;\n  height: 80px;\n  padding: 0 15px;\n  /* 3 */\n  font-size: 0.875rem;\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif;\n  /* 4 */\n  text-decoration: none; }\n\n/*\n * Nav items\n */\n.uk-navbar-nav > li > a {\n  color: #999;\n  text-transform: uppercase;\n  -webkit-transition: 0.1s ease-in-out;\n  transition: 0.1s ease-in-out;\n  -webkit-transition-property: color, background-color;\n  transition-property: color, background-color; }\n\n/*\n * Hover\n * Apply hover style also to focus state and if dropdown is opened\n */\n.uk-navbar-nav > li:hover > a,\n.uk-navbar-nav > li > a:focus,\n.uk-navbar-nav > li > a.uk-open {\n  color: #666;\n  outline: none; }\n\n/* OnClick */\n.uk-navbar-nav > li > a:active {\n  color: #333; }\n\n/* Active */\n.uk-navbar-nav > li.uk-active > a {\n  color: #333; }\n\n/* Item\n ========================================================================== */\n.uk-navbar-item {\n  color: #666; }\n\n/* Toggle\n ========================================================================== */\n.uk-navbar-toggle {\n  color: #999; }\n\n.uk-navbar-toggle:hover,\n.uk-navbar-toggle:focus,\n.uk-navbar-toggle.uk-open {\n  color: #666;\n  outline: none;\n  text-decoration: none; }\n\n/*\n * Icon\n * Adopts `uk-icon`\n */\n/* Hover + Focus */\n/* Subtitle\n ========================================================================== */\n.uk-navbar-subtitle {\n  font-size: 0.875rem; }\n\n/* Style modifiers\n ========================================================================== */\n/* Dropdown\n ========================================================================== */\n/*\n * Adopts `uk-dropdown`\n * 1. Hide by default\n * 2. Set position\n * 3. Set a default width\n * 4. Style\n */\n.uk-navbar-dropdown {\n  /* 1 */\n  display: none;\n  /* 2 */\n  position: absolute;\n  z-index: 1020;\n  /* 3 */\n  box-sizing: border-box;\n  width: 200px;\n  /* 4 */\n  padding: 25px;\n  background: #fff;\n  color: #666;\n  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15); }\n\n/* Show */\n.uk-navbar-dropdown.uk-open {\n  display: block; }\n\n/*\n * Direction / Alignment modifiers\n */\n/* Direction */\n[class*='uk-navbar-dropdown-top'] {\n  margin-top: -15px; }\n\n[class*='uk-navbar-dropdown-bottom'] {\n  margin-top: 15px; }\n\n[class*='uk-navbar-dropdown-left'] {\n  margin-left: -15px; }\n\n[class*='uk-navbar-dropdown-right'] {\n  margin-left: 15px; }\n\n/*\n * Grid\n * Adopts `uk-grid`\n */\n/* Gutter Horizontal */\n.uk-navbar-dropdown-grid {\n  margin-left: -50px; }\n\n.uk-navbar-dropdown-grid > * {\n  padding-left: 50px; }\n\n/* Gutter Vertical */\n.uk-navbar-dropdown-grid > .uk-grid-margin {\n  margin-top: 50px; }\n\n/* Stack */\n.uk-navbar-dropdown-stack .uk-navbar-dropdown-grid > * {\n  width: 100% !important; }\n\n/*\n * Width modifier\n */\n.uk-navbar-dropdown-width-2:not(.uk-navbar-dropdown-stack) {\n  width: 400px; }\n\n.uk-navbar-dropdown-width-3:not(.uk-navbar-dropdown-stack) {\n  width: 600px; }\n\n.uk-navbar-dropdown-width-4:not(.uk-navbar-dropdown-stack) {\n  width: 800px; }\n\n.uk-navbar-dropdown-width-5:not(.uk-navbar-dropdown-stack) {\n  width: 1000px; }\n\n/*\n * Dropbar modifier\n */\n.uk-navbar-dropdown-dropbar {\n  margin-bottom: 30px;\n  box-shadow: none; }\n\n/* Dropdown Nav\n * Adopts `uk-nav`\n ========================================================================== */\n.uk-navbar-dropdown-nav {\n  font-size: 0.875rem; }\n\n/*\n * Items\n */\n.uk-navbar-dropdown-nav > li > a {\n  color: #999; }\n\n/* Hover + Focus */\n.uk-navbar-dropdown-nav > li > a:hover,\n.uk-navbar-dropdown-nav > li > a:focus {\n  color: #666; }\n\n/* Active */\n.uk-navbar-dropdown-nav > li.uk-active > a {\n  color: #333; }\n\n/*\n * Header\n */\n.uk-navbar-dropdown-nav .uk-nav-header {\n  color: #333; }\n\n/*\n * Divider\n */\n.uk-navbar-dropdown-nav .uk-nav-divider {\n  border-top: 1px solid #e5e5e5; }\n\n/*\n * Sublists\n */\n.uk-navbar-dropdown-nav .uk-nav-sub a {\n  color: #999; }\n\n.uk-navbar-dropdown-nav .uk-nav-sub a:hover,\n.uk-navbar-dropdown-nav .uk-nav-sub a:focus {\n  color: #666; }\n\n/* Dropbar\n ========================================================================== */\n.uk-navbar-dropbar {\n  position: relative;\n  background: #fff;\n  overflow: hidden; }\n\n/*\n * Slide modifier\n */\n.uk-navbar-dropbar-slide {\n  position: absolute;\n  z-index: 1020;\n  left: 0;\n  right: 0; }\n\n/*\n     * Navbar\n     */\n.uk-navbar-container > .uk-container .uk-navbar-left {\n  margin-left: -15px;\n  margin-right: -15px; }\n\n.uk-navbar-container > .uk-container .uk-navbar-right {\n  margin-right: -15px; }\n\n/*\n     * Grid Divider\n     */\n.uk-navbar-dropdown-grid > * {\n  position: relative; }\n\n.uk-navbar-dropdown-grid > :not(.uk-first-column)::before {\n  content: \"\";\n  position: absolute;\n  top: 0;\n  bottom: 0;\n  left: 25px;\n  border-left: 1px solid #e5e5e5; }\n\n/* Vertical */\n.uk-navbar-dropdown-grid.uk-grid-stack > .uk-grid-margin::before {\n  content: \"\";\n  position: absolute;\n  top: -25px;\n  left: 50px;\n  right: 0;\n  border-top: 1px solid #e5e5e5; }\n\n/* ========================================================================\n   Component: Subnav\n ========================================================================== */\n/*\n * 1. Allow items to wrap into the next line\n * 2. Gutter\n * 3. Reset lists\n */\n.uk-subnav {\n  display: -ms-flexbox;\n  display: -webkit-flex;\n  display: flex;\n  /* 1 */\n  -ms-flex-wrap: wrap;\n  -webkit-flex-wrap: wrap;\n  flex-wrap: wrap;\n  /* 2 */\n  margin-left: -20px;\n  /* 3 */\n  padding: 0;\n  list-style: none; }\n\n/*\n * 1. Space is allocated solely based on content dimensions: 0 0 auto\n * 2. Gutter\n * 3. Create position context for dropdowns\n */\n.uk-subnav > * {\n  /* 1 */\n  -ms-flex: none;\n  -webkit-flex: none;\n  flex: none;\n  /* 2 */\n  padding-left: 20px;\n  /* 3 */\n  position: relative; }\n\n/* Items\n ========================================================================== */\n/*\n * Items must target `a` elements to exclude other elements (e.g. dropdowns)\n * Using `:first-child` instead of `a` to support `span` elements for text\n * 1. Prevent gap if child element is `inline-block`, e.g. an icon\n * 2. Style\n */\n.uk-subnav > * > :first-child {\n  /* 1 */\n  display: block;\n  /* 2 */\n  color: #999;\n  font-size: 0.875rem;\n  text-transform: uppercase;\n  -webkit-transition: 0.1s ease-in-out;\n  transition: 0.1s ease-in-out;\n  -webkit-transition-property: color, background-color;\n  transition-property: color, background-color; }\n\n/* Hover + Focus */\n.uk-subnav > * > a:hover,\n.uk-subnav > * > a:focus {\n  color: #666;\n  text-decoration: none;\n  outline: none; }\n\n/* Active */\n.uk-subnav > .uk-active > a {\n  color: #333; }\n\n/* Divider modifier\n ========================================================================== */\n/*\n * 1. Align items and divider vertically\n */\n.uk-subnav-divider > * {\n  /* 1 */\n  display: -ms-flexbox;\n  display: -webkit-flex;\n  display: flex;\n  -ms-flex-align: center;\n  -webkit-align-items: center;\n  align-items: center; }\n\n/*\n * Divider\n * `nth-child` makes it also work without JS if it's only one row\n */\n.uk-subnav-divider > :nth-child(n+2):not(.uk-first-column)::before {\n  content: \"\";\n  height: 1.5em;\n  margin-left: 0px;\n  margin-right: 20px;\n  border-left: 1px solid #e5e5e5; }\n\n/* Pill modifier\n ========================================================================== */\n.uk-subnav-pill > * > :first-child {\n  padding: 5px 10px;\n  background: transparent;\n  color: #999; }\n\n/* Hover + Focus */\n.uk-subnav-pill > * > a:hover,\n.uk-subnav-pill > * > a:focus {\n  background-color: #f8f8f8;\n  color: #666; }\n\n/* OnClick */\n.uk-subnav-pill > * > a:active {\n  background-color: #f8f8f8;\n  color: #666; }\n\n/* Active */\n.uk-subnav-pill > .uk-active > a {\n  background-color: #1e87f0;\n  color: #fff; }\n\n/* Disabled\n * The same for all style modifiers\n ========================================================================== */\n.uk-subnav > .uk-disabled > a {\n  color: #999; }\n\n/* ========================================================================\n   Component: Breadcrumb\n ========================================================================== */\n/*\n * 1. Allow items to wrap into the next line\n * 2. Reset lists\n */\n.uk-breadcrumb {\n  display: -ms-flexbox;\n  display: -webkit-flex;\n  display: flex;\n  /* 1 */\n  -ms-flex-wrap: wrap;\n  -webkit-flex-wrap: wrap;\n  flex-wrap: wrap;\n  /* 2 */\n  padding: 0;\n  list-style: none; }\n\n/*\n * Space is allocated solely based on content dimensions: 0 0 auto\n */\n.uk-breadcrumb > * {\n  -ms-flex: none;\n  -webkit-flex: none;\n  flex: none; }\n\n/* Items\n ========================================================================== */\n.uk-breadcrumb > * > * {\n  display: inline-block;\n  font-size: 0.875rem;\n  color: #999; }\n\n/* Hover + Focus */\n.uk-breadcrumb > * > :hover,\n.uk-breadcrumb > * > :focus {\n  color: #666;\n  text-decoration: none; }\n\n/* Active */\n.uk-breadcrumb > :last-child > * {\n  color: #666; }\n\n/*\n * Divider\n * `nth-child` makes it also work without JS if it's only one row\n */\n.uk-breadcrumb > :nth-child(n+2):not(.uk-first-column)::before {\n  content: \"/\";\n  display: inline-block;\n  margin: 0 20px;\n  color: #999; }\n\n/* ========================================================================\n   Component: Pagination\n ========================================================================== */\n/*\n * 1. Allow items to wrap into the next line\n * 2. Gutter\n * 3. Reset lists\n */\n.uk-pagination {\n  display: -ms-flexbox;\n  display: -webkit-flex;\n  display: flex;\n  /* 1 */\n  -ms-flex-wrap: wrap;\n  -webkit-flex-wrap: wrap;\n  flex-wrap: wrap;\n  /* 2 */\n  margin-left: -20px;\n  /* 3 */\n  padding: 0;\n  list-style: none; }\n\n/*\n * 1. Space is allocated solely based on content dimensions: 0 0 auto\n * 2. Gutter\n * 3. Create position context for dropdowns\n */\n.uk-pagination > * {\n  /* 1 */\n  -ms-flex: none;\n  -webkit-flex: none;\n  flex: none;\n  /* 2 */\n  padding-left: 20px;\n  /* 3 */\n  position: relative; }\n\n/* Items\n ========================================================================== */\n/*\n * 1. Prevent gap if child element is `inline-block`, e.g. an icon\n * 2. Style\n */\n.uk-pagination > * > * {\n  /* 1 */\n  display: block;\n  /* 2 */\n  color: #999;\n  -webkit-transition: color 0.1s ease-in-out;\n  transition: color 0.1s ease-in-out; }\n\n/* Hover + Focus */\n.uk-pagination > * > :hover,\n.uk-pagination > * > :focus {\n  color: #666;\n  text-decoration: none; }\n\n/* Active */\n.uk-pagination > .uk-active > * {\n  color: #666; }\n\n/* Disabled */\n.uk-pagination > .uk-disabled > * {\n  color: #999; }\n\n/* ========================================================================\n   Component: Tab\n ========================================================================== */\n/*\n * 1. Allow items to wrap into the next line\n * 2. Gutter\n * 3. Reset lists\n */\n.uk-tab {\n  display: -ms-flexbox;\n  display: -webkit-flex;\n  display: flex;\n  /* 1 */\n  -ms-flex-wrap: wrap;\n  -webkit-flex-wrap: wrap;\n  flex-wrap: wrap;\n  /* 2 */\n  margin-left: -20px;\n  /* 3 */\n  padding: 0;\n  list-style: none;\n  position: relative; }\n  .uk-tab::before {\n    content: \"\";\n    position: absolute;\n    bottom: 0;\n    left: 20px;\n    right: 0;\n    border-bottom: 1px solid #e5e5e5; }\n\n/*\n * 1. Space is allocated solely based on content dimensions: 0 0 auto\n * 2. Gutter\n * 3. Create position context for dropdowns\n */\n.uk-tab > * {\n  /* 1 */\n  -ms-flex: none;\n  -webkit-flex: none;\n  flex: none;\n  /* 2 */\n  padding-left: 20px;\n  /* 3 */\n  position: relative; }\n\n/* Items\n ========================================================================== */\n/*\n * Items must target `a` elements to exclude other elements (e.g. dropdowns)\n * 1. Center text if a width is set\n * 2. Style\n */\n.uk-tab > * > a {\n  /* 1 */\n  display: block;\n  text-align: center;\n  /* 2 */\n  padding: 5px 10px;\n  color: #999;\n  border-bottom: 1px solid transparent;\n  font-size: 0.875rem;\n  text-transform: uppercase;\n  -webkit-transition: color 0.1s ease-in-out;\n  transition: color 0.1s ease-in-out; }\n\n/* Hover + Focus */\n.uk-tab > * > a:hover,\n.uk-tab > * > a:focus {\n  color: #666;\n  text-decoration: none; }\n\n/* Active */\n.uk-tab > .uk-active > a {\n  color: #333;\n  border-color: #1e87f0; }\n\n/* Disabled */\n.uk-tab > .uk-disabled > a {\n  color: #999; }\n\n/* Position modifier\n ========================================================================== */\n/*\n * Bottom\n */\n.uk-tab-bottom::before {\n  top: 0;\n  bottom: auto; }\n\n.uk-tab-bottom > * > a {\n  border-top: 1px solid transparent;\n  border-bottom: none; }\n\n/*\n * Left + Right\n * 1. Reset Gutter\n */\n.uk-tab-left,\n.uk-tab-right {\n  -ms-flex-direction: column;\n  -webkit-flex-direction: column;\n  flex-direction: column;\n  /* 1 */\n  margin-left: 0; }\n\n/* 1 */\n.uk-tab-left > *,\n.uk-tab-right > * {\n  padding-left: 0; }\n\n.uk-tab-left::before {\n  top: 0;\n  bottom: 0;\n  left: auto;\n  right: 0;\n  border-left: 1px solid #e5e5e5;\n  border-bottom: none; }\n\n.uk-tab-right::before {\n  top: 0;\n  bottom: 0;\n  left: 0;\n  right: auto;\n  border-left: 1px solid #e5e5e5;\n  border-bottom: none; }\n\n.uk-tab-left > * > a {\n  text-align: right;\n  border-right: 1px solid transparent;\n  border-bottom: none; }\n\n.uk-tab-right > * > a {\n  text-align: left;\n  border-left: 1px solid transparent;\n  border-bottom: none; }\n\n.uk-tab .uk-dropdown {\n  margin-left: 30px; }\n\n/* ========================================================================\n   Component: Slidenav\n ========================================================================== */\n/*\n * Adopts `uk-icon`\n */\n.uk-slidenav {\n  padding: 5px;\n  color: rgba(102, 102, 102, 0.6);\n  -webkit-transition: color 0.1s ease-in-out;\n  transition: color 0.1s ease-in-out; }\n\n/* Hover + Focus */\n.uk-slidenav:hover,\n.uk-slidenav:focus {\n  color: rgba(102, 102, 102, 0.8);\n  outline: none; }\n\n/* OnClick */\n.uk-slidenav:active {\n  color: rgba(102, 102, 102, 0.9); }\n\n/* Icon modifier\n ========================================================================== */\n/*\n * Previous\n */\n/*\n * Next\n */\n/* Container\n ========================================================================== */\n.uk-slidenav-container {\n  display: -ms-flexbox;\n  display: -webkit-flex;\n  display: flex; }\n\n/* ========================================================================\n   Component: Dotnav\n ========================================================================== */\n/*\n * 1. Allow items to wrap into the next line\n * 2. Reset lists\n * 3. Gutter\n */\n.uk-dotnav {\n  display: -ms-flexbox;\n  display: -webkit-flex;\n  display: flex;\n  /* 1 */\n  -ms-flex-wrap: wrap;\n  -webkit-flex-wrap: wrap;\n  flex-wrap: wrap;\n  /* 2 */\n  margin: 0;\n  padding: 0;\n  list-style: none;\n  /* 3 */\n  margin-left: -15px; }\n\n/*\n * 1. Space is allocated solely based on content dimensions: 0 0 auto\n * 2. Gutter\n */\n.uk-dotnav > * {\n  /* 1 */\n  -ms-flex: none;\n  -webkit-flex: none;\n  flex: none;\n  /* 2 */\n  padding-left: 15px; }\n\n/* Items\n ========================================================================== */\n/*\n * Items\n * 1. Hide text if present\n */\n.uk-dotnav > * > * {\n  display: block;\n  box-sizing: content-box;\n  width: 16px;\n  height: 16px;\n  border-radius: 50%;\n  background: rgba(102, 102, 102, 0.1);\n  /* 1 */\n  text-indent: 100%;\n  overflow: hidden;\n  white-space: nowrap;\n  -webkit-transition: background-color 0.2s ease-in-out;\n  transition: background-color 0.2s ease-in-out; }\n\n/* Hover + Focus */\n.uk-dotnav > * > :hover,\n.uk-dotnav > * > :focus {\n  background-color: rgba(102, 102, 102, 0.4);\n  outline: none; }\n\n/* OnClick */\n.uk-dotnav > * > :active {\n  background-color: rgba(102, 102, 102, 0.6); }\n\n/* Active */\n.uk-dotnav > .uk-active > * {\n  background-color: rgba(102, 102, 102, 0.4); }\n\n/* Modifier: 'uk-dotnav-vertical'\n ========================================================================== */\n/*\n * 1. Change direction\n * 2. Gutter\n */\n.uk-dotnav-vertical {\n  /* 1 */\n  -ms-flex-direction: column;\n  -webkit-flex-direction: column;\n  flex-direction: column;\n  /* 2 */\n  margin-left: 0;\n  margin-top: -15px; }\n\n/* 2 */\n.uk-dotnav-vertical > * {\n  padding-left: 0;\n  padding-top: 15px; }\n\n/* ========================================================================\n   Component: Accordion\n ========================================================================== */\n.uk-accordion {\n  padding: 0;\n  list-style: none; }\n\n/* Item\n ========================================================================== */\n.uk-accordion > :nth-child(n+2) {\n  margin-top: 20px; }\n\n/* Title\n ========================================================================== */\n.uk-accordion-title {\n  margin: 0;\n  font-size: 1.25rem;\n  line-height: 1.4;\n  cursor: pointer;\n  overflow: hidden; }\n  .uk-accordion-title::after {\n    content: \"\";\n    width: 1.4em;\n    height: 1.4em;\n    float: right;\n    background-image: url(\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2213%22%20height%3D%2213%22%20viewBox%3D%220%200%2013%2013%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Crect%20fill%3D%22%23666%22%20width%3D%2213%22%20height%3D%221%22%20x%3D%220%22%20y%3D%226%22%3E%3C%2Frect%3E%0A%20%20%20%20%3Crect%20fill%3D%22%23666%22%20width%3D%221%22%20height%3D%2213%22%20x%3D%226%22%20y%3D%220%22%3E%3C%2Frect%3E%0A%3C%2Fsvg%3E\");\n    background-repeat: no-repeat;\n    background-position: 50% 50%; }\n  .uk-open > .uk-accordion-title::after {\n    background-image: url(\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2213%22%20height%3D%2213%22%20viewBox%3D%220%200%2013%2013%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Crect%20fill%3D%22%23666%22%20width%3D%2213%22%20height%3D%221%22%20x%3D%220%22%20y%3D%226%22%3E%3C%2Frect%3E%0A%3C%2Fsvg%3E\"); }\n\n/* Content\n ========================================================================== */\n.uk-accordion-content {\n  margin-top: 20px; }\n\n/*\n * Micro clearfix\n */\n.uk-accordion-content:before,\n.uk-accordion-content:after {\n  content: \"\";\n  display: table; }\n\n.uk-accordion-content:after {\n  clear: both; }\n\n/*\n * Remove margin from the last-child\n */\n.uk-accordion-content > :last-child {\n  margin-bottom: 0; }\n\n/* ========================================================================\n   Component: Drop\n ========================================================================== */\n/*\n * 1. Hide by default\n * 2. Set position\n * 3. Set a default width\n */\n.uk-drop {\n  /* 1 */\n  display: none;\n  /* 2 */\n  position: absolute;\n  z-index: 1020;\n  /* 3 */\n  box-sizing: border-box;\n  width: 300px; }\n\n/* Show */\n.uk-drop.uk-open {\n  display: block; }\n\n/* Direction / Alignment modifiers\n ========================================================================== */\n/* Direction */\n[class*='uk-drop-top'] {\n  margin-top: -20px; }\n\n[class*='uk-drop-bottom'] {\n  margin-top: 20px; }\n\n[class*='uk-drop-left'] {\n  margin-left: -20px; }\n\n[class*='uk-drop-right'] {\n  margin-left: 20px; }\n\n/* Grid modifiers\n ========================================================================== */\n.uk-drop-stack .uk-drop-grid > * {\n  width: 100% !important; }\n\n/* ========================================================================\n   Component: Dropdown\n ========================================================================== */\n/*\n * 1. Hide by default\n * 2. Set position\n * 3. Set a default width\n * 4. Style\n */\n.uk-dropdown {\n  /* 1 */\n  display: none;\n  /* 2 */\n  position: absolute;\n  z-index: 1020;\n  /* 3 */\n  box-sizing: border-box;\n  min-width: 200px;\n  /* 4 */\n  padding: 25px;\n  background: #fff;\n  color: #666;\n  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15); }\n\n/* Show */\n.uk-dropdown.uk-open {\n  display: block; }\n\n/* Nav\n * Adopts `uk-nav`\n ========================================================================== */\n.uk-dropdown-nav {\n  white-space: nowrap;\n  font-size: 0.875rem; }\n\n/*\n * Items\n */\n.uk-dropdown-nav > li > a {\n  color: #999; }\n\n/* Hover + Focus + Active */\n.uk-dropdown-nav > li > a:hover,\n.uk-dropdown-nav > li > a:focus,\n.uk-dropdown-nav > li.uk-active > a {\n  color: #666; }\n\n/*\n * Header\n */\n.uk-dropdown-nav .uk-nav-header {\n  color: #333; }\n\n/*\n * Divider\n */\n.uk-dropdown-nav .uk-nav-divider {\n  border-top: 1px solid #e5e5e5; }\n\n/*\n * Sublists\n */\n.uk-dropdown-nav .uk-nav-sub a {\n  color: #999; }\n\n.uk-dropdown-nav .uk-nav-sub a:hover,\n.uk-dropdown-nav .uk-nav-sub a:focus {\n  color: #666; }\n\n/* Direction / Alignment modifiers\n ========================================================================== */\n/* Direction */\n[class*='uk-dropdown-top'] {\n  margin-top: -10px; }\n\n[class*='uk-dropdown-bottom'] {\n  margin-top: 10px; }\n\n[class*='uk-dropdown-left'] {\n  margin-left: -10px; }\n\n[class*='uk-dropdown-right'] {\n  margin-left: 10px; }\n\n/* Grid modifiers\n ========================================================================== */\n.uk-dropdown-stack .uk-dropdown-grid > * {\n  width: 100% !important; }\n\n/* ========================================================================\n   Component: Modal\n ========================================================================== */\n/*\n * 1. Hide by default\n * 2. Set position\n * 3. Allow scrolling for the modal dialog\n * 4. Horizontal padding\n * 5. Mask the background page\n * 6. Fade-in transition\n */\n.uk-modal {\n  /* 1 */\n  display: none;\n  /* 2 */\n  position: fixed;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  left: 0;\n  z-index: 1010;\n  /* 3 */\n  overflow-y: auto;\n  -webkit-overflow-scrolling: touch;\n  /* 4 */\n  padding-left: 15px;\n  padding-right: 15px;\n  /* 5 */\n  background: rgba(0, 0, 0, 0.6);\n  /* 6 */\n  opacity: 0;\n  -webkit-transition: opacity 0.15s linear;\n  transition: opacity 0.15s linear; }\n\n/* Phone landscape and bigger */\n@media (min-width: 640px) {\n  .uk-modal {\n    padding-left: 30px;\n    padding-right: 30px; } }\n\n/* Tablet landscape and bigger */\n@media (min-width: 960px) {\n  .uk-modal {\n    padding-left: 40px;\n    padding-right: 40px; } }\n\n/*\n * Open\n */\n.uk-modal.uk-open {\n  opacity: 1; }\n\n/* Page\n ========================================================================== */\n/*\n * Prevent scrollbars\n */\n.uk-modal-page {\n  overflow: hidden; }\n\n/* Dialog\n ========================================================================== */\n/*\n * 1. Create position context for caption, spinner and close button\n * 2. Dimensions\n * 3. Style\n * 4. Slide-in transition\n */\n.uk-modal-dialog {\n  /* 1 */\n  position: relative;\n  /* 2 */\n  box-sizing: border-box;\n  margin: 50px auto;\n  width: 600px;\n  max-width: 100%;\n  /* 3 */\n  background: #fff;\n  /* 4 */\n  opacity: 0;\n  -webkit-transform: translateY(-100px);\n  transform: translateY(-100px);\n  -webkit-transition: opacity 0.3s linear, -webkit-transform 0.3s ease-out;\n  transition: opacity 0.3s linear, transform 0.3s ease-out; }\n\n/* Phone portrait and smaller */\n@media (max-width: 639px) {\n  .uk-modal-dialog {\n    margin-top: 15px;\n    margin-bottom: 15px; } }\n\n/*\n * Open\n */\n.uk-open > .uk-modal-dialog {\n  opacity: 1;\n  -webkit-transform: translateY(0);\n  transform: translateY(0); }\n\n/* Size modifier\n ========================================================================== */\n/*\n * Container size\n * Take the same size as the Container component\n */\n.uk-modal-container .uk-modal-dialog {\n  width: 1200px; }\n\n/*\n * Full size\n * 1. Remove padding and background from modal\n * 2. Reset all default declarations from modal dialog\n */\n/* 1 */\n.uk-modal-full {\n  padding: 0;\n  background: none; }\n\n/* 2 */\n.uk-modal-full .uk-modal-dialog {\n  margin: 0;\n  width: 100%;\n  max-width: 100%;\n  -webkit-transform: translateY(0);\n  transform: translateY(0); }\n\n/* Lightbox modifier\n ========================================================================== */\n.uk-modal-lightbox {\n  background: rgba(0, 0, 0, 0.9); }\n\n.uk-modal-lightbox .uk-modal-dialog {\n  margin-left: 15px;\n  margin-right: 15px; }\n\n/* Sections\n ========================================================================== */\n.uk-modal-body {\n  padding: 30px 30px; }\n\n.uk-modal-header {\n  padding: 15px 30px;\n  background: #fff;\n  border-bottom: 1px solid #e5e5e5; }\n\n.uk-modal-footer {\n  padding: 15px 30px;\n  background: #fff;\n  border-top: 1px solid #e5e5e5; }\n\n/*\n * Micro clearfix\n */\n.uk-modal-body::before,\n.uk-modal-body::after,\n.uk-modal-header::before,\n.uk-modal-header::after,\n.uk-modal-footer::before,\n.uk-modal-footer::after {\n  content: \"\";\n  display: table; }\n\n.uk-modal-body::after,\n.uk-modal-header::after,\n.uk-modal-footer::after {\n  clear: both; }\n\n/*\n * Remove margin from the last-child\n */\n.uk-modal-body > :last-child,\n.uk-modal-header > :last-child,\n.uk-modal-footer > :last-child {\n  margin-bottom: 0; }\n\n/* Title\n ========================================================================== */\n.uk-modal-title {\n  font-size: 2rem;\n  line-height: 1.3; }\n\n/* Close\n * Adopts `uk-close`\n ========================================================================== */\n[class*='uk-modal-close-'] {\n  position: absolute;\n  z-index: 1010;\n  top: 10px;\n  right: 10px;\n  padding: 5px; }\n\n/*\n * Remove margin from adjacent element\n */\n[class*='uk-modal-close-']:first-child + * {\n  margin-top: 0; }\n\n/*\n * Hover\n */\n/*\n * Default\n */\n/*\n * Outside\n */\n.uk-modal-close-outside {\n  top: 0;\n  right: 0;\n  -webkit-transform: translate(100%, -100%);\n  transform: translate(100%, -100%);\n  color: white; }\n\n.uk-modal-close-outside:hover {\n  color: #fff; }\n\n/*\n * Full\n */\n.uk-modal-close-full {\n  top: 0;\n  right: 0;\n  padding: 20px;\n  background: #fff; }\n\n/* Caption\n ========================================================================== */\n.uk-modal-caption {\n  position: absolute;\n  left: 0;\n  right: 0;\n  top: 100%;\n  margin-top: 20px;\n  color: #fff;\n  text-align: center; }\n\n/* ========================================================================\n   Component: Sticky\n ========================================================================== */\n/*\n * 1. Resolve frame rate issues on devices with lower frame rates by forcing hardware acceleration\n */\n.uk-sticky-fixed {\n  z-index: 980;\n  box-sizing: border-box;\n  margin: 0 !important;\n  /* 1 */\n  -webkit-backface-visibility: hidden;\n  backface-visibility: hidden; }\n\n/*\n * Faster animations\n */\n.uk-sticky[class*='uk-animation-'] {\n  -webkit-animation-duration: 0.2s;\n  animation-duration: 0.2s; }\n\n.uk-sticky.uk-animation-reverse {\n  -webkit-animation-duration: 0.2s;\n  animation-duration: 0.2s; }\n\n/* ========================================================================\n   Component: Off-canvas\n ========================================================================== */\n/*\n * 1. Hide by default\n * 2. Set position\n */\n.uk-offcanvas {\n  /* 1 */\n  display: none;\n  /* 2 */\n  position: fixed;\n  top: 0;\n  bottom: 0;\n  left: 0;\n  z-index: 1000; }\n\n/*\n * Flip modifier\n */\n.uk-offcanvas-flip .uk-offcanvas {\n  right: 0;\n  left: auto; }\n\n/* Bar\n ========================================================================== */\n/*\n * 1. Set position\n * 2. Size and style\n * 3. Allow scrolling\n * 4. Transform\n */\n.uk-offcanvas-bar {\n  /* 1 */\n  position: absolute;\n  top: 0;\n  bottom: 0;\n  left: 0;\n  /* 2 */\n  box-sizing: border-box;\n  width: 270px;\n  padding: 20px 20px;\n  background: #222;\n  /* 3 */\n  overflow-y: auto;\n  -webkit-overflow-scrolling: touch;\n  /* 4 */\n  -webkit-transform: translateX(-100%);\n  transform: translateX(-100%); }\n\n/* Tablet landscape and bigger */\n@media (min-width: 960px) {\n  .uk-offcanvas-bar {\n    width: 350px;\n    padding: 40px 40px; } }\n\n/* Flip modifier */\n.uk-offcanvas-flip .uk-offcanvas-bar {\n  left: auto;\n  right: 0;\n  -webkit-transform: translateX(100%);\n  transform: translateX(100%); }\n\n/*\n * Open\n */\n.uk-open > .uk-offcanvas-bar {\n  -webkit-transform: translateX(0);\n  transform: translateX(0); }\n\n/*\n * Slide Animation (Used in slide and push mode)\n */\n.uk-offcanvas-bar-animation {\n  -webkit-transition: -webkit-transform 0.3s ease-out;\n  transition: transform 0.3s ease-out; }\n\n/*\n * Reveal Animation\n * 1. Set position\n * 2. Clip the bar\n * 3. Animation\n * 4. Reset transform\n */\n.uk-offcanvas-reveal {\n  /* 1 */\n  position: absolute;\n  top: 0;\n  bottom: 0;\n  left: 0;\n  /* 2 */\n  width: 0;\n  overflow: hidden;\n  /* 3 */\n  -webkit-transition: width 0.3s ease-out;\n  transition: width 0.3s ease-out; }\n\n.uk-offcanvas-reveal .uk-offcanvas-bar {\n  /* 4 */\n  -webkit-transform: translateX(0);\n  transform: translateX(0); }\n\n.uk-open > .uk-offcanvas-reveal {\n  width: 270px; }\n\n/* Tablet landscape and bigger */\n@media (min-width: 960px) {\n  .uk-open > .uk-offcanvas-reveal {\n    width: 350px; } }\n\n/*\n * Flip modifier\n */\n.uk-offcanvas-flip .uk-offcanvas-reveal {\n  right: 0;\n  left: auto; }\n\n/* Close\n * Adopts `uk-close`\n ========================================================================== */\n.uk-offcanvas-close {\n  position: absolute;\n  z-index: 1000;\n  top: 20px;\n  right: 20px;\n  padding: 5px; }\n\n/* Overlay\n ========================================================================== */\n/*\n * Overlay the whole page. Needed for the `::before`\n * 1. Using `100vw` so no modification is needed when off-canvas is flipped\n * 2. Allow for closing with swipe gesture on devices with pointer events.\n */\n.uk-offcanvas-overlay {\n  /* 1 */\n  width: 100vw;\n  /* 2 */\n  touch-action: none; }\n\n/*\n * 1. Mask the whole page\n * 2. Fade-in transition\n */\n.uk-offcanvas-overlay::before {\n  /* 1 */\n  content: \"\";\n  position: absolute;\n  top: 0;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  background: rgba(0, 0, 0, 0.1);\n  /* 2 */\n  opacity: 0;\n  -webkit-transition: opacity 0.15s linear;\n  transition: opacity 0.15s linear; }\n\n.uk-offcanvas-overlay.uk-open::before {\n  opacity: 1; }\n\n/* Container\n ========================================================================== */\n/*\n * Prevent horizontal scrollbar when the content is slide-out\n * Has to be on the `html` element too to make it work on the `body`\n */\n.uk-offcanvas-page,\n.uk-offcanvas-container {\n  overflow-x: hidden; }\n\n/*\n * Prevent all scrollbars if overlay is used\n */\n.uk-offcanvas-container-overlay {\n  overflow: hidden; }\n\n/* Content\n ========================================================================== */\n/*\n * Prepare slide-out animation (Used in reveal and push mode)\n * Using `position: left` instead of `transform` because position `fixed` elements like sticky navbars\n * lose their fixed state and behaves like `absolute` within a transformed container\n * Note: JS sets a fixed width and height so the page can slide-out without shrinking\n * 1. Smooth scrolling\n */\n.uk-offcanvas-container .uk-offcanvas-content {\n  position: relative;\n  left: 0;\n  -webkit-transition: left 0.3s ease-out;\n  transition: left 0.3s ease-out;\n  /* 1 */\n  -webkit-overflow-scrolling: touch; }\n\n/* Disable scrolling if overlay mode */\n.uk-offcanvas-overlay .uk-offcanvas-content {\n  overflow-y: hidden; }\n\n/*\n * Activate slide-out animation\n */\n:not(.uk-offcanvas-flip) > .uk-offcanvas-content-animation {\n  left: 270px; }\n\n.uk-offcanvas-flip > .uk-offcanvas-content-animation {\n  left: -270px; }\n\n/* Tablet landscape and bigger */\n@media (min-width: 960px) {\n  :not(.uk-offcanvas-flip) > .uk-offcanvas-content-animation {\n    left: 350px; }\n  .uk-offcanvas-flip > .uk-offcanvas-content-animation {\n    left: -350px; } }\n\n/* ========================================================================\n   Component: Switcher\n ========================================================================== */\n/*\n * Reset lists\n */\n.uk-switcher {\n  margin: 0;\n  padding: 0;\n  list-style: none; }\n\n/* Items\n ========================================================================== */\n/*\n * Hide not active items\n */\n.uk-switcher > :not(.uk-active) {\n  display: none; }\n\n/*\n * Remove margin from the last-child\n */\n.uk-switcher > * > :last-child {\n  margin-bottom: 0; }\n\n/* ========================================================================\n   Component: Iconnav\n ========================================================================== */\n/*\n * 1. Allow items to wrap into the next line\n * 2. Reset lists\n * 3. Gutter\n */\n.uk-iconnav {\n  display: -ms-flexbox;\n  display: -webkit-flex;\n  display: flex;\n  /* 1 */\n  -ms-flex-wrap: wrap;\n  -webkit-flex-wrap: wrap;\n  flex-wrap: wrap;\n  /* 2 */\n  margin: 0;\n  padding: 0;\n  list-style: none;\n  /* 3 */\n  margin-left: -10px; }\n\n/*\n * 1. Space is allocated solely based on content dimensions: 0 0 auto\n * 2. Gutter\n */\n.uk-iconnav > * {\n  /* 1 */\n  -ms-flex: none;\n  -webkit-flex: none;\n  flex: none;\n  /* 2 */\n  padding-left: 10px; }\n\n/* Items\n ========================================================================== */\n/*\n * Items\n * 1. Prevent gap if child element is `inline-block`, e.g. an icon\n * 2. Style\n */\n.uk-iconnav > * > * {\n  /* 1 */\n  display: block;\n  /* 2 */\n  color: #999; }\n\n/* Hover + Focus */\n.uk-iconnav > * > :hover,\n.uk-iconnav > * > :focus {\n  color: #666;\n  outline: none; }\n\n/* Active */\n.uk-iconnav > .uk-active > * {\n  color: #666; }\n\n/* Modifier: 'uk-iconnav-vertical'\n ========================================================================== */\n/*\n * 1. Change direction\n * 2. Gutter\n */\n.uk-iconnav-vertical {\n  /* 1 */\n  -ms-flex-direction: column;\n  -webkit-flex-direction: column;\n  flex-direction: column;\n  /* 2 */\n  margin-left: 0;\n  margin-top: -10px; }\n\n/* 2 */\n.uk-iconnav-vertical > * {\n  padding-left: 0;\n  padding-top: 10px; }\n\n/* ========================================================================\n   Component: Notification\n ========================================================================== */\n/*\n * 1. Set position\n * 2. Dimensions\n */\n.uk-notification {\n  /* 1 */\n  position: fixed;\n  top: 10px;\n  left: 10px;\n  z-index: 1040;\n  /* 2 */\n  box-sizing: border-box;\n  width: 350px; }\n\n/* Position modifiers\n========================================================================== */\n.uk-notification-top-right,\n.uk-notification-bottom-right {\n  left: auto;\n  right: 10px; }\n\n.uk-notification-top-center,\n.uk-notification-bottom-center {\n  left: 50%;\n  margin-left: -175px; }\n\n.uk-notification-bottom-left,\n.uk-notification-bottom-right,\n.uk-notification-bottom-center {\n  top: auto;\n  bottom: 10px; }\n\n/* Responsiveness\n========================================================================== */\n/* Phones portrait and smaller */\n@media (max-width: 639px) {\n  .uk-notification {\n    left: 10px;\n    right: 10px;\n    width: auto;\n    margin: 0; } }\n\n/* Message\n========================================================================== */\n.uk-notification-message {\n  position: relative;\n  margin-bottom: 10px;\n  padding: 15px;\n  background: #f8f8f8;\n  color: #666;\n  font-size: 1.25rem;\n  line-height: 1.4;\n  cursor: pointer; }\n\n/* Close\n * Adopts `uk-close`\n ========================================================================== */\n.uk-notification-close {\n  display: none;\n  position: absolute;\n  top: 20px;\n  right: 15px; }\n\n.uk-notification-message:hover .uk-notification-close {\n  display: block; }\n\n/* Style modifiers\n ========================================================================== */\n/*\n * Primary\n */\n.uk-notification-message-primary {\n  color: #1e87f0; }\n\n/*\n * Success\n */\n.uk-notification-message-success {\n  color: #32d296; }\n\n/*\n * Warning\n */\n.uk-notification-message-warning {\n  color: #faa05a; }\n\n/*\n * Danger\n */\n.uk-notification-message-danger {\n  color: #f0506e; }\n\n/* ========================================================================\n   Component: Tooltip\n ========================================================================== */\n/*\n * 1. Hide by default\n * 2. Position\n * 3. Dimensions\n * 4. Style\n */\n.uk-tooltip {\n  /* 1 */\n  display: none;\n  /* 2 */\n  position: absolute;\n  z-index: 1030;\n  /* 3 */\n  box-sizing: border-box;\n  max-width: 200px;\n  padding: 3px 6px;\n  /* 4 */\n  background: #666;\n  border-radius: 2px;\n  color: #fff;\n  font-size: 12px; }\n\n/* Show */\n.uk-tooltip.uk-active {\n  display: block; }\n\n/* Direction / Alignment modifiers\n ========================================================================== */\n/* Direction */\n[class*='uk-tooltip-top'] {\n  margin-top: -10px; }\n\n[class*='uk-tooltip-bottom'] {\n  margin-top: 10px; }\n\n[class*='uk-tooltip-left'] {\n  margin-left: -10px; }\n\n[class*='uk-tooltip-right'] {\n  margin-left: 10px; }\n\n/* ========================================================================\n   Component: Placeholder\n ========================================================================== */\n.uk-placeholder {\n  margin-bottom: 20px;\n  padding: 30px 30px;\n  background: transparent;\n  border: 1px dashed #e5e5e5; }\n\n/* Add margin if adjacent element */\n* + .uk-placeholder {\n  margin-top: 20px; }\n\n/*\n * Remove margin from the last-child\n */\n.uk-placeholder > :last-child {\n  margin-bottom: 0; }\n\n/* ========================================================================\n   Component: Progress\n ========================================================================== */\n/*\n * 1. Remove default style\n * 2. Behave like a block element\n * 3. Remove borders in Firefox and Edge\n * 4. Set background color for progress container in Firefox, IE11 and Edge\n * 5. Style\n */\n.uk-progress {\n  /* 1 */\n  -webkit-appearance: none;\n  -moz-appearance: none;\n  /* 2 */\n  display: block;\n  width: 100%;\n  /* 3 */\n  border: 0;\n  /* 4 */\n  background-color: #f8f8f8;\n  /* 5 */\n  margin-bottom: 20px;\n  height: 15px;\n  border-radius: 500px;\n  overflow: hidden; }\n\n/* Add margin if adjacent element */\n* + .uk-progress {\n  margin-top: 20px; }\n\n/*\n * Remove animated circles for indeterminate state in IE11 and Edge\n */\n.uk-progress:indeterminate {\n  color: transparent; }\n\n/*\n * Progress container\n * 2. Remove progress bar for indeterminate state in Firefox\n */\n.uk-progress::-webkit-progress-bar {\n  background-color: #f8f8f8;\n  border-radius: 500px;\n  overflow: hidden; }\n\n/* 2 */\n.uk-progress:indeterminate::-moz-progress-bar {\n  width: 0; }\n\n/*\n * Progress bar\n * 1. Remove right border in IE11 and Edge\n */\n.uk-progress::-webkit-progress-value {\n  background-color: #1e87f0;\n  transition: width 0.6s ease; }\n\n.uk-progress::-moz-progress-bar {\n  background-color: #1e87f0; }\n\n.uk-progress::-ms-fill {\n  background-color: #1e87f0;\n  transition: width 0.6s ease;\n  /* 1 */\n  border: 0; }\n\n/* ========================================================================\n   Component: Sortable\n ========================================================================== */\n.uk-sortable {\n  position: relative; }\n\n/*\n * Deactivate browser touch actions in IE11\n */\n.uk-sortable > * {\n  touch-action: none; }\n\n/*\n * Deactivate pointer-events on SVGs in Safari\n */\n.uk-sortable svg {\n  pointer-events: none; }\n\n/*\n * Remove margin from the last-child\n */\n.uk-sortable > :last-child {\n  margin-bottom: 0; }\n\n/* Drag\n ========================================================================== */\n.uk-sortable-drag {\n  position: absolute !important;\n  z-index: 1050 !important;\n  pointer-events: none; }\n\n/* Placeholder\n ========================================================================== */\n.uk-sortable-placeholder {\n  opacity: 0; }\n\n/* Empty modifier\n ========================================================================== */\n.uk-sortable-empty {\n  min-height: 50px; }\n\n/* Handle\n ========================================================================== */\n/* Hover */\n.uk-sortable-handle:hover {\n  cursor: move; }\n\n/* ========================================================================\n   Component: Animation\n ========================================================================== */\n[class*='uk-animation-'] {\n  -webkit-animation-duration: 0.5s;\n  animation-duration: 0.5s;\n  -webkit-animation-timing-function: ease-out;\n  animation-timing-function: ease-out;\n  -webkit-animation-fill-mode: both;\n  animation-fill-mode: both; }\n\n/* Direction modifier\n ========================================================================== */\n.uk-animation-reverse {\n  -webkit-animation-direction: reverse;\n  animation-direction: reverse;\n  -webkit-animation-timing-function: ease-in;\n  animation-timing-function: ease-in; }\n\n/* Animations for scrollspy\n ========================================================================== */\n/*\n * Fade\n */\n.uk-animation-fade {\n  -webkit-animation-name: uk-fade;\n  animation-name: uk-fade;\n  -webkit-animation-duration: 0.8s;\n  animation-duration: 0.8s;\n  -webkit-animation-timing-function: linear;\n  animation-timing-function: linear; }\n\n/*\n * Scale\n */\n.uk-animation-scale-up {\n  -webkit-animation-name: uk-fade-scale-02;\n  animation-name: uk-fade-scale-02; }\n\n.uk-animation-scale-down {\n  -webkit-animation-name: uk-fade-scale-18;\n  animation-name: uk-fade-scale-18; }\n\n/*\n * Slide\n */\n.uk-animation-slide-top {\n  -webkit-animation-name: uk-fade-top;\n  animation-name: uk-fade-top; }\n\n.uk-animation-slide-bottom {\n  -webkit-animation-name: uk-fade-bottom;\n  animation-name: uk-fade-bottom; }\n\n.uk-animation-slide-left {\n  -webkit-animation-name: uk-fade-left;\n  animation-name: uk-fade-left; }\n\n.uk-animation-slide-right {\n  -webkit-animation-name: uk-fade-right;\n  animation-name: uk-fade-right; }\n\n/*\n * Slide Small\n */\n.uk-animation-slide-top-small {\n  -webkit-animation-name: uk-fade-top-small;\n  animation-name: uk-fade-top-small; }\n\n.uk-animation-slide-bottom-small {\n  -webkit-animation-name: uk-fade-bottom-small;\n  animation-name: uk-fade-bottom-small; }\n\n.uk-animation-slide-left-small {\n  -webkit-animation-name: uk-fade-left-small;\n  animation-name: uk-fade-left-small; }\n\n.uk-animation-slide-right-small {\n  -webkit-animation-name: uk-fade-right-small;\n  animation-name: uk-fade-right-small; }\n\n/*\n * Slide Medium\n */\n.uk-animation-slide-top-medium {\n  -webkit-animation-name: uk-fade-top-medium;\n  animation-name: uk-fade-top-medium; }\n\n.uk-animation-slide-bottom-medium {\n  -webkit-animation-name: uk-fade-bottom-medium;\n  animation-name: uk-fade-bottom-medium; }\n\n.uk-animation-slide-left-medium {\n  -webkit-animation-name: uk-fade-left-medium;\n  animation-name: uk-fade-left-medium; }\n\n.uk-animation-slide-right-medium {\n  -webkit-animation-name: uk-fade-right-medium;\n  animation-name: uk-fade-right-medium; }\n\n/*\n * Kenburns\n */\n.uk-animation-kenburns {\n  -webkit-animation-name: uk-scale-kenburns;\n  animation-name: uk-scale-kenburns;\n  -webkit-animation-duration: 15s;\n  animation-duration: 15s; }\n\n/*\n * Shake\n */\n.uk-animation-shake {\n  -webkit-animation-name: uk-shake;\n  animation-name: uk-shake; }\n\n/* Duration modifier\n ========================================================================== */\n.uk-animation-fast {\n  -webkit-animation-duration: 0.1s;\n  animation-duration: 0.1s; }\n\n/* Enable animation only on hover\n========================================================================== */\n/*\n * Note: Firefox and IE needs this because animations are not triggered when switching between display `none` and `block`\n */\n.uk-animation-toggle:not(:hover):not(.uk-hover) [class*='uk-animation-'] {\n  -webkit-animation-name: none;\n  animation-name: none; }\n\n/* Keyframes used by animation classes\n ========================================================================== */\n/*\n * Fade\n */\n@-webkit-keyframes uk-fade {\n  0% {\n    opacity: 0; }\n  100% {\n    opacity: 1; } }\n\n@keyframes uk-fade {\n  0% {\n    opacity: 0; }\n  100% {\n    opacity: 1; } }\n\n/*\n * Slide Top\n */\n@-webkit-keyframes uk-fade-top {\n  0% {\n    opacity: 0;\n    -webkit-transform: translateY(-100%); }\n  100% {\n    opacity: 1;\n    -webkit-transform: translateY(0); } }\n\n@keyframes uk-fade-top {\n  0% {\n    opacity: 0;\n    transform: translateY(-100%); }\n  100% {\n    opacity: 1;\n    transform: translateY(0); } }\n\n/*\n * Slide Bottom\n */\n@-webkit-keyframes uk-fade-bottom {\n  0% {\n    opacity: 0;\n    -webkit-transform: translateY(100%); }\n  100% {\n    opacity: 1;\n    -webkit-transform: translateY(0); } }\n\n@keyframes uk-fade-bottom {\n  0% {\n    opacity: 0;\n    transform: translateY(100%); }\n  100% {\n    opacity: 1;\n    transform: translateY(0); } }\n\n/*\n * Slide Left\n */\n@-webkit-keyframes uk-fade-left {\n  0% {\n    opacity: 0;\n    -webkit-transform: translateX(-100%); }\n  100% {\n    opacity: 1;\n    -webkit-transform: translateX(0); } }\n\n@keyframes uk-fade-left {\n  0% {\n    opacity: 0;\n    transform: translateX(-100%); }\n  100% {\n    opacity: 1;\n    transform: translateX(0); } }\n\n/*\n * Slide Right\n */\n@-webkit-keyframes uk-fade-right {\n  0% {\n    opacity: 0;\n    -webkit-transform: translateX(100%); }\n  100% {\n    opacity: 1;\n    -webkit-transform: translateX(0); } }\n\n@keyframes uk-fade-right {\n  0% {\n    opacity: 0;\n    transform: translateX(100%); }\n  100% {\n    opacity: 1;\n    transform: translateX(0); } }\n\n/*\n * Slide Top Small\n */\n@-webkit-keyframes uk-fade-top-small {\n  0% {\n    opacity: 0;\n    -webkit-transform: translateY(-10px); }\n  100% {\n    opacity: 1;\n    -webkit-transform: translateY(0); } }\n\n@keyframes uk-fade-top-small {\n  0% {\n    opacity: 0;\n    transform: translateY(-10px); }\n  100% {\n    opacity: 1;\n    transform: translateY(0); } }\n\n/*\n * Slide Bottom Small\n */\n@-webkit-keyframes uk-fade-bottom-small {\n  0% {\n    opacity: 0;\n    -webkit-transform: translateY(10px); }\n  100% {\n    opacity: 1;\n    -webkit-transform: translateY(0); } }\n\n@keyframes uk-fade-bottom-small {\n  0% {\n    opacity: 0;\n    transform: translateY(10px); }\n  100% {\n    opacity: 1;\n    transform: translateY(0); } }\n\n/*\n * Slide Left Small\n */\n@-webkit-keyframes uk-fade-left-small {\n  0% {\n    opacity: 0;\n    -webkit-transform: translateX(-10px); }\n  100% {\n    opacity: 1;\n    -webkit-transform: translateX(0); } }\n\n@keyframes uk-fade-left-small {\n  0% {\n    opacity: 0;\n    transform: translateX(-10px); }\n  100% {\n    opacity: 1;\n    transform: translateX(0); } }\n\n/*\n * Slide Right Small\n */\n@-webkit-keyframes uk-fade-right-small {\n  0% {\n    opacity: 0;\n    -webkit-transform: translateX(10px); }\n  100% {\n    opacity: 1;\n    -webkit-transform: translateX(0); } }\n\n@keyframes uk-fade-right-small {\n  0% {\n    opacity: 0;\n    transform: translateX(10px); }\n  100% {\n    opacity: 1;\n    transform: translateX(0); } }\n\n/*\n * Slide Top Medium\n */\n@-webkit-keyframes uk-fade-top-medium {\n  0% {\n    opacity: 0;\n    -webkit-transform: translateY(-50px); }\n  100% {\n    opacity: 1;\n    -webkit-transform: translateY(0); } }\n\n@keyframes uk-fade-top-medium {\n  0% {\n    opacity: 0;\n    transform: translateY(-50px); }\n  100% {\n    opacity: 1;\n    transform: translateY(0); } }\n\n/*\n * Slide Bottom Medium\n */\n@-webkit-keyframes uk-fade-bottom-medium {\n  0% {\n    opacity: 0;\n    -webkit-transform: translateY(50px); }\n  100% {\n    opacity: 1;\n    -webkit-transform: translateY(0); } }\n\n@keyframes uk-fade-bottom-medium {\n  0% {\n    opacity: 0;\n    transform: translateY(50px); }\n  100% {\n    opacity: 1;\n    transform: translateY(0); } }\n\n/*\n * Slide Left Medium\n */\n@-webkit-keyframes uk-fade-left-medium {\n  0% {\n    opacity: 0;\n    -webkit-transform: translateX(-50px); }\n  100% {\n    opacity: 1;\n    -webkit-transform: translateX(0); } }\n\n@keyframes uk-fade-left-medium {\n  0% {\n    opacity: 0;\n    transform: translateX(-50px); }\n  100% {\n    opacity: 1;\n    transform: translateX(0); } }\n\n/*\n * Slide Right Medium\n */\n@-webkit-keyframes uk-fade-right-medium {\n  0% {\n    opacity: 0;\n    -webkit-transform: translateX(50px); }\n  100% {\n    opacity: 1;\n    -webkit-transform: translateX(0); } }\n\n@keyframes uk-fade-right-medium {\n  0% {\n    opacity: 0;\n    transform: translateX(50px); }\n  100% {\n    opacity: 1;\n    transform: translateX(0); } }\n\n/*\n * Scale Up\n */\n@-webkit-keyframes uk-fade-scale-02 {\n  0% {\n    opacity: 0;\n    -webkit-transform: scale(0.2); }\n  100% {\n    opacity: 1;\n    -webkit-transform: scale(1); } }\n\n@keyframes uk-fade-scale-02 {\n  0% {\n    opacity: 0;\n    transform: scale(0.2); }\n  100% {\n    opacity: 1;\n    transform: scale(1); } }\n\n/*\n * Scale Down\n */\n@-webkit-keyframes uk-fade-scale-18 {\n  0% {\n    opacity: 0;\n    -webkit-transform: scale(1.8); }\n  100% {\n    opacity: 1;\n    -webkit-transform: scale(1); } }\n\n@keyframes uk-fade-scale-18 {\n  0% {\n    opacity: 0;\n    transform: scale(1.8); }\n  100% {\n    opacity: 1;\n    transform: scale(1); } }\n\n/*\n * Kenburns\n */\n@-webkit-keyframes uk-scale-kenburns {\n  0% {\n    -webkit-transform: scale(1); }\n  100% {\n    -webkit-transform: scale(1.2); } }\n\n@keyframes uk-scale-kenburns {\n  0% {\n    transform: scale(1); }\n  100% {\n    transform: scale(1.2); } }\n\n/*\n * Shake\n */\n@-webkit-keyframes uk-shake {\n  0%, 100% {\n    -webkit-transform: translateX(0); }\n  10% {\n    -webkit-transform: translateX(-9px); }\n  20% {\n    -webkit-transform: translateX(8px); }\n  30% {\n    -webkit-transform: translateX(-7px); }\n  40% {\n    -webkit-transform: translateX(6px); }\n  50% {\n    -webkit-transform: translateX(-5px); }\n  60% {\n    -webkit-transform: translateX(4px); }\n  70% {\n    -webkit-transform: translateX(-3px); }\n  80% {\n    -webkit-transform: translateX(2px); }\n  90% {\n    -webkit-transform: translateX(-1px); } }\n\n@keyframes uk-shake {\n  0%, 100% {\n    transform: translateX(0); }\n  10% {\n    transform: translateX(-9px); }\n  20% {\n    transform: translateX(8px); }\n  30% {\n    transform: translateX(-7px); }\n  40% {\n    transform: translateX(6px); }\n  50% {\n    transform: translateX(-5px); }\n  60% {\n    transform: translateX(4px); }\n  70% {\n    transform: translateX(-3px); }\n  80% {\n    transform: translateX(2px); }\n  90% {\n    transform: translateX(-1px); } }\n\n/* ========================================================================\n   Component: Width\n ========================================================================== */\n/* Equal child widths\n ========================================================================== */\n[class*='uk-child-width'] > * {\n  box-sizing: border-box;\n  width: 100%; }\n\n.uk-child-width-1-2 > * {\n  width: 50%; }\n\n.uk-child-width-1-3 > * {\n  width: calc(100% * 1 / 3.001); }\n\n.uk-child-width-1-4 > * {\n  width: 25%; }\n\n.uk-child-width-1-5 > * {\n  width: 20%; }\n\n.uk-child-width-1-6 > * {\n  width: calc(100% * 1 / 6.001); }\n\n.uk-child-width-auto > * {\n  width: auto; }\n\n/*\n *    Instead of 0, 1px is needed to make cell wrap into next row if predecessor is 100% wide\n *    and the grid gutter is 0 pixels wide\n */\n.uk-child-width-expand > * {\n  width: 1px; }\n\n/*\n * 1. Make `width: 1px` work, because according to the spec flex items won’t shrink\n *    below their minimum content size. To change this, set the min-width.\n *    Only needed for Firefox. All other browsers ignore this.\n *\n * 2. `width` is ignored when wrapping flex items in Safari\n *    https://github.com/philipwalton/flexbugs#11-min-and-max-size-declarations-are-ignored-when-wrapping-flex-items\n */\n.uk-child-width-expand > :not([class*='uk-width']) {\n  -ms-flex: 1;\n  -webkit-flex: 1;\n  flex: 1;\n  /* 1 */\n  min-width: 0;\n  /* 2 */\n  flex-basis: 1px; }\n\n/* Phone landscape and bigger */\n@media (min-width: 640px) {\n  .uk-child-width-1-1\\@s > * {\n    width: 100%; }\n  .uk-child-width-1-2\\@s > * {\n    width: 50%; }\n  .uk-child-width-1-3\\@s > * {\n    width: calc(100% * 1 / 3.001); }\n  .uk-child-width-1-4\\@s > * {\n    width: 25%; }\n  .uk-child-width-1-5\\@s > * {\n    width: 20%; }\n  .uk-child-width-1-6\\@s > * {\n    width: calc(100% * 1 / 6.001); }\n  .uk-child-width-auto\\@s > * {\n    width: auto; }\n  .uk-child-width-expand\\@s > * {\n    width: 1px; }\n  .uk-child-width-expand\\@s > :not([class*='uk-width']) {\n    -ms-flex: 1;\n    -webkit-flex: 1;\n    flex: 1;\n    min-width: 0;\n    flex-basis: 1px; } }\n\n/* Tablet landscape and bigger */\n@media (min-width: 960px) {\n  .uk-child-width-1-1\\@m > * {\n    width: 100%; }\n  .uk-child-width-1-2\\@m > * {\n    width: 50%; }\n  .uk-child-width-1-3\\@m > * {\n    width: calc(100% * 1 / 3.001); }\n  .uk-child-width-1-4\\@m > * {\n    width: 25%; }\n  .uk-child-width-1-5\\@m > * {\n    width: 20%; }\n  .uk-child-width-1-6\\@m > * {\n    width: calc(100% * 1 / 6.001); }\n  .uk-child-width-auto\\@m > * {\n    width: auto; }\n  .uk-child-width-expand\\@m > * {\n    width: 1px; }\n  .uk-child-width-expand\\@m > :not([class*='uk-width']) {\n    -ms-flex: 1;\n    -webkit-flex: 1;\n    flex: 1;\n    min-width: 0;\n    flex-basis: 1px; } }\n\n/* Desktop and bigger */\n@media (min-width: 1200px) {\n  .uk-child-width-1-1\\@l > * {\n    width: 100%; }\n  .uk-child-width-1-2\\@l > * {\n    width: 50%; }\n  .uk-child-width-1-3\\@l > * {\n    width: calc(100% * 1 / 3.001); }\n  .uk-child-width-1-4\\@l > * {\n    width: 25%; }\n  .uk-child-width-1-5\\@l > * {\n    width: 20%; }\n  .uk-child-width-1-6\\@l > * {\n    width: calc(100% * 1 / 6.001); }\n  .uk-child-width-auto\\@l > * {\n    width: auto; }\n  .uk-child-width-expand\\@l > * {\n    width: 1px; }\n  .uk-child-width-expand\\@l > :not([class*='uk-width']) {\n    -ms-flex: 1;\n    -webkit-flex: 1;\n    flex: 1;\n    min-width: 0;\n    flex-basis: 1px; } }\n\n/* Large screen and bigger */\n@media (min-width: 1600px) {\n  .uk-child-width-1-1\\@xl > * {\n    width: 100%; }\n  .uk-child-width-1-2\\@xl > * {\n    width: 50%; }\n  .uk-child-width-1-3\\@xl > * {\n    width: calc(100% * 1 / 3.001); }\n  .uk-child-width-1-4\\@xl > * {\n    width: 25%; }\n  .uk-child-width-1-5\\@xl > * {\n    width: 20%; }\n  .uk-child-width-1-6\\@xl > * {\n    width: calc(100% * 1 / 6.001); }\n  .uk-child-width-auto\\@xl > * {\n    width: auto; }\n  .uk-child-width-expand\\@xl > * {\n    width: 1px; }\n  .uk-child-width-expand\\@xl > :not([class*='uk-width']) {\n    -ms-flex: 1;\n    -webkit-flex: 1;\n    flex: 1;\n    min-width: 0;\n    flex-basis: 1px; } }\n\n/* Single Widths\n ========================================================================== */\n/*\n * 1. `max-width` is needed for the pixel-based classes\n */\n[class*='uk-width'] {\n  box-sizing: border-box;\n  width: 100%;\n  /* 1 */\n  max-width: 100%; }\n\n/* Halves */\n.uk-width-1-2 {\n  width: 50%; }\n\n/* Thirds */\n.uk-width-1-3 {\n  width: calc(100% * 1 / 3.001); }\n\n.uk-width-2-3 {\n  width: calc(100% * 2 / 3.001); }\n\n/* Quarters */\n.uk-width-1-4 {\n  width: 25%; }\n\n.uk-width-3-4 {\n  width: 75%; }\n\n/* Fifths */\n.uk-width-1-5 {\n  width: 20%; }\n\n.uk-width-2-5 {\n  width: 40%; }\n\n.uk-width-3-5 {\n  width: 60%; }\n\n.uk-width-4-5 {\n  width: 80%; }\n\n/* Sixths */\n.uk-width-1-6 {\n  width: calc(100% * 1 / 6.001); }\n\n.uk-width-5-6 {\n  width: calc(100% * 5 / 6.001); }\n\n/* Pixel */\n.uk-width-small {\n  width: 150px; }\n\n.uk-width-medium {\n  width: 300px; }\n\n.uk-width-large {\n  width: 450px; }\n\n.uk-width-xlarge {\n  width: 600px; }\n\n.uk-width-xxlarge {\n  width: 750px; }\n\n/* Auto */\n.uk-width-auto {\n  width: auto; }\n\n/* Expand */\n.uk-width-expand {\n  width: 1px;\n  -ms-flex: 1;\n  -webkit-flex: 1;\n  flex: 1;\n  min-width: 0;\n  flex-basis: 1px; }\n\n/* Phone landscape and bigger */\n@media (min-width: 640px) {\n  /* Whole */\n  .uk-width-1-1\\@s {\n    width: 100%; }\n  /* Halves */\n  .uk-width-1-2\\@s {\n    width: 50%; }\n  /* Thirds */\n  .uk-width-1-3\\@s {\n    width: calc(100% * 1 / 3.001); }\n  .uk-width-2-3\\@s {\n    width: calc(100% * 2 / 3.001); }\n  /* Quarters */\n  .uk-width-1-4\\@s {\n    width: 25%; }\n  .uk-width-3-4\\@s {\n    width: 75%; }\n  /* Fifths */\n  .uk-width-1-5\\@s {\n    width: 20%; }\n  .uk-width-2-5\\@s {\n    width: 40%; }\n  .uk-width-3-5\\@s {\n    width: 60%; }\n  .uk-width-4-5\\@s {\n    width: 80%; }\n  /* Sixths */\n  .uk-width-1-6\\@s {\n    width: calc(100% * 1 / 6.001); }\n  .uk-width-5-6\\@s {\n    width: calc(100% * 5 / 6.001); }\n  /* Pixel */\n  .uk-width-small\\@s {\n    width: 150px; }\n  .uk-width-medium\\@s {\n    width: 300px; }\n  .uk-width-large\\@s {\n    width: 450px; }\n  .uk-width-xlarge\\@s {\n    width: 600px; }\n  .uk-width-xxlarge\\@s {\n    width: 750px; }\n  /* Auto */\n  .uk-width-auto\\@s {\n    width: auto; }\n  /* Expand */\n  .uk-width-expand\\@s {\n    width: 1px;\n    -ms-flex: 1;\n    -webkit-flex: 1;\n    flex: 1;\n    min-width: 0;\n    flex-basis: 1px; } }\n\n/* Tablet landscape and bigger */\n@media (min-width: 960px) {\n  /* Whole */\n  .uk-width-1-1\\@m {\n    width: 100%; }\n  /* Halves */\n  .uk-width-1-2\\@m {\n    width: 50%; }\n  /* Thirds */\n  .uk-width-1-3\\@m {\n    width: calc(100% * 1 / 3.001); }\n  .uk-width-2-3\\@m {\n    width: calc(100% * 2 / 3.001); }\n  /* Quarters */\n  .uk-width-1-4\\@m {\n    width: 25%; }\n  .uk-width-3-4\\@m {\n    width: 75%; }\n  /* Fifths */\n  .uk-width-1-5\\@m {\n    width: 20%; }\n  .uk-width-2-5\\@m {\n    width: 40%; }\n  .uk-width-3-5\\@m {\n    width: 60%; }\n  .uk-width-4-5\\@m {\n    width: 80%; }\n  /* Sixths */\n  .uk-width-1-6\\@m {\n    width: calc(100% * 1 / 6.001); }\n  .uk-width-5-6\\@m {\n    width: calc(100% * 5 / 6.001); }\n  /* Pixel */\n  .uk-width-small\\@m {\n    width: 150px; }\n  .uk-width-medium\\@m {\n    width: 300px; }\n  .uk-width-large\\@m {\n    width: 450px; }\n  .uk-width-xlarge\\@m {\n    width: 600px; }\n  .uk-width-xxlarge\\@m {\n    width: 750px; }\n  /* Auto */\n  .uk-width-auto\\@m {\n    width: auto; }\n  /* Expand */\n  .uk-width-expand\\@m {\n    width: 1px;\n    -ms-flex: 1;\n    -webkit-flex: 1;\n    flex: 1;\n    min-width: 0;\n    flex-basis: 1px; } }\n\n/* Desktop and bigger */\n@media (min-width: 1200px) {\n  /* Whole */\n  .uk-width-1-1\\@l {\n    width: 100%; }\n  /* Halves */\n  .uk-width-1-2\\@l {\n    width: 50%; }\n  /* Thirds */\n  .uk-width-1-3\\@l {\n    width: calc(100% * 1 / 3.001); }\n  .uk-width-2-3\\@l {\n    width: calc(100% * 2 / 3.001); }\n  /* Quarters */\n  .uk-width-1-4\\@l {\n    width: 25%; }\n  .uk-width-3-4\\@l {\n    width: 75%; }\n  /* Fifths */\n  .uk-width-1-5\\@l {\n    width: 20%; }\n  .uk-width-2-5\\@l {\n    width: 40%; }\n  .uk-width-3-5\\@l {\n    width: 60%; }\n  .uk-width-4-5\\@l {\n    width: 80%; }\n  /* Sixths */\n  .uk-width-1-6\\@l {\n    width: calc(100% * 1 / 6.001); }\n  .uk-width-5-6\\@l {\n    width: calc(100% * 5 / 6.001); }\n  /* Pixel */\n  .uk-width-small\\@l {\n    width: 150px; }\n  .uk-width-medium\\@l {\n    width: 300px; }\n  .uk-width-large\\@l {\n    width: 450px; }\n  .uk-width-xlarge\\@l {\n    width: 600px; }\n  .uk-width-xxlarge\\@l {\n    width: 750px; }\n  /* Auto */\n  .uk-width-auto\\@l {\n    width: auto; }\n  /* Expand */\n  .uk-width-expand\\@l {\n    width: 1px;\n    -ms-flex: 1;\n    -webkit-flex: 1;\n    flex: 1;\n    min-width: 0;\n    flex-basis: 1px; } }\n\n/* Large screen and bigger */\n@media (min-width: 1600px) {\n  /* Whole */\n  .uk-width-1-1\\@xl {\n    width: 100%; }\n  /* Halves */\n  .uk-width-1-2\\@xl {\n    width: 50%; }\n  /* Thirds */\n  .uk-width-1-3\\@xl {\n    width: calc(100% * 1 / 3.001); }\n  .uk-width-2-3\\@xl {\n    width: calc(100% * 2 / 3.001); }\n  /* Quarters */\n  .uk-width-1-4\\@xl {\n    width: 25%; }\n  .uk-width-3-4\\@xl {\n    width: 75%; }\n  /* Fifths */\n  .uk-width-1-5\\@xl {\n    width: 20%; }\n  .uk-width-2-5\\@xl {\n    width: 40%; }\n  .uk-width-3-5\\@xl {\n    width: 60%; }\n  .uk-width-4-5\\@xl {\n    width: 80%; }\n  /* Sixths */\n  .uk-width-1-6\\@xl {\n    width: calc(100% * 1 / 6.001); }\n  .uk-width-5-6\\@xl {\n    width: calc(100% * 5 / 6.001); }\n  /* Pixel */\n  .uk-width-small\\@xl {\n    width: 150px; }\n  .uk-width-medium\\@xl {\n    width: 300px; }\n  .uk-width-large\\@xl {\n    width: 450px; }\n  .uk-width-xlarge\\@xl {\n    width: 600px; }\n  .uk-width-xxlarge\\@xl {\n    width: 750px; }\n  /* Auto */\n  .uk-width-auto\\@xl {\n    width: auto; }\n  /* Expand */\n  .uk-width-expand\\@xl {\n    width: 1px;\n    -ms-flex: 1;\n    -webkit-flex: 1;\n    flex: 1;\n    min-width: 0;\n    flex-basis: 1px; } }\n\n/* ========================================================================\n   Component: Text\n ========================================================================== */\n/* Style modifiers\n ========================================================================== */\n.uk-text-lead {\n  font-size: 1.5rem;\n  line-height: 1.5;\n  color: #333; }\n\n.uk-text-meta {\n  font-size: 0.875rem;\n  line-height: 1.4;\n  color: #999; }\n  .uk-text-meta a {\n    color: #999; }\n  .uk-text-meta a:hover {\n    color: #666;\n    text-decoration: none; }\n\n/* Size modifiers\n ========================================================================== */\n.uk-text-small {\n  font-size: 0.875rem;\n  line-height: 1.5; }\n\n.uk-text-large {\n  font-size: 1.5rem;\n  line-height: 1.5; }\n\n/* Weight modifier\n ========================================================================== */\n.uk-text-bold {\n  font-weight: bolder; }\n\n/* Transform modifier\n ========================================================================== */\n.uk-text-uppercase {\n  text-transform: uppercase !important; }\n\n.uk-text-capitalize {\n  text-transform: capitalize !important; }\n\n.uk-text-lowercase {\n  text-transform: lowercase !important; }\n\n/* Color modifiers\n ========================================================================== */\n.uk-text-muted {\n  color: #999 !important; }\n\n.uk-text-primary {\n  color: #1e87f0 !important; }\n\n.uk-text-success {\n  color: #32d296 !important; }\n\n.uk-text-warning {\n  color: #faa05a !important; }\n\n.uk-text-danger {\n  color: #f0506e !important; }\n\n/* Background modifier\n ========================================================================== */\n/*\n * 1. The background clips to the foreground text. Works in Chrome, Firefox, Safari, Edge and Opera\n *    Default color is set to transparent\n * 2. Container fits the text\n * 3. Fallback color for IE11\n */\n.uk-text-background {\n  /* 1 */\n  -webkit-background-clip: text;\n  -webkit-text-fill-color: transparent;\n  /* 2 */\n  display: inline-block;\n  /* 3 */\n  color: #1e87f0 !important; }\n\n@supports (-webkit-background-clip: text) {\n  .uk-text-background {\n    background-color: #1e87f0; } }\n\n/* Alignment modifiers\n ========================================================================== */\n.uk-text-left {\n  text-align: left !important; }\n\n.uk-text-right {\n  text-align: right !important; }\n\n.uk-text-center {\n  text-align: center !important; }\n\n.uk-text-justify {\n  text-align: justify !important; }\n\n/* Phone landscape and bigger */\n@media (min-width: 640px) {\n  .uk-text-left\\@s {\n    text-align: left !important; }\n  .uk-text-right\\@s {\n    text-align: right !important; }\n  .uk-text-center\\@s {\n    text-align: center !important; } }\n\n/* Tablet landscape and bigger */\n@media (min-width: 960px) {\n  .uk-text-left\\@m {\n    text-align: left !important; }\n  .uk-text-right\\@m {\n    text-align: right !important; }\n  .uk-text-center\\@m {\n    text-align: center !important; } }\n\n/* Desktop and bigger */\n@media (min-width: 1200px) {\n  .uk-text-left\\@l {\n    text-align: left !important; }\n  .uk-text-right\\@l {\n    text-align: right !important; }\n  .uk-text-center\\@l {\n    text-align: center !important; } }\n\n/* Large screen and bigger */\n@media (min-width: 1600px) {\n  .uk-text-left\\@xl {\n    text-align: left !important; }\n  .uk-text-right\\@xl {\n    text-align: right !important; }\n  .uk-text-center\\@xl {\n    text-align: center !important; } }\n\n/*\n * Vertical\n */\n.uk-text-top {\n  vertical-align: top !important; }\n\n.uk-text-middle {\n  vertical-align: middle !important; }\n\n.uk-text-bottom {\n  vertical-align: bottom !important; }\n\n.uk-text-baseline {\n  vertical-align: baseline !important; }\n\n/* Wrap modifiers\n ========================================================================== */\n/*\n * Prevent text from wrapping onto multiple lines\n */\n.uk-text-nowrap {\n  white-space: nowrap; }\n\n/*\n * 1. Make sure a max-width is set after which truncation can occur\n * 2. Prevent text from wrapping onto multiple lines, and truncate with an ellipsis\n * 3. Fix for table cells\n */\n.uk-text-truncate {\n  /* 1 */\n  max-width: 100%;\n  /* 2 */\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap; }\n\n/* 2 */\nth.uk-text-truncate,\ntd.uk-text-truncate {\n  max-width: 0; }\n\n/*\n * 1. Wrap long words onto the next line and break them if they are too long to fit\n * 2. Legacy `word-wrap` as fallback for `overflow-wrap`\n * 3. Add a hyphen where the word breaks\n * 4. Fix `overflow-wrap` which doesn't work with table cells in Chrome, Opera, IE11 and Edge\n *    Must use `break-all` to support IE11 and Edge\n */\n.uk-text-break {\n  /* 1 */\n  overflow-wrap: break-word;\n  /* 2 */\n  word-wrap: break-word;\n  /* 3 */\n  -webkit-hyphens: auto;\n  -ms-hyphens: auto;\n  -moz-hyphens: auto;\n  hyphens: auto; }\n\n/* 4 */\nth.uk-text-break,\ntd.uk-text-break {\n  word-break: break-all; }\n\n/* ========================================================================\n   Component: Column\n ========================================================================== */\n[class*='uk-column-'] {\n  -webkit-column-gap: 30px;\n  -moz-column-gap: 30px;\n  column-gap: 30px; }\n\n/* Desktop and bigger */\n@media (min-width: 1200px) {\n  [class*='uk-column-'] {\n    -webkit-column-gap: 40px;\n    -moz-column-gap: 40px;\n    column-gap: 40px; } }\n\n/*\n * Fix image 1px line wrapping into the next column in Chrome\n */\n[class*='uk-column-'] img {\n  transform: translate3d(0, 0, 0); }\n\n/* Divider\n ========================================================================== */\n/*\n * 1. Double the column gap\n */\n.uk-column-divider {\n  -webkit-column-rule: 1px solid #e5e5e5;\n  -moz-column-rule: 1px solid #e5e5e5;\n  column-rule: 1px solid #e5e5e5;\n  /* 1 */\n  -webkit-column-gap: 60px;\n  -moz-column-gap: 60px;\n  column-gap: 60px; }\n\n/* Desktop and bigger */\n@media (min-width: 1200px) {\n  .uk-column-divider {\n    -webkit-column-gap: 80px;\n    -moz-column-gap: 80px;\n    column-gap: 80px; } }\n\n/* Width modifiers\n ========================================================================== */\n.uk-column-1-2 {\n  -webkit-column-count: 2;\n  -moz-column-count: 2;\n  column-count: 2; }\n\n.uk-column-1-3 {\n  -webkit-column-count: 3;\n  -moz-column-count: 3;\n  column-count: 3; }\n\n.uk-column-1-4 {\n  -webkit-column-count: 4;\n  -moz-column-count: 4;\n  column-count: 4; }\n\n.uk-column-1-5 {\n  -webkit-column-count: 5;\n  -moz-column-count: 5;\n  column-count: 5; }\n\n.uk-column-1-6 {\n  -webkit-column-count: 6;\n  -moz-column-count: 6;\n  column-count: 6; }\n\n/* Phone landscape and bigger */\n@media (min-width: 640px) {\n  .uk-column-1-2\\@s {\n    -webkit-column-count: 2;\n    -moz-column-count: 2;\n    column-count: 2; }\n  .uk-column-1-3\\@s {\n    -webkit-column-count: 3;\n    -moz-column-count: 3;\n    column-count: 3; }\n  .uk-column-1-4\\@s {\n    -webkit-column-count: 4;\n    -moz-column-count: 4;\n    column-count: 4; }\n  .uk-column-1-5\\@s {\n    -webkit-column-count: 5;\n    -moz-column-count: 5;\n    column-count: 5; }\n  .uk-column-1-6\\@s {\n    -webkit-column-count: 6;\n    -moz-column-count: 6;\n    column-count: 6; } }\n\n/* Tablet landscape and bigger */\n@media (min-width: 960px) {\n  .uk-column-1-2\\@m {\n    -webkit-column-count: 2;\n    -moz-column-count: 2;\n    column-count: 2; }\n  .uk-column-1-3\\@m {\n    -webkit-column-count: 3;\n    -moz-column-count: 3;\n    column-count: 3; }\n  .uk-column-1-4\\@m {\n    -webkit-column-count: 4;\n    -moz-column-count: 4;\n    column-count: 4; }\n  .uk-column-1-5\\@m {\n    -webkit-column-count: 5;\n    -moz-column-count: 5;\n    column-count: 5; }\n  .uk-column-1-6\\@m {\n    -webkit-column-count: 6;\n    -moz-column-count: 6;\n    column-count: 6; } }\n\n/* Desktop and bigger */\n@media (min-width: 1200px) {\n  .uk-column-1-2\\@l {\n    -webkit-column-count: 2;\n    -moz-column-count: 2;\n    column-count: 2; }\n  .uk-column-1-3\\@l {\n    -webkit-column-count: 3;\n    -moz-column-count: 3;\n    column-count: 3; }\n  .uk-column-1-4\\@l {\n    -webkit-column-count: 4;\n    -moz-column-count: 4;\n    column-count: 4; }\n  .uk-column-1-5\\@l {\n    -webkit-column-count: 5;\n    -moz-column-count: 5;\n    column-count: 5; }\n  .uk-column-1-6\\@l {\n    -webkit-column-count: 6;\n    -moz-column-count: 6;\n    column-count: 6; } }\n\n/* Large screen and bigger */\n@media (min-width: 1600px) {\n  .uk-column-1-2\\@xl {\n    -webkit-column-count: 2;\n    -moz-column-count: 2;\n    column-count: 2; }\n  .uk-column-1-3\\@xl {\n    -webkit-column-count: 3;\n    -moz-column-count: 3;\n    column-count: 3; }\n  .uk-column-1-4\\@xl {\n    -webkit-column-count: 4;\n    -moz-column-count: 4;\n    column-count: 4; }\n  .uk-column-1-5\\@xl {\n    -webkit-column-count: 5;\n    -moz-column-count: 5;\n    column-count: 5; }\n  .uk-column-1-6\\@xl {\n    -webkit-column-count: 6;\n    -moz-column-count: 6;\n    column-count: 6; } }\n\n/* Make element span across all columns\n * Does not work in Firefox yet\n ========================================================================== */\n.uk-column-span {\n  -webkit-column-span: all;\n  -moz-column-span: all;\n  column-span: all; }\n\n/* ========================================================================\n   Component: Cover\n ========================================================================== */\n/*\n * Works with iframes and embedded content\n * 1. Reset responsiveness for embedded content\n * 2. Center object\n * Note: Percent values on the `top` property only works if this element\n *       is absolute positioned or if the container has a height\n */\n.uk-cover {\n  /* 1 */\n  max-width: none;\n  /* 2 */\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n  transform: translate(-50%, -50%); }\n\n/* Container\n ========================================================================== */\n/*\n * 1. Parent container which clips resized object\n * 2. Needed if the child is positioned absolute. See note above\n */\n.uk-cover-container {\n  /* 1 */\n  overflow: hidden;\n  /* 2 */\n  position: relative; }\n\n/* ========================================================================\n   Component: Background\n ========================================================================== */\n/* Color\n ========================================================================== */\n.uk-background-default {\n  background-color: #fff; }\n\n.uk-background-muted {\n  background-color: #f8f8f8; }\n\n.uk-background-primary {\n  background-color: #1e87f0; }\n\n.uk-background-secondary {\n  background-color: #222; }\n\n/* Size\n ========================================================================== */\n.uk-background-cover,\n.uk-background-contain {\n  background-position: 50% 50%;\n  background-repeat: no-repeat; }\n\n.uk-background-cover {\n  background-size: cover; }\n\n.uk-background-contain {\n  background-size: contain; }\n\n/* Position\n ========================================================================== */\n.uk-background-top-left {\n  background-position: 0 0; }\n\n.uk-background-top-center {\n  background-position: 50% 0; }\n\n.uk-background-top-right {\n  background-position: 100% 0; }\n\n.uk-background-center-left {\n  background-position: 0 50%; }\n\n.uk-background-center-center {\n  background-position: 50% 50%; }\n\n.uk-background-center-right {\n  background-position: 100% 50%; }\n\n.uk-background-bottom-left {\n  background-position: 0 100%; }\n\n.uk-background-bottom-center {\n  background-position: 50% 100%; }\n\n.uk-background-bottom-right {\n  background-position: 100% 100%; }\n\n/* Repeat\n ========================================================================== */\n.uk-background-norepeat {\n  background-repeat: no-repeat; }\n\n/* Attachment\n ========================================================================== */\n.uk-background-fixed {\n  background-attachment: fixed; }\n\n/*\n * Exclude touch devices because `fixed` doesn't work on iOS and Android\n */\n@media (pointer: coarse) {\n  .uk-background-fixed {\n    background-attachment: scroll; } }\n\n/* Image\n ========================================================================== */\n/* Phone portrait and smaller */\n@media (max-width: 639px) {\n  .uk-background-image\\@s {\n    background-image: none !important; } }\n\n/* Phone landscape and smaller */\n@media (max-width: 959px) {\n  .uk-background-image\\@m {\n    background-image: none !important; } }\n\n/* Tablet landscape and smaller */\n@media (max-width: 1199px) {\n  .uk-background-image\\@l {\n    background-image: none !important; } }\n\n/* Desktop and smaller */\n@media (max-width: 1599px) {\n  .uk-background-image\\@xl {\n    background-image: none !important; } }\n\n/* Blend modes\n ========================================================================== */\n.uk-background-blend-multiply {\n  background-blend-mode: multiply; }\n\n.uk-background-blend-screen {\n  background-blend-mode: screen; }\n\n.uk-background-blend-overlay {\n  background-blend-mode: overlay; }\n\n.uk-background-blend-darken {\n  background-blend-mode: darken; }\n\n.uk-background-blend-lighten {\n  background-blend-mode: lighten; }\n\n.uk-background-blend-color-dodge {\n  background-blend-mode: color-dodge; }\n\n.uk-background-blend-color-burn {\n  background-blend-mode: color-burn; }\n\n.uk-background-blend-hard-light {\n  background-blend-mode: hard-light; }\n\n.uk-background-blend-soft-light {\n  background-blend-mode: soft-light; }\n\n.uk-background-blend-difference {\n  background-blend-mode: difference; }\n\n.uk-background-blend-exclusion {\n  background-blend-mode: exclusion; }\n\n.uk-background-blend-hue {\n  background-blend-mode: hue; }\n\n.uk-background-blend-saturation {\n  background-blend-mode: saturation; }\n\n.uk-background-blend-color {\n  background-blend-mode: color; }\n\n.uk-background-blend-luminosity {\n  background-blend-mode: luminosity; }\n\n/* ========================================================================\n   Component: Align\n ========================================================================== */\n/*\n * Default\n */\n[class*='uk-align'] {\n  display: block;\n  margin-bottom: 30px; }\n\n* + [class*='uk-align'] {\n  margin-top: 30px; }\n\n/*\n * Center\n */\n.uk-align-center {\n  margin-left: auto;\n  margin-right: auto; }\n\n/*\n * Left/Right\n */\n.uk-align-left {\n  margin-top: 0;\n  margin-right: 30px;\n  float: left; }\n\n.uk-align-right {\n  margin-top: 0;\n  margin-left: 30px;\n  float: right; }\n\n/* Phone landscape and bigger */\n@media (min-width: 640px) {\n  .uk-align-left\\@s {\n    margin-top: 0;\n    margin-right: 30px;\n    float: left; }\n  .uk-align-right\\@s {\n    margin-top: 0;\n    margin-left: 30px;\n    float: right; } }\n\n/* Tablet landscape and bigger */\n@media (min-width: 960px) {\n  .uk-align-left\\@m {\n    margin-top: 0;\n    margin-right: 30px;\n    float: left; }\n  .uk-align-right\\@m {\n    margin-top: 0;\n    margin-left: 30px;\n    float: right; } }\n\n/* Desktop and bigger */\n@media (min-width: 1200px) {\n  .uk-align-left\\@l {\n    margin-top: 0;\n    float: left; }\n  .uk-align-right\\@l {\n    margin-top: 0;\n    float: right; }\n  .uk-align-left,\n  .uk-align-left\\@s,\n  .uk-align-left\\@m,\n  .uk-align-left\\@l {\n    margin-right: 40px; }\n  .uk-align-right,\n  .uk-align-right\\@s,\n  .uk-align-right\\@m,\n  .uk-align-right\\@l {\n    margin-left: 40px; } }\n\n/* Large screen and bigger */\n@media (min-width: 1600px) {\n  .uk-align-left\\@xl {\n    margin-top: 0;\n    margin-right: 40px;\n    float: left; }\n  .uk-align-right\\@xl {\n    margin-top: 0;\n    margin-left: 40px;\n    float: right; } }\n\n/* ========================================================================\n   Component: Utility\n ========================================================================== */\n/* Panel\n ========================================================================== */\n.uk-panel {\n  position: relative;\n  box-sizing: border-box; }\n\n/*\n * Micro clearfix\n */\n.uk-panel::before,\n.uk-panel::after {\n  content: \"\";\n  display: table; }\n\n.uk-panel::after {\n  clear: both; }\n\n/*\n * Remove margin from the last-child\n */\n.uk-panel > :last-child {\n  margin-bottom: 0; }\n\n/*\n * Scrollable\n */\n.uk-panel-scrollable {\n  height: 170px;\n  padding: 10px;\n  border: 1px solid #e5e5e5;\n  overflow: auto;\n  -webkit-overflow-scrolling: touch;\n  resize: both; }\n\n/* Clearfix\n ========================================================================== */\n/*\n * 1. `table-cell` is used with `::before` because `table` creates a 1px gap when it becomes a flex item, only in Webkit\n * 2. `table` is used again with `::after` because `clear` only works with block elements.\n * Note: `display: block` with `overflow: hidden` is currently not working in the latest Safari\n */\n/* 1 */\n.uk-clearfix::before {\n  content: \"\";\n  display: table-cell; }\n\n/* 2 */\n.uk-clearfix::after {\n  content: \"\";\n  display: table;\n  clear: both; }\n\n/* Float\n ========================================================================== */\n/*\n * 1. Prevent content overflow\n */\n.uk-float-left {\n  float: left; }\n\n.uk-float-right {\n  float: right; }\n\n/* 1 */\n[class*='uk-float-'] {\n  max-width: 100%; }\n\n/* Overfow\n ========================================================================== */\n.uk-overflow-hidden {\n  overflow: hidden; }\n\n/*\n * Enable scrollbars if content is clipped\n */\n.uk-overflow-auto {\n  overflow: auto;\n  -webkit-overflow-scrolling: touch; }\n\n.uk-overflow-auto > :last-child {\n  margin-bottom: 0; }\n\n/* Resize\n ========================================================================== */\n.uk-resize {\n  resize: both; }\n\n.uk-resize-vertical {\n  resize: vertical; }\n\n/* Display\n ========================================================================== */\n.uk-display-block {\n  display: block !important; }\n\n.uk-display-inline {\n  display: inline !important; }\n\n.uk-display-inline-block {\n  display: inline-block !important; }\n\n/* Inline\n ========================================================================== */\n/*\n * 1. Container fits its content\n * 2. Create position context\n * 3. Prevent content overflow\n * 4. Behave like most inline-block elements\n * 5. Clip child elements\n */\n[class*='uk-inline'] {\n  /* 1 */\n  display: inline-block;\n  /* 2 */\n  position: relative;\n  /* 3 */\n  max-width: 100%;\n  /* 4 */\n  vertical-align: middle; }\n\n.uk-inline-clip {\n  /* 5 */\n  overflow: hidden; }\n\n/* Height\n ========================================================================== */\n[class*='uk-height'] {\n  box-sizing: border-box; }\n\n/*\n * Only works if parent element has a height set\n */\n.uk-height-1-1 {\n  height: 100%; }\n\n/*\n * Useful to create image teasers\n */\n.uk-height-viewport {\n  min-height: 100vh; }\n\n/*\n * Pixel\n * Useful for `overflow: auto`\n */\n.uk-height-small {\n  height: 150px; }\n\n.uk-height-medium {\n  height: 300px; }\n\n.uk-height-large {\n  height: 450px; }\n\n.uk-height-max-small {\n  max-height: 150px; }\n\n.uk-height-max-medium {\n  max-height: 300px; }\n\n.uk-height-max-large {\n  max-height: 450px; }\n\n/* Responsive objects\n ========================================================================== */\n/*\n * Preserve original dimensions\n * Because `img, `video`, `canvas` and  `audio` are already responsive by default, see Base component\n */\n.uk-preserve-width,\n.uk-preserve-width audio,\n.uk-preserve-width canvas,\n.uk-preserve-width img,\n.uk-preserve-width svg,\n.uk-preserve-width video {\n  max-width: none; }\n\n/*\n * Responsiveness\n * Corrects `max-width` and `max-height` behavior if padding and border are used\n */\n.uk-responsive-width,\n.uk-responsive-height {\n  box-sizing: border-box; }\n\n/*\n * 1. Set a maximum width. `important` needed to override `uk-preserve-width img`\n * 2. Auto scale the height. Only needed if `height` attribute is present\n */\n.uk-responsive-width {\n  /* 1 */\n  max-width: 100% !important;\n  /* 2 */\n  height: auto; }\n\n/*\n * 1. Set a maximum height. Only works if the parent element has a fixed height\n * 2. Auto scale the width. Only needed if `width` attribute is present\n * 3. Reset max-width, which `img, `video`, `canvas` and  `audio` already have by default\n */\n.uk-responsive-height {\n  /* 1 */\n  max-height: 100%;\n  /* 2 */\n  width: auto;\n  /* 3 */\n  max-width: none; }\n\n/* Border\n ========================================================================== */\n.uk-border-circle {\n  border-radius: 50%; }\n\n.uk-border-rounded {\n  border-radius: 5px; }\n\n/*\n * Fix `overflow: hidden` to be ignored with border-radius and CSS transforms in Webkit\n */\n.uk-inline-clip[class*='uk-border-'] {\n  -webkit-transform: translateZ(0); }\n\n/* Box-shadow\n ========================================================================== */\n.uk-box-shadow-small {\n  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); }\n\n.uk-box-shadow-medium {\n  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); }\n\n.uk-box-shadow-large {\n  box-shadow: 0 14px 25px rgba(0, 0, 0, 0.16); }\n\n.uk-box-shadow-xlarge {\n  box-shadow: 0 28px 50px rgba(0, 0, 0, 0.16); }\n\n/*\n * Hover\n */\n[class*='uk-box-shadow-hover'] {\n  -webkit-transition: box-shadow 0.1s ease-in-out;\n  transition: box-shadow 0.1s ease-in-out; }\n\n.uk-box-shadow-hover-small:hover {\n  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); }\n\n.uk-box-shadow-hover-medium:hover {\n  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); }\n\n.uk-box-shadow-hover-large:hover {\n  box-shadow: 0 14px 25px rgba(0, 0, 0, 0.16); }\n\n.uk-box-shadow-hover-xlarge:hover {\n  box-shadow: 0 28px 50px rgba(0, 0, 0, 0.16); }\n\n/* Drop cap\n ========================================================================== */\n.uk-dropcap::first-letter,\n.uk-dropcap > p:first-of-type::first-letter {\n  display: block;\n  margin-right: 10px;\n  float: left;\n  font-size: 4.5em;\n  line-height: 1;\n  margin-bottom: -2px; }\n\n/* Leader\n ========================================================================== */\n.uk-leader {\n  overflow: hidden; }\n\n/*\n * 1. Place element in text flow\n * 2. Never break into a new line\n * 3. Get a string back with as many repeating characters to fill the container\n * 4. Prevent wrapping. Overflowing characters will be clipped by the container\n */\n.uk-leader-fill::after {\n  /* 1 */\n  display: inline-block;\n  margin-left: 15px;\n  /* 2 */\n  width: 0;\n  /* 3 */\n  content: attr(data-fill);\n  /* 4 */\n  white-space: nowrap; }\n\n/*\n * Hide if media does not match\n */\n.uk-leader-fill.uk-leader-hide::after {\n  display: none; }\n\n/* Pass fill character to JS */\n.var-leader-fill:before {\n  content: \".\"; }\n\n/* Logo\n ========================================================================== */\n/*\n * 1. Required for `a`\n */\n.uk-logo {\n  font-size: 1.5rem;\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif;\n  color: #666;\n  /* 1 */\n  text-decoration: none; }\n\n/* Hover + Focus */\n.uk-logo:hover,\n.uk-logo:focus {\n  color: #666;\n  outline: none;\n  /* 1 */\n  text-decoration: none; }\n\n.uk-logo-inverse {\n  display: none; }\n\n/* SVG\n ========================================================================== */\n/*\n * 1. Fill all SVG elements with the current text color if no `fill` attribute is set\n * 2. Set the fill and stroke color of all SVG elements to the current text color\n */\n/* 1 */\n.uk-svg,\n.uk-svg:not(.uk-preserve) [fill*='#']:not(.uk-preserve) {\n  fill: currentcolor; }\n\n.uk-svg:not(.uk-preserve) [stroke*='#']:not(.uk-preserve) {\n  stroke: currentcolor; }\n\n/*\n * Fix Firefox blurry SVG rendering: https://bugzilla.mozilla.org/show_bug.cgi?id=1046835\n */\n.uk-svg {\n  transform: translate(0, 0); }\n\n/* Disabled State\n ========================================================================== */\n.uk-disabled {\n  pointer-events: none; }\n\n/* Drag State\n ========================================================================== */\n/*\n * 1. Needed if moving over elements with have their own cursor on hover, e.g. links or buttons\n * 2. Fix dragging over iframes\n */\n.uk-drag,\n.uk-drag * {\n  cursor: move; }\n\n/* 2 */\n.uk-drag iframe {\n  pointer-events: none; }\n\n/* Dragover State\n ========================================================================== */\n/*\n * Create a box-shadow when dragging a file over the upload area\n */\n.uk-dragover {\n  box-shadow: 0 0 20px rgba(100, 100, 100, 0.3); }\n\n/* Blend modes\n ========================================================================== */\n.uk-blend-multiply {\n  mix-blend-mode: multiply; }\n\n.uk-blend-screen {\n  mix-blend-mode: screen; }\n\n.uk-blend-overlay {\n  mix-blend-mode: overlay; }\n\n.uk-blend-darken {\n  mix-blend-mode: darken; }\n\n.uk-blend-lighten {\n  mix-blend-mode: lighten; }\n\n.uk-blend-color-dodge {\n  mix-blend-mode: color-dodge; }\n\n.uk-blend-color-burn {\n  mix-blend-mode: color-burn; }\n\n.uk-blend-hard-light {\n  mix-blend-mode: hard-light; }\n\n.uk-blend-soft-light {\n  mix-blend-mode: soft-light; }\n\n.uk-blend-difference {\n  mix-blend-mode: difference; }\n\n.uk-blend-exclusion {\n  mix-blend-mode: exclusion; }\n\n.uk-blend-hue {\n  mix-blend-mode: hue; }\n\n.uk-blend-saturation {\n  mix-blend-mode: saturation; }\n\n.uk-blend-color {\n  mix-blend-mode: color; }\n\n.uk-blend-luminosity {\n  mix-blend-mode: luminosity; }\n\n/* Transform Origin\n========================================================================== */\n.uk-transform-origin-top-left {\n  -webkit-transform-origin: 0 0;\n  transform-origin: 0 0; }\n\n.uk-transform-origin-top-center {\n  -webkit-transform-origin: 50% 0;\n  transform-origin: 50% 0; }\n\n.uk-transform-origin-top-right {\n  -webkit-transform-origin: 100% 0;\n  transform-origin: 100% 0; }\n\n.uk-transform-origin-center-left {\n  -webkit-transform-origin: 0 50%;\n  transform-origin: 0 50%; }\n\n.uk-transform-origin-center-right {\n  -webkit-transform-origin: 100% 50%;\n  transform-origin: 100% 50%; }\n\n.uk-transform-origin-bottom-left {\n  -webkit-transform-origin: 0 100%;\n  transform-origin: 0 100%; }\n\n.uk-transform-origin-bottom-center {\n  -webkit-transform-origin: 50% 100%;\n  transform-origin: 50% 100%; }\n\n.uk-transform-origin-bottom-right {\n  -webkit-transform-origin: 100% 100%;\n  transform-origin: 100% 100%; }\n\n/* ========================================================================\n   Component: Flex\n ========================================================================== */\n.uk-flex {\n  display: -ms-flexbox;\n  display: -webkit-flex;\n  display: flex; }\n\n.uk-flex-inline {\n  display: -ms-inline-flexbox;\n  display: -webkit-inline-flex;\n  display: inline-flex; }\n\n/*\n * Remove pseudo elements created by micro clearfix as precaution\n */\n.uk-flex::before,\n.uk-flex::after,\n.uk-flex-inline::before,\n.uk-flex-inline::after {\n  display: none; }\n\n/* Alignment\n ========================================================================== */\n/*\n * Align items along the main axis of the current line of the flex container\n * Row: Horizontal\n */\n.uk-flex-left {\n  -ms-flex-pack: start;\n  -webkit-justify-content: flex-start;\n  justify-content: flex-start; }\n\n.uk-flex-center {\n  -ms-flex-pack: center;\n  -webkit-justify-content: center;\n  justify-content: center; }\n\n.uk-flex-right {\n  -ms-flex-pack: end;\n  -webkit-justify-content: flex-end;\n  justify-content: flex-end; }\n\n.uk-flex-between {\n  -ms-flex-pack: justify;\n  -webkit-justify-content: space-between;\n  justify-content: space-between; }\n\n.uk-flex-around {\n  -ms-flex-pack: distribute;\n  -webkit-justify-content: space-around;\n  justify-content: space-around; }\n\n/* Phone landscape and bigger */\n@media (min-width: 640px) {\n  .uk-flex-left\\@s {\n    -ms-flex-pack: start;\n    -webkit-justify-content: flex-start;\n    justify-content: flex-start; }\n  .uk-flex-center\\@s {\n    -ms-flex-pack: center;\n    -webkit-justify-content: center;\n    justify-content: center; }\n  .uk-flex-right\\@s {\n    -ms-flex-pack: end;\n    -webkit-justify-content: flex-end;\n    justify-content: flex-end; }\n  .uk-flex-between\\@s {\n    -ms-flex-pack: justify;\n    -webkit-justify-content: space-between;\n    justify-content: space-between; }\n  .uk-flex-around\\@s {\n    -ms-flex-pack: distribute;\n    -webkit-justify-content: space-around;\n    justify-content: space-around; } }\n\n/* Tablet landscape and bigger */\n@media (min-width: 960px) {\n  .uk-flex-left\\@m {\n    -ms-flex-pack: start;\n    -webkit-justify-content: flex-start;\n    justify-content: flex-start; }\n  .uk-flex-center\\@m {\n    -ms-flex-pack: center;\n    -webkit-justify-content: center;\n    justify-content: center; }\n  .uk-flex-right\\@m {\n    -ms-flex-pack: end;\n    -webkit-justify-content: flex-end;\n    justify-content: flex-end; }\n  .uk-flex-between\\@m {\n    -ms-flex-pack: justify;\n    -webkit-justify-content: space-between;\n    justify-content: space-between; }\n  .uk-flex-around\\@m {\n    -ms-flex-pack: distribute;\n    -webkit-justify-content: space-around;\n    justify-content: space-around; } }\n\n/* Desktop and bigger */\n@media (min-width: 1200px) {\n  .uk-flex-left\\@l {\n    -ms-flex-pack: start;\n    -webkit-justify-content: flex-start;\n    justify-content: flex-start; }\n  .uk-flex-center\\@l {\n    -ms-flex-pack: center;\n    -webkit-justify-content: center;\n    justify-content: center; }\n  .uk-flex-right\\@l {\n    -ms-flex-pack: end;\n    -webkit-justify-content: flex-end;\n    justify-content: flex-end; }\n  .uk-flex-between\\@l {\n    -ms-flex-pack: justify;\n    -webkit-justify-content: space-between;\n    justify-content: space-between; }\n  .uk-flex-around\\@l {\n    -ms-flex-pack: distribute;\n    -webkit-justify-content: space-around;\n    justify-content: space-around; } }\n\n/* Large screen and bigger */\n@media (min-width: 1600px) {\n  .uk-flex-left\\@xl {\n    -ms-flex-pack: start;\n    -webkit-justify-content: flex-start;\n    justify-content: flex-start; }\n  .uk-flex-center\\@xl {\n    -ms-flex-pack: center;\n    -webkit-justify-content: center;\n    justify-content: center; }\n  .uk-flex-right\\@xl {\n    -ms-flex-pack: end;\n    -webkit-justify-content: flex-end;\n    justify-content: flex-end; }\n  .uk-flex-between\\@xl {\n    -ms-flex-pack: justify;\n    -webkit-justify-content: space-between;\n    justify-content: space-between; }\n  .uk-flex-around\\@xl {\n    -ms-flex-pack: distribute;\n    -webkit-justify-content: space-around;\n    justify-content: space-around; } }\n\n/*\n * Align items in the cross axis of the current line of the flex container\n * Row: Vertical\n */\n.uk-flex-stretch {\n  -ms-flex-align: stretch;\n  -webkit-align-items: stretch;\n  align-items: stretch; }\n\n.uk-flex-top {\n  -ms-flex-align: start;\n  -webkit-align-items: flex-start;\n  align-items: flex-start; }\n\n.uk-flex-middle {\n  -ms-flex-align: center;\n  -webkit-align-items: center;\n  align-items: center; }\n\n.uk-flex-bottom {\n  -ms-flex-align: end;\n  -webkit-align-items: flex-end;\n  align-items: flex-end; }\n\n/* Direction\n ========================================================================== */\n.uk-flex-row {\n  -ms-flex-direction: row;\n  -webkit-flex-direction: row;\n  flex-direction: row; }\n\n.uk-flex-row-reverse {\n  -ms-flex-direction: row-reverse;\n  -webkit-flex-direction: row-reverse;\n  flex-direction: row-reverse; }\n\n.uk-flex-column {\n  -ms-flex-direction: column;\n  -webkit-flex-direction: column;\n  flex-direction: column; }\n\n.uk-flex-column-reverse {\n  -ms-flex-direction: column-reverse;\n  -webkit-flex-direction: column-reverse;\n  flex-direction: column-reverse; }\n\n/* Wrap\n ========================================================================== */\n.uk-flex-nowrap {\n  -ms-flex-wrap: nowrap;\n  -webkit-flex-wrap: nowrap;\n  flex-wrap: nowrap; }\n\n.uk-flex-wrap {\n  -ms-flex-wrap: wrap;\n  -webkit-flex-wrap: wrap;\n  flex-wrap: wrap; }\n\n.uk-flex-wrap-reverse {\n  -ms-flex-wrap: wrap-reverse;\n  -webkit-flex-wrap: wrap-reverse;\n  flex-wrap: wrap-reverse; }\n\n/*\n * Aligns items within the flex container when there is extra space in the cross-axis\n * Only works if there is more than one line of flex items\n */\n.uk-flex-wrap-stretch {\n  -ms-flex-line-pack: stretch;\n  -webkit-align-content: stretch;\n  align-content: stretch; }\n\n.uk-flex-wrap-top {\n  -ms-flex-line-pack: start;\n  -webkit-align-content: flex-start;\n  align-content: flex-start; }\n\n.uk-flex-wrap-middle {\n  -ms-flex-line-pack: center;\n  -webkit-align-content: center;\n  align-content: center; }\n\n.uk-flex-wrap-bottom {\n  -ms-flex-line-pack: end;\n  -webkit-align-content: flex-end;\n  align-content: flex-end; }\n\n.uk-flex-wrap-between {\n  -ms-flex-line-pack: justify;\n  -webkit-align-content: space-between;\n  align-content: space-between; }\n\n.uk-flex-wrap-around {\n  -ms-flex-line-pack: distribute;\n  -webkit-align-content: space-around;\n  align-content: space-around; }\n\n/* Item ordering\n ========================================================================== */\n/*\n * Default is 0\n */\n.uk-flex-first {\n  -ms-flex-order: -1;\n  -webkit-order: -1;\n  order: -1; }\n\n.uk-flex-last {\n  -ms-flex-order: 99;\n  -webkit-order: 99;\n  order: 99; }\n\n/* Phone landscape and bigger */\n@media (min-width: 640px) {\n  .uk-flex-first\\@s {\n    -ms-flex-order: -1;\n    -webkit-order: -1;\n    order: -1; }\n  .uk-flex-last\\@s {\n    -ms-flex-order: 99;\n    -webkit-order: 99;\n    order: 99; } }\n\n/* Tablet landscape and bigger */\n@media (min-width: 960px) {\n  .uk-flex-first\\@m {\n    -ms-flex-order: -1;\n    -webkit-order: -1;\n    order: -1; }\n  .uk-flex-last\\@m {\n    -ms-flex-order: 99;\n    -webkit-order: 99;\n    order: 99; } }\n\n/* Desktop and bigger */\n@media (min-width: 1200px) {\n  .uk-flex-first\\@l {\n    -ms-flex-order: -1;\n    -webkit-order: -1;\n    order: -1; }\n  .uk-flex-last\\@l {\n    -ms-flex-order: 99;\n    -webkit-order: 99;\n    order: 99; } }\n\n/* Large screen and bigger */\n@media (min-width: 1600px) {\n  .uk-flex-first\\@xl {\n    -ms-flex-order: -1;\n    -webkit-order: -1;\n    order: -1; }\n  .uk-flex-last\\@xl {\n    -ms-flex-order: 99;\n    -webkit-order: 99;\n    order: 99; } }\n\n/* Item dimensions\n ========================================================================== */\n/*\n * Initial: 0 1 auto\n * Content dimensions, but shrinks\n */\n/*\n * No Flex: 0 0 auto\n * Content dimensions\n */\n.uk-flex-none {\n  -ms-flex: none;\n  -webkit-flex: none;\n  flex: none; }\n\n/*\n * Relative Flex: 1 1 auto\n * Space is allocated considering content\n */\n.uk-flex-auto {\n  -ms-flex: auto;\n  -webkit-flex: auto;\n  flex: auto; }\n\n/*\n * Absolute Flex: 1 1 0%\n * Space is allocated solely based on flex\n */\n.uk-flex-1 {\n  -ms-flex: 1;\n  -webkit-flex: 1;\n  flex: 1; }\n\n/* ========================================================================\n   Component: Margin\n ========================================================================== */\n/*\n * Default\n */\n.uk-margin {\n  margin-bottom: 20px; }\n\n* + .uk-margin {\n  margin-top: 20px !important; }\n\n.uk-margin-top {\n  margin-top: 20px !important; }\n\n.uk-margin-bottom {\n  margin-bottom: 20px !important; }\n\n.uk-margin-left {\n  margin-left: 20px !important; }\n\n.uk-margin-right {\n  margin-right: 20px !important; }\n\n/* Small\n ========================================================================== */\n.uk-margin-small {\n  margin-bottom: 10px; }\n\n* + .uk-margin-small {\n  margin-top: 10px !important; }\n\n.uk-margin-small-top {\n  margin-top: 10px !important; }\n\n.uk-margin-small-bottom {\n  margin-bottom: 10px !important; }\n\n.uk-margin-small-left {\n  margin-left: 10px !important; }\n\n.uk-margin-small-right {\n  margin-right: 10px !important; }\n\n/* Medium\n ========================================================================== */\n.uk-margin-medium {\n  margin-bottom: 40px; }\n\n* + .uk-margin-medium {\n  margin-top: 40px !important; }\n\n.uk-margin-medium-top {\n  margin-top: 40px !important; }\n\n.uk-margin-medium-bottom {\n  margin-bottom: 40px !important; }\n\n.uk-margin-medium-left {\n  margin-left: 40px !important; }\n\n.uk-margin-medium-right {\n  margin-right: 40px !important; }\n\n/* Large\n ========================================================================== */\n.uk-margin-large {\n  margin-bottom: 40px; }\n\n* + .uk-margin-large {\n  margin-top: 40px !important; }\n\n.uk-margin-large-top {\n  margin-top: 40px !important; }\n\n.uk-margin-large-bottom {\n  margin-bottom: 40px !important; }\n\n.uk-margin-large-left {\n  margin-left: 40px !important; }\n\n.uk-margin-large-right {\n  margin-right: 40px !important; }\n\n/* Desktop and bigger */\n@media (min-width: 1200px) {\n  .uk-margin-large {\n    margin-bottom: 70px; }\n  * + .uk-margin-large {\n    margin-top: 70px !important; }\n  .uk-margin-large-top {\n    margin-top: 70px !important; }\n  .uk-margin-large-bottom {\n    margin-bottom: 70px !important; }\n  .uk-margin-large-left {\n    margin-left: 70px !important; }\n  .uk-margin-large-right {\n    margin-right: 70px !important; } }\n\n/* XLarge\n ========================================================================== */\n.uk-margin-xlarge {\n  margin-bottom: 70px; }\n\n* + .uk-margin-xlarge {\n  margin-top: 70px !important; }\n\n.uk-margin-xlarge-top {\n  margin-top: 70px !important; }\n\n.uk-margin-xlarge-bottom {\n  margin-bottom: 70px !important; }\n\n.uk-margin-xlarge-left {\n  margin-left: 70px !important; }\n\n.uk-margin-xlarge-right {\n  margin-right: 70px !important; }\n\n/* Desktop and bigger */\n@media (min-width: 1200px) {\n  .uk-margin-xlarge {\n    margin-bottom: 140px; }\n  * + .uk-margin-xlarge {\n    margin-top: 140px !important; }\n  .uk-margin-xlarge-top {\n    margin-top: 140px !important; }\n  .uk-margin-xlarge-bottom {\n    margin-bottom: 140px !important; }\n  .uk-margin-xlarge-left {\n    margin-left: 140px !important; }\n  .uk-margin-xlarge-right {\n    margin-right: 140px !important; } }\n\n/* Remove\n ========================================================================== */\n.uk-margin-remove {\n  margin: 0 !important; }\n\n.uk-margin-remove-top {\n  margin-top: 0 !important; }\n\n.uk-margin-remove-bottom {\n  margin-bottom: 0 !important; }\n\n.uk-margin-remove-left {\n  margin-left: 0 !important; }\n\n.uk-margin-remove-right {\n  margin-right: 0 !important; }\n\n.uk-margin-remove-vertical {\n  margin-top: 0 !important;\n  margin-bottom: 0 !important; }\n\n.uk-margin-remove-adjacent + * {\n  margin-top: 0 !important; }\n\n/* Auto\n ========================================================================== */\n.uk-margin-auto {\n  margin-left: auto !important;\n  margin-right: auto !important; }\n\n.uk-margin-auto-top {\n  margin-top: auto !important; }\n\n.uk-margin-auto-bottom {\n  margin-bottom: auto !important; }\n\n.uk-margin-auto-left {\n  margin-left: auto !important; }\n\n.uk-margin-auto-right {\n  margin-right: auto !important; }\n\n.uk-margin-auto-vertical {\n  margin-top: auto !important;\n  margin-bottom: auto !important; }\n\n/* ========================================================================\n   Component: Padding\n ========================================================================== */\n.uk-padding {\n  padding: 30px; }\n\n/* Desktop and bigger */\n@media (min-width: 1200px) {\n  .uk-padding {\n    padding: 40px; } }\n\n/* Small\n ========================================================================== */\n.uk-padding-small {\n  padding: 15px; }\n\n/* Large\n ========================================================================== */\n.uk-padding-large {\n  padding: 30px; }\n\n/* Desktop and bigger */\n@media (min-width: 1200px) {\n  .uk-padding-large {\n    padding: 70px; } }\n\n/* Remove\n ========================================================================== */\n.uk-padding-remove {\n  padding: 0 !important; }\n\n.uk-padding-remove-top {\n  padding-top: 0 !important; }\n\n.uk-padding-remove-bottom {\n  padding-bottom: 0 !important; }\n\n.uk-padding-remove-left {\n  padding-left: 0 !important; }\n\n.uk-padding-remove-right {\n  padding-right: 0 !important; }\n\n.uk-padding-remove-vertical {\n  padding-top: 0 !important;\n  padding-bottom: 0 !important; }\n\n.uk-padding-remove-horizontal {\n  padding-left: 0 !important;\n  padding-right: 0 !important; }\n\n/* ========================================================================\n   Component: Position\n ========================================================================== */\n/* Directions\n ========================================================================== */\n[class*='uk-position-top'],\n[class*='uk-position-bottom'],\n[class*='uk-position-left'],\n[class*='uk-position-right'],\n[class*='uk-position-center'] {\n  position: absolute !important; }\n\n/* Edges\n ========================================================================== */\n/* Don't use `width: 100%` because it is wrong if the parent has padding. */\n.uk-position-top {\n  top: 0;\n  left: 0;\n  right: 0; }\n\n.uk-position-bottom {\n  bottom: 0;\n  left: 0;\n  right: 0; }\n\n.uk-position-left {\n  top: 0;\n  bottom: 0;\n  left: 0; }\n\n.uk-position-right {\n  top: 0;\n  bottom: 0;\n  right: 0; }\n\n/* Corners\n ========================================================================== */\n.uk-position-top-left {\n  top: 0;\n  left: 0; }\n\n.uk-position-top-right {\n  top: 0;\n  right: 0; }\n\n.uk-position-bottom-left {\n  bottom: 0;\n  left: 0; }\n\n.uk-position-bottom-right {\n  bottom: 0;\n  right: 0; }\n\n/*\n * Center\n * 1. Fix text wrapping if content is larger than 50% of the container (Not working in Firefox)\n * 2. Fix text wrapping for Firefox\n */\n.uk-position-center {\n  top: 50%;\n  left: 50%;\n  -webkit-transform: translate(-50%, -50%);\n  transform: translate(-50%, -50%);\n  /* 1 */\n  display: table;\n  /* 2 */\n  width: -moz-max-content;\n  max-width: 100%; }\n\n/* Vertical */\n.uk-position-center-left,\n.uk-position-center-right {\n  top: 50%;\n  -webkit-transform: translateY(-50%);\n  transform: translateY(-50%); }\n\n.uk-position-center-left {\n  left: 0; }\n\n.uk-position-center-right {\n  right: 0; }\n\n/* Horizontal */\n.uk-position-top-center,\n.uk-position-bottom-center {\n  left: 50%;\n  -webkit-transform: translateX(-50%);\n  transform: translateX(-50%);\n  /* 1 */\n  display: table; }\n\n.uk-position-top-center {\n  top: 0; }\n\n.uk-position-bottom-center {\n  bottom: 0; }\n\n/* Cover\n ========================================================================== */\n.uk-position-cover {\n  position: absolute;\n  top: 0;\n  bottom: 0;\n  left: 0;\n  right: 0; }\n\n/* Utility\n ========================================================================== */\n.uk-position-relative {\n  position: relative !important; }\n\n.uk-position-absolute {\n  position: absolute !important; }\n\n.uk-position-fixed {\n  position: fixed !important; }\n\n.uk-position-z-index {\n  z-index: 1; }\n\n/* Margin modifier\n ========================================================================== */\n/*\n * Small\n */\n.uk-position-small {\n  margin: 15px; }\n\n.uk-position-small.uk-position-center {\n  -webkit-transform: translate(calc(-50% - 15px), calc(-50% - 15px));\n  transform: translate(calc(-50% - 15px), calc(-50% - 15px)); }\n\n.uk-position-small.uk-position-center-left,\n.uk-position-small.uk-position-center-right {\n  -webkit-transform: translateY(calc(-50% - 15px));\n  transform: translateY(calc(-50% - 15px)); }\n\n.uk-position-small.uk-position-top-center,\n.uk-position-small.uk-position-bottom-center {\n  -webkit-transform: translateX(calc(-50% - 15px));\n  transform: translateX(calc(-50% - 15px)); }\n\n/*\n * Medium\n */\n.uk-position-medium {\n  margin: 30px; }\n\n.uk-position-medium.uk-position-center {\n  -webkit-transform: translate(calc(-50% - 30px), calc(-50% - 30px));\n  transform: translate(calc(-50% - 30px), calc(-50% - 30px)); }\n\n.uk-position-medium.uk-position-center-left,\n.uk-position-medium.uk-position-center-right {\n  -webkit-transform: translateY(calc(-50% - 30px));\n  transform: translateY(calc(-50% - 30px)); }\n\n.uk-position-medium.uk-position-top-center,\n.uk-position-medium.uk-position-bottom-center {\n  -webkit-transform: translateX(calc(-50% - 30px));\n  transform: translateX(calc(-50% - 30px)); }\n\n/* ========================================================================\n   Component: Transition\n ========================================================================== */\n/*\n * Using multiple selectors to exclude `uk-transition-toggle`\n * Note: Transitions don't work with `uk-postion-center-*` classes because they also use `transform`\n *       Just put the transition in an extra `div`\n */\n.uk-transition-fade,\n[class*='uk-transition-scale'],\n[class*='uk-transition-slide'] {\n  -webkit-transition: 0.3s ease-out;\n  transition: 0.3s ease-out;\n  -webkit-transition-property: opacity, transform, filter;\n  transition-property: opacity, transform, filter; }\n\n/*\n * Fade\n */\n.uk-transition-fade {\n  opacity: 0; }\n\n.uk-transition-toggle:hover [class*='uk-transition-fade'],\n.uk-transition-toggle.uk-hover [class*='uk-transition-fade'] {\n  opacity: 1; }\n\n/*\n * Scale\n * Note: Using `scale3d` for better image rendering\n */\n[class*='uk-transition-scale'] {\n  opacity: 0; }\n\n.uk-transition-scale-up {\n  -webkit-transform: scale3d(1, 1, 1);\n  transform: scale3d(1, 1, 1); }\n\n.uk-transition-toggle:hover .uk-transition-scale-up,\n.uk-transition-toggle.uk-hover .uk-transition-scale-up {\n  opacity: 1;\n  -webkit-transform: scale3d(1.1, 1.1, 1);\n  transform: scale3d(1.1, 1.1, 1); }\n\n.uk-transition-scale-down {\n  -webkit-transform: scale3d(1.1, 1.1, 1);\n  transform: scale3d(1.1, 1.1, 1); }\n\n.uk-transition-toggle:hover .uk-transition-scale-down,\n.uk-transition-toggle.uk-hover .uk-transition-scale-down {\n  opacity: 1;\n  -webkit-transform: scale3d(1, 1, 1);\n  transform: scale3d(1, 1, 1); }\n\n/*\n * Slide\n */\n[class*='uk-transition-slide'] {\n  opacity: 0; }\n\n.uk-transition-slide-top {\n  -webkit-transform: translateY(-100%);\n  transform: translateY(-100%); }\n\n.uk-transition-slide-bottom {\n  -webkit-transform: translateY(100%);\n  transform: translateY(100%); }\n\n.uk-transition-slide-left {\n  -webkit-transform: translateX(-100%);\n  transform: translateX(-100%); }\n\n.uk-transition-slide-right {\n  -webkit-transform: translateX(100%);\n  transform: translateX(100%); }\n\n.uk-transition-slide-top-small {\n  -webkit-transform: translateY(-10px);\n  transform: translateY(-10px); }\n\n.uk-transition-slide-bottom-small {\n  -webkit-transform: translateY(10px);\n  transform: translateY(10px); }\n\n.uk-transition-slide-left-small {\n  -webkit-transform: translateX(-10px);\n  transform: translateX(-10px); }\n\n.uk-transition-slide-right-small {\n  -webkit-transform: translateX(10px);\n  transform: translateX(10px); }\n\n.uk-transition-slide-top-medium {\n  -webkit-transform: translateY(-50px);\n  transform: translateY(-50px); }\n\n.uk-transition-slide-bottom-medium {\n  -webkit-transform: translateY(50px);\n  transform: translateY(50px); }\n\n.uk-transition-slide-left-medium {\n  -webkit-transform: translateX(-50px);\n  transform: translateX(-50px); }\n\n.uk-transition-slide-right-medium {\n  -webkit-transform: translateX(50px);\n  transform: translateX(50px); }\n\n/* Hover */\n.uk-transition-toggle:hover [class*='uk-transition-slide'],\n.uk-transition-toggle.uk-hover [class*='uk-transition-slide'] {\n  opacity: 1;\n  -webkit-transform: translateX(0) translateY(0);\n  transform: translateX(0) translateY(0); }\n\n/* Opacity modifier\n========================================================================== */\n.uk-transition-opaque {\n  opacity: 1; }\n\n/* Duration modifiers\n========================================================================== */\n.uk-transition-slow {\n  transition-duration: 0.7s; }\n\n/* ========================================================================\n   Component: Visibility\n ========================================================================== */\n/*\n * Hidden\n * `hidden` attribute also set here to make it stronger\n */\n[hidden],\n.uk-hidden {\n  display: none !important; }\n\n/* Phone landscape and bigger */\n@media (min-width: 640px) {\n  .uk-hidden\\@s {\n    display: none !important; } }\n\n/* Tablet landscape and bigger */\n@media (min-width: 960px) {\n  .uk-hidden\\@m {\n    display: none !important; } }\n\n/* Desktop and bigger */\n@media (min-width: 1200px) {\n  .uk-hidden\\@l {\n    display: none !important; } }\n\n/* Large screen and bigger */\n@media (min-width: 1600px) {\n  .uk-hidden\\@xl {\n    display: none !important; } }\n\n/*\n * Visible\n */\n/* Phone portrait and smaller */\n@media (max-width: 639px) {\n  .uk-visible\\@s {\n    display: none !important; } }\n\n/* Phone landscape and smaller */\n@media (max-width: 959px) {\n  .uk-visible\\@m {\n    display: none !important; } }\n\n/* Tablet landscape and smaller */\n@media (max-width: 1199px) {\n  .uk-visible\\@l {\n    display: none !important; } }\n\n/* Desktop and smaller */\n@media (max-width: 1599px) {\n  .uk-visible\\@xl {\n    display: none !important; } }\n\n/* Visibility\n ========================================================================== */\n.uk-invisible {\n  visibility: hidden !important; }\n\n/* Hover\n ========================================================================== */\n/* Hidden */\n.uk-visible-toggle:not(:hover):not(.uk-hover) .uk-hidden-hover {\n  display: none !important; }\n\n/* Invisible */\n.uk-visible-toggle:not(:hover):not(.uk-hover) .uk-invisible-hover {\n  visibility: hidden !important; }\n\n/* ========================================================================\n   Component: Inverse\n ========================================================================== */\n/*\n * Implemented class depends on the general theme color\n * `uk-light` is for light colors on dark backgrounds\n * `uk-dark` is or dark colors on light backgrounds\n */\n.uk-light, .uk-section-primary:not(.uk-preserve-color), .uk-section-secondary:not(.uk-preserve-color), .uk-tile-primary:not(.uk-preserve-color), .uk-tile-secondary:not(.uk-preserve-color), .uk-card-primary.uk-card-body, .uk-card-primary > :not([class*='uk-card-media']), .uk-card-secondary.uk-card-body, .uk-card-secondary > :not([class*='uk-card-media']), .uk-overlay-primary, .uk-offcanvas-bar {\n  color: rgba(255, 255, 255, 0.7); }\n  .uk-light a, .uk-section-primary:not(.uk-preserve-color) a, .uk-section-secondary:not(.uk-preserve-color) a, .uk-tile-primary:not(.uk-preserve-color) a, .uk-tile-secondary:not(.uk-preserve-color) a, .uk-card-primary.uk-card-body a, .uk-card-primary > :not([class*='uk-card-media']) a, .uk-card-secondary.uk-card-body a, .uk-card-secondary > :not([class*='uk-card-media']) a, .uk-overlay-primary a, .uk-offcanvas-bar a,\n  .uk-light .uk-link, .uk-section-primary:not(.uk-preserve-color) .uk-link, .uk-section-secondary:not(.uk-preserve-color) .uk-link, .uk-tile-primary:not(.uk-preserve-color) .uk-link, .uk-tile-secondary:not(.uk-preserve-color) .uk-link, .uk-card-primary.uk-card-body .uk-link, .uk-card-primary > :not([class*='uk-card-media']) .uk-link, .uk-card-secondary.uk-card-body .uk-link, .uk-card-secondary > :not([class*='uk-card-media']) .uk-link, .uk-overlay-primary .uk-link, .uk-offcanvas-bar .uk-link {\n    color: #fff; }\n  .uk-light a:hover, .uk-section-primary:not(.uk-preserve-color) a:hover, .uk-section-secondary:not(.uk-preserve-color) a:hover, .uk-tile-primary:not(.uk-preserve-color) a:hover, .uk-tile-secondary:not(.uk-preserve-color) a:hover, .uk-card-primary.uk-card-body a:hover, .uk-card-primary > :not([class*='uk-card-media']) a:hover, .uk-card-secondary.uk-card-body a:hover, .uk-card-secondary > :not([class*='uk-card-media']) a:hover, .uk-overlay-primary a:hover, .uk-offcanvas-bar a:hover,\n  .uk-light .uk-link:hover, .uk-section-primary:not(.uk-preserve-color) .uk-link:hover, .uk-section-secondary:not(.uk-preserve-color) .uk-link:hover, .uk-tile-primary:not(.uk-preserve-color) .uk-link:hover, .uk-tile-secondary:not(.uk-preserve-color) .uk-link:hover, .uk-card-primary.uk-card-body .uk-link:hover, .uk-card-primary > :not([class*='uk-card-media']) .uk-link:hover, .uk-card-secondary.uk-card-body .uk-link:hover, .uk-card-secondary > :not([class*='uk-card-media']) .uk-link:hover, .uk-overlay-primary .uk-link:hover, .uk-offcanvas-bar .uk-link:hover {\n    color: #fff; }\n  .uk-light :not(pre) > code, .uk-section-primary:not(.uk-preserve-color) :not(pre) > code, .uk-section-secondary:not(.uk-preserve-color) :not(pre) > code, .uk-tile-primary:not(.uk-preserve-color) :not(pre) > code, .uk-tile-secondary:not(.uk-preserve-color) :not(pre) > code, .uk-card-primary.uk-card-body :not(pre) > code, .uk-card-primary > :not([class*='uk-card-media']) :not(pre) > code, .uk-card-secondary.uk-card-body :not(pre) > code, .uk-card-secondary > :not([class*='uk-card-media']) :not(pre) > code, .uk-overlay-primary :not(pre) > code, .uk-offcanvas-bar :not(pre) > code,\n  .uk-light :not(pre) > kbd, .uk-section-primary:not(.uk-preserve-color) :not(pre) > kbd, .uk-section-secondary:not(.uk-preserve-color) :not(pre) > kbd, .uk-tile-primary:not(.uk-preserve-color) :not(pre) > kbd, .uk-tile-secondary:not(.uk-preserve-color) :not(pre) > kbd, .uk-card-primary.uk-card-body :not(pre) > kbd, .uk-card-primary > :not([class*='uk-card-media']) :not(pre) > kbd, .uk-card-secondary.uk-card-body :not(pre) > kbd, .uk-card-secondary > :not([class*='uk-card-media']) :not(pre) > kbd, .uk-overlay-primary :not(pre) > kbd, .uk-offcanvas-bar :not(pre) > kbd,\n  .uk-light :not(pre) > samp, .uk-section-primary:not(.uk-preserve-color) :not(pre) > samp, .uk-section-secondary:not(.uk-preserve-color) :not(pre) > samp, .uk-tile-primary:not(.uk-preserve-color) :not(pre) > samp, .uk-tile-secondary:not(.uk-preserve-color) :not(pre) > samp, .uk-card-primary.uk-card-body :not(pre) > samp, .uk-card-primary > :not([class*='uk-card-media']) :not(pre) > samp, .uk-card-secondary.uk-card-body :not(pre) > samp, .uk-card-secondary > :not([class*='uk-card-media']) :not(pre) > samp, .uk-overlay-primary :not(pre) > samp, .uk-offcanvas-bar :not(pre) > samp {\n    color: rgba(255, 255, 255, 0.7);\n    background: rgba(255, 255, 255, 0.1); }\n  .uk-light em, .uk-section-primary:not(.uk-preserve-color) em, .uk-section-secondary:not(.uk-preserve-color) em, .uk-tile-primary:not(.uk-preserve-color) em, .uk-tile-secondary:not(.uk-preserve-color) em, .uk-card-primary.uk-card-body em, .uk-card-primary > :not([class*='uk-card-media']) em, .uk-card-secondary.uk-card-body em, .uk-card-secondary > :not([class*='uk-card-media']) em, .uk-overlay-primary em, .uk-offcanvas-bar em {\n    color: #fff; }\n  .uk-light h1, .uk-section-primary:not(.uk-preserve-color) h1, .uk-section-secondary:not(.uk-preserve-color) h1, .uk-tile-primary:not(.uk-preserve-color) h1, .uk-tile-secondary:not(.uk-preserve-color) h1, .uk-card-primary.uk-card-body h1, .uk-card-primary > :not([class*='uk-card-media']) h1, .uk-card-secondary.uk-card-body h1, .uk-card-secondary > :not([class*='uk-card-media']) h1, .uk-overlay-primary h1, .uk-offcanvas-bar h1, .uk-light .uk-h1, .uk-section-primary:not(.uk-preserve-color) .uk-h1, .uk-section-secondary:not(.uk-preserve-color) .uk-h1, .uk-tile-primary:not(.uk-preserve-color) .uk-h1, .uk-tile-secondary:not(.uk-preserve-color) .uk-h1, .uk-card-primary.uk-card-body .uk-h1, .uk-card-primary > :not([class*='uk-card-media']) .uk-h1, .uk-card-secondary.uk-card-body .uk-h1, .uk-card-secondary > :not([class*='uk-card-media']) .uk-h1, .uk-overlay-primary .uk-h1, .uk-offcanvas-bar .uk-h1,\n  .uk-light h2, .uk-section-primary:not(.uk-preserve-color) h2, .uk-section-secondary:not(.uk-preserve-color) h2, .uk-tile-primary:not(.uk-preserve-color) h2, .uk-tile-secondary:not(.uk-preserve-color) h2, .uk-card-primary.uk-card-body h2, .uk-card-primary > :not([class*='uk-card-media']) h2, .uk-card-secondary.uk-card-body h2, .uk-card-secondary > :not([class*='uk-card-media']) h2, .uk-overlay-primary h2, .uk-offcanvas-bar h2, .uk-light .uk-h2, .uk-section-primary:not(.uk-preserve-color) .uk-h2, .uk-section-secondary:not(.uk-preserve-color) .uk-h2, .uk-tile-primary:not(.uk-preserve-color) .uk-h2, .uk-tile-secondary:not(.uk-preserve-color) .uk-h2, .uk-card-primary.uk-card-body .uk-h2, .uk-card-primary > :not([class*='uk-card-media']) .uk-h2, .uk-card-secondary.uk-card-body .uk-h2, .uk-card-secondary > :not([class*='uk-card-media']) .uk-h2, .uk-overlay-primary .uk-h2, .uk-offcanvas-bar .uk-h2,\n  .uk-light h3, .uk-section-primary:not(.uk-preserve-color) h3, .uk-section-secondary:not(.uk-preserve-color) h3, .uk-tile-primary:not(.uk-preserve-color) h3, .uk-tile-secondary:not(.uk-preserve-color) h3, .uk-card-primary.uk-card-body h3, .uk-card-primary > :not([class*='uk-card-media']) h3, .uk-card-secondary.uk-card-body h3, .uk-card-secondary > :not([class*='uk-card-media']) h3, .uk-overlay-primary h3, .uk-offcanvas-bar h3, .uk-light .uk-h3, .uk-section-primary:not(.uk-preserve-color) .uk-h3, .uk-section-secondary:not(.uk-preserve-color) .uk-h3, .uk-tile-primary:not(.uk-preserve-color) .uk-h3, .uk-tile-secondary:not(.uk-preserve-color) .uk-h3, .uk-card-primary.uk-card-body .uk-h3, .uk-card-primary > :not([class*='uk-card-media']) .uk-h3, .uk-card-secondary.uk-card-body .uk-h3, .uk-card-secondary > :not([class*='uk-card-media']) .uk-h3, .uk-overlay-primary .uk-h3, .uk-offcanvas-bar .uk-h3,\n  .uk-light h4, .uk-section-primary:not(.uk-preserve-color) h4, .uk-section-secondary:not(.uk-preserve-color) h4, .uk-tile-primary:not(.uk-preserve-color) h4, .uk-tile-secondary:not(.uk-preserve-color) h4, .uk-card-primary.uk-card-body h4, .uk-card-primary > :not([class*='uk-card-media']) h4, .uk-card-secondary.uk-card-body h4, .uk-card-secondary > :not([class*='uk-card-media']) h4, .uk-overlay-primary h4, .uk-offcanvas-bar h4, .uk-light .uk-h4, .uk-section-primary:not(.uk-preserve-color) .uk-h4, .uk-section-secondary:not(.uk-preserve-color) .uk-h4, .uk-tile-primary:not(.uk-preserve-color) .uk-h4, .uk-tile-secondary:not(.uk-preserve-color) .uk-h4, .uk-card-primary.uk-card-body .uk-h4, .uk-card-primary > :not([class*='uk-card-media']) .uk-h4, .uk-card-secondary.uk-card-body .uk-h4, .uk-card-secondary > :not([class*='uk-card-media']) .uk-h4, .uk-overlay-primary .uk-h4, .uk-offcanvas-bar .uk-h4,\n  .uk-light h5, .uk-section-primary:not(.uk-preserve-color) h5, .uk-section-secondary:not(.uk-preserve-color) h5, .uk-tile-primary:not(.uk-preserve-color) h5, .uk-tile-secondary:not(.uk-preserve-color) h5, .uk-card-primary.uk-card-body h5, .uk-card-primary > :not([class*='uk-card-media']) h5, .uk-card-secondary.uk-card-body h5, .uk-card-secondary > :not([class*='uk-card-media']) h5, .uk-overlay-primary h5, .uk-offcanvas-bar h5, .uk-light .uk-h5, .uk-section-primary:not(.uk-preserve-color) .uk-h5, .uk-section-secondary:not(.uk-preserve-color) .uk-h5, .uk-tile-primary:not(.uk-preserve-color) .uk-h5, .uk-tile-secondary:not(.uk-preserve-color) .uk-h5, .uk-card-primary.uk-card-body .uk-h5, .uk-card-primary > :not([class*='uk-card-media']) .uk-h5, .uk-card-secondary.uk-card-body .uk-h5, .uk-card-secondary > :not([class*='uk-card-media']) .uk-h5, .uk-overlay-primary .uk-h5, .uk-offcanvas-bar .uk-h5,\n  .uk-light h6, .uk-section-primary:not(.uk-preserve-color) h6, .uk-section-secondary:not(.uk-preserve-color) h6, .uk-tile-primary:not(.uk-preserve-color) h6, .uk-tile-secondary:not(.uk-preserve-color) h6, .uk-card-primary.uk-card-body h6, .uk-card-primary > :not([class*='uk-card-media']) h6, .uk-card-secondary.uk-card-body h6, .uk-card-secondary > :not([class*='uk-card-media']) h6, .uk-overlay-primary h6, .uk-offcanvas-bar h6, .uk-light .uk-h6, .uk-section-primary:not(.uk-preserve-color) .uk-h6, .uk-section-secondary:not(.uk-preserve-color) .uk-h6, .uk-tile-primary:not(.uk-preserve-color) .uk-h6, .uk-tile-secondary:not(.uk-preserve-color) .uk-h6, .uk-card-primary.uk-card-body .uk-h6, .uk-card-primary > :not([class*='uk-card-media']) .uk-h6, .uk-card-secondary.uk-card-body .uk-h6, .uk-card-secondary > :not([class*='uk-card-media']) .uk-h6, .uk-overlay-primary .uk-h6, .uk-offcanvas-bar .uk-h6 {\n    color: #fff; }\n  .uk-light blockquote, .uk-section-primary:not(.uk-preserve-color) blockquote, .uk-section-secondary:not(.uk-preserve-color) blockquote, .uk-tile-primary:not(.uk-preserve-color) blockquote, .uk-tile-secondary:not(.uk-preserve-color) blockquote, .uk-card-primary.uk-card-body blockquote, .uk-card-primary > :not([class*='uk-card-media']) blockquote, .uk-card-secondary.uk-card-body blockquote, .uk-card-secondary > :not([class*='uk-card-media']) blockquote, .uk-overlay-primary blockquote, .uk-offcanvas-bar blockquote {\n    color: #fff; }\n  .uk-light blockquote footer, .uk-section-primary:not(.uk-preserve-color) blockquote footer, .uk-section-secondary:not(.uk-preserve-color) blockquote footer, .uk-tile-primary:not(.uk-preserve-color) blockquote footer, .uk-tile-secondary:not(.uk-preserve-color) blockquote footer, .uk-card-primary.uk-card-body blockquote footer, .uk-card-primary > :not([class*='uk-card-media']) blockquote footer, .uk-card-secondary.uk-card-body blockquote footer, .uk-card-secondary > :not([class*='uk-card-media']) blockquote footer, .uk-overlay-primary blockquote footer, .uk-offcanvas-bar blockquote footer {\n    color: rgba(255, 255, 255, 0.7); }\n  .uk-light hr, .uk-section-primary:not(.uk-preserve-color) hr, .uk-section-secondary:not(.uk-preserve-color) hr, .uk-tile-primary:not(.uk-preserve-color) hr, .uk-tile-secondary:not(.uk-preserve-color) hr, .uk-card-primary.uk-card-body hr, .uk-card-primary > :not([class*='uk-card-media']) hr, .uk-card-secondary.uk-card-body hr, .uk-card-secondary > :not([class*='uk-card-media']) hr, .uk-overlay-primary hr, .uk-offcanvas-bar hr {\n    border-top-color: rgba(255, 255, 255, 0.2); }\n  .uk-light a.uk-link-muted, .uk-section-primary:not(.uk-preserve-color) a.uk-link-muted, .uk-section-secondary:not(.uk-preserve-color) a.uk-link-muted, .uk-tile-primary:not(.uk-preserve-color) a.uk-link-muted, .uk-tile-secondary:not(.uk-preserve-color) a.uk-link-muted, .uk-card-primary.uk-card-body a.uk-link-muted, .uk-card-primary > :not([class*='uk-card-media']) a.uk-link-muted, .uk-card-secondary.uk-card-body a.uk-link-muted, .uk-card-secondary > :not([class*='uk-card-media']) a.uk-link-muted, .uk-overlay-primary a.uk-link-muted, .uk-offcanvas-bar a.uk-link-muted,\n  .uk-light .uk-link-muted a, .uk-section-primary:not(.uk-preserve-color) .uk-link-muted a, .uk-section-secondary:not(.uk-preserve-color) .uk-link-muted a, .uk-tile-primary:not(.uk-preserve-color) .uk-link-muted a, .uk-tile-secondary:not(.uk-preserve-color) .uk-link-muted a, .uk-card-primary.uk-card-body .uk-link-muted a, .uk-card-primary > :not([class*='uk-card-media']) .uk-link-muted a, .uk-card-secondary.uk-card-body .uk-link-muted a, .uk-card-secondary > :not([class*='uk-card-media']) .uk-link-muted a, .uk-overlay-primary .uk-link-muted a, .uk-offcanvas-bar .uk-link-muted a {\n    color: rgba(255, 255, 255, 0.5); }\n  .uk-light a.uk-link-muted:hover, .uk-section-primary:not(.uk-preserve-color) a.uk-link-muted:hover, .uk-section-secondary:not(.uk-preserve-color) a.uk-link-muted:hover, .uk-tile-primary:not(.uk-preserve-color) a.uk-link-muted:hover, .uk-tile-secondary:not(.uk-preserve-color) a.uk-link-muted:hover, .uk-card-primary.uk-card-body a.uk-link-muted:hover, .uk-card-primary > :not([class*='uk-card-media']) a.uk-link-muted:hover, .uk-card-secondary.uk-card-body a.uk-link-muted:hover, .uk-card-secondary > :not([class*='uk-card-media']) a.uk-link-muted:hover, .uk-overlay-primary a.uk-link-muted:hover, .uk-offcanvas-bar a.uk-link-muted:hover,\n  .uk-light .uk-link-muted a:hover, .uk-section-primary:not(.uk-preserve-color) .uk-link-muted a:hover, .uk-section-secondary:not(.uk-preserve-color) .uk-link-muted a:hover, .uk-tile-primary:not(.uk-preserve-color) .uk-link-muted a:hover, .uk-tile-secondary:not(.uk-preserve-color) .uk-link-muted a:hover, .uk-card-primary.uk-card-body .uk-link-muted a:hover, .uk-card-primary > :not([class*='uk-card-media']) .uk-link-muted a:hover, .uk-card-secondary.uk-card-body .uk-link-muted a:hover, .uk-card-secondary > :not([class*='uk-card-media']) .uk-link-muted a:hover, .uk-overlay-primary .uk-link-muted a:hover, .uk-offcanvas-bar .uk-link-muted a:hover {\n    color: rgba(255, 255, 255, 0.7); }\n  .uk-light .uk-heading-divider, .uk-section-primary:not(.uk-preserve-color) .uk-heading-divider, .uk-section-secondary:not(.uk-preserve-color) .uk-heading-divider, .uk-tile-primary:not(.uk-preserve-color) .uk-heading-divider, .uk-tile-secondary:not(.uk-preserve-color) .uk-heading-divider, .uk-card-primary.uk-card-body .uk-heading-divider, .uk-card-primary > :not([class*='uk-card-media']) .uk-heading-divider, .uk-card-secondary.uk-card-body .uk-heading-divider, .uk-card-secondary > :not([class*='uk-card-media']) .uk-heading-divider, .uk-overlay-primary .uk-heading-divider, .uk-offcanvas-bar .uk-heading-divider {\n    border-bottom-color: rgba(255, 255, 255, 0.2); }\n  .uk-light .uk-heading-bullet::before, .uk-section-primary:not(.uk-preserve-color) .uk-heading-bullet::before, .uk-section-secondary:not(.uk-preserve-color) .uk-heading-bullet::before, .uk-tile-primary:not(.uk-preserve-color) .uk-heading-bullet::before, .uk-tile-secondary:not(.uk-preserve-color) .uk-heading-bullet::before, .uk-card-primary.uk-card-body .uk-heading-bullet::before, .uk-card-primary > :not([class*='uk-card-media']) .uk-heading-bullet::before, .uk-card-secondary.uk-card-body .uk-heading-bullet::before, .uk-card-secondary > :not([class*='uk-card-media']) .uk-heading-bullet::before, .uk-overlay-primary .uk-heading-bullet::before, .uk-offcanvas-bar .uk-heading-bullet::before {\n    border-left-color: rgba(255, 255, 255, 0.2); }\n  .uk-light .uk-heading-line > :before, .uk-section-primary:not(.uk-preserve-color) .uk-heading-line > :before, .uk-section-secondary:not(.uk-preserve-color) .uk-heading-line > :before, .uk-tile-primary:not(.uk-preserve-color) .uk-heading-line > :before, .uk-tile-secondary:not(.uk-preserve-color) .uk-heading-line > :before, .uk-card-primary.uk-card-body .uk-heading-line > :before, .uk-card-primary > :not([class*='uk-card-media']) .uk-heading-line > :before, .uk-card-secondary.uk-card-body .uk-heading-line > :before, .uk-card-secondary > :not([class*='uk-card-media']) .uk-heading-line > :before, .uk-overlay-primary .uk-heading-line > :before, .uk-offcanvas-bar .uk-heading-line > :before,\n  .uk-light .uk-heading-line > :after, .uk-section-primary:not(.uk-preserve-color) .uk-heading-line > :after, .uk-section-secondary:not(.uk-preserve-color) .uk-heading-line > :after, .uk-tile-primary:not(.uk-preserve-color) .uk-heading-line > :after, .uk-tile-secondary:not(.uk-preserve-color) .uk-heading-line > :after, .uk-card-primary.uk-card-body .uk-heading-line > :after, .uk-card-primary > :not([class*='uk-card-media']) .uk-heading-line > :after, .uk-card-secondary.uk-card-body .uk-heading-line > :after, .uk-card-secondary > :not([class*='uk-card-media']) .uk-heading-line > :after, .uk-overlay-primary .uk-heading-line > :after, .uk-offcanvas-bar .uk-heading-line > :after {\n    border-bottom-color: rgba(255, 255, 255, 0.2); }\n  .uk-light .uk-divider-icon, .uk-section-primary:not(.uk-preserve-color) .uk-divider-icon, .uk-section-secondary:not(.uk-preserve-color) .uk-divider-icon, .uk-tile-primary:not(.uk-preserve-color) .uk-divider-icon, .uk-tile-secondary:not(.uk-preserve-color) .uk-divider-icon, .uk-card-primary.uk-card-body .uk-divider-icon, .uk-card-primary > :not([class*='uk-card-media']) .uk-divider-icon, .uk-card-secondary.uk-card-body .uk-divider-icon, .uk-card-secondary > :not([class*='uk-card-media']) .uk-divider-icon, .uk-overlay-primary .uk-divider-icon, .uk-offcanvas-bar .uk-divider-icon {\n    background-image: url(\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2020%2020%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Ccircle%20fill%3D%22none%22%20stroke%3D%22rgba(255, 255, 255, 0.2)%22%20stroke-width%3D%222%22%20cx%3D%2210%22%20cy%3D%2210%22%20r%3D%227%22%3E%3C%2Fcircle%3E%0A%3C%2Fsvg%3E%0A\"); }\n  .uk-light .uk-divider-icon::before, .uk-section-primary:not(.uk-preserve-color) .uk-divider-icon::before, .uk-section-secondary:not(.uk-preserve-color) .uk-divider-icon::before, .uk-tile-primary:not(.uk-preserve-color) .uk-divider-icon::before, .uk-tile-secondary:not(.uk-preserve-color) .uk-divider-icon::before, .uk-card-primary.uk-card-body .uk-divider-icon::before, .uk-card-primary > :not([class*='uk-card-media']) .uk-divider-icon::before, .uk-card-secondary.uk-card-body .uk-divider-icon::before, .uk-card-secondary > :not([class*='uk-card-media']) .uk-divider-icon::before, .uk-overlay-primary .uk-divider-icon::before, .uk-offcanvas-bar .uk-divider-icon::before,\n  .uk-light .uk-divider-icon::after, .uk-section-primary:not(.uk-preserve-color) .uk-divider-icon::after, .uk-section-secondary:not(.uk-preserve-color) .uk-divider-icon::after, .uk-tile-primary:not(.uk-preserve-color) .uk-divider-icon::after, .uk-tile-secondary:not(.uk-preserve-color) .uk-divider-icon::after, .uk-card-primary.uk-card-body .uk-divider-icon::after, .uk-card-primary > :not([class*='uk-card-media']) .uk-divider-icon::after, .uk-card-secondary.uk-card-body .uk-divider-icon::after, .uk-card-secondary > :not([class*='uk-card-media']) .uk-divider-icon::after, .uk-overlay-primary .uk-divider-icon::after, .uk-offcanvas-bar .uk-divider-icon::after {\n    border-bottom-color: rgba(255, 255, 255, 0.2); }\n  .uk-light .uk-divider-small::after, .uk-section-primary:not(.uk-preserve-color) .uk-divider-small::after, .uk-section-secondary:not(.uk-preserve-color) .uk-divider-small::after, .uk-tile-primary:not(.uk-preserve-color) .uk-divider-small::after, .uk-tile-secondary:not(.uk-preserve-color) .uk-divider-small::after, .uk-card-primary.uk-card-body .uk-divider-small::after, .uk-card-primary > :not([class*='uk-card-media']) .uk-divider-small::after, .uk-card-secondary.uk-card-body .uk-divider-small::after, .uk-card-secondary > :not([class*='uk-card-media']) .uk-divider-small::after, .uk-overlay-primary .uk-divider-small::after, .uk-offcanvas-bar .uk-divider-small::after {\n    border-top-color: rgba(255, 255, 255, 0.2); }\n  .uk-light .uk-list-divider > li:nth-child(n+2), .uk-section-primary:not(.uk-preserve-color) .uk-list-divider > li:nth-child(n+2), .uk-section-secondary:not(.uk-preserve-color) .uk-list-divider > li:nth-child(n+2), .uk-tile-primary:not(.uk-preserve-color) .uk-list-divider > li:nth-child(n+2), .uk-tile-secondary:not(.uk-preserve-color) .uk-list-divider > li:nth-child(n+2), .uk-card-primary.uk-card-body .uk-list-divider > li:nth-child(n+2), .uk-card-primary > :not([class*='uk-card-media']) .uk-list-divider > li:nth-child(n+2), .uk-card-secondary.uk-card-body .uk-list-divider > li:nth-child(n+2), .uk-card-secondary > :not([class*='uk-card-media']) .uk-list-divider > li:nth-child(n+2), .uk-overlay-primary .uk-list-divider > li:nth-child(n+2), .uk-offcanvas-bar .uk-list-divider > li:nth-child(n+2) {\n    border-top-color: rgba(255, 255, 255, 0.2); }\n  .uk-light .uk-list-striped > li, .uk-section-primary:not(.uk-preserve-color) .uk-list-striped > li, .uk-section-secondary:not(.uk-preserve-color) .uk-list-striped > li, .uk-tile-primary:not(.uk-preserve-color) .uk-list-striped > li, .uk-tile-secondary:not(.uk-preserve-color) .uk-list-striped > li, .uk-card-primary.uk-card-body .uk-list-striped > li, .uk-card-primary > :not([class*='uk-card-media']) .uk-list-striped > li, .uk-card-secondary.uk-card-body .uk-list-striped > li, .uk-card-secondary > :not([class*='uk-card-media']) .uk-list-striped > li, .uk-overlay-primary .uk-list-striped > li, .uk-offcanvas-bar .uk-list-striped > li {\n    border-bottom-color: rgba(255, 255, 255, 0.2); }\n    .uk-light .uk-list-striped > li:first-child, .uk-section-primary:not(.uk-preserve-color) .uk-list-striped > li:first-child, .uk-section-secondary:not(.uk-preserve-color) .uk-list-striped > li:first-child, .uk-tile-primary:not(.uk-preserve-color) .uk-list-striped > li:first-child, .uk-tile-secondary:not(.uk-preserve-color) .uk-list-striped > li:first-child, .uk-card-primary.uk-card-body .uk-list-striped > li:first-child, .uk-card-primary > :not([class*='uk-card-media']) .uk-list-striped > li:first-child, .uk-card-secondary.uk-card-body .uk-list-striped > li:first-child, .uk-card-secondary > :not([class*='uk-card-media']) .uk-list-striped > li:first-child, .uk-overlay-primary .uk-list-striped > li:first-child, .uk-offcanvas-bar .uk-list-striped > li:first-child {\n      border-top-color: rgba(255, 255, 255, 0.2); }\n  .uk-light .uk-list-striped > li:nth-of-type(odd), .uk-section-primary:not(.uk-preserve-color) .uk-list-striped > li:nth-of-type(odd), .uk-section-secondary:not(.uk-preserve-color) .uk-list-striped > li:nth-of-type(odd), .uk-tile-primary:not(.uk-preserve-color) .uk-list-striped > li:nth-of-type(odd), .uk-tile-secondary:not(.uk-preserve-color) .uk-list-striped > li:nth-of-type(odd), .uk-card-primary.uk-card-body .uk-list-striped > li:nth-of-type(odd), .uk-card-primary > :not([class*='uk-card-media']) .uk-list-striped > li:nth-of-type(odd), .uk-card-secondary.uk-card-body .uk-list-striped > li:nth-of-type(odd), .uk-card-secondary > :not([class*='uk-card-media']) .uk-list-striped > li:nth-of-type(odd), .uk-overlay-primary .uk-list-striped > li:nth-of-type(odd), .uk-offcanvas-bar .uk-list-striped > li:nth-of-type(odd) {\n    background-color: rgba(255, 255, 255, 0.1); }\n  .uk-light .uk-list-bullet > li::before, .uk-section-primary:not(.uk-preserve-color) .uk-list-bullet > li::before, .uk-section-secondary:not(.uk-preserve-color) .uk-list-bullet > li::before, .uk-tile-primary:not(.uk-preserve-color) .uk-list-bullet > li::before, .uk-tile-secondary:not(.uk-preserve-color) .uk-list-bullet > li::before, .uk-card-primary.uk-card-body .uk-list-bullet > li::before, .uk-card-primary > :not([class*='uk-card-media']) .uk-list-bullet > li::before, .uk-card-secondary.uk-card-body .uk-list-bullet > li::before, .uk-card-secondary > :not([class*='uk-card-media']) .uk-list-bullet > li::before, .uk-overlay-primary .uk-list-bullet > li::before, .uk-offcanvas-bar .uk-list-bullet > li::before {\n    background-image: url(\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%226%22%20height%3D%226%22%20viewBox%3D%220%200%206%206%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Ccircle%20fill%3D%22rgba(255, 255, 255, 0.7)%22%20cx%3D%223%22%20cy%3D%223%22%20r%3D%223%22%3E%3C%2Fcircle%3E%0A%3C%2Fsvg%3E\"); }\n  .uk-light .uk-icon-link, .uk-section-primary:not(.uk-preserve-color) .uk-icon-link, .uk-section-secondary:not(.uk-preserve-color) .uk-icon-link, .uk-tile-primary:not(.uk-preserve-color) .uk-icon-link, .uk-tile-secondary:not(.uk-preserve-color) .uk-icon-link, .uk-card-primary.uk-card-body .uk-icon-link, .uk-card-primary > :not([class*='uk-card-media']) .uk-icon-link, .uk-card-secondary.uk-card-body .uk-icon-link, .uk-card-secondary > :not([class*='uk-card-media']) .uk-icon-link, .uk-overlay-primary .uk-icon-link, .uk-offcanvas-bar .uk-icon-link {\n    color: rgba(255, 255, 255, 0.5); }\n  .uk-light .uk-icon-link:hover, .uk-section-primary:not(.uk-preserve-color) .uk-icon-link:hover, .uk-section-secondary:not(.uk-preserve-color) .uk-icon-link:hover, .uk-tile-primary:not(.uk-preserve-color) .uk-icon-link:hover, .uk-tile-secondary:not(.uk-preserve-color) .uk-icon-link:hover, .uk-card-primary.uk-card-body .uk-icon-link:hover, .uk-card-primary > :not([class*='uk-card-media']) .uk-icon-link:hover, .uk-card-secondary.uk-card-body .uk-icon-link:hover, .uk-card-secondary > :not([class*='uk-card-media']) .uk-icon-link:hover, .uk-overlay-primary .uk-icon-link:hover, .uk-offcanvas-bar .uk-icon-link:hover,\n  .uk-light .uk-icon-link:focus, .uk-section-primary:not(.uk-preserve-color) .uk-icon-link:focus, .uk-section-secondary:not(.uk-preserve-color) .uk-icon-link:focus, .uk-tile-primary:not(.uk-preserve-color) .uk-icon-link:focus, .uk-tile-secondary:not(.uk-preserve-color) .uk-icon-link:focus, .uk-card-primary.uk-card-body .uk-icon-link:focus, .uk-card-primary > :not([class*='uk-card-media']) .uk-icon-link:focus, .uk-card-secondary.uk-card-body .uk-icon-link:focus, .uk-card-secondary > :not([class*='uk-card-media']) .uk-icon-link:focus, .uk-overlay-primary .uk-icon-link:focus, .uk-offcanvas-bar .uk-icon-link:focus {\n    color: rgba(255, 255, 255, 0.7); }\n  .uk-light .uk-icon-link:active, .uk-section-primary:not(.uk-preserve-color) .uk-icon-link:active, .uk-section-secondary:not(.uk-preserve-color) .uk-icon-link:active, .uk-tile-primary:not(.uk-preserve-color) .uk-icon-link:active, .uk-tile-secondary:not(.uk-preserve-color) .uk-icon-link:active, .uk-card-primary.uk-card-body .uk-icon-link:active, .uk-card-primary > :not([class*='uk-card-media']) .uk-icon-link:active, .uk-card-secondary.uk-card-body .uk-icon-link:active, .uk-card-secondary > :not([class*='uk-card-media']) .uk-icon-link:active, .uk-overlay-primary .uk-icon-link:active, .uk-offcanvas-bar .uk-icon-link:active,\n  .uk-light .uk-active > .uk-icon-link, .uk-section-primary:not(.uk-preserve-color) .uk-active > .uk-icon-link, .uk-section-secondary:not(.uk-preserve-color) .uk-active > .uk-icon-link, .uk-tile-primary:not(.uk-preserve-color) .uk-active > .uk-icon-link, .uk-tile-secondary:not(.uk-preserve-color) .uk-active > .uk-icon-link, .uk-card-primary.uk-card-body .uk-active > .uk-icon-link, .uk-card-primary > :not([class*='uk-card-media']) .uk-active > .uk-icon-link, .uk-card-secondary.uk-card-body .uk-active > .uk-icon-link, .uk-card-secondary > :not([class*='uk-card-media']) .uk-active > .uk-icon-link, .uk-overlay-primary .uk-active > .uk-icon-link, .uk-offcanvas-bar .uk-active > .uk-icon-link {\n    color: rgba(255, 255, 255, 0.7); }\n  .uk-light .uk-icon-button, .uk-section-primary:not(.uk-preserve-color) .uk-icon-button, .uk-section-secondary:not(.uk-preserve-color) .uk-icon-button, .uk-tile-primary:not(.uk-preserve-color) .uk-icon-button, .uk-tile-secondary:not(.uk-preserve-color) .uk-icon-button, .uk-card-primary.uk-card-body .uk-icon-button, .uk-card-primary > :not([class*='uk-card-media']) .uk-icon-button, .uk-card-secondary.uk-card-body .uk-icon-button, .uk-card-secondary > :not([class*='uk-card-media']) .uk-icon-button, .uk-overlay-primary .uk-icon-button, .uk-offcanvas-bar .uk-icon-button {\n    background-color: rgba(255, 255, 255, 0.1);\n    color: rgba(255, 255, 255, 0.5); }\n  .uk-light .uk-icon-button:hover, .uk-section-primary:not(.uk-preserve-color) .uk-icon-button:hover, .uk-section-secondary:not(.uk-preserve-color) .uk-icon-button:hover, .uk-tile-primary:not(.uk-preserve-color) .uk-icon-button:hover, .uk-tile-secondary:not(.uk-preserve-color) .uk-icon-button:hover, .uk-card-primary.uk-card-body .uk-icon-button:hover, .uk-card-primary > :not([class*='uk-card-media']) .uk-icon-button:hover, .uk-card-secondary.uk-card-body .uk-icon-button:hover, .uk-card-secondary > :not([class*='uk-card-media']) .uk-icon-button:hover, .uk-overlay-primary .uk-icon-button:hover, .uk-offcanvas-bar .uk-icon-button:hover,\n  .uk-light .uk-icon-button:focus, .uk-section-primary:not(.uk-preserve-color) .uk-icon-button:focus, .uk-section-secondary:not(.uk-preserve-color) .uk-icon-button:focus, .uk-tile-primary:not(.uk-preserve-color) .uk-icon-button:focus, .uk-tile-secondary:not(.uk-preserve-color) .uk-icon-button:focus, .uk-card-primary.uk-card-body .uk-icon-button:focus, .uk-card-primary > :not([class*='uk-card-media']) .uk-icon-button:focus, .uk-card-secondary.uk-card-body .uk-icon-button:focus, .uk-card-secondary > :not([class*='uk-card-media']) .uk-icon-button:focus, .uk-overlay-primary .uk-icon-button:focus, .uk-offcanvas-bar .uk-icon-button:focus {\n    background-color: rgba(242, 242, 242, 0.1);\n    color: rgba(255, 255, 255, 0.7); }\n  .uk-light .uk-icon-button:active, .uk-section-primary:not(.uk-preserve-color) .uk-icon-button:active, .uk-section-secondary:not(.uk-preserve-color) .uk-icon-button:active, .uk-tile-primary:not(.uk-preserve-color) .uk-icon-button:active, .uk-tile-secondary:not(.uk-preserve-color) .uk-icon-button:active, .uk-card-primary.uk-card-body .uk-icon-button:active, .uk-card-primary > :not([class*='uk-card-media']) .uk-icon-button:active, .uk-card-secondary.uk-card-body .uk-icon-button:active, .uk-card-secondary > :not([class*='uk-card-media']) .uk-icon-button:active, .uk-overlay-primary .uk-icon-button:active, .uk-offcanvas-bar .uk-icon-button:active {\n    background-color: rgba(230, 230, 230, 0.1);\n    color: rgba(255, 255, 255, 0.7); }\n  .uk-light .uk-input, .uk-section-primary:not(.uk-preserve-color) .uk-input, .uk-section-secondary:not(.uk-preserve-color) .uk-input, .uk-tile-primary:not(.uk-preserve-color) .uk-input, .uk-tile-secondary:not(.uk-preserve-color) .uk-input, .uk-card-primary.uk-card-body .uk-input, .uk-card-primary > :not([class*='uk-card-media']) .uk-input, .uk-card-secondary.uk-card-body .uk-input, .uk-card-secondary > :not([class*='uk-card-media']) .uk-input, .uk-overlay-primary .uk-input, .uk-offcanvas-bar .uk-input,\n  .uk-light .uk-select, .uk-section-primary:not(.uk-preserve-color) .uk-select, .uk-section-secondary:not(.uk-preserve-color) .uk-select, .uk-tile-primary:not(.uk-preserve-color) .uk-select, .uk-tile-secondary:not(.uk-preserve-color) .uk-select, .uk-card-primary.uk-card-body .uk-select, .uk-card-primary > :not([class*='uk-card-media']) .uk-select, .uk-card-secondary.uk-card-body .uk-select, .uk-card-secondary > :not([class*='uk-card-media']) .uk-select, .uk-overlay-primary .uk-select, .uk-offcanvas-bar .uk-select,\n  .uk-light .uk-textarea, .uk-section-primary:not(.uk-preserve-color) .uk-textarea, .uk-section-secondary:not(.uk-preserve-color) .uk-textarea, .uk-tile-primary:not(.uk-preserve-color) .uk-textarea, .uk-tile-secondary:not(.uk-preserve-color) .uk-textarea, .uk-card-primary.uk-card-body .uk-textarea, .uk-card-primary > :not([class*='uk-card-media']) .uk-textarea, .uk-card-secondary.uk-card-body .uk-textarea, .uk-card-secondary > :not([class*='uk-card-media']) .uk-textarea, .uk-overlay-primary .uk-textarea, .uk-offcanvas-bar .uk-textarea {\n    background-color: rgba(255, 255, 255, 0.1);\n    color: rgba(255, 255, 255, 0.7);\n    background-clip: padding-box;\n    border-color: rgba(255, 255, 255, 0.2); }\n    .uk-light .uk-input:focus, .uk-section-primary:not(.uk-preserve-color) .uk-input:focus, .uk-section-secondary:not(.uk-preserve-color) .uk-input:focus, .uk-tile-primary:not(.uk-preserve-color) .uk-input:focus, .uk-tile-secondary:not(.uk-preserve-color) .uk-input:focus, .uk-card-primary.uk-card-body .uk-input:focus, .uk-card-primary > :not([class*='uk-card-media']) .uk-input:focus, .uk-card-secondary.uk-card-body .uk-input:focus, .uk-card-secondary > :not([class*='uk-card-media']) .uk-input:focus, .uk-overlay-primary .uk-input:focus, .uk-offcanvas-bar .uk-input:focus,\n    .uk-light .uk-select:focus, .uk-section-primary:not(.uk-preserve-color) .uk-select:focus, .uk-section-secondary:not(.uk-preserve-color) .uk-select:focus, .uk-tile-primary:not(.uk-preserve-color) .uk-select:focus, .uk-tile-secondary:not(.uk-preserve-color) .uk-select:focus, .uk-card-primary.uk-card-body .uk-select:focus, .uk-card-primary > :not([class*='uk-card-media']) .uk-select:focus, .uk-card-secondary.uk-card-body .uk-select:focus, .uk-card-secondary > :not([class*='uk-card-media']) .uk-select:focus, .uk-overlay-primary .uk-select:focus, .uk-offcanvas-bar .uk-select:focus,\n    .uk-light .uk-textarea:focus, .uk-section-primary:not(.uk-preserve-color) .uk-textarea:focus, .uk-section-secondary:not(.uk-preserve-color) .uk-textarea:focus, .uk-tile-primary:not(.uk-preserve-color) .uk-textarea:focus, .uk-tile-secondary:not(.uk-preserve-color) .uk-textarea:focus, .uk-card-primary.uk-card-body .uk-textarea:focus, .uk-card-primary > :not([class*='uk-card-media']) .uk-textarea:focus, .uk-card-secondary.uk-card-body .uk-textarea:focus, .uk-card-secondary > :not([class*='uk-card-media']) .uk-textarea:focus, .uk-overlay-primary .uk-textarea:focus, .uk-offcanvas-bar .uk-textarea:focus {\n      background-color: rgba(255, 255, 255, 0.1);\n      color: rgba(255, 255, 255, 0.7);\n      border-color: rgba(255, 255, 255, 0.7); }\n  .uk-light .uk-input:-ms-input-placeholder, .uk-section-primary:not(.uk-preserve-color) .uk-input:-ms-input-placeholder, .uk-section-secondary:not(.uk-preserve-color) .uk-input:-ms-input-placeholder, .uk-tile-primary:not(.uk-preserve-color) .uk-input:-ms-input-placeholder, .uk-tile-secondary:not(.uk-preserve-color) .uk-input:-ms-input-placeholder, .uk-card-primary.uk-card-body .uk-input:-ms-input-placeholder, .uk-card-primary > :not([class*='uk-card-media']) .uk-input:-ms-input-placeholder, .uk-card-secondary.uk-card-body .uk-input:-ms-input-placeholder, .uk-card-secondary > :not([class*='uk-card-media']) .uk-input:-ms-input-placeholder, .uk-overlay-primary .uk-input:-ms-input-placeholder, .uk-offcanvas-bar .uk-input:-ms-input-placeholder {\n    color: rgba(255, 255, 255, 0.5) !important; }\n  .uk-light .uk-input::-moz-placeholder, .uk-section-primary:not(.uk-preserve-color) .uk-input::-moz-placeholder, .uk-section-secondary:not(.uk-preserve-color) .uk-input::-moz-placeholder, .uk-tile-primary:not(.uk-preserve-color) .uk-input::-moz-placeholder, .uk-tile-secondary:not(.uk-preserve-color) .uk-input::-moz-placeholder, .uk-card-primary.uk-card-body .uk-input::-moz-placeholder, .uk-card-primary > :not([class*='uk-card-media']) .uk-input::-moz-placeholder, .uk-card-secondary.uk-card-body .uk-input::-moz-placeholder, .uk-card-secondary > :not([class*='uk-card-media']) .uk-input::-moz-placeholder, .uk-overlay-primary .uk-input::-moz-placeholder, .uk-offcanvas-bar .uk-input::-moz-placeholder {\n    color: rgba(255, 255, 255, 0.5); }\n  .uk-light .uk-input::-webkit-input-placeholder, .uk-section-primary:not(.uk-preserve-color) .uk-input::-webkit-input-placeholder, .uk-section-secondary:not(.uk-preserve-color) .uk-input::-webkit-input-placeholder, .uk-tile-primary:not(.uk-preserve-color) .uk-input::-webkit-input-placeholder, .uk-tile-secondary:not(.uk-preserve-color) .uk-input::-webkit-input-placeholder, .uk-card-primary.uk-card-body .uk-input::-webkit-input-placeholder, .uk-card-primary > :not([class*='uk-card-media']) .uk-input::-webkit-input-placeholder, .uk-card-secondary.uk-card-body .uk-input::-webkit-input-placeholder, .uk-card-secondary > :not([class*='uk-card-media']) .uk-input::-webkit-input-placeholder, .uk-overlay-primary .uk-input::-webkit-input-placeholder, .uk-offcanvas-bar .uk-input::-webkit-input-placeholder {\n    color: rgba(255, 255, 255, 0.5); }\n  .uk-light .uk-textarea:-ms-input-placeholder, .uk-section-primary:not(.uk-preserve-color) .uk-textarea:-ms-input-placeholder, .uk-section-secondary:not(.uk-preserve-color) .uk-textarea:-ms-input-placeholder, .uk-tile-primary:not(.uk-preserve-color) .uk-textarea:-ms-input-placeholder, .uk-tile-secondary:not(.uk-preserve-color) .uk-textarea:-ms-input-placeholder, .uk-card-primary.uk-card-body .uk-textarea:-ms-input-placeholder, .uk-card-primary > :not([class*='uk-card-media']) .uk-textarea:-ms-input-placeholder, .uk-card-secondary.uk-card-body .uk-textarea:-ms-input-placeholder, .uk-card-secondary > :not([class*='uk-card-media']) .uk-textarea:-ms-input-placeholder, .uk-overlay-primary .uk-textarea:-ms-input-placeholder, .uk-offcanvas-bar .uk-textarea:-ms-input-placeholder {\n    color: rgba(255, 255, 255, 0.5) !important; }\n  .uk-light .uk-textarea::-moz-placeholder, .uk-section-primary:not(.uk-preserve-color) .uk-textarea::-moz-placeholder, .uk-section-secondary:not(.uk-preserve-color) .uk-textarea::-moz-placeholder, .uk-tile-primary:not(.uk-preserve-color) .uk-textarea::-moz-placeholder, .uk-tile-secondary:not(.uk-preserve-color) .uk-textarea::-moz-placeholder, .uk-card-primary.uk-card-body .uk-textarea::-moz-placeholder, .uk-card-primary > :not([class*='uk-card-media']) .uk-textarea::-moz-placeholder, .uk-card-secondary.uk-card-body .uk-textarea::-moz-placeholder, .uk-card-secondary > :not([class*='uk-card-media']) .uk-textarea::-moz-placeholder, .uk-overlay-primary .uk-textarea::-moz-placeholder, .uk-offcanvas-bar .uk-textarea::-moz-placeholder {\n    color: rgba(255, 255, 255, 0.5); }\n  .uk-light .uk-textarea::-webkit-input-placeholder, .uk-section-primary:not(.uk-preserve-color) .uk-textarea::-webkit-input-placeholder, .uk-section-secondary:not(.uk-preserve-color) .uk-textarea::-webkit-input-placeholder, .uk-tile-primary:not(.uk-preserve-color) .uk-textarea::-webkit-input-placeholder, .uk-tile-secondary:not(.uk-preserve-color) .uk-textarea::-webkit-input-placeholder, .uk-card-primary.uk-card-body .uk-textarea::-webkit-input-placeholder, .uk-card-primary > :not([class*='uk-card-media']) .uk-textarea::-webkit-input-placeholder, .uk-card-secondary.uk-card-body .uk-textarea::-webkit-input-placeholder, .uk-card-secondary > :not([class*='uk-card-media']) .uk-textarea::-webkit-input-placeholder, .uk-overlay-primary .uk-textarea::-webkit-input-placeholder, .uk-offcanvas-bar .uk-textarea::-webkit-input-placeholder {\n    color: rgba(255, 255, 255, 0.5); }\n  .uk-light .uk-select:not([multiple]):not([size]), .uk-section-primary:not(.uk-preserve-color) .uk-select:not([multiple]):not([size]), .uk-section-secondary:not(.uk-preserve-color) .uk-select:not([multiple]):not([size]), .uk-tile-primary:not(.uk-preserve-color) .uk-select:not([multiple]):not([size]), .uk-tile-secondary:not(.uk-preserve-color) .uk-select:not([multiple]):not([size]), .uk-card-primary.uk-card-body .uk-select:not([multiple]):not([size]), .uk-card-primary > :not([class*='uk-card-media']) .uk-select:not([multiple]):not([size]), .uk-card-secondary.uk-card-body .uk-select:not([multiple]):not([size]), .uk-card-secondary > :not([class*='uk-card-media']) .uk-select:not([multiple]):not([size]), .uk-overlay-primary .uk-select:not([multiple]):not([size]), .uk-offcanvas-bar .uk-select:not([multiple]):not([size]) {\n    background-image: url(\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Cpolygon%20fill%3D%22rgba(255, 255, 255, 0.7)%22%20points%3D%224%201%201%206%207%206%22%3E%3C%2Fpolygon%3E%0A%20%20%20%20%3Cpolygon%20fill%3D%22rgba(255, 255, 255, 0.7)%22%20points%3D%224%2013%201%208%207%208%22%3E%3C%2Fpolygon%3E%0A%3C%2Fsvg%3E\"); }\n  .uk-light .uk-radio, .uk-section-primary:not(.uk-preserve-color) .uk-radio, .uk-section-secondary:not(.uk-preserve-color) .uk-radio, .uk-tile-primary:not(.uk-preserve-color) .uk-radio, .uk-tile-secondary:not(.uk-preserve-color) .uk-radio, .uk-card-primary.uk-card-body .uk-radio, .uk-card-primary > :not([class*='uk-card-media']) .uk-radio, .uk-card-secondary.uk-card-body .uk-radio, .uk-card-secondary > :not([class*='uk-card-media']) .uk-radio, .uk-overlay-primary .uk-radio, .uk-offcanvas-bar .uk-radio,\n  .uk-light .uk-checkbox, .uk-section-primary:not(.uk-preserve-color) .uk-checkbox, .uk-section-secondary:not(.uk-preserve-color) .uk-checkbox, .uk-tile-primary:not(.uk-preserve-color) .uk-checkbox, .uk-tile-secondary:not(.uk-preserve-color) .uk-checkbox, .uk-card-primary.uk-card-body .uk-checkbox, .uk-card-primary > :not([class*='uk-card-media']) .uk-checkbox, .uk-card-secondary.uk-card-body .uk-checkbox, .uk-card-secondary > :not([class*='uk-card-media']) .uk-checkbox, .uk-overlay-primary .uk-checkbox, .uk-offcanvas-bar .uk-checkbox {\n    background-color: rgba(242, 242, 242, 0.1);\n    border-color: rgba(255, 255, 255, 0.2); }\n  .uk-light .uk-radio:focus, .uk-section-primary:not(.uk-preserve-color) .uk-radio:focus, .uk-section-secondary:not(.uk-preserve-color) .uk-radio:focus, .uk-tile-primary:not(.uk-preserve-color) .uk-radio:focus, .uk-tile-secondary:not(.uk-preserve-color) .uk-radio:focus, .uk-card-primary.uk-card-body .uk-radio:focus, .uk-card-primary > :not([class*='uk-card-media']) .uk-radio:focus, .uk-card-secondary.uk-card-body .uk-radio:focus, .uk-card-secondary > :not([class*='uk-card-media']) .uk-radio:focus, .uk-overlay-primary .uk-radio:focus, .uk-offcanvas-bar .uk-radio:focus,\n  .uk-light .uk-checkbox:focus, .uk-section-primary:not(.uk-preserve-color) .uk-checkbox:focus, .uk-section-secondary:not(.uk-preserve-color) .uk-checkbox:focus, .uk-tile-primary:not(.uk-preserve-color) .uk-checkbox:focus, .uk-tile-secondary:not(.uk-preserve-color) .uk-checkbox:focus, .uk-card-primary.uk-card-body .uk-checkbox:focus, .uk-card-primary > :not([class*='uk-card-media']) .uk-checkbox:focus, .uk-card-secondary.uk-card-body .uk-checkbox:focus, .uk-card-secondary > :not([class*='uk-card-media']) .uk-checkbox:focus, .uk-overlay-primary .uk-checkbox:focus, .uk-offcanvas-bar .uk-checkbox:focus {\n    border-color: rgba(255, 255, 255, 0.7); }\n  .uk-light .uk-radio:checked, .uk-section-primary:not(.uk-preserve-color) .uk-radio:checked, .uk-section-secondary:not(.uk-preserve-color) .uk-radio:checked, .uk-tile-primary:not(.uk-preserve-color) .uk-radio:checked, .uk-tile-secondary:not(.uk-preserve-color) .uk-radio:checked, .uk-card-primary.uk-card-body .uk-radio:checked, .uk-card-primary > :not([class*='uk-card-media']) .uk-radio:checked, .uk-card-secondary.uk-card-body .uk-radio:checked, .uk-card-secondary > :not([class*='uk-card-media']) .uk-radio:checked, .uk-overlay-primary .uk-radio:checked, .uk-offcanvas-bar .uk-radio:checked,\n  .uk-light .uk-checkbox:checked, .uk-section-primary:not(.uk-preserve-color) .uk-checkbox:checked, .uk-section-secondary:not(.uk-preserve-color) .uk-checkbox:checked, .uk-tile-primary:not(.uk-preserve-color) .uk-checkbox:checked, .uk-tile-secondary:not(.uk-preserve-color) .uk-checkbox:checked, .uk-card-primary.uk-card-body .uk-checkbox:checked, .uk-card-primary > :not([class*='uk-card-media']) .uk-checkbox:checked, .uk-card-secondary.uk-card-body .uk-checkbox:checked, .uk-card-secondary > :not([class*='uk-card-media']) .uk-checkbox:checked, .uk-overlay-primary .uk-checkbox:checked, .uk-offcanvas-bar .uk-checkbox:checked,\n  .uk-light .uk-checkbox:indeterminate, .uk-section-primary:not(.uk-preserve-color) .uk-checkbox:indeterminate, .uk-section-secondary:not(.uk-preserve-color) .uk-checkbox:indeterminate, .uk-tile-primary:not(.uk-preserve-color) .uk-checkbox:indeterminate, .uk-tile-secondary:not(.uk-preserve-color) .uk-checkbox:indeterminate, .uk-card-primary.uk-card-body .uk-checkbox:indeterminate, .uk-card-primary > :not([class*='uk-card-media']) .uk-checkbox:indeterminate, .uk-card-secondary.uk-card-body .uk-checkbox:indeterminate, .uk-card-secondary > :not([class*='uk-card-media']) .uk-checkbox:indeterminate, .uk-overlay-primary .uk-checkbox:indeterminate, .uk-offcanvas-bar .uk-checkbox:indeterminate {\n    background-color: #fff;\n    border-color: rgba(255, 255, 255, 0.7); }\n  .uk-light .uk-radio:checked:focus, .uk-section-primary:not(.uk-preserve-color) .uk-radio:checked:focus, .uk-section-secondary:not(.uk-preserve-color) .uk-radio:checked:focus, .uk-tile-primary:not(.uk-preserve-color) .uk-radio:checked:focus, .uk-tile-secondary:not(.uk-preserve-color) .uk-radio:checked:focus, .uk-card-primary.uk-card-body .uk-radio:checked:focus, .uk-card-primary > :not([class*='uk-card-media']) .uk-radio:checked:focus, .uk-card-secondary.uk-card-body .uk-radio:checked:focus, .uk-card-secondary > :not([class*='uk-card-media']) .uk-radio:checked:focus, .uk-overlay-primary .uk-radio:checked:focus, .uk-offcanvas-bar .uk-radio:checked:focus,\n  .uk-light .uk-checkbox:checked:focus, .uk-section-primary:not(.uk-preserve-color) .uk-checkbox:checked:focus, .uk-section-secondary:not(.uk-preserve-color) .uk-checkbox:checked:focus, .uk-tile-primary:not(.uk-preserve-color) .uk-checkbox:checked:focus, .uk-tile-secondary:not(.uk-preserve-color) .uk-checkbox:checked:focus, .uk-card-primary.uk-card-body .uk-checkbox:checked:focus, .uk-card-primary > :not([class*='uk-card-media']) .uk-checkbox:checked:focus, .uk-card-secondary.uk-card-body .uk-checkbox:checked:focus, .uk-card-secondary > :not([class*='uk-card-media']) .uk-checkbox:checked:focus, .uk-overlay-primary .uk-checkbox:checked:focus, .uk-offcanvas-bar .uk-checkbox:checked:focus,\n  .uk-light .uk-checkbox:indeterminate:focus, .uk-section-primary:not(.uk-preserve-color) .uk-checkbox:indeterminate:focus, .uk-section-secondary:not(.uk-preserve-color) .uk-checkbox:indeterminate:focus, .uk-tile-primary:not(.uk-preserve-color) .uk-checkbox:indeterminate:focus, .uk-tile-secondary:not(.uk-preserve-color) .uk-checkbox:indeterminate:focus, .uk-card-primary.uk-card-body .uk-checkbox:indeterminate:focus, .uk-card-primary > :not([class*='uk-card-media']) .uk-checkbox:indeterminate:focus, .uk-card-secondary.uk-card-body .uk-checkbox:indeterminate:focus, .uk-card-secondary > :not([class*='uk-card-media']) .uk-checkbox:indeterminate:focus, .uk-overlay-primary .uk-checkbox:indeterminate:focus, .uk-offcanvas-bar .uk-checkbox:indeterminate:focus {\n    background-color: #e6e6e6; }\n  .uk-light .uk-radio:checked, .uk-section-primary:not(.uk-preserve-color) .uk-radio:checked, .uk-section-secondary:not(.uk-preserve-color) .uk-radio:checked, .uk-tile-primary:not(.uk-preserve-color) .uk-radio:checked, .uk-tile-secondary:not(.uk-preserve-color) .uk-radio:checked, .uk-card-primary.uk-card-body .uk-radio:checked, .uk-card-primary > :not([class*='uk-card-media']) .uk-radio:checked, .uk-card-secondary.uk-card-body .uk-radio:checked, .uk-card-secondary > :not([class*='uk-card-media']) .uk-radio:checked, .uk-overlay-primary .uk-radio:checked, .uk-offcanvas-bar .uk-radio:checked {\n    background-image: url(\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Ccircle%20fill%3D%22%23666%22%20cx%3D%228%22%20cy%3D%228%22%20r%3D%222%22%3E%3C%2Fcircle%3E%0A%3C%2Fsvg%3E\"); }\n  .uk-light .uk-checkbox:checked, .uk-section-primary:not(.uk-preserve-color) .uk-checkbox:checked, .uk-section-secondary:not(.uk-preserve-color) .uk-checkbox:checked, .uk-tile-primary:not(.uk-preserve-color) .uk-checkbox:checked, .uk-tile-secondary:not(.uk-preserve-color) .uk-checkbox:checked, .uk-card-primary.uk-card-body .uk-checkbox:checked, .uk-card-primary > :not([class*='uk-card-media']) .uk-checkbox:checked, .uk-card-secondary.uk-card-body .uk-checkbox:checked, .uk-card-secondary > :not([class*='uk-card-media']) .uk-checkbox:checked, .uk-overlay-primary .uk-checkbox:checked, .uk-offcanvas-bar .uk-checkbox:checked {\n    background-image: url(\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2214%22%20height%3D%2211%22%20viewBox%3D%220%200%2014%2011%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Cpolygon%20fill%3D%22%23666%22%20points%3D%2212%201%205%207.5%202%205%201%205.5%205%2010%2013%201.5%22%2F%3E%0A%3C%2Fsvg%3E\"); }\n  .uk-light .uk-checkbox:indeterminate, .uk-section-primary:not(.uk-preserve-color) .uk-checkbox:indeterminate, .uk-section-secondary:not(.uk-preserve-color) .uk-checkbox:indeterminate, .uk-tile-primary:not(.uk-preserve-color) .uk-checkbox:indeterminate, .uk-tile-secondary:not(.uk-preserve-color) .uk-checkbox:indeterminate, .uk-card-primary.uk-card-body .uk-checkbox:indeterminate, .uk-card-primary > :not([class*='uk-card-media']) .uk-checkbox:indeterminate, .uk-card-secondary.uk-card-body .uk-checkbox:indeterminate, .uk-card-secondary > :not([class*='uk-card-media']) .uk-checkbox:indeterminate, .uk-overlay-primary .uk-checkbox:indeterminate, .uk-offcanvas-bar .uk-checkbox:indeterminate {\n    background-image: url(\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Crect%20fill%3D%22%23666%22%20x%3D%223%22%20y%3D%228%22%20width%3D%2210%22%20height%3D%221%22%3E%3C%2Frect%3E%0A%3C%2Fsvg%3E\"); }\n  .uk-light .uk-form-label, .uk-section-primary:not(.uk-preserve-color) .uk-form-label, .uk-section-secondary:not(.uk-preserve-color) .uk-form-label, .uk-tile-primary:not(.uk-preserve-color) .uk-form-label, .uk-tile-secondary:not(.uk-preserve-color) .uk-form-label, .uk-card-primary.uk-card-body .uk-form-label, .uk-card-primary > :not([class*='uk-card-media']) .uk-form-label, .uk-card-secondary.uk-card-body .uk-form-label, .uk-card-secondary > :not([class*='uk-card-media']) .uk-form-label, .uk-overlay-primary .uk-form-label, .uk-offcanvas-bar .uk-form-label {\n    color: #fff; }\n  .uk-light .uk-button-default, .uk-section-primary:not(.uk-preserve-color) .uk-button-default, .uk-section-secondary:not(.uk-preserve-color) .uk-button-default, .uk-tile-primary:not(.uk-preserve-color) .uk-button-default, .uk-tile-secondary:not(.uk-preserve-color) .uk-button-default, .uk-card-primary.uk-card-body .uk-button-default, .uk-card-primary > :not([class*='uk-card-media']) .uk-button-default, .uk-card-secondary.uk-card-body .uk-button-default, .uk-card-secondary > :not([class*='uk-card-media']) .uk-button-default, .uk-overlay-primary .uk-button-default, .uk-offcanvas-bar .uk-button-default {\n    background-color: transparent;\n    color: #fff;\n    border-color: rgba(255, 255, 255, 0.7); }\n  .uk-light .uk-button-default:hover, .uk-section-primary:not(.uk-preserve-color) .uk-button-default:hover, .uk-section-secondary:not(.uk-preserve-color) .uk-button-default:hover, .uk-tile-primary:not(.uk-preserve-color) .uk-button-default:hover, .uk-tile-secondary:not(.uk-preserve-color) .uk-button-default:hover, .uk-card-primary.uk-card-body .uk-button-default:hover, .uk-card-primary > :not([class*='uk-card-media']) .uk-button-default:hover, .uk-card-secondary.uk-card-body .uk-button-default:hover, .uk-card-secondary > :not([class*='uk-card-media']) .uk-button-default:hover, .uk-overlay-primary .uk-button-default:hover, .uk-offcanvas-bar .uk-button-default:hover,\n  .uk-light .uk-button-default:focus, .uk-section-primary:not(.uk-preserve-color) .uk-button-default:focus, .uk-section-secondary:not(.uk-preserve-color) .uk-button-default:focus, .uk-tile-primary:not(.uk-preserve-color) .uk-button-default:focus, .uk-tile-secondary:not(.uk-preserve-color) .uk-button-default:focus, .uk-card-primary.uk-card-body .uk-button-default:focus, .uk-card-primary > :not([class*='uk-card-media']) .uk-button-default:focus, .uk-card-secondary.uk-card-body .uk-button-default:focus, .uk-card-secondary > :not([class*='uk-card-media']) .uk-button-default:focus, .uk-overlay-primary .uk-button-default:focus, .uk-offcanvas-bar .uk-button-default:focus {\n    background-color: transparent;\n    color: #fff;\n    border-color: #fff; }\n  .uk-light .uk-button-default:active, .uk-section-primary:not(.uk-preserve-color) .uk-button-default:active, .uk-section-secondary:not(.uk-preserve-color) .uk-button-default:active, .uk-tile-primary:not(.uk-preserve-color) .uk-button-default:active, .uk-tile-secondary:not(.uk-preserve-color) .uk-button-default:active, .uk-card-primary.uk-card-body .uk-button-default:active, .uk-card-primary > :not([class*='uk-card-media']) .uk-button-default:active, .uk-card-secondary.uk-card-body .uk-button-default:active, .uk-card-secondary > :not([class*='uk-card-media']) .uk-button-default:active, .uk-overlay-primary .uk-button-default:active, .uk-offcanvas-bar .uk-button-default:active,\n  .uk-light .uk-button-default.uk-active, .uk-section-primary:not(.uk-preserve-color) .uk-button-default.uk-active, .uk-section-secondary:not(.uk-preserve-color) .uk-button-default.uk-active, .uk-tile-primary:not(.uk-preserve-color) .uk-button-default.uk-active, .uk-tile-secondary:not(.uk-preserve-color) .uk-button-default.uk-active, .uk-card-primary.uk-card-body .uk-button-default.uk-active, .uk-card-primary > :not([class*='uk-card-media']) .uk-button-default.uk-active, .uk-card-secondary.uk-card-body .uk-button-default.uk-active, .uk-card-secondary > :not([class*='uk-card-media']) .uk-button-default.uk-active, .uk-overlay-primary .uk-button-default.uk-active, .uk-offcanvas-bar .uk-button-default.uk-active {\n    background-color: transparent;\n    color: #fff;\n    border-color: #fff; }\n  .uk-light .uk-button-primary, .uk-section-primary:not(.uk-preserve-color) .uk-button-primary, .uk-section-secondary:not(.uk-preserve-color) .uk-button-primary, .uk-tile-primary:not(.uk-preserve-color) .uk-button-primary, .uk-tile-secondary:not(.uk-preserve-color) .uk-button-primary, .uk-card-primary.uk-card-body .uk-button-primary, .uk-card-primary > :not([class*='uk-card-media']) .uk-button-primary, .uk-card-secondary.uk-card-body .uk-button-primary, .uk-card-secondary > :not([class*='uk-card-media']) .uk-button-primary, .uk-overlay-primary .uk-button-primary, .uk-offcanvas-bar .uk-button-primary {\n    background-color: #fff;\n    color: #666; }\n  .uk-light .uk-button-primary:hover, .uk-section-primary:not(.uk-preserve-color) .uk-button-primary:hover, .uk-section-secondary:not(.uk-preserve-color) .uk-button-primary:hover, .uk-tile-primary:not(.uk-preserve-color) .uk-button-primary:hover, .uk-tile-secondary:not(.uk-preserve-color) .uk-button-primary:hover, .uk-card-primary.uk-card-body .uk-button-primary:hover, .uk-card-primary > :not([class*='uk-card-media']) .uk-button-primary:hover, .uk-card-secondary.uk-card-body .uk-button-primary:hover, .uk-card-secondary > :not([class*='uk-card-media']) .uk-button-primary:hover, .uk-overlay-primary .uk-button-primary:hover, .uk-offcanvas-bar .uk-button-primary:hover,\n  .uk-light .uk-button-primary:focus, .uk-section-primary:not(.uk-preserve-color) .uk-button-primary:focus, .uk-section-secondary:not(.uk-preserve-color) .uk-button-primary:focus, .uk-tile-primary:not(.uk-preserve-color) .uk-button-primary:focus, .uk-tile-secondary:not(.uk-preserve-color) .uk-button-primary:focus, .uk-card-primary.uk-card-body .uk-button-primary:focus, .uk-card-primary > :not([class*='uk-card-media']) .uk-button-primary:focus, .uk-card-secondary.uk-card-body .uk-button-primary:focus, .uk-card-secondary > :not([class*='uk-card-media']) .uk-button-primary:focus, .uk-overlay-primary .uk-button-primary:focus, .uk-offcanvas-bar .uk-button-primary:focus {\n    background-color: #f2f2f2;\n    color: #666; }\n  .uk-light .uk-button-primary:active, .uk-section-primary:not(.uk-preserve-color) .uk-button-primary:active, .uk-section-secondary:not(.uk-preserve-color) .uk-button-primary:active, .uk-tile-primary:not(.uk-preserve-color) .uk-button-primary:active, .uk-tile-secondary:not(.uk-preserve-color) .uk-button-primary:active, .uk-card-primary.uk-card-body .uk-button-primary:active, .uk-card-primary > :not([class*='uk-card-media']) .uk-button-primary:active, .uk-card-secondary.uk-card-body .uk-button-primary:active, .uk-card-secondary > :not([class*='uk-card-media']) .uk-button-primary:active, .uk-overlay-primary .uk-button-primary:active, .uk-offcanvas-bar .uk-button-primary:active,\n  .uk-light .uk-button-primary.uk-active, .uk-section-primary:not(.uk-preserve-color) .uk-button-primary.uk-active, .uk-section-secondary:not(.uk-preserve-color) .uk-button-primary.uk-active, .uk-tile-primary:not(.uk-preserve-color) .uk-button-primary.uk-active, .uk-tile-secondary:not(.uk-preserve-color) .uk-button-primary.uk-active, .uk-card-primary.uk-card-body .uk-button-primary.uk-active, .uk-card-primary > :not([class*='uk-card-media']) .uk-button-primary.uk-active, .uk-card-secondary.uk-card-body .uk-button-primary.uk-active, .uk-card-secondary > :not([class*='uk-card-media']) .uk-button-primary.uk-active, .uk-overlay-primary .uk-button-primary.uk-active, .uk-offcanvas-bar .uk-button-primary.uk-active {\n    background-color: #e6e6e6;\n    color: #666; }\n  .uk-light .uk-button-secondary, .uk-section-primary:not(.uk-preserve-color) .uk-button-secondary, .uk-section-secondary:not(.uk-preserve-color) .uk-button-secondary, .uk-tile-primary:not(.uk-preserve-color) .uk-button-secondary, .uk-tile-secondary:not(.uk-preserve-color) .uk-button-secondary, .uk-card-primary.uk-card-body .uk-button-secondary, .uk-card-primary > :not([class*='uk-card-media']) .uk-button-secondary, .uk-card-secondary.uk-card-body .uk-button-secondary, .uk-card-secondary > :not([class*='uk-card-media']) .uk-button-secondary, .uk-overlay-primary .uk-button-secondary, .uk-offcanvas-bar .uk-button-secondary {\n    background-color: #fff;\n    color: #666; }\n  .uk-light .uk-button-secondary:hover, .uk-section-primary:not(.uk-preserve-color) .uk-button-secondary:hover, .uk-section-secondary:not(.uk-preserve-color) .uk-button-secondary:hover, .uk-tile-primary:not(.uk-preserve-color) .uk-button-secondary:hover, .uk-tile-secondary:not(.uk-preserve-color) .uk-button-secondary:hover, .uk-card-primary.uk-card-body .uk-button-secondary:hover, .uk-card-primary > :not([class*='uk-card-media']) .uk-button-secondary:hover, .uk-card-secondary.uk-card-body .uk-button-secondary:hover, .uk-card-secondary > :not([class*='uk-card-media']) .uk-button-secondary:hover, .uk-overlay-primary .uk-button-secondary:hover, .uk-offcanvas-bar .uk-button-secondary:hover,\n  .uk-light .uk-button-secondary:focus, .uk-section-primary:not(.uk-preserve-color) .uk-button-secondary:focus, .uk-section-secondary:not(.uk-preserve-color) .uk-button-secondary:focus, .uk-tile-primary:not(.uk-preserve-color) .uk-button-secondary:focus, .uk-tile-secondary:not(.uk-preserve-color) .uk-button-secondary:focus, .uk-card-primary.uk-card-body .uk-button-secondary:focus, .uk-card-primary > :not([class*='uk-card-media']) .uk-button-secondary:focus, .uk-card-secondary.uk-card-body .uk-button-secondary:focus, .uk-card-secondary > :not([class*='uk-card-media']) .uk-button-secondary:focus, .uk-overlay-primary .uk-button-secondary:focus, .uk-offcanvas-bar .uk-button-secondary:focus {\n    background-color: #f2f2f2;\n    color: #666; }\n  .uk-light .uk-button-secondary:active, .uk-section-primary:not(.uk-preserve-color) .uk-button-secondary:active, .uk-section-secondary:not(.uk-preserve-color) .uk-button-secondary:active, .uk-tile-primary:not(.uk-preserve-color) .uk-button-secondary:active, .uk-tile-secondary:not(.uk-preserve-color) .uk-button-secondary:active, .uk-card-primary.uk-card-body .uk-button-secondary:active, .uk-card-primary > :not([class*='uk-card-media']) .uk-button-secondary:active, .uk-card-secondary.uk-card-body .uk-button-secondary:active, .uk-card-secondary > :not([class*='uk-card-media']) .uk-button-secondary:active, .uk-overlay-primary .uk-button-secondary:active, .uk-offcanvas-bar .uk-button-secondary:active,\n  .uk-light .uk-button-secondary.uk-active, .uk-section-primary:not(.uk-preserve-color) .uk-button-secondary.uk-active, .uk-section-secondary:not(.uk-preserve-color) .uk-button-secondary.uk-active, .uk-tile-primary:not(.uk-preserve-color) .uk-button-secondary.uk-active, .uk-tile-secondary:not(.uk-preserve-color) .uk-button-secondary.uk-active, .uk-card-primary.uk-card-body .uk-button-secondary.uk-active, .uk-card-primary > :not([class*='uk-card-media']) .uk-button-secondary.uk-active, .uk-card-secondary.uk-card-body .uk-button-secondary.uk-active, .uk-card-secondary > :not([class*='uk-card-media']) .uk-button-secondary.uk-active, .uk-overlay-primary .uk-button-secondary.uk-active, .uk-offcanvas-bar .uk-button-secondary.uk-active {\n    background-color: #e6e6e6;\n    color: #666; }\n  .uk-light .uk-button-text, .uk-section-primary:not(.uk-preserve-color) .uk-button-text, .uk-section-secondary:not(.uk-preserve-color) .uk-button-text, .uk-tile-primary:not(.uk-preserve-color) .uk-button-text, .uk-tile-secondary:not(.uk-preserve-color) .uk-button-text, .uk-card-primary.uk-card-body .uk-button-text, .uk-card-primary > :not([class*='uk-card-media']) .uk-button-text, .uk-card-secondary.uk-card-body .uk-button-text, .uk-card-secondary > :not([class*='uk-card-media']) .uk-button-text, .uk-overlay-primary .uk-button-text, .uk-offcanvas-bar .uk-button-text {\n    color: #fff; }\n    .uk-light .uk-button-text::before, .uk-section-primary:not(.uk-preserve-color) .uk-button-text::before, .uk-section-secondary:not(.uk-preserve-color) .uk-button-text::before, .uk-tile-primary:not(.uk-preserve-color) .uk-button-text::before, .uk-tile-secondary:not(.uk-preserve-color) .uk-button-text::before, .uk-card-primary.uk-card-body .uk-button-text::before, .uk-card-primary > :not([class*='uk-card-media']) .uk-button-text::before, .uk-card-secondary.uk-card-body .uk-button-text::before, .uk-card-secondary > :not([class*='uk-card-media']) .uk-button-text::before, .uk-overlay-primary .uk-button-text::before, .uk-offcanvas-bar .uk-button-text::before {\n      border-bottom-color: #fff; }\n  .uk-light .uk-button-text:hover, .uk-section-primary:not(.uk-preserve-color) .uk-button-text:hover, .uk-section-secondary:not(.uk-preserve-color) .uk-button-text:hover, .uk-tile-primary:not(.uk-preserve-color) .uk-button-text:hover, .uk-tile-secondary:not(.uk-preserve-color) .uk-button-text:hover, .uk-card-primary.uk-card-body .uk-button-text:hover, .uk-card-primary > :not([class*='uk-card-media']) .uk-button-text:hover, .uk-card-secondary.uk-card-body .uk-button-text:hover, .uk-card-secondary > :not([class*='uk-card-media']) .uk-button-text:hover, .uk-overlay-primary .uk-button-text:hover, .uk-offcanvas-bar .uk-button-text:hover,\n  .uk-light .uk-button-text:focus, .uk-section-primary:not(.uk-preserve-color) .uk-button-text:focus, .uk-section-secondary:not(.uk-preserve-color) .uk-button-text:focus, .uk-tile-primary:not(.uk-preserve-color) .uk-button-text:focus, .uk-tile-secondary:not(.uk-preserve-color) .uk-button-text:focus, .uk-card-primary.uk-card-body .uk-button-text:focus, .uk-card-primary > :not([class*='uk-card-media']) .uk-button-text:focus, .uk-card-secondary.uk-card-body .uk-button-text:focus, .uk-card-secondary > :not([class*='uk-card-media']) .uk-button-text:focus, .uk-overlay-primary .uk-button-text:focus, .uk-offcanvas-bar .uk-button-text:focus {\n    color: #fff; }\n  .uk-light .uk-button-text:disabled, .uk-section-primary:not(.uk-preserve-color) .uk-button-text:disabled, .uk-section-secondary:not(.uk-preserve-color) .uk-button-text:disabled, .uk-tile-primary:not(.uk-preserve-color) .uk-button-text:disabled, .uk-tile-secondary:not(.uk-preserve-color) .uk-button-text:disabled, .uk-card-primary.uk-card-body .uk-button-text:disabled, .uk-card-primary > :not([class*='uk-card-media']) .uk-button-text:disabled, .uk-card-secondary.uk-card-body .uk-button-text:disabled, .uk-card-secondary > :not([class*='uk-card-media']) .uk-button-text:disabled, .uk-overlay-primary .uk-button-text:disabled, .uk-offcanvas-bar .uk-button-text:disabled {\n    color: rgba(255, 255, 255, 0.5); }\n  .uk-light .uk-grid-divider > :not(.uk-first-column)::before, .uk-section-primary:not(.uk-preserve-color) .uk-grid-divider > :not(.uk-first-column)::before, .uk-section-secondary:not(.uk-preserve-color) .uk-grid-divider > :not(.uk-first-column)::before, .uk-tile-primary:not(.uk-preserve-color) .uk-grid-divider > :not(.uk-first-column)::before, .uk-tile-secondary:not(.uk-preserve-color) .uk-grid-divider > :not(.uk-first-column)::before, .uk-card-primary.uk-card-body .uk-grid-divider > :not(.uk-first-column)::before, .uk-card-primary > :not([class*='uk-card-media']) .uk-grid-divider > :not(.uk-first-column)::before, .uk-card-secondary.uk-card-body .uk-grid-divider > :not(.uk-first-column)::before, .uk-card-secondary > :not([class*='uk-card-media']) .uk-grid-divider > :not(.uk-first-column)::before, .uk-overlay-primary .uk-grid-divider > :not(.uk-first-column)::before, .uk-offcanvas-bar .uk-grid-divider > :not(.uk-first-column)::before {\n    border-left-color: rgba(255, 255, 255, 0.2); }\n  .uk-light .uk-grid-divider.uk-grid-stack > .uk-grid-margin::before, .uk-section-primary:not(.uk-preserve-color) .uk-grid-divider.uk-grid-stack > .uk-grid-margin::before, .uk-section-secondary:not(.uk-preserve-color) .uk-grid-divider.uk-grid-stack > .uk-grid-margin::before, .uk-tile-primary:not(.uk-preserve-color) .uk-grid-divider.uk-grid-stack > .uk-grid-margin::before, .uk-tile-secondary:not(.uk-preserve-color) .uk-grid-divider.uk-grid-stack > .uk-grid-margin::before, .uk-card-primary.uk-card-body .uk-grid-divider.uk-grid-stack > .uk-grid-margin::before, .uk-card-primary > :not([class*='uk-card-media']) .uk-grid-divider.uk-grid-stack > .uk-grid-margin::before, .uk-card-secondary.uk-card-body .uk-grid-divider.uk-grid-stack > .uk-grid-margin::before, .uk-card-secondary > :not([class*='uk-card-media']) .uk-grid-divider.uk-grid-stack > .uk-grid-margin::before, .uk-overlay-primary .uk-grid-divider.uk-grid-stack > .uk-grid-margin::before, .uk-offcanvas-bar .uk-grid-divider.uk-grid-stack > .uk-grid-margin::before {\n    border-top-color: rgba(255, 255, 255, 0.2); }\n  .uk-light .uk-close, .uk-section-primary:not(.uk-preserve-color) .uk-close, .uk-section-secondary:not(.uk-preserve-color) .uk-close, .uk-tile-primary:not(.uk-preserve-color) .uk-close, .uk-tile-secondary:not(.uk-preserve-color) .uk-close, .uk-card-primary.uk-card-body .uk-close, .uk-card-primary > :not([class*='uk-card-media']) .uk-close, .uk-card-secondary.uk-card-body .uk-close, .uk-card-secondary > :not([class*='uk-card-media']) .uk-close, .uk-overlay-primary .uk-close, .uk-offcanvas-bar .uk-close {\n    color: rgba(255, 255, 255, 0.5); }\n  .uk-light .uk-close:hover, .uk-section-primary:not(.uk-preserve-color) .uk-close:hover, .uk-section-secondary:not(.uk-preserve-color) .uk-close:hover, .uk-tile-primary:not(.uk-preserve-color) .uk-close:hover, .uk-tile-secondary:not(.uk-preserve-color) .uk-close:hover, .uk-card-primary.uk-card-body .uk-close:hover, .uk-card-primary > :not([class*='uk-card-media']) .uk-close:hover, .uk-card-secondary.uk-card-body .uk-close:hover, .uk-card-secondary > :not([class*='uk-card-media']) .uk-close:hover, .uk-overlay-primary .uk-close:hover, .uk-offcanvas-bar .uk-close:hover,\n  .uk-light .uk-close:focus, .uk-section-primary:not(.uk-preserve-color) .uk-close:focus, .uk-section-secondary:not(.uk-preserve-color) .uk-close:focus, .uk-tile-primary:not(.uk-preserve-color) .uk-close:focus, .uk-tile-secondary:not(.uk-preserve-color) .uk-close:focus, .uk-card-primary.uk-card-body .uk-close:focus, .uk-card-primary > :not([class*='uk-card-media']) .uk-close:focus, .uk-card-secondary.uk-card-body .uk-close:focus, .uk-card-secondary > :not([class*='uk-card-media']) .uk-close:focus, .uk-overlay-primary .uk-close:focus, .uk-offcanvas-bar .uk-close:focus {\n    color: rgba(255, 255, 255, 0.7); }\n  .uk-light .uk-totop, .uk-section-primary:not(.uk-preserve-color) .uk-totop, .uk-section-secondary:not(.uk-preserve-color) .uk-totop, .uk-tile-primary:not(.uk-preserve-color) .uk-totop, .uk-tile-secondary:not(.uk-preserve-color) .uk-totop, .uk-card-primary.uk-card-body .uk-totop, .uk-card-primary > :not([class*='uk-card-media']) .uk-totop, .uk-card-secondary.uk-card-body .uk-totop, .uk-card-secondary > :not([class*='uk-card-media']) .uk-totop, .uk-overlay-primary .uk-totop, .uk-offcanvas-bar .uk-totop {\n    color: rgba(255, 255, 255, 0.5); }\n  .uk-light .uk-totop:hover, .uk-section-primary:not(.uk-preserve-color) .uk-totop:hover, .uk-section-secondary:not(.uk-preserve-color) .uk-totop:hover, .uk-tile-primary:not(.uk-preserve-color) .uk-totop:hover, .uk-tile-secondary:not(.uk-preserve-color) .uk-totop:hover, .uk-card-primary.uk-card-body .uk-totop:hover, .uk-card-primary > :not([class*='uk-card-media']) .uk-totop:hover, .uk-card-secondary.uk-card-body .uk-totop:hover, .uk-card-secondary > :not([class*='uk-card-media']) .uk-totop:hover, .uk-overlay-primary .uk-totop:hover, .uk-offcanvas-bar .uk-totop:hover,\n  .uk-light .uk-totop:focus, .uk-section-primary:not(.uk-preserve-color) .uk-totop:focus, .uk-section-secondary:not(.uk-preserve-color) .uk-totop:focus, .uk-tile-primary:not(.uk-preserve-color) .uk-totop:focus, .uk-tile-secondary:not(.uk-preserve-color) .uk-totop:focus, .uk-card-primary.uk-card-body .uk-totop:focus, .uk-card-primary > :not([class*='uk-card-media']) .uk-totop:focus, .uk-card-secondary.uk-card-body .uk-totop:focus, .uk-card-secondary > :not([class*='uk-card-media']) .uk-totop:focus, .uk-overlay-primary .uk-totop:focus, .uk-offcanvas-bar .uk-totop:focus {\n    color: rgba(255, 255, 255, 0.7); }\n  .uk-light .uk-totop:active, .uk-section-primary:not(.uk-preserve-color) .uk-totop:active, .uk-section-secondary:not(.uk-preserve-color) .uk-totop:active, .uk-tile-primary:not(.uk-preserve-color) .uk-totop:active, .uk-tile-secondary:not(.uk-preserve-color) .uk-totop:active, .uk-card-primary.uk-card-body .uk-totop:active, .uk-card-primary > :not([class*='uk-card-media']) .uk-totop:active, .uk-card-secondary.uk-card-body .uk-totop:active, .uk-card-secondary > :not([class*='uk-card-media']) .uk-totop:active, .uk-overlay-primary .uk-totop:active, .uk-offcanvas-bar .uk-totop:active {\n    color: #fff; }\n  .uk-light .uk-badge, .uk-section-primary:not(.uk-preserve-color) .uk-badge, .uk-section-secondary:not(.uk-preserve-color) .uk-badge, .uk-tile-primary:not(.uk-preserve-color) .uk-badge, .uk-tile-secondary:not(.uk-preserve-color) .uk-badge, .uk-card-primary.uk-card-body .uk-badge, .uk-card-primary > :not([class*='uk-card-media']) .uk-badge, .uk-card-secondary.uk-card-body .uk-badge, .uk-card-secondary > :not([class*='uk-card-media']) .uk-badge, .uk-overlay-primary .uk-badge, .uk-offcanvas-bar .uk-badge {\n    background-color: #fff;\n    color: #666; }\n  .uk-light .uk-badge:hover, .uk-section-primary:not(.uk-preserve-color) .uk-badge:hover, .uk-section-secondary:not(.uk-preserve-color) .uk-badge:hover, .uk-tile-primary:not(.uk-preserve-color) .uk-badge:hover, .uk-tile-secondary:not(.uk-preserve-color) .uk-badge:hover, .uk-card-primary.uk-card-body .uk-badge:hover, .uk-card-primary > :not([class*='uk-card-media']) .uk-badge:hover, .uk-card-secondary.uk-card-body .uk-badge:hover, .uk-card-secondary > :not([class*='uk-card-media']) .uk-badge:hover, .uk-overlay-primary .uk-badge:hover, .uk-offcanvas-bar .uk-badge:hover,\n  .uk-light .uk-badge:focus, .uk-section-primary:not(.uk-preserve-color) .uk-badge:focus, .uk-section-secondary:not(.uk-preserve-color) .uk-badge:focus, .uk-tile-primary:not(.uk-preserve-color) .uk-badge:focus, .uk-tile-secondary:not(.uk-preserve-color) .uk-badge:focus, .uk-card-primary.uk-card-body .uk-badge:focus, .uk-card-primary > :not([class*='uk-card-media']) .uk-badge:focus, .uk-card-secondary.uk-card-body .uk-badge:focus, .uk-card-secondary > :not([class*='uk-card-media']) .uk-badge:focus, .uk-overlay-primary .uk-badge:focus, .uk-offcanvas-bar .uk-badge:focus {\n    color: #666; }\n  .uk-light .uk-label, .uk-section-primary:not(.uk-preserve-color) .uk-label, .uk-section-secondary:not(.uk-preserve-color) .uk-label, .uk-tile-primary:not(.uk-preserve-color) .uk-label, .uk-tile-secondary:not(.uk-preserve-color) .uk-label, .uk-card-primary.uk-card-body .uk-label, .uk-card-primary > :not([class*='uk-card-media']) .uk-label, .uk-card-secondary.uk-card-body .uk-label, .uk-card-secondary > :not([class*='uk-card-media']) .uk-label, .uk-overlay-primary .uk-label, .uk-offcanvas-bar .uk-label {\n    background-color: #fff;\n    color: #666; }\n  .uk-light .uk-article-meta, .uk-section-primary:not(.uk-preserve-color) .uk-article-meta, .uk-section-secondary:not(.uk-preserve-color) .uk-article-meta, .uk-tile-primary:not(.uk-preserve-color) .uk-article-meta, .uk-tile-secondary:not(.uk-preserve-color) .uk-article-meta, .uk-card-primary.uk-card-body .uk-article-meta, .uk-card-primary > :not([class*='uk-card-media']) .uk-article-meta, .uk-card-secondary.uk-card-body .uk-article-meta, .uk-card-secondary > :not([class*='uk-card-media']) .uk-article-meta, .uk-overlay-primary .uk-article-meta, .uk-offcanvas-bar .uk-article-meta {\n    color: rgba(255, 255, 255, 0.5); }\n  .uk-light .uk-search-input, .uk-section-primary:not(.uk-preserve-color) .uk-search-input, .uk-section-secondary:not(.uk-preserve-color) .uk-search-input, .uk-tile-primary:not(.uk-preserve-color) .uk-search-input, .uk-tile-secondary:not(.uk-preserve-color) .uk-search-input, .uk-card-primary.uk-card-body .uk-search-input, .uk-card-primary > :not([class*='uk-card-media']) .uk-search-input, .uk-card-secondary.uk-card-body .uk-search-input, .uk-card-secondary > :not([class*='uk-card-media']) .uk-search-input, .uk-overlay-primary .uk-search-input, .uk-offcanvas-bar .uk-search-input {\n    color: rgba(255, 255, 255, 0.7); }\n  .uk-light .uk-search-input:-ms-input-placeholder, .uk-section-primary:not(.uk-preserve-color) .uk-search-input:-ms-input-placeholder, .uk-section-secondary:not(.uk-preserve-color) .uk-search-input:-ms-input-placeholder, .uk-tile-primary:not(.uk-preserve-color) .uk-search-input:-ms-input-placeholder, .uk-tile-secondary:not(.uk-preserve-color) .uk-search-input:-ms-input-placeholder, .uk-card-primary.uk-card-body .uk-search-input:-ms-input-placeholder, .uk-card-primary > :not([class*='uk-card-media']) .uk-search-input:-ms-input-placeholder, .uk-card-secondary.uk-card-body .uk-search-input:-ms-input-placeholder, .uk-card-secondary > :not([class*='uk-card-media']) .uk-search-input:-ms-input-placeholder, .uk-overlay-primary .uk-search-input:-ms-input-placeholder, .uk-offcanvas-bar .uk-search-input:-ms-input-placeholder {\n    color: rgba(255, 255, 255, 0.5) !important; }\n  .uk-light .uk-search-input::-moz-placeholder, .uk-section-primary:not(.uk-preserve-color) .uk-search-input::-moz-placeholder, .uk-section-secondary:not(.uk-preserve-color) .uk-search-input::-moz-placeholder, .uk-tile-primary:not(.uk-preserve-color) .uk-search-input::-moz-placeholder, .uk-tile-secondary:not(.uk-preserve-color) .uk-search-input::-moz-placeholder, .uk-card-primary.uk-card-body .uk-search-input::-moz-placeholder, .uk-card-primary > :not([class*='uk-card-media']) .uk-search-input::-moz-placeholder, .uk-card-secondary.uk-card-body .uk-search-input::-moz-placeholder, .uk-card-secondary > :not([class*='uk-card-media']) .uk-search-input::-moz-placeholder, .uk-overlay-primary .uk-search-input::-moz-placeholder, .uk-offcanvas-bar .uk-search-input::-moz-placeholder {\n    color: rgba(255, 255, 255, 0.5); }\n  .uk-light .uk-search-input::-webkit-input-placeholder, .uk-section-primary:not(.uk-preserve-color) .uk-search-input::-webkit-input-placeholder, .uk-section-secondary:not(.uk-preserve-color) .uk-search-input::-webkit-input-placeholder, .uk-tile-primary:not(.uk-preserve-color) .uk-search-input::-webkit-input-placeholder, .uk-tile-secondary:not(.uk-preserve-color) .uk-search-input::-webkit-input-placeholder, .uk-card-primary.uk-card-body .uk-search-input::-webkit-input-placeholder, .uk-card-primary > :not([class*='uk-card-media']) .uk-search-input::-webkit-input-placeholder, .uk-card-secondary.uk-card-body .uk-search-input::-webkit-input-placeholder, .uk-card-secondary > :not([class*='uk-card-media']) .uk-search-input::-webkit-input-placeholder, .uk-overlay-primary .uk-search-input::-webkit-input-placeholder, .uk-offcanvas-bar .uk-search-input::-webkit-input-placeholder {\n    color: rgba(255, 255, 255, 0.5); }\n  .uk-light .uk-search .uk-search-icon, .uk-section-primary:not(.uk-preserve-color) .uk-search .uk-search-icon, .uk-section-secondary:not(.uk-preserve-color) .uk-search .uk-search-icon, .uk-tile-primary:not(.uk-preserve-color) .uk-search .uk-search-icon, .uk-tile-secondary:not(.uk-preserve-color) .uk-search .uk-search-icon, .uk-card-primary.uk-card-body .uk-search .uk-search-icon, .uk-card-primary > :not([class*='uk-card-media']) .uk-search .uk-search-icon, .uk-card-secondary.uk-card-body .uk-search .uk-search-icon, .uk-card-secondary > :not([class*='uk-card-media']) .uk-search .uk-search-icon, .uk-overlay-primary .uk-search .uk-search-icon, .uk-offcanvas-bar .uk-search .uk-search-icon {\n    color: rgba(255, 255, 255, 0.5); }\n  .uk-light .uk-search .uk-search-icon:hover, .uk-section-primary:not(.uk-preserve-color) .uk-search .uk-search-icon:hover, .uk-section-secondary:not(.uk-preserve-color) .uk-search .uk-search-icon:hover, .uk-tile-primary:not(.uk-preserve-color) .uk-search .uk-search-icon:hover, .uk-tile-secondary:not(.uk-preserve-color) .uk-search .uk-search-icon:hover, .uk-card-primary.uk-card-body .uk-search .uk-search-icon:hover, .uk-card-primary > :not([class*='uk-card-media']) .uk-search .uk-search-icon:hover, .uk-card-secondary.uk-card-body .uk-search .uk-search-icon:hover, .uk-card-secondary > :not([class*='uk-card-media']) .uk-search .uk-search-icon:hover, .uk-overlay-primary .uk-search .uk-search-icon:hover, .uk-offcanvas-bar .uk-search .uk-search-icon:hover {\n    color: rgba(255, 255, 255, 0.5); }\n  .uk-light .uk-search-default .uk-search-input, .uk-section-primary:not(.uk-preserve-color) .uk-search-default .uk-search-input, .uk-section-secondary:not(.uk-preserve-color) .uk-search-default .uk-search-input, .uk-tile-primary:not(.uk-preserve-color) .uk-search-default .uk-search-input, .uk-tile-secondary:not(.uk-preserve-color) .uk-search-default .uk-search-input, .uk-card-primary.uk-card-body .uk-search-default .uk-search-input, .uk-card-primary > :not([class*='uk-card-media']) .uk-search-default .uk-search-input, .uk-card-secondary.uk-card-body .uk-search-default .uk-search-input, .uk-card-secondary > :not([class*='uk-card-media']) .uk-search-default .uk-search-input, .uk-overlay-primary .uk-search-default .uk-search-input, .uk-offcanvas-bar .uk-search-default .uk-search-input {\n    background-color: transparent;\n    border-color: rgba(255, 255, 255, 0.2); }\n  .uk-light .uk-search-default .uk-search-input:focus, .uk-section-primary:not(.uk-preserve-color) .uk-search-default .uk-search-input:focus, .uk-section-secondary:not(.uk-preserve-color) .uk-search-default .uk-search-input:focus, .uk-tile-primary:not(.uk-preserve-color) .uk-search-default .uk-search-input:focus, .uk-tile-secondary:not(.uk-preserve-color) .uk-search-default .uk-search-input:focus, .uk-card-primary.uk-card-body .uk-search-default .uk-search-input:focus, .uk-card-primary > :not([class*='uk-card-media']) .uk-search-default .uk-search-input:focus, .uk-card-secondary.uk-card-body .uk-search-default .uk-search-input:focus, .uk-card-secondary > :not([class*='uk-card-media']) .uk-search-default .uk-search-input:focus, .uk-overlay-primary .uk-search-default .uk-search-input:focus, .uk-offcanvas-bar .uk-search-default .uk-search-input:focus {\n    background-color: transparent; }\n  .uk-light .uk-search-navbar .uk-search-input, .uk-section-primary:not(.uk-preserve-color) .uk-search-navbar .uk-search-input, .uk-section-secondary:not(.uk-preserve-color) .uk-search-navbar .uk-search-input, .uk-tile-primary:not(.uk-preserve-color) .uk-search-navbar .uk-search-input, .uk-tile-secondary:not(.uk-preserve-color) .uk-search-navbar .uk-search-input, .uk-card-primary.uk-card-body .uk-search-navbar .uk-search-input, .uk-card-primary > :not([class*='uk-card-media']) .uk-search-navbar .uk-search-input, .uk-card-secondary.uk-card-body .uk-search-navbar .uk-search-input, .uk-card-secondary > :not([class*='uk-card-media']) .uk-search-navbar .uk-search-input, .uk-overlay-primary .uk-search-navbar .uk-search-input, .uk-offcanvas-bar .uk-search-navbar .uk-search-input {\n    background-color: transparent; }\n  .uk-light .uk-search-large .uk-search-input, .uk-section-primary:not(.uk-preserve-color) .uk-search-large .uk-search-input, .uk-section-secondary:not(.uk-preserve-color) .uk-search-large .uk-search-input, .uk-tile-primary:not(.uk-preserve-color) .uk-search-large .uk-search-input, .uk-tile-secondary:not(.uk-preserve-color) .uk-search-large .uk-search-input, .uk-card-primary.uk-card-body .uk-search-large .uk-search-input, .uk-card-primary > :not([class*='uk-card-media']) .uk-search-large .uk-search-input, .uk-card-secondary.uk-card-body .uk-search-large .uk-search-input, .uk-card-secondary > :not([class*='uk-card-media']) .uk-search-large .uk-search-input, .uk-overlay-primary .uk-search-large .uk-search-input, .uk-offcanvas-bar .uk-search-large .uk-search-input {\n    background-color: transparent; }\n  .uk-light .uk-search-toggle, .uk-section-primary:not(.uk-preserve-color) .uk-search-toggle, .uk-section-secondary:not(.uk-preserve-color) .uk-search-toggle, .uk-tile-primary:not(.uk-preserve-color) .uk-search-toggle, .uk-tile-secondary:not(.uk-preserve-color) .uk-search-toggle, .uk-card-primary.uk-card-body .uk-search-toggle, .uk-card-primary > :not([class*='uk-card-media']) .uk-search-toggle, .uk-card-secondary.uk-card-body .uk-search-toggle, .uk-card-secondary > :not([class*='uk-card-media']) .uk-search-toggle, .uk-overlay-primary .uk-search-toggle, .uk-offcanvas-bar .uk-search-toggle {\n    color: rgba(255, 255, 255, 0.5); }\n  .uk-light .uk-search-toggle:hover, .uk-section-primary:not(.uk-preserve-color) .uk-search-toggle:hover, .uk-section-secondary:not(.uk-preserve-color) .uk-search-toggle:hover, .uk-tile-primary:not(.uk-preserve-color) .uk-search-toggle:hover, .uk-tile-secondary:not(.uk-preserve-color) .uk-search-toggle:hover, .uk-card-primary.uk-card-body .uk-search-toggle:hover, .uk-card-primary > :not([class*='uk-card-media']) .uk-search-toggle:hover, .uk-card-secondary.uk-card-body .uk-search-toggle:hover, .uk-card-secondary > :not([class*='uk-card-media']) .uk-search-toggle:hover, .uk-overlay-primary .uk-search-toggle:hover, .uk-offcanvas-bar .uk-search-toggle:hover,\n  .uk-light .uk-search-toggle:focus, .uk-section-primary:not(.uk-preserve-color) .uk-search-toggle:focus, .uk-section-secondary:not(.uk-preserve-color) .uk-search-toggle:focus, .uk-tile-primary:not(.uk-preserve-color) .uk-search-toggle:focus, .uk-tile-secondary:not(.uk-preserve-color) .uk-search-toggle:focus, .uk-card-primary.uk-card-body .uk-search-toggle:focus, .uk-card-primary > :not([class*='uk-card-media']) .uk-search-toggle:focus, .uk-card-secondary.uk-card-body .uk-search-toggle:focus, .uk-card-secondary > :not([class*='uk-card-media']) .uk-search-toggle:focus, .uk-overlay-primary .uk-search-toggle:focus, .uk-offcanvas-bar .uk-search-toggle:focus {\n    color: rgba(255, 255, 255, 0.7); }\n  .uk-light .uk-nav-parent-icon > .uk-parent > a::after, .uk-section-primary:not(.uk-preserve-color) .uk-nav-parent-icon > .uk-parent > a::after, .uk-section-secondary:not(.uk-preserve-color) .uk-nav-parent-icon > .uk-parent > a::after, .uk-tile-primary:not(.uk-preserve-color) .uk-nav-parent-icon > .uk-parent > a::after, .uk-tile-secondary:not(.uk-preserve-color) .uk-nav-parent-icon > .uk-parent > a::after, .uk-card-primary.uk-card-body .uk-nav-parent-icon > .uk-parent > a::after, .uk-card-primary > :not([class*='uk-card-media']) .uk-nav-parent-icon > .uk-parent > a::after, .uk-card-secondary.uk-card-body .uk-nav-parent-icon > .uk-parent > a::after, .uk-card-secondary > :not([class*='uk-card-media']) .uk-nav-parent-icon > .uk-parent > a::after, .uk-overlay-primary .uk-nav-parent-icon > .uk-parent > a::after, .uk-offcanvas-bar .uk-nav-parent-icon > .uk-parent > a::after {\n    background-image: url(\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2214%22%20height%3D%2214%22%20viewBox%3D%220%200%2014%2014%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Cpolyline%20fill%3D%22none%22%20stroke%3D%22rgba(255, 255, 255, 0.7)%22%20stroke-width%3D%221.1%22%20points%3D%2210%201%204%207%2010%2013%22%3E%3C%2Fpolyline%3E%0A%3C%2Fsvg%3E\"); }\n  .uk-light .uk-nav-parent-icon > .uk-parent.uk-open > a::after, .uk-section-primary:not(.uk-preserve-color) .uk-nav-parent-icon > .uk-parent.uk-open > a::after, .uk-section-secondary:not(.uk-preserve-color) .uk-nav-parent-icon > .uk-parent.uk-open > a::after, .uk-tile-primary:not(.uk-preserve-color) .uk-nav-parent-icon > .uk-parent.uk-open > a::after, .uk-tile-secondary:not(.uk-preserve-color) .uk-nav-parent-icon > .uk-parent.uk-open > a::after, .uk-card-primary.uk-card-body .uk-nav-parent-icon > .uk-parent.uk-open > a::after, .uk-card-primary > :not([class*='uk-card-media']) .uk-nav-parent-icon > .uk-parent.uk-open > a::after, .uk-card-secondary.uk-card-body .uk-nav-parent-icon > .uk-parent.uk-open > a::after, .uk-card-secondary > :not([class*='uk-card-media']) .uk-nav-parent-icon > .uk-parent.uk-open > a::after, .uk-overlay-primary .uk-nav-parent-icon > .uk-parent.uk-open > a::after, .uk-offcanvas-bar .uk-nav-parent-icon > .uk-parent.uk-open > a::after {\n    background-image: url(\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2214%22%20height%3D%2214%22%20viewBox%3D%220%200%2014%2014%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Cpolyline%20fill%3D%22none%22%20stroke%3D%22rgba(255, 255, 255, 0.7)%22%20stroke-width%3D%221.1%22%20points%3D%221%204%207%2010%2013%204%22%3E%3C%2Fpolyline%3E%0A%3C%2Fsvg%3E\"); }\n  .uk-light .uk-nav-default > li > a, .uk-section-primary:not(.uk-preserve-color) .uk-nav-default > li > a, .uk-section-secondary:not(.uk-preserve-color) .uk-nav-default > li > a, .uk-tile-primary:not(.uk-preserve-color) .uk-nav-default > li > a, .uk-tile-secondary:not(.uk-preserve-color) .uk-nav-default > li > a, .uk-card-primary.uk-card-body .uk-nav-default > li > a, .uk-card-primary > :not([class*='uk-card-media']) .uk-nav-default > li > a, .uk-card-secondary.uk-card-body .uk-nav-default > li > a, .uk-card-secondary > :not([class*='uk-card-media']) .uk-nav-default > li > a, .uk-overlay-primary .uk-nav-default > li > a, .uk-offcanvas-bar .uk-nav-default > li > a {\n    color: rgba(255, 255, 255, 0.5); }\n  .uk-light .uk-nav-default > li > a:hover, .uk-section-primary:not(.uk-preserve-color) .uk-nav-default > li > a:hover, .uk-section-secondary:not(.uk-preserve-color) .uk-nav-default > li > a:hover, .uk-tile-primary:not(.uk-preserve-color) .uk-nav-default > li > a:hover, .uk-tile-secondary:not(.uk-preserve-color) .uk-nav-default > li > a:hover, .uk-card-primary.uk-card-body .uk-nav-default > li > a:hover, .uk-card-primary > :not([class*='uk-card-media']) .uk-nav-default > li > a:hover, .uk-card-secondary.uk-card-body .uk-nav-default > li > a:hover, .uk-card-secondary > :not([class*='uk-card-media']) .uk-nav-default > li > a:hover, .uk-overlay-primary .uk-nav-default > li > a:hover, .uk-offcanvas-bar .uk-nav-default > li > a:hover,\n  .uk-light .uk-nav-default > li > a:focus, .uk-section-primary:not(.uk-preserve-color) .uk-nav-default > li > a:focus, .uk-section-secondary:not(.uk-preserve-color) .uk-nav-default > li > a:focus, .uk-tile-primary:not(.uk-preserve-color) .uk-nav-default > li > a:focus, .uk-tile-secondary:not(.uk-preserve-color) .uk-nav-default > li > a:focus, .uk-card-primary.uk-card-body .uk-nav-default > li > a:focus, .uk-card-primary > :not([class*='uk-card-media']) .uk-nav-default > li > a:focus, .uk-card-secondary.uk-card-body .uk-nav-default > li > a:focus, .uk-card-secondary > :not([class*='uk-card-media']) .uk-nav-default > li > a:focus, .uk-overlay-primary .uk-nav-default > li > a:focus, .uk-offcanvas-bar .uk-nav-default > li > a:focus {\n    color: rgba(255, 255, 255, 0.7); }\n  .uk-light .uk-nav-default > li.uk-active > a, .uk-section-primary:not(.uk-preserve-color) .uk-nav-default > li.uk-active > a, .uk-section-secondary:not(.uk-preserve-color) .uk-nav-default > li.uk-active > a, .uk-tile-primary:not(.uk-preserve-color) .uk-nav-default > li.uk-active > a, .uk-tile-secondary:not(.uk-preserve-color) .uk-nav-default > li.uk-active > a, .uk-card-primary.uk-card-body .uk-nav-default > li.uk-active > a, .uk-card-primary > :not([class*='uk-card-media']) .uk-nav-default > li.uk-active > a, .uk-card-secondary.uk-card-body .uk-nav-default > li.uk-active > a, .uk-card-secondary > :not([class*='uk-card-media']) .uk-nav-default > li.uk-active > a, .uk-overlay-primary .uk-nav-default > li.uk-active > a, .uk-offcanvas-bar .uk-nav-default > li.uk-active > a {\n    color: #fff; }\n  .uk-light .uk-nav-default .uk-nav-header, .uk-section-primary:not(.uk-preserve-color) .uk-nav-default .uk-nav-header, .uk-section-secondary:not(.uk-preserve-color) .uk-nav-default .uk-nav-header, .uk-tile-primary:not(.uk-preserve-color) .uk-nav-default .uk-nav-header, .uk-tile-secondary:not(.uk-preserve-color) .uk-nav-default .uk-nav-header, .uk-card-primary.uk-card-body .uk-nav-default .uk-nav-header, .uk-card-primary > :not([class*='uk-card-media']) .uk-nav-default .uk-nav-header, .uk-card-secondary.uk-card-body .uk-nav-default .uk-nav-header, .uk-card-secondary > :not([class*='uk-card-media']) .uk-nav-default .uk-nav-header, .uk-overlay-primary .uk-nav-default .uk-nav-header, .uk-offcanvas-bar .uk-nav-default .uk-nav-header {\n    color: #fff; }\n  .uk-light .uk-nav-default .uk-nav-divider, .uk-section-primary:not(.uk-preserve-color) .uk-nav-default .uk-nav-divider, .uk-section-secondary:not(.uk-preserve-color) .uk-nav-default .uk-nav-divider, .uk-tile-primary:not(.uk-preserve-color) .uk-nav-default .uk-nav-divider, .uk-tile-secondary:not(.uk-preserve-color) .uk-nav-default .uk-nav-divider, .uk-card-primary.uk-card-body .uk-nav-default .uk-nav-divider, .uk-card-primary > :not([class*='uk-card-media']) .uk-nav-default .uk-nav-divider, .uk-card-secondary.uk-card-body .uk-nav-default .uk-nav-divider, .uk-card-secondary > :not([class*='uk-card-media']) .uk-nav-default .uk-nav-divider, .uk-overlay-primary .uk-nav-default .uk-nav-divider, .uk-offcanvas-bar .uk-nav-default .uk-nav-divider {\n    border-top-color: rgba(255, 255, 255, 0.2); }\n  .uk-light .uk-nav-default .uk-nav-sub a, .uk-section-primary:not(.uk-preserve-color) .uk-nav-default .uk-nav-sub a, .uk-section-secondary:not(.uk-preserve-color) .uk-nav-default .uk-nav-sub a, .uk-tile-primary:not(.uk-preserve-color) .uk-nav-default .uk-nav-sub a, .uk-tile-secondary:not(.uk-preserve-color) .uk-nav-default .uk-nav-sub a, .uk-card-primary.uk-card-body .uk-nav-default .uk-nav-sub a, .uk-card-primary > :not([class*='uk-card-media']) .uk-nav-default .uk-nav-sub a, .uk-card-secondary.uk-card-body .uk-nav-default .uk-nav-sub a, .uk-card-secondary > :not([class*='uk-card-media']) .uk-nav-default .uk-nav-sub a, .uk-overlay-primary .uk-nav-default .uk-nav-sub a, .uk-offcanvas-bar .uk-nav-default .uk-nav-sub a {\n    color: rgba(255, 255, 255, 0.5); }\n  .uk-light .uk-nav-default .uk-nav-sub a:hover, .uk-section-primary:not(.uk-preserve-color) .uk-nav-default .uk-nav-sub a:hover, .uk-section-secondary:not(.uk-preserve-color) .uk-nav-default .uk-nav-sub a:hover, .uk-tile-primary:not(.uk-preserve-color) .uk-nav-default .uk-nav-sub a:hover, .uk-tile-secondary:not(.uk-preserve-color) .uk-nav-default .uk-nav-sub a:hover, .uk-card-primary.uk-card-body .uk-nav-default .uk-nav-sub a:hover, .uk-card-primary > :not([class*='uk-card-media']) .uk-nav-default .uk-nav-sub a:hover, .uk-card-secondary.uk-card-body .uk-nav-default .uk-nav-sub a:hover, .uk-card-secondary > :not([class*='uk-card-media']) .uk-nav-default .uk-nav-sub a:hover, .uk-overlay-primary .uk-nav-default .uk-nav-sub a:hover, .uk-offcanvas-bar .uk-nav-default .uk-nav-sub a:hover,\n  .uk-light .uk-nav-default .uk-nav-sub a:focus, .uk-section-primary:not(.uk-preserve-color) .uk-nav-default .uk-nav-sub a:focus, .uk-section-secondary:not(.uk-preserve-color) .uk-nav-default .uk-nav-sub a:focus, .uk-tile-primary:not(.uk-preserve-color) .uk-nav-default .uk-nav-sub a:focus, .uk-tile-secondary:not(.uk-preserve-color) .uk-nav-default .uk-nav-sub a:focus, .uk-card-primary.uk-card-body .uk-nav-default .uk-nav-sub a:focus, .uk-card-primary > :not([class*='uk-card-media']) .uk-nav-default .uk-nav-sub a:focus, .uk-card-secondary.uk-card-body .uk-nav-default .uk-nav-sub a:focus, .uk-card-secondary > :not([class*='uk-card-media']) .uk-nav-default .uk-nav-sub a:focus, .uk-overlay-primary .uk-nav-default .uk-nav-sub a:focus, .uk-offcanvas-bar .uk-nav-default .uk-nav-sub a:focus {\n    color: rgba(255, 255, 255, 0.7); }\n  .uk-light .uk-nav-primary > li > a, .uk-section-primary:not(.uk-preserve-color) .uk-nav-primary > li > a, .uk-section-secondary:not(.uk-preserve-color) .uk-nav-primary > li > a, .uk-tile-primary:not(.uk-preserve-color) .uk-nav-primary > li > a, .uk-tile-secondary:not(.uk-preserve-color) .uk-nav-primary > li > a, .uk-card-primary.uk-card-body .uk-nav-primary > li > a, .uk-card-primary > :not([class*='uk-card-media']) .uk-nav-primary > li > a, .uk-card-secondary.uk-card-body .uk-nav-primary > li > a, .uk-card-secondary > :not([class*='uk-card-media']) .uk-nav-primary > li > a, .uk-overlay-primary .uk-nav-primary > li > a, .uk-offcanvas-bar .uk-nav-primary > li > a {\n    color: rgba(255, 255, 255, 0.5); }\n  .uk-light .uk-nav-primary > li > a:hover, .uk-section-primary:not(.uk-preserve-color) .uk-nav-primary > li > a:hover, .uk-section-secondary:not(.uk-preserve-color) .uk-nav-primary > li > a:hover, .uk-tile-primary:not(.uk-preserve-color) .uk-nav-primary > li > a:hover, .uk-tile-secondary:not(.uk-preserve-color) .uk-nav-primary > li > a:hover, .uk-card-primary.uk-card-body .uk-nav-primary > li > a:hover, .uk-card-primary > :not([class*='uk-card-media']) .uk-nav-primary > li > a:hover, .uk-card-secondary.uk-card-body .uk-nav-primary > li > a:hover, .uk-card-secondary > :not([class*='uk-card-media']) .uk-nav-primary > li > a:hover, .uk-overlay-primary .uk-nav-primary > li > a:hover, .uk-offcanvas-bar .uk-nav-primary > li > a:hover,\n  .uk-light .uk-nav-primary > li > a:focus, .uk-section-primary:not(.uk-preserve-color) .uk-nav-primary > li > a:focus, .uk-section-secondary:not(.uk-preserve-color) .uk-nav-primary > li > a:focus, .uk-tile-primary:not(.uk-preserve-color) .uk-nav-primary > li > a:focus, .uk-tile-secondary:not(.uk-preserve-color) .uk-nav-primary > li > a:focus, .uk-card-primary.uk-card-body .uk-nav-primary > li > a:focus, .uk-card-primary > :not([class*='uk-card-media']) .uk-nav-primary > li > a:focus, .uk-card-secondary.uk-card-body .uk-nav-primary > li > a:focus, .uk-card-secondary > :not([class*='uk-card-media']) .uk-nav-primary > li > a:focus, .uk-overlay-primary .uk-nav-primary > li > a:focus, .uk-offcanvas-bar .uk-nav-primary > li > a:focus {\n    color: rgba(255, 255, 255, 0.7); }\n  .uk-light .uk-nav-primary > li.uk-active > a, .uk-section-primary:not(.uk-preserve-color) .uk-nav-primary > li.uk-active > a, .uk-section-secondary:not(.uk-preserve-color) .uk-nav-primary > li.uk-active > a, .uk-tile-primary:not(.uk-preserve-color) .uk-nav-primary > li.uk-active > a, .uk-tile-secondary:not(.uk-preserve-color) .uk-nav-primary > li.uk-active > a, .uk-card-primary.uk-card-body .uk-nav-primary > li.uk-active > a, .uk-card-primary > :not([class*='uk-card-media']) .uk-nav-primary > li.uk-active > a, .uk-card-secondary.uk-card-body .uk-nav-primary > li.uk-active > a, .uk-card-secondary > :not([class*='uk-card-media']) .uk-nav-primary > li.uk-active > a, .uk-overlay-primary .uk-nav-primary > li.uk-active > a, .uk-offcanvas-bar .uk-nav-primary > li.uk-active > a {\n    color: #fff; }\n  .uk-light .uk-nav-primary .uk-nav-header, .uk-section-primary:not(.uk-preserve-color) .uk-nav-primary .uk-nav-header, .uk-section-secondary:not(.uk-preserve-color) .uk-nav-primary .uk-nav-header, .uk-tile-primary:not(.uk-preserve-color) .uk-nav-primary .uk-nav-header, .uk-tile-secondary:not(.uk-preserve-color) .uk-nav-primary .uk-nav-header, .uk-card-primary.uk-card-body .uk-nav-primary .uk-nav-header, .uk-card-primary > :not([class*='uk-card-media']) .uk-nav-primary .uk-nav-header, .uk-card-secondary.uk-card-body .uk-nav-primary .uk-nav-header, .uk-card-secondary > :not([class*='uk-card-media']) .uk-nav-primary .uk-nav-header, .uk-overlay-primary .uk-nav-primary .uk-nav-header, .uk-offcanvas-bar .uk-nav-primary .uk-nav-header {\n    color: #fff; }\n  .uk-light .uk-nav-primary .uk-nav-divider, .uk-section-primary:not(.uk-preserve-color) .uk-nav-primary .uk-nav-divider, .uk-section-secondary:not(.uk-preserve-color) .uk-nav-primary .uk-nav-divider, .uk-tile-primary:not(.uk-preserve-color) .uk-nav-primary .uk-nav-divider, .uk-tile-secondary:not(.uk-preserve-color) .uk-nav-primary .uk-nav-divider, .uk-card-primary.uk-card-body .uk-nav-primary .uk-nav-divider, .uk-card-primary > :not([class*='uk-card-media']) .uk-nav-primary .uk-nav-divider, .uk-card-secondary.uk-card-body .uk-nav-primary .uk-nav-divider, .uk-card-secondary > :not([class*='uk-card-media']) .uk-nav-primary .uk-nav-divider, .uk-overlay-primary .uk-nav-primary .uk-nav-divider, .uk-offcanvas-bar .uk-nav-primary .uk-nav-divider {\n    border-top-color: rgba(255, 255, 255, 0.2); }\n  .uk-light .uk-nav-primary .uk-nav-sub a, .uk-section-primary:not(.uk-preserve-color) .uk-nav-primary .uk-nav-sub a, .uk-section-secondary:not(.uk-preserve-color) .uk-nav-primary .uk-nav-sub a, .uk-tile-primary:not(.uk-preserve-color) .uk-nav-primary .uk-nav-sub a, .uk-tile-secondary:not(.uk-preserve-color) .uk-nav-primary .uk-nav-sub a, .uk-card-primary.uk-card-body .uk-nav-primary .uk-nav-sub a, .uk-card-primary > :not([class*='uk-card-media']) .uk-nav-primary .uk-nav-sub a, .uk-card-secondary.uk-card-body .uk-nav-primary .uk-nav-sub a, .uk-card-secondary > :not([class*='uk-card-media']) .uk-nav-primary .uk-nav-sub a, .uk-overlay-primary .uk-nav-primary .uk-nav-sub a, .uk-offcanvas-bar .uk-nav-primary .uk-nav-sub a {\n    color: rgba(255, 255, 255, 0.5); }\n  .uk-light .uk-nav-primary .uk-nav-sub a:hover, .uk-section-primary:not(.uk-preserve-color) .uk-nav-primary .uk-nav-sub a:hover, .uk-section-secondary:not(.uk-preserve-color) .uk-nav-primary .uk-nav-sub a:hover, .uk-tile-primary:not(.uk-preserve-color) .uk-nav-primary .uk-nav-sub a:hover, .uk-tile-secondary:not(.uk-preserve-color) .uk-nav-primary .uk-nav-sub a:hover, .uk-card-primary.uk-card-body .uk-nav-primary .uk-nav-sub a:hover, .uk-card-primary > :not([class*='uk-card-media']) .uk-nav-primary .uk-nav-sub a:hover, .uk-card-secondary.uk-card-body .uk-nav-primary .uk-nav-sub a:hover, .uk-card-secondary > :not([class*='uk-card-media']) .uk-nav-primary .uk-nav-sub a:hover, .uk-overlay-primary .uk-nav-primary .uk-nav-sub a:hover, .uk-offcanvas-bar .uk-nav-primary .uk-nav-sub a:hover,\n  .uk-light .uk-nav-primary .uk-nav-sub a:focus, .uk-section-primary:not(.uk-preserve-color) .uk-nav-primary .uk-nav-sub a:focus, .uk-section-secondary:not(.uk-preserve-color) .uk-nav-primary .uk-nav-sub a:focus, .uk-tile-primary:not(.uk-preserve-color) .uk-nav-primary .uk-nav-sub a:focus, .uk-tile-secondary:not(.uk-preserve-color) .uk-nav-primary .uk-nav-sub a:focus, .uk-card-primary.uk-card-body .uk-nav-primary .uk-nav-sub a:focus, .uk-card-primary > :not([class*='uk-card-media']) .uk-nav-primary .uk-nav-sub a:focus, .uk-card-secondary.uk-card-body .uk-nav-primary .uk-nav-sub a:focus, .uk-card-secondary > :not([class*='uk-card-media']) .uk-nav-primary .uk-nav-sub a:focus, .uk-overlay-primary .uk-nav-primary .uk-nav-sub a:focus, .uk-offcanvas-bar .uk-nav-primary .uk-nav-sub a:focus {\n    color: rgba(255, 255, 255, 0.7); }\n  .uk-light .uk-navbar-nav > li > a, .uk-section-primary:not(.uk-preserve-color) .uk-navbar-nav > li > a, .uk-section-secondary:not(.uk-preserve-color) .uk-navbar-nav > li > a, .uk-tile-primary:not(.uk-preserve-color) .uk-navbar-nav > li > a, .uk-tile-secondary:not(.uk-preserve-color) .uk-navbar-nav > li > a, .uk-card-primary.uk-card-body .uk-navbar-nav > li > a, .uk-card-primary > :not([class*='uk-card-media']) .uk-navbar-nav > li > a, .uk-card-secondary.uk-card-body .uk-navbar-nav > li > a, .uk-card-secondary > :not([class*='uk-card-media']) .uk-navbar-nav > li > a, .uk-overlay-primary .uk-navbar-nav > li > a, .uk-offcanvas-bar .uk-navbar-nav > li > a {\n    color: rgba(255, 255, 255, 0.5); }\n  .uk-light .uk-navbar-nav > li:hover > a, .uk-section-primary:not(.uk-preserve-color) .uk-navbar-nav > li:hover > a, .uk-section-secondary:not(.uk-preserve-color) .uk-navbar-nav > li:hover > a, .uk-tile-primary:not(.uk-preserve-color) .uk-navbar-nav > li:hover > a, .uk-tile-secondary:not(.uk-preserve-color) .uk-navbar-nav > li:hover > a, .uk-card-primary.uk-card-body .uk-navbar-nav > li:hover > a, .uk-card-primary > :not([class*='uk-card-media']) .uk-navbar-nav > li:hover > a, .uk-card-secondary.uk-card-body .uk-navbar-nav > li:hover > a, .uk-card-secondary > :not([class*='uk-card-media']) .uk-navbar-nav > li:hover > a, .uk-overlay-primary .uk-navbar-nav > li:hover > a, .uk-offcanvas-bar .uk-navbar-nav > li:hover > a,\n  .uk-light .uk-navbar-nav > li > a:focus, .uk-section-primary:not(.uk-preserve-color) .uk-navbar-nav > li > a:focus, .uk-section-secondary:not(.uk-preserve-color) .uk-navbar-nav > li > a:focus, .uk-tile-primary:not(.uk-preserve-color) .uk-navbar-nav > li > a:focus, .uk-tile-secondary:not(.uk-preserve-color) .uk-navbar-nav > li > a:focus, .uk-card-primary.uk-card-body .uk-navbar-nav > li > a:focus, .uk-card-primary > :not([class*='uk-card-media']) .uk-navbar-nav > li > a:focus, .uk-card-secondary.uk-card-body .uk-navbar-nav > li > a:focus, .uk-card-secondary > :not([class*='uk-card-media']) .uk-navbar-nav > li > a:focus, .uk-overlay-primary .uk-navbar-nav > li > a:focus, .uk-offcanvas-bar .uk-navbar-nav > li > a:focus,\n  .uk-light .uk-navbar-nav > li > a.uk-open, .uk-section-primary:not(.uk-preserve-color) .uk-navbar-nav > li > a.uk-open, .uk-section-secondary:not(.uk-preserve-color) .uk-navbar-nav > li > a.uk-open, .uk-tile-primary:not(.uk-preserve-color) .uk-navbar-nav > li > a.uk-open, .uk-tile-secondary:not(.uk-preserve-color) .uk-navbar-nav > li > a.uk-open, .uk-card-primary.uk-card-body .uk-navbar-nav > li > a.uk-open, .uk-card-primary > :not([class*='uk-card-media']) .uk-navbar-nav > li > a.uk-open, .uk-card-secondary.uk-card-body .uk-navbar-nav > li > a.uk-open, .uk-card-secondary > :not([class*='uk-card-media']) .uk-navbar-nav > li > a.uk-open, .uk-overlay-primary .uk-navbar-nav > li > a.uk-open, .uk-offcanvas-bar .uk-navbar-nav > li > a.uk-open {\n    color: rgba(255, 255, 255, 0.7); }\n  .uk-light .uk-navbar-nav > li > a:active, .uk-section-primary:not(.uk-preserve-color) .uk-navbar-nav > li > a:active, .uk-section-secondary:not(.uk-preserve-color) .uk-navbar-nav > li > a:active, .uk-tile-primary:not(.uk-preserve-color) .uk-navbar-nav > li > a:active, .uk-tile-secondary:not(.uk-preserve-color) .uk-navbar-nav > li > a:active, .uk-card-primary.uk-card-body .uk-navbar-nav > li > a:active, .uk-card-primary > :not([class*='uk-card-media']) .uk-navbar-nav > li > a:active, .uk-card-secondary.uk-card-body .uk-navbar-nav > li > a:active, .uk-card-secondary > :not([class*='uk-card-media']) .uk-navbar-nav > li > a:active, .uk-overlay-primary .uk-navbar-nav > li > a:active, .uk-offcanvas-bar .uk-navbar-nav > li > a:active {\n    color: #fff; }\n  .uk-light .uk-navbar-nav > li.uk-active > a, .uk-section-primary:not(.uk-preserve-color) .uk-navbar-nav > li.uk-active > a, .uk-section-secondary:not(.uk-preserve-color) .uk-navbar-nav > li.uk-active > a, .uk-tile-primary:not(.uk-preserve-color) .uk-navbar-nav > li.uk-active > a, .uk-tile-secondary:not(.uk-preserve-color) .uk-navbar-nav > li.uk-active > a, .uk-card-primary.uk-card-body .uk-navbar-nav > li.uk-active > a, .uk-card-primary > :not([class*='uk-card-media']) .uk-navbar-nav > li.uk-active > a, .uk-card-secondary.uk-card-body .uk-navbar-nav > li.uk-active > a, .uk-card-secondary > :not([class*='uk-card-media']) .uk-navbar-nav > li.uk-active > a, .uk-overlay-primary .uk-navbar-nav > li.uk-active > a, .uk-offcanvas-bar .uk-navbar-nav > li.uk-active > a {\n    color: #fff; }\n  .uk-light .uk-navbar-item, .uk-section-primary:not(.uk-preserve-color) .uk-navbar-item, .uk-section-secondary:not(.uk-preserve-color) .uk-navbar-item, .uk-tile-primary:not(.uk-preserve-color) .uk-navbar-item, .uk-tile-secondary:not(.uk-preserve-color) .uk-navbar-item, .uk-card-primary.uk-card-body .uk-navbar-item, .uk-card-primary > :not([class*='uk-card-media']) .uk-navbar-item, .uk-card-secondary.uk-card-body .uk-navbar-item, .uk-card-secondary > :not([class*='uk-card-media']) .uk-navbar-item, .uk-overlay-primary .uk-navbar-item, .uk-offcanvas-bar .uk-navbar-item {\n    color: rgba(255, 255, 255, 0.7); }\n  .uk-light .uk-navbar-toggle, .uk-section-primary:not(.uk-preserve-color) .uk-navbar-toggle, .uk-section-secondary:not(.uk-preserve-color) .uk-navbar-toggle, .uk-tile-primary:not(.uk-preserve-color) .uk-navbar-toggle, .uk-tile-secondary:not(.uk-preserve-color) .uk-navbar-toggle, .uk-card-primary.uk-card-body .uk-navbar-toggle, .uk-card-primary > :not([class*='uk-card-media']) .uk-navbar-toggle, .uk-card-secondary.uk-card-body .uk-navbar-toggle, .uk-card-secondary > :not([class*='uk-card-media']) .uk-navbar-toggle, .uk-overlay-primary .uk-navbar-toggle, .uk-offcanvas-bar .uk-navbar-toggle {\n    color: rgba(255, 255, 255, 0.5); }\n  .uk-light .uk-navbar-toggle:hover, .uk-section-primary:not(.uk-preserve-color) .uk-navbar-toggle:hover, .uk-section-secondary:not(.uk-preserve-color) .uk-navbar-toggle:hover, .uk-tile-primary:not(.uk-preserve-color) .uk-navbar-toggle:hover, .uk-tile-secondary:not(.uk-preserve-color) .uk-navbar-toggle:hover, .uk-card-primary.uk-card-body .uk-navbar-toggle:hover, .uk-card-primary > :not([class*='uk-card-media']) .uk-navbar-toggle:hover, .uk-card-secondary.uk-card-body .uk-navbar-toggle:hover, .uk-card-secondary > :not([class*='uk-card-media']) .uk-navbar-toggle:hover, .uk-overlay-primary .uk-navbar-toggle:hover, .uk-offcanvas-bar .uk-navbar-toggle:hover,\n  .uk-light .uk-navbar-toggle:focus, .uk-section-primary:not(.uk-preserve-color) .uk-navbar-toggle:focus, .uk-section-secondary:not(.uk-preserve-color) .uk-navbar-toggle:focus, .uk-tile-primary:not(.uk-preserve-color) .uk-navbar-toggle:focus, .uk-tile-secondary:not(.uk-preserve-color) .uk-navbar-toggle:focus, .uk-card-primary.uk-card-body .uk-navbar-toggle:focus, .uk-card-primary > :not([class*='uk-card-media']) .uk-navbar-toggle:focus, .uk-card-secondary.uk-card-body .uk-navbar-toggle:focus, .uk-card-secondary > :not([class*='uk-card-media']) .uk-navbar-toggle:focus, .uk-overlay-primary .uk-navbar-toggle:focus, .uk-offcanvas-bar .uk-navbar-toggle:focus,\n  .uk-light .uk-navbar-toggle.uk-open, .uk-section-primary:not(.uk-preserve-color) .uk-navbar-toggle.uk-open, .uk-section-secondary:not(.uk-preserve-color) .uk-navbar-toggle.uk-open, .uk-tile-primary:not(.uk-preserve-color) .uk-navbar-toggle.uk-open, .uk-tile-secondary:not(.uk-preserve-color) .uk-navbar-toggle.uk-open, .uk-card-primary.uk-card-body .uk-navbar-toggle.uk-open, .uk-card-primary > :not([class*='uk-card-media']) .uk-navbar-toggle.uk-open, .uk-card-secondary.uk-card-body .uk-navbar-toggle.uk-open, .uk-card-secondary > :not([class*='uk-card-media']) .uk-navbar-toggle.uk-open, .uk-overlay-primary .uk-navbar-toggle.uk-open, .uk-offcanvas-bar .uk-navbar-toggle.uk-open {\n    color: rgba(255, 255, 255, 0.7); }\n  .uk-light .uk-subnav > * > :first-child, .uk-section-primary:not(.uk-preserve-color) .uk-subnav > * > :first-child, .uk-section-secondary:not(.uk-preserve-color) .uk-subnav > * > :first-child, .uk-tile-primary:not(.uk-preserve-color) .uk-subnav > * > :first-child, .uk-tile-secondary:not(.uk-preserve-color) .uk-subnav > * > :first-child, .uk-card-primary.uk-card-body .uk-subnav > * > :first-child, .uk-card-primary > :not([class*='uk-card-media']) .uk-subnav > * > :first-child, .uk-card-secondary.uk-card-body .uk-subnav > * > :first-child, .uk-card-secondary > :not([class*='uk-card-media']) .uk-subnav > * > :first-child, .uk-overlay-primary .uk-subnav > * > :first-child, .uk-offcanvas-bar .uk-subnav > * > :first-child {\n    color: rgba(255, 255, 255, 0.5); }\n  .uk-light .uk-subnav > * > a:hover, .uk-section-primary:not(.uk-preserve-color) .uk-subnav > * > a:hover, .uk-section-secondary:not(.uk-preserve-color) .uk-subnav > * > a:hover, .uk-tile-primary:not(.uk-preserve-color) .uk-subnav > * > a:hover, .uk-tile-secondary:not(.uk-preserve-color) .uk-subnav > * > a:hover, .uk-card-primary.uk-card-body .uk-subnav > * > a:hover, .uk-card-primary > :not([class*='uk-card-media']) .uk-subnav > * > a:hover, .uk-card-secondary.uk-card-body .uk-subnav > * > a:hover, .uk-card-secondary > :not([class*='uk-card-media']) .uk-subnav > * > a:hover, .uk-overlay-primary .uk-subnav > * > a:hover, .uk-offcanvas-bar .uk-subnav > * > a:hover,\n  .uk-light .uk-subnav > * > a:focus, .uk-section-primary:not(.uk-preserve-color) .uk-subnav > * > a:focus, .uk-section-secondary:not(.uk-preserve-color) .uk-subnav > * > a:focus, .uk-tile-primary:not(.uk-preserve-color) .uk-subnav > * > a:focus, .uk-tile-secondary:not(.uk-preserve-color) .uk-subnav > * > a:focus, .uk-card-primary.uk-card-body .uk-subnav > * > a:focus, .uk-card-primary > :not([class*='uk-card-media']) .uk-subnav > * > a:focus, .uk-card-secondary.uk-card-body .uk-subnav > * > a:focus, .uk-card-secondary > :not([class*='uk-card-media']) .uk-subnav > * > a:focus, .uk-overlay-primary .uk-subnav > * > a:focus, .uk-offcanvas-bar .uk-subnav > * > a:focus {\n    color: rgba(255, 255, 255, 0.7); }\n  .uk-light .uk-subnav > .uk-active > a, .uk-section-primary:not(.uk-preserve-color) .uk-subnav > .uk-active > a, .uk-section-secondary:not(.uk-preserve-color) .uk-subnav > .uk-active > a, .uk-tile-primary:not(.uk-preserve-color) .uk-subnav > .uk-active > a, .uk-tile-secondary:not(.uk-preserve-color) .uk-subnav > .uk-active > a, .uk-card-primary.uk-card-body .uk-subnav > .uk-active > a, .uk-card-primary > :not([class*='uk-card-media']) .uk-subnav > .uk-active > a, .uk-card-secondary.uk-card-body .uk-subnav > .uk-active > a, .uk-card-secondary > :not([class*='uk-card-media']) .uk-subnav > .uk-active > a, .uk-overlay-primary .uk-subnav > .uk-active > a, .uk-offcanvas-bar .uk-subnav > .uk-active > a {\n    color: #fff; }\n  .uk-light .uk-subnav-divider > :nth-child(n+2):not(.uk-first-column)::before, .uk-section-primary:not(.uk-preserve-color) .uk-subnav-divider > :nth-child(n+2):not(.uk-first-column)::before, .uk-section-secondary:not(.uk-preserve-color) .uk-subnav-divider > :nth-child(n+2):not(.uk-first-column)::before, .uk-tile-primary:not(.uk-preserve-color) .uk-subnav-divider > :nth-child(n+2):not(.uk-first-column)::before, .uk-tile-secondary:not(.uk-preserve-color) .uk-subnav-divider > :nth-child(n+2):not(.uk-first-column)::before, .uk-card-primary.uk-card-body .uk-subnav-divider > :nth-child(n+2):not(.uk-first-column)::before, .uk-card-primary > :not([class*='uk-card-media']) .uk-subnav-divider > :nth-child(n+2):not(.uk-first-column)::before, .uk-card-secondary.uk-card-body .uk-subnav-divider > :nth-child(n+2):not(.uk-first-column)::before, .uk-card-secondary > :not([class*='uk-card-media']) .uk-subnav-divider > :nth-child(n+2):not(.uk-first-column)::before, .uk-overlay-primary .uk-subnav-divider > :nth-child(n+2):not(.uk-first-column)::before, .uk-offcanvas-bar .uk-subnav-divider > :nth-child(n+2):not(.uk-first-column)::before {\n    border-left-color: rgba(255, 255, 255, 0.2); }\n  .uk-light .uk-subnav-pill > * > :first-child, .uk-section-primary:not(.uk-preserve-color) .uk-subnav-pill > * > :first-child, .uk-section-secondary:not(.uk-preserve-color) .uk-subnav-pill > * > :first-child, .uk-tile-primary:not(.uk-preserve-color) .uk-subnav-pill > * > :first-child, .uk-tile-secondary:not(.uk-preserve-color) .uk-subnav-pill > * > :first-child, .uk-card-primary.uk-card-body .uk-subnav-pill > * > :first-child, .uk-card-primary > :not([class*='uk-card-media']) .uk-subnav-pill > * > :first-child, .uk-card-secondary.uk-card-body .uk-subnav-pill > * > :first-child, .uk-card-secondary > :not([class*='uk-card-media']) .uk-subnav-pill > * > :first-child, .uk-overlay-primary .uk-subnav-pill > * > :first-child, .uk-offcanvas-bar .uk-subnav-pill > * > :first-child {\n    background-color: transparent;\n    color: rgba(255, 255, 255, 0.5); }\n  .uk-light .uk-subnav-pill > * > a:hover, .uk-section-primary:not(.uk-preserve-color) .uk-subnav-pill > * > a:hover, .uk-section-secondary:not(.uk-preserve-color) .uk-subnav-pill > * > a:hover, .uk-tile-primary:not(.uk-preserve-color) .uk-subnav-pill > * > a:hover, .uk-tile-secondary:not(.uk-preserve-color) .uk-subnav-pill > * > a:hover, .uk-card-primary.uk-card-body .uk-subnav-pill > * > a:hover, .uk-card-primary > :not([class*='uk-card-media']) .uk-subnav-pill > * > a:hover, .uk-card-secondary.uk-card-body .uk-subnav-pill > * > a:hover, .uk-card-secondary > :not([class*='uk-card-media']) .uk-subnav-pill > * > a:hover, .uk-overlay-primary .uk-subnav-pill > * > a:hover, .uk-offcanvas-bar .uk-subnav-pill > * > a:hover,\n  .uk-light .uk-subnav-pill > * > a:focus, .uk-section-primary:not(.uk-preserve-color) .uk-subnav-pill > * > a:focus, .uk-section-secondary:not(.uk-preserve-color) .uk-subnav-pill > * > a:focus, .uk-tile-primary:not(.uk-preserve-color) .uk-subnav-pill > * > a:focus, .uk-tile-secondary:not(.uk-preserve-color) .uk-subnav-pill > * > a:focus, .uk-card-primary.uk-card-body .uk-subnav-pill > * > a:focus, .uk-card-primary > :not([class*='uk-card-media']) .uk-subnav-pill > * > a:focus, .uk-card-secondary.uk-card-body .uk-subnav-pill > * > a:focus, .uk-card-secondary > :not([class*='uk-card-media']) .uk-subnav-pill > * > a:focus, .uk-overlay-primary .uk-subnav-pill > * > a:focus, .uk-offcanvas-bar .uk-subnav-pill > * > a:focus {\n    background-color: rgba(255, 255, 255, 0.1);\n    color: rgba(255, 255, 255, 0.7); }\n  .uk-light .uk-subnav-pill > * > a:active, .uk-section-primary:not(.uk-preserve-color) .uk-subnav-pill > * > a:active, .uk-section-secondary:not(.uk-preserve-color) .uk-subnav-pill > * > a:active, .uk-tile-primary:not(.uk-preserve-color) .uk-subnav-pill > * > a:active, .uk-tile-secondary:not(.uk-preserve-color) .uk-subnav-pill > * > a:active, .uk-card-primary.uk-card-body .uk-subnav-pill > * > a:active, .uk-card-primary > :not([class*='uk-card-media']) .uk-subnav-pill > * > a:active, .uk-card-secondary.uk-card-body .uk-subnav-pill > * > a:active, .uk-card-secondary > :not([class*='uk-card-media']) .uk-subnav-pill > * > a:active, .uk-overlay-primary .uk-subnav-pill > * > a:active, .uk-offcanvas-bar .uk-subnav-pill > * > a:active {\n    background-color: rgba(255, 255, 255, 0.1);\n    color: rgba(255, 255, 255, 0.7); }\n  .uk-light .uk-subnav-pill > .uk-active > a, .uk-section-primary:not(.uk-preserve-color) .uk-subnav-pill > .uk-active > a, .uk-section-secondary:not(.uk-preserve-color) .uk-subnav-pill > .uk-active > a, .uk-tile-primary:not(.uk-preserve-color) .uk-subnav-pill > .uk-active > a, .uk-tile-secondary:not(.uk-preserve-color) .uk-subnav-pill > .uk-active > a, .uk-card-primary.uk-card-body .uk-subnav-pill > .uk-active > a, .uk-card-primary > :not([class*='uk-card-media']) .uk-subnav-pill > .uk-active > a, .uk-card-secondary.uk-card-body .uk-subnav-pill > .uk-active > a, .uk-card-secondary > :not([class*='uk-card-media']) .uk-subnav-pill > .uk-active > a, .uk-overlay-primary .uk-subnav-pill > .uk-active > a, .uk-offcanvas-bar .uk-subnav-pill > .uk-active > a {\n    background-color: #fff;\n    color: #666; }\n  .uk-light .uk-subnav > .uk-disabled > a, .uk-section-primary:not(.uk-preserve-color) .uk-subnav > .uk-disabled > a, .uk-section-secondary:not(.uk-preserve-color) .uk-subnav > .uk-disabled > a, .uk-tile-primary:not(.uk-preserve-color) .uk-subnav > .uk-disabled > a, .uk-tile-secondary:not(.uk-preserve-color) .uk-subnav > .uk-disabled > a, .uk-card-primary.uk-card-body .uk-subnav > .uk-disabled > a, .uk-card-primary > :not([class*='uk-card-media']) .uk-subnav > .uk-disabled > a, .uk-card-secondary.uk-card-body .uk-subnav > .uk-disabled > a, .uk-card-secondary > :not([class*='uk-card-media']) .uk-subnav > .uk-disabled > a, .uk-overlay-primary .uk-subnav > .uk-disabled > a, .uk-offcanvas-bar .uk-subnav > .uk-disabled > a {\n    color: rgba(255, 255, 255, 0.5); }\n  .uk-light .uk-breadcrumb > * > *, .uk-section-primary:not(.uk-preserve-color) .uk-breadcrumb > * > *, .uk-section-secondary:not(.uk-preserve-color) .uk-breadcrumb > * > *, .uk-tile-primary:not(.uk-preserve-color) .uk-breadcrumb > * > *, .uk-tile-secondary:not(.uk-preserve-color) .uk-breadcrumb > * > *, .uk-card-primary.uk-card-body .uk-breadcrumb > * > *, .uk-card-primary > :not([class*='uk-card-media']) .uk-breadcrumb > * > *, .uk-card-secondary.uk-card-body .uk-breadcrumb > * > *, .uk-card-secondary > :not([class*='uk-card-media']) .uk-breadcrumb > * > *, .uk-overlay-primary .uk-breadcrumb > * > *, .uk-offcanvas-bar .uk-breadcrumb > * > * {\n    color: rgba(255, 255, 255, 0.5); }\n  .uk-light .uk-breadcrumb > * > :hover, .uk-section-primary:not(.uk-preserve-color) .uk-breadcrumb > * > :hover, .uk-section-secondary:not(.uk-preserve-color) .uk-breadcrumb > * > :hover, .uk-tile-primary:not(.uk-preserve-color) .uk-breadcrumb > * > :hover, .uk-tile-secondary:not(.uk-preserve-color) .uk-breadcrumb > * > :hover, .uk-card-primary.uk-card-body .uk-breadcrumb > * > :hover, .uk-card-primary > :not([class*='uk-card-media']) .uk-breadcrumb > * > :hover, .uk-card-secondary.uk-card-body .uk-breadcrumb > * > :hover, .uk-card-secondary > :not([class*='uk-card-media']) .uk-breadcrumb > * > :hover, .uk-overlay-primary .uk-breadcrumb > * > :hover, .uk-offcanvas-bar .uk-breadcrumb > * > :hover,\n  .uk-light .uk-breadcrumb > * > :focus, .uk-section-primary:not(.uk-preserve-color) .uk-breadcrumb > * > :focus, .uk-section-secondary:not(.uk-preserve-color) .uk-breadcrumb > * > :focus, .uk-tile-primary:not(.uk-preserve-color) .uk-breadcrumb > * > :focus, .uk-tile-secondary:not(.uk-preserve-color) .uk-breadcrumb > * > :focus, .uk-card-primary.uk-card-body .uk-breadcrumb > * > :focus, .uk-card-primary > :not([class*='uk-card-media']) .uk-breadcrumb > * > :focus, .uk-card-secondary.uk-card-body .uk-breadcrumb > * > :focus, .uk-card-secondary > :not([class*='uk-card-media']) .uk-breadcrumb > * > :focus, .uk-overlay-primary .uk-breadcrumb > * > :focus, .uk-offcanvas-bar .uk-breadcrumb > * > :focus {\n    color: rgba(255, 255, 255, 0.7); }\n  .uk-light .uk-breadcrumb > :last-child > *, .uk-section-primary:not(.uk-preserve-color) .uk-breadcrumb > :last-child > *, .uk-section-secondary:not(.uk-preserve-color) .uk-breadcrumb > :last-child > *, .uk-tile-primary:not(.uk-preserve-color) .uk-breadcrumb > :last-child > *, .uk-tile-secondary:not(.uk-preserve-color) .uk-breadcrumb > :last-child > *, .uk-card-primary.uk-card-body .uk-breadcrumb > :last-child > *, .uk-card-primary > :not([class*='uk-card-media']) .uk-breadcrumb > :last-child > *, .uk-card-secondary.uk-card-body .uk-breadcrumb > :last-child > *, .uk-card-secondary > :not([class*='uk-card-media']) .uk-breadcrumb > :last-child > *, .uk-overlay-primary .uk-breadcrumb > :last-child > *, .uk-offcanvas-bar .uk-breadcrumb > :last-child > * {\n    color: rgba(255, 255, 255, 0.7); }\n  .uk-light .uk-breadcrumb > :nth-child(n+2):not(.uk-first-column)::before, .uk-section-primary:not(.uk-preserve-color) .uk-breadcrumb > :nth-child(n+2):not(.uk-first-column)::before, .uk-section-secondary:not(.uk-preserve-color) .uk-breadcrumb > :nth-child(n+2):not(.uk-first-column)::before, .uk-tile-primary:not(.uk-preserve-color) .uk-breadcrumb > :nth-child(n+2):not(.uk-first-column)::before, .uk-tile-secondary:not(.uk-preserve-color) .uk-breadcrumb > :nth-child(n+2):not(.uk-first-column)::before, .uk-card-primary.uk-card-body .uk-breadcrumb > :nth-child(n+2):not(.uk-first-column)::before, .uk-card-primary > :not([class*='uk-card-media']) .uk-breadcrumb > :nth-child(n+2):not(.uk-first-column)::before, .uk-card-secondary.uk-card-body .uk-breadcrumb > :nth-child(n+2):not(.uk-first-column)::before, .uk-card-secondary > :not([class*='uk-card-media']) .uk-breadcrumb > :nth-child(n+2):not(.uk-first-column)::before, .uk-overlay-primary .uk-breadcrumb > :nth-child(n+2):not(.uk-first-column)::before, .uk-offcanvas-bar .uk-breadcrumb > :nth-child(n+2):not(.uk-first-column)::before {\n    color: rgba(255, 255, 255, 0.5); }\n  .uk-light .uk-pagination > * > *, .uk-section-primary:not(.uk-preserve-color) .uk-pagination > * > *, .uk-section-secondary:not(.uk-preserve-color) .uk-pagination > * > *, .uk-tile-primary:not(.uk-preserve-color) .uk-pagination > * > *, .uk-tile-secondary:not(.uk-preserve-color) .uk-pagination > * > *, .uk-card-primary.uk-card-body .uk-pagination > * > *, .uk-card-primary > :not([class*='uk-card-media']) .uk-pagination > * > *, .uk-card-secondary.uk-card-body .uk-pagination > * > *, .uk-card-secondary > :not([class*='uk-card-media']) .uk-pagination > * > *, .uk-overlay-primary .uk-pagination > * > *, .uk-offcanvas-bar .uk-pagination > * > * {\n    color: rgba(255, 255, 255, 0.5); }\n  .uk-light .uk-pagination > * > :hover, .uk-section-primary:not(.uk-preserve-color) .uk-pagination > * > :hover, .uk-section-secondary:not(.uk-preserve-color) .uk-pagination > * > :hover, .uk-tile-primary:not(.uk-preserve-color) .uk-pagination > * > :hover, .uk-tile-secondary:not(.uk-preserve-color) .uk-pagination > * > :hover, .uk-card-primary.uk-card-body .uk-pagination > * > :hover, .uk-card-primary > :not([class*='uk-card-media']) .uk-pagination > * > :hover, .uk-card-secondary.uk-card-body .uk-pagination > * > :hover, .uk-card-secondary > :not([class*='uk-card-media']) .uk-pagination > * > :hover, .uk-overlay-primary .uk-pagination > * > :hover, .uk-offcanvas-bar .uk-pagination > * > :hover,\n  .uk-light .uk-pagination > * > :focus, .uk-section-primary:not(.uk-preserve-color) .uk-pagination > * > :focus, .uk-section-secondary:not(.uk-preserve-color) .uk-pagination > * > :focus, .uk-tile-primary:not(.uk-preserve-color) .uk-pagination > * > :focus, .uk-tile-secondary:not(.uk-preserve-color) .uk-pagination > * > :focus, .uk-card-primary.uk-card-body .uk-pagination > * > :focus, .uk-card-primary > :not([class*='uk-card-media']) .uk-pagination > * > :focus, .uk-card-secondary.uk-card-body .uk-pagination > * > :focus, .uk-card-secondary > :not([class*='uk-card-media']) .uk-pagination > * > :focus, .uk-overlay-primary .uk-pagination > * > :focus, .uk-offcanvas-bar .uk-pagination > * > :focus {\n    color: rgba(255, 255, 255, 0.7); }\n  .uk-light .uk-pagination > .uk-active > *, .uk-section-primary:not(.uk-preserve-color) .uk-pagination > .uk-active > *, .uk-section-secondary:not(.uk-preserve-color) .uk-pagination > .uk-active > *, .uk-tile-primary:not(.uk-preserve-color) .uk-pagination > .uk-active > *, .uk-tile-secondary:not(.uk-preserve-color) .uk-pagination > .uk-active > *, .uk-card-primary.uk-card-body .uk-pagination > .uk-active > *, .uk-card-primary > :not([class*='uk-card-media']) .uk-pagination > .uk-active > *, .uk-card-secondary.uk-card-body .uk-pagination > .uk-active > *, .uk-card-secondary > :not([class*='uk-card-media']) .uk-pagination > .uk-active > *, .uk-overlay-primary .uk-pagination > .uk-active > *, .uk-offcanvas-bar .uk-pagination > .uk-active > * {\n    color: rgba(255, 255, 255, 0.7); }\n  .uk-light .uk-pagination > .uk-disabled > *, .uk-section-primary:not(.uk-preserve-color) .uk-pagination > .uk-disabled > *, .uk-section-secondary:not(.uk-preserve-color) .uk-pagination > .uk-disabled > *, .uk-tile-primary:not(.uk-preserve-color) .uk-pagination > .uk-disabled > *, .uk-tile-secondary:not(.uk-preserve-color) .uk-pagination > .uk-disabled > *, .uk-card-primary.uk-card-body .uk-pagination > .uk-disabled > *, .uk-card-primary > :not([class*='uk-card-media']) .uk-pagination > .uk-disabled > *, .uk-card-secondary.uk-card-body .uk-pagination > .uk-disabled > *, .uk-card-secondary > :not([class*='uk-card-media']) .uk-pagination > .uk-disabled > *, .uk-overlay-primary .uk-pagination > .uk-disabled > *, .uk-offcanvas-bar .uk-pagination > .uk-disabled > * {\n    color: rgba(255, 255, 255, 0.5); }\n  .uk-light .uk-tab::before, .uk-section-primary:not(.uk-preserve-color) .uk-tab::before, .uk-section-secondary:not(.uk-preserve-color) .uk-tab::before, .uk-tile-primary:not(.uk-preserve-color) .uk-tab::before, .uk-tile-secondary:not(.uk-preserve-color) .uk-tab::before, .uk-card-primary.uk-card-body .uk-tab::before, .uk-card-primary > :not([class*='uk-card-media']) .uk-tab::before, .uk-card-secondary.uk-card-body .uk-tab::before, .uk-card-secondary > :not([class*='uk-card-media']) .uk-tab::before, .uk-overlay-primary .uk-tab::before, .uk-offcanvas-bar .uk-tab::before {\n    border-color: rgba(255, 255, 255, 0.2); }\n  .uk-light .uk-tab > * > a, .uk-section-primary:not(.uk-preserve-color) .uk-tab > * > a, .uk-section-secondary:not(.uk-preserve-color) .uk-tab > * > a, .uk-tile-primary:not(.uk-preserve-color) .uk-tab > * > a, .uk-tile-secondary:not(.uk-preserve-color) .uk-tab > * > a, .uk-card-primary.uk-card-body .uk-tab > * > a, .uk-card-primary > :not([class*='uk-card-media']) .uk-tab > * > a, .uk-card-secondary.uk-card-body .uk-tab > * > a, .uk-card-secondary > :not([class*='uk-card-media']) .uk-tab > * > a, .uk-overlay-primary .uk-tab > * > a, .uk-offcanvas-bar .uk-tab > * > a {\n    color: rgba(255, 255, 255, 0.5); }\n  .uk-light .uk-tab > * > a:hover, .uk-section-primary:not(.uk-preserve-color) .uk-tab > * > a:hover, .uk-section-secondary:not(.uk-preserve-color) .uk-tab > * > a:hover, .uk-tile-primary:not(.uk-preserve-color) .uk-tab > * > a:hover, .uk-tile-secondary:not(.uk-preserve-color) .uk-tab > * > a:hover, .uk-card-primary.uk-card-body .uk-tab > * > a:hover, .uk-card-primary > :not([class*='uk-card-media']) .uk-tab > * > a:hover, .uk-card-secondary.uk-card-body .uk-tab > * > a:hover, .uk-card-secondary > :not([class*='uk-card-media']) .uk-tab > * > a:hover, .uk-overlay-primary .uk-tab > * > a:hover, .uk-offcanvas-bar .uk-tab > * > a:hover,\n  .uk-light .uk-tab > * > a:focus, .uk-section-primary:not(.uk-preserve-color) .uk-tab > * > a:focus, .uk-section-secondary:not(.uk-preserve-color) .uk-tab > * > a:focus, .uk-tile-primary:not(.uk-preserve-color) .uk-tab > * > a:focus, .uk-tile-secondary:not(.uk-preserve-color) .uk-tab > * > a:focus, .uk-card-primary.uk-card-body .uk-tab > * > a:focus, .uk-card-primary > :not([class*='uk-card-media']) .uk-tab > * > a:focus, .uk-card-secondary.uk-card-body .uk-tab > * > a:focus, .uk-card-secondary > :not([class*='uk-card-media']) .uk-tab > * > a:focus, .uk-overlay-primary .uk-tab > * > a:focus, .uk-offcanvas-bar .uk-tab > * > a:focus {\n    color: rgba(255, 255, 255, 0.7); }\n  .uk-light .uk-tab > .uk-active > a, .uk-section-primary:not(.uk-preserve-color) .uk-tab > .uk-active > a, .uk-section-secondary:not(.uk-preserve-color) .uk-tab > .uk-active > a, .uk-tile-primary:not(.uk-preserve-color) .uk-tab > .uk-active > a, .uk-tile-secondary:not(.uk-preserve-color) .uk-tab > .uk-active > a, .uk-card-primary.uk-card-body .uk-tab > .uk-active > a, .uk-card-primary > :not([class*='uk-card-media']) .uk-tab > .uk-active > a, .uk-card-secondary.uk-card-body .uk-tab > .uk-active > a, .uk-card-secondary > :not([class*='uk-card-media']) .uk-tab > .uk-active > a, .uk-overlay-primary .uk-tab > .uk-active > a, .uk-offcanvas-bar .uk-tab > .uk-active > a {\n    color: #fff;\n    border-color: #fff; }\n  .uk-light .uk-tab > .uk-disabled > a, .uk-section-primary:not(.uk-preserve-color) .uk-tab > .uk-disabled > a, .uk-section-secondary:not(.uk-preserve-color) .uk-tab > .uk-disabled > a, .uk-tile-primary:not(.uk-preserve-color) .uk-tab > .uk-disabled > a, .uk-tile-secondary:not(.uk-preserve-color) .uk-tab > .uk-disabled > a, .uk-card-primary.uk-card-body .uk-tab > .uk-disabled > a, .uk-card-primary > :not([class*='uk-card-media']) .uk-tab > .uk-disabled > a, .uk-card-secondary.uk-card-body .uk-tab > .uk-disabled > a, .uk-card-secondary > :not([class*='uk-card-media']) .uk-tab > .uk-disabled > a, .uk-overlay-primary .uk-tab > .uk-disabled > a, .uk-offcanvas-bar .uk-tab > .uk-disabled > a {\n    color: rgba(255, 255, 255, 0.5); }\n  .uk-light .uk-slidenav, .uk-section-primary:not(.uk-preserve-color) .uk-slidenav, .uk-section-secondary:not(.uk-preserve-color) .uk-slidenav, .uk-tile-primary:not(.uk-preserve-color) .uk-slidenav, .uk-tile-secondary:not(.uk-preserve-color) .uk-slidenav, .uk-card-primary.uk-card-body .uk-slidenav, .uk-card-primary > :not([class*='uk-card-media']) .uk-slidenav, .uk-card-secondary.uk-card-body .uk-slidenav, .uk-card-secondary > :not([class*='uk-card-media']) .uk-slidenav, .uk-overlay-primary .uk-slidenav, .uk-offcanvas-bar .uk-slidenav {\n    color: rgba(255, 255, 255, 0.3); }\n  .uk-light .uk-slidenav:hover, .uk-section-primary:not(.uk-preserve-color) .uk-slidenav:hover, .uk-section-secondary:not(.uk-preserve-color) .uk-slidenav:hover, .uk-tile-primary:not(.uk-preserve-color) .uk-slidenav:hover, .uk-tile-secondary:not(.uk-preserve-color) .uk-slidenav:hover, .uk-card-primary.uk-card-body .uk-slidenav:hover, .uk-card-primary > :not([class*='uk-card-media']) .uk-slidenav:hover, .uk-card-secondary.uk-card-body .uk-slidenav:hover, .uk-card-secondary > :not([class*='uk-card-media']) .uk-slidenav:hover, .uk-overlay-primary .uk-slidenav:hover, .uk-offcanvas-bar .uk-slidenav:hover,\n  .uk-light .uk-slidenav:focus, .uk-section-primary:not(.uk-preserve-color) .uk-slidenav:focus, .uk-section-secondary:not(.uk-preserve-color) .uk-slidenav:focus, .uk-tile-primary:not(.uk-preserve-color) .uk-slidenav:focus, .uk-tile-secondary:not(.uk-preserve-color) .uk-slidenav:focus, .uk-card-primary.uk-card-body .uk-slidenav:focus, .uk-card-primary > :not([class*='uk-card-media']) .uk-slidenav:focus, .uk-card-secondary.uk-card-body .uk-slidenav:focus, .uk-card-secondary > :not([class*='uk-card-media']) .uk-slidenav:focus, .uk-overlay-primary .uk-slidenav:focus, .uk-offcanvas-bar .uk-slidenav:focus {\n    color: rgba(255, 255, 255, 0.5); }\n  .uk-light .uk-slidenav:active, .uk-section-primary:not(.uk-preserve-color) .uk-slidenav:active, .uk-section-secondary:not(.uk-preserve-color) .uk-slidenav:active, .uk-tile-primary:not(.uk-preserve-color) .uk-slidenav:active, .uk-tile-secondary:not(.uk-preserve-color) .uk-slidenav:active, .uk-card-primary.uk-card-body .uk-slidenav:active, .uk-card-primary > :not([class*='uk-card-media']) .uk-slidenav:active, .uk-card-secondary.uk-card-body .uk-slidenav:active, .uk-card-secondary > :not([class*='uk-card-media']) .uk-slidenav:active, .uk-overlay-primary .uk-slidenav:active, .uk-offcanvas-bar .uk-slidenav:active {\n    color: rgba(255, 255, 255, 0.6); }\n  .uk-light .uk-dotnav > * > *, .uk-section-primary:not(.uk-preserve-color) .uk-dotnav > * > *, .uk-section-secondary:not(.uk-preserve-color) .uk-dotnav > * > *, .uk-tile-primary:not(.uk-preserve-color) .uk-dotnav > * > *, .uk-tile-secondary:not(.uk-preserve-color) .uk-dotnav > * > *, .uk-card-primary.uk-card-body .uk-dotnav > * > *, .uk-card-primary > :not([class*='uk-card-media']) .uk-dotnav > * > *, .uk-card-secondary.uk-card-body .uk-dotnav > * > *, .uk-card-secondary > :not([class*='uk-card-media']) .uk-dotnav > * > *, .uk-overlay-primary .uk-dotnav > * > *, .uk-offcanvas-bar .uk-dotnav > * > * {\n    background-color: rgba(255, 255, 255, 0.1); }\n  .uk-light .uk-dotnav > * > :hover, .uk-section-primary:not(.uk-preserve-color) .uk-dotnav > * > :hover, .uk-section-secondary:not(.uk-preserve-color) .uk-dotnav > * > :hover, .uk-tile-primary:not(.uk-preserve-color) .uk-dotnav > * > :hover, .uk-tile-secondary:not(.uk-preserve-color) .uk-dotnav > * > :hover, .uk-card-primary.uk-card-body .uk-dotnav > * > :hover, .uk-card-primary > :not([class*='uk-card-media']) .uk-dotnav > * > :hover, .uk-card-secondary.uk-card-body .uk-dotnav > * > :hover, .uk-card-secondary > :not([class*='uk-card-media']) .uk-dotnav > * > :hover, .uk-overlay-primary .uk-dotnav > * > :hover, .uk-offcanvas-bar .uk-dotnav > * > :hover,\n  .uk-light .uk-dotnav > * > :focus, .uk-section-primary:not(.uk-preserve-color) .uk-dotnav > * > :focus, .uk-section-secondary:not(.uk-preserve-color) .uk-dotnav > * > :focus, .uk-tile-primary:not(.uk-preserve-color) .uk-dotnav > * > :focus, .uk-tile-secondary:not(.uk-preserve-color) .uk-dotnav > * > :focus, .uk-card-primary.uk-card-body .uk-dotnav > * > :focus, .uk-card-primary > :not([class*='uk-card-media']) .uk-dotnav > * > :focus, .uk-card-secondary.uk-card-body .uk-dotnav > * > :focus, .uk-card-secondary > :not([class*='uk-card-media']) .uk-dotnav > * > :focus, .uk-overlay-primary .uk-dotnav > * > :focus, .uk-offcanvas-bar .uk-dotnav > * > :focus {\n    background-color: rgba(255, 255, 255, 0.4); }\n  .uk-light .uk-dotnav > * > :active, .uk-section-primary:not(.uk-preserve-color) .uk-dotnav > * > :active, .uk-section-secondary:not(.uk-preserve-color) .uk-dotnav > * > :active, .uk-tile-primary:not(.uk-preserve-color) .uk-dotnav > * > :active, .uk-tile-secondary:not(.uk-preserve-color) .uk-dotnav > * > :active, .uk-card-primary.uk-card-body .uk-dotnav > * > :active, .uk-card-primary > :not([class*='uk-card-media']) .uk-dotnav > * > :active, .uk-card-secondary.uk-card-body .uk-dotnav > * > :active, .uk-card-secondary > :not([class*='uk-card-media']) .uk-dotnav > * > :active, .uk-overlay-primary .uk-dotnav > * > :active, .uk-offcanvas-bar .uk-dotnav > * > :active {\n    background-color: rgba(255, 255, 255, 0.6); }\n  .uk-light .uk-dotnav > .uk-active > *, .uk-section-primary:not(.uk-preserve-color) .uk-dotnav > .uk-active > *, .uk-section-secondary:not(.uk-preserve-color) .uk-dotnav > .uk-active > *, .uk-tile-primary:not(.uk-preserve-color) .uk-dotnav > .uk-active > *, .uk-tile-secondary:not(.uk-preserve-color) .uk-dotnav > .uk-active > *, .uk-card-primary.uk-card-body .uk-dotnav > .uk-active > *, .uk-card-primary > :not([class*='uk-card-media']) .uk-dotnav > .uk-active > *, .uk-card-secondary.uk-card-body .uk-dotnav > .uk-active > *, .uk-card-secondary > :not([class*='uk-card-media']) .uk-dotnav > .uk-active > *, .uk-overlay-primary .uk-dotnav > .uk-active > *, .uk-offcanvas-bar .uk-dotnav > .uk-active > * {\n    background-color: rgba(255, 255, 255, 0.6); }\n  .uk-light .uk-accordion-title::after, .uk-section-primary:not(.uk-preserve-color) .uk-accordion-title::after, .uk-section-secondary:not(.uk-preserve-color) .uk-accordion-title::after, .uk-tile-primary:not(.uk-preserve-color) .uk-accordion-title::after, .uk-tile-secondary:not(.uk-preserve-color) .uk-accordion-title::after, .uk-card-primary.uk-card-body .uk-accordion-title::after, .uk-card-primary > :not([class*='uk-card-media']) .uk-accordion-title::after, .uk-card-secondary.uk-card-body .uk-accordion-title::after, .uk-card-secondary > :not([class*='uk-card-media']) .uk-accordion-title::after, .uk-overlay-primary .uk-accordion-title::after, .uk-offcanvas-bar .uk-accordion-title::after {\n    background-image: url(\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2213%22%20height%3D%2213%22%20viewBox%3D%220%200%2013%2013%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Crect%20fill%3D%22rgba(255, 255, 255, 0.7)%22%20width%3D%2213%22%20height%3D%221%22%20x%3D%220%22%20y%3D%226%22%3E%3C%2Frect%3E%0A%20%20%20%20%3Crect%20fill%3D%22rgba(255, 255, 255, 0.7)%22%20width%3D%221%22%20height%3D%2213%22%20x%3D%226%22%20y%3D%220%22%3E%3C%2Frect%3E%0A%3C%2Fsvg%3E\"); }\n  .uk-light .uk-open > .uk-accordion-title::after, .uk-section-primary:not(.uk-preserve-color) .uk-open > .uk-accordion-title::after, .uk-section-secondary:not(.uk-preserve-color) .uk-open > .uk-accordion-title::after, .uk-tile-primary:not(.uk-preserve-color) .uk-open > .uk-accordion-title::after, .uk-tile-secondary:not(.uk-preserve-color) .uk-open > .uk-accordion-title::after, .uk-card-primary.uk-card-body .uk-open > .uk-accordion-title::after, .uk-card-primary > :not([class*='uk-card-media']) .uk-open > .uk-accordion-title::after, .uk-card-secondary.uk-card-body .uk-open > .uk-accordion-title::after, .uk-card-secondary > :not([class*='uk-card-media']) .uk-open > .uk-accordion-title::after, .uk-overlay-primary .uk-open > .uk-accordion-title::after, .uk-offcanvas-bar .uk-open > .uk-accordion-title::after {\n    background-image: url(\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2213%22%20height%3D%2213%22%20viewBox%3D%220%200%2013%2013%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Crect%20fill%3D%22rgba(255, 255, 255, 0.7)%22%20width%3D%2213%22%20height%3D%221%22%20x%3D%220%22%20y%3D%226%22%3E%3C%2Frect%3E%0A%3C%2Fsvg%3E\"); }\n  .uk-light .uk-iconnav > * > *, .uk-section-primary:not(.uk-preserve-color) .uk-iconnav > * > *, .uk-section-secondary:not(.uk-preserve-color) .uk-iconnav > * > *, .uk-tile-primary:not(.uk-preserve-color) .uk-iconnav > * > *, .uk-tile-secondary:not(.uk-preserve-color) .uk-iconnav > * > *, .uk-card-primary.uk-card-body .uk-iconnav > * > *, .uk-card-primary > :not([class*='uk-card-media']) .uk-iconnav > * > *, .uk-card-secondary.uk-card-body .uk-iconnav > * > *, .uk-card-secondary > :not([class*='uk-card-media']) .uk-iconnav > * > *, .uk-overlay-primary .uk-iconnav > * > *, .uk-offcanvas-bar .uk-iconnav > * > * {\n    color: rgba(255, 255, 255, 0.5); }\n  .uk-light .uk-iconnav > * > :hover, .uk-section-primary:not(.uk-preserve-color) .uk-iconnav > * > :hover, .uk-section-secondary:not(.uk-preserve-color) .uk-iconnav > * > :hover, .uk-tile-primary:not(.uk-preserve-color) .uk-iconnav > * > :hover, .uk-tile-secondary:not(.uk-preserve-color) .uk-iconnav > * > :hover, .uk-card-primary.uk-card-body .uk-iconnav > * > :hover, .uk-card-primary > :not([class*='uk-card-media']) .uk-iconnav > * > :hover, .uk-card-secondary.uk-card-body .uk-iconnav > * > :hover, .uk-card-secondary > :not([class*='uk-card-media']) .uk-iconnav > * > :hover, .uk-overlay-primary .uk-iconnav > * > :hover, .uk-offcanvas-bar .uk-iconnav > * > :hover,\n  .uk-light .uk-iconnav > * > :focus, .uk-section-primary:not(.uk-preserve-color) .uk-iconnav > * > :focus, .uk-section-secondary:not(.uk-preserve-color) .uk-iconnav > * > :focus, .uk-tile-primary:not(.uk-preserve-color) .uk-iconnav > * > :focus, .uk-tile-secondary:not(.uk-preserve-color) .uk-iconnav > * > :focus, .uk-card-primary.uk-card-body .uk-iconnav > * > :focus, .uk-card-primary > :not([class*='uk-card-media']) .uk-iconnav > * > :focus, .uk-card-secondary.uk-card-body .uk-iconnav > * > :focus, .uk-card-secondary > :not([class*='uk-card-media']) .uk-iconnav > * > :focus, .uk-overlay-primary .uk-iconnav > * > :focus, .uk-offcanvas-bar .uk-iconnav > * > :focus {\n    color: rgba(255, 255, 255, 0.7); }\n  .uk-light .uk-iconnav > .uk-active > *, .uk-section-primary:not(.uk-preserve-color) .uk-iconnav > .uk-active > *, .uk-section-secondary:not(.uk-preserve-color) .uk-iconnav > .uk-active > *, .uk-tile-primary:not(.uk-preserve-color) .uk-iconnav > .uk-active > *, .uk-tile-secondary:not(.uk-preserve-color) .uk-iconnav > .uk-active > *, .uk-card-primary.uk-card-body .uk-iconnav > .uk-active > *, .uk-card-primary > :not([class*='uk-card-media']) .uk-iconnav > .uk-active > *, .uk-card-secondary.uk-card-body .uk-iconnav > .uk-active > *, .uk-card-secondary > :not([class*='uk-card-media']) .uk-iconnav > .uk-active > *, .uk-overlay-primary .uk-iconnav > .uk-active > *, .uk-offcanvas-bar .uk-iconnav > .uk-active > * {\n    color: rgba(255, 255, 255, 0.7); }\n  .uk-light .uk-text-lead, .uk-section-primary:not(.uk-preserve-color) .uk-text-lead, .uk-section-secondary:not(.uk-preserve-color) .uk-text-lead, .uk-tile-primary:not(.uk-preserve-color) .uk-text-lead, .uk-tile-secondary:not(.uk-preserve-color) .uk-text-lead, .uk-card-primary.uk-card-body .uk-text-lead, .uk-card-primary > :not([class*='uk-card-media']) .uk-text-lead, .uk-card-secondary.uk-card-body .uk-text-lead, .uk-card-secondary > :not([class*='uk-card-media']) .uk-text-lead, .uk-overlay-primary .uk-text-lead, .uk-offcanvas-bar .uk-text-lead {\n    color: rgba(255, 255, 255, 0.7); }\n  .uk-light .uk-text-meta, .uk-section-primary:not(.uk-preserve-color) .uk-text-meta, .uk-section-secondary:not(.uk-preserve-color) .uk-text-meta, .uk-tile-primary:not(.uk-preserve-color) .uk-text-meta, .uk-tile-secondary:not(.uk-preserve-color) .uk-text-meta, .uk-card-primary.uk-card-body .uk-text-meta, .uk-card-primary > :not([class*='uk-card-media']) .uk-text-meta, .uk-card-secondary.uk-card-body .uk-text-meta, .uk-card-secondary > :not([class*='uk-card-media']) .uk-text-meta, .uk-overlay-primary .uk-text-meta, .uk-offcanvas-bar .uk-text-meta {\n    color: rgba(255, 255, 255, 0.5); }\n  .uk-light .uk-text-muted, .uk-section-primary:not(.uk-preserve-color) .uk-text-muted, .uk-section-secondary:not(.uk-preserve-color) .uk-text-muted, .uk-tile-primary:not(.uk-preserve-color) .uk-text-muted, .uk-tile-secondary:not(.uk-preserve-color) .uk-text-muted, .uk-card-primary.uk-card-body .uk-text-muted, .uk-card-primary > :not([class*='uk-card-media']) .uk-text-muted, .uk-card-secondary.uk-card-body .uk-text-muted, .uk-card-secondary > :not([class*='uk-card-media']) .uk-text-muted, .uk-overlay-primary .uk-text-muted, .uk-offcanvas-bar .uk-text-muted {\n    color: rgba(255, 255, 255, 0.5) !important; }\n  .uk-light .uk-text-primary, .uk-section-primary:not(.uk-preserve-color) .uk-text-primary, .uk-section-secondary:not(.uk-preserve-color) .uk-text-primary, .uk-tile-primary:not(.uk-preserve-color) .uk-text-primary, .uk-tile-secondary:not(.uk-preserve-color) .uk-text-primary, .uk-card-primary.uk-card-body .uk-text-primary, .uk-card-primary > :not([class*='uk-card-media']) .uk-text-primary, .uk-card-secondary.uk-card-body .uk-text-primary, .uk-card-secondary > :not([class*='uk-card-media']) .uk-text-primary, .uk-overlay-primary .uk-text-primary, .uk-offcanvas-bar .uk-text-primary {\n    color: rgba(255, 255, 255, 0.7) !important; }\n  .uk-light .uk-column-divider, .uk-section-primary:not(.uk-preserve-color) .uk-column-divider, .uk-section-secondary:not(.uk-preserve-color) .uk-column-divider, .uk-tile-primary:not(.uk-preserve-color) .uk-column-divider, .uk-tile-secondary:not(.uk-preserve-color) .uk-column-divider, .uk-card-primary.uk-card-body .uk-column-divider, .uk-card-primary > :not([class*='uk-card-media']) .uk-column-divider, .uk-card-secondary.uk-card-body .uk-column-divider, .uk-card-secondary > :not([class*='uk-card-media']) .uk-column-divider, .uk-overlay-primary .uk-column-divider, .uk-offcanvas-bar .uk-column-divider {\n    -webkit-column-rule-color: rgba(255, 255, 255, 0.2);\n    -moz-column-rule-color: rgba(255, 255, 255, 0.2);\n    column-rule-color: rgba(255, 255, 255, 0.2); }\n  .uk-light .uk-logo, .uk-section-primary:not(.uk-preserve-color) .uk-logo, .uk-section-secondary:not(.uk-preserve-color) .uk-logo, .uk-tile-primary:not(.uk-preserve-color) .uk-logo, .uk-tile-secondary:not(.uk-preserve-color) .uk-logo, .uk-card-primary.uk-card-body .uk-logo, .uk-card-primary > :not([class*='uk-card-media']) .uk-logo, .uk-card-secondary.uk-card-body .uk-logo, .uk-card-secondary > :not([class*='uk-card-media']) .uk-logo, .uk-overlay-primary .uk-logo, .uk-offcanvas-bar .uk-logo {\n    color: rgba(255, 255, 255, 0.7); }\n  .uk-light .uk-logo:hover, .uk-section-primary:not(.uk-preserve-color) .uk-logo:hover, .uk-section-secondary:not(.uk-preserve-color) .uk-logo:hover, .uk-tile-primary:not(.uk-preserve-color) .uk-logo:hover, .uk-tile-secondary:not(.uk-preserve-color) .uk-logo:hover, .uk-card-primary.uk-card-body .uk-logo:hover, .uk-card-primary > :not([class*='uk-card-media']) .uk-logo:hover, .uk-card-secondary.uk-card-body .uk-logo:hover, .uk-card-secondary > :not([class*='uk-card-media']) .uk-logo:hover, .uk-overlay-primary .uk-logo:hover, .uk-offcanvas-bar .uk-logo:hover,\n  .uk-light .uk-logo:focus, .uk-section-primary:not(.uk-preserve-color) .uk-logo:focus, .uk-section-secondary:not(.uk-preserve-color) .uk-logo:focus, .uk-tile-primary:not(.uk-preserve-color) .uk-logo:focus, .uk-tile-secondary:not(.uk-preserve-color) .uk-logo:focus, .uk-card-primary.uk-card-body .uk-logo:focus, .uk-card-primary > :not([class*='uk-card-media']) .uk-logo:focus, .uk-card-secondary.uk-card-body .uk-logo:focus, .uk-card-secondary > :not([class*='uk-card-media']) .uk-logo:focus, .uk-overlay-primary .uk-logo:focus, .uk-offcanvas-bar .uk-logo:focus {\n    color: rgba(255, 255, 255, 0.7); }\n  .uk-light .uk-logo > :not(.uk-logo-inverse):not(:only-of-type), .uk-section-primary:not(.uk-preserve-color) .uk-logo > :not(.uk-logo-inverse):not(:only-of-type), .uk-section-secondary:not(.uk-preserve-color) .uk-logo > :not(.uk-logo-inverse):not(:only-of-type), .uk-tile-primary:not(.uk-preserve-color) .uk-logo > :not(.uk-logo-inverse):not(:only-of-type), .uk-tile-secondary:not(.uk-preserve-color) .uk-logo > :not(.uk-logo-inverse):not(:only-of-type), .uk-card-primary.uk-card-body .uk-logo > :not(.uk-logo-inverse):not(:only-of-type), .uk-card-primary > :not([class*='uk-card-media']) .uk-logo > :not(.uk-logo-inverse):not(:only-of-type), .uk-card-secondary.uk-card-body .uk-logo > :not(.uk-logo-inverse):not(:only-of-type), .uk-card-secondary > :not([class*='uk-card-media']) .uk-logo > :not(.uk-logo-inverse):not(:only-of-type), .uk-overlay-primary .uk-logo > :not(.uk-logo-inverse):not(:only-of-type), .uk-offcanvas-bar .uk-logo > :not(.uk-logo-inverse):not(:only-of-type) {\n    display: none; }\n  .uk-light .uk-logo-inverse, .uk-section-primary:not(.uk-preserve-color) .uk-logo-inverse, .uk-section-secondary:not(.uk-preserve-color) .uk-logo-inverse, .uk-tile-primary:not(.uk-preserve-color) .uk-logo-inverse, .uk-tile-secondary:not(.uk-preserve-color) .uk-logo-inverse, .uk-card-primary.uk-card-body .uk-logo-inverse, .uk-card-primary > :not([class*='uk-card-media']) .uk-logo-inverse, .uk-card-secondary.uk-card-body .uk-logo-inverse, .uk-card-secondary > :not([class*='uk-card-media']) .uk-logo-inverse, .uk-overlay-primary .uk-logo-inverse, .uk-offcanvas-bar .uk-logo-inverse {\n    display: inline; }\n\n/* ========================================================================\n   Component: Print\n ========================================================================== */\n@media print {\n  *,\n  *::before,\n  *::after {\n    background: transparent !important;\n    color: black !important;\n    box-shadow: none !important;\n    text-shadow: none !important; }\n  a,\n  a:visited {\n    text-decoration: underline; }\n  pre,\n  blockquote {\n    border: 1px solid #999;\n    page-break-inside: avoid; }\n  thead {\n    display: table-header-group; }\n  tr,\n  img {\n    page-break-inside: avoid; }\n  img {\n    max-width: 100% !important; }\n  @page {\n    margin: 0.5cm; }\n  p,\n  h2,\n  h3 {\n    orphans: 3;\n    widows: 3; }\n  h2,\n  h3 {\n    page-break-after: avoid; } }\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 339 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(46)(undefined);
+// imports
+
+
+// module
+exports.push([module.i, "\n.example {\n\tcolor: red;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 340 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(46)(undefined);
+// imports
+
+
+// module
+exports.push([module.i, "\n.uk-list li[data-v-a84c527a]:not(:last-child) {\n  margin-right: #DA7D02;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 341 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(46)(undefined);
+// imports
+
+
+// module
+exports.push([module.i, "\naside[data-v-aeae57de] {\n  width: 260px;\n}\n.market[data-v-aeae57de] {\n  padding: 30px;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 342 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(46)(undefined);
+// imports
+
+
+// module
+exports.push([module.i, "\n.star {\n  margin-right: 3px;\n}\n.star.-on {\n    color: #DA7D02;\n}\n.star.-off {\n    opacity: 0.25;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 343 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(46)(undefined);
 // imports
 
 
@@ -23370,190 +26391,7 @@ exports.push([module.i, "", ""]);
 
 
 /***/ }),
-/* 306 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(Buffer) {/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
-// css base code, injected by the css-loader
-module.exports = function(useSourceMap) {
-	var list = [];
-
-	// return the list of modules as css string
-	list.toString = function toString() {
-		return this.map(function (item) {
-			var content = cssWithMappingToString(item, useSourceMap);
-			if(item[2]) {
-				return "@media " + item[2] + "{" + content + "}";
-			} else {
-				return content;
-			}
-		}).join("");
-	};
-
-	// import a list of modules into the list
-	list.i = function(modules, mediaQuery) {
-		if(typeof modules === "string")
-			modules = [[null, modules, ""]];
-		var alreadyImportedModules = {};
-		for(var i = 0; i < this.length; i++) {
-			var id = this[i][0];
-			if(typeof id === "number")
-				alreadyImportedModules[id] = true;
-		}
-		for(i = 0; i < modules.length; i++) {
-			var item = modules[i];
-			// skip already imported module
-			// this implementation is not 100% perfect for weird media query combinations
-			//  when a module is imported multiple times with different media queries.
-			//  I hope this will never occur (Hey this way we have smaller bundles)
-			if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
-				if(mediaQuery && !item[2]) {
-					item[2] = mediaQuery;
-				} else if(mediaQuery) {
-					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
-				}
-				list.push(item);
-			}
-		}
-	};
-	return list;
-};
-
-function cssWithMappingToString(item, useSourceMap) {
-	var content = item[1] || '';
-	var cssMapping = item[3];
-	if (!cssMapping) {
-		return content;
-	}
-
-	if (useSourceMap) {
-		var sourceMapping = toComment(cssMapping);
-		var sourceURLs = cssMapping.sources.map(function (source) {
-			return '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */'
-		});
-
-		return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
-	}
-
-	return [content].join('\n');
-}
-
-// Adapted from convert-source-map (MIT)
-function toComment(sourceMap) {
-  var base64 = new Buffer(JSON.stringify(sourceMap)).toString('base64');
-  var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
-
-  return '/*# ' + data + ' */';
-}
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(123).Buffer))
-
-/***/ }),
-/* 307 */
-/***/ (function(module, exports) {
-
-exports.read = function (buffer, offset, isLE, mLen, nBytes) {
-  var e, m
-  var eLen = nBytes * 8 - mLen - 1
-  var eMax = (1 << eLen) - 1
-  var eBias = eMax >> 1
-  var nBits = -7
-  var i = isLE ? (nBytes - 1) : 0
-  var d = isLE ? -1 : 1
-  var s = buffer[offset + i]
-
-  i += d
-
-  e = s & ((1 << (-nBits)) - 1)
-  s >>= (-nBits)
-  nBits += eLen
-  for (; nBits > 0; e = e * 256 + buffer[offset + i], i += d, nBits -= 8) {}
-
-  m = e & ((1 << (-nBits)) - 1)
-  e >>= (-nBits)
-  nBits += mLen
-  for (; nBits > 0; m = m * 256 + buffer[offset + i], i += d, nBits -= 8) {}
-
-  if (e === 0) {
-    e = 1 - eBias
-  } else if (e === eMax) {
-    return m ? NaN : ((s ? -1 : 1) * Infinity)
-  } else {
-    m = m + Math.pow(2, mLen)
-    e = e - eBias
-  }
-  return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
-}
-
-exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
-  var e, m, c
-  var eLen = nBytes * 8 - mLen - 1
-  var eMax = (1 << eLen) - 1
-  var eBias = eMax >> 1
-  var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
-  var i = isLE ? 0 : (nBytes - 1)
-  var d = isLE ? 1 : -1
-  var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
-
-  value = Math.abs(value)
-
-  if (isNaN(value) || value === Infinity) {
-    m = isNaN(value) ? 1 : 0
-    e = eMax
-  } else {
-    e = Math.floor(Math.log(value) / Math.LN2)
-    if (value * (c = Math.pow(2, -e)) < 1) {
-      e--
-      c *= 2
-    }
-    if (e + eBias >= 1) {
-      value += rt / c
-    } else {
-      value += rt * Math.pow(2, 1 - eBias)
-    }
-    if (value * c >= 2) {
-      e++
-      c /= 2
-    }
-
-    if (e + eBias >= eMax) {
-      m = 0
-      e = eMax
-    } else if (e + eBias >= 1) {
-      m = (value * c - 1) * Math.pow(2, mLen)
-      e = e + eBias
-    } else {
-      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen)
-      e = 0
-    }
-  }
-
-  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
-
-  e = (e << mLen) | m
-  eLen += mLen
-  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
-
-  buffer[offset + i - d] |= s * 128
-}
-
-
-/***/ }),
-/* 308 */
-/***/ (function(module, exports) {
-
-var toString = {}.toString;
-
-module.exports = Array.isArray || function (arr) {
-  return toString.call(arr) == '[object Array]';
-};
-
-
-/***/ }),
-/* 309 */
+/* 344 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -33813,827 +36651,766 @@ return jQuery;
 
 
 /***/ }),
-/* 310 */
+/* 345 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(global, process) {/**
- * Copyright (c) 2014, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * https://raw.github.com/facebook/regenerator/master/LICENSE file. An
- * additional grant of patent rights can be found in the PATENTS file in
- * the same directory.
- */
-
-!(function(global) {
-  "use strict";
-
-  var Op = Object.prototype;
-  var hasOwn = Op.hasOwnProperty;
-  var undefined; // More compressible than void 0.
-  var $Symbol = typeof Symbol === "function" ? Symbol : {};
-  var iteratorSymbol = $Symbol.iterator || "@@iterator";
-  var toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
-
-  var inModule = typeof module === "object";
-  var runtime = global.regeneratorRuntime;
-  if (runtime) {
-    if (inModule) {
-      // If regeneratorRuntime is defined globally and we're in a module,
-      // make the exports object identical to regeneratorRuntime.
-      module.exports = runtime;
-    }
-    // Don't bother evaluating the rest of this file if the runtime was
-    // already defined globally.
-    return;
-  }
-
-  // Define the runtime globally (as expected by generated code) as either
-  // module.exports (if we're in a module) or a new, empty object.
-  runtime = global.regeneratorRuntime = inModule ? module.exports : {};
-
-  function wrap(innerFn, outerFn, self, tryLocsList) {
-    // If outerFn provided and outerFn.prototype is a Generator, then outerFn.prototype instanceof Generator.
-    var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator;
-    var generator = Object.create(protoGenerator.prototype);
-    var context = new Context(tryLocsList || []);
-
-    // The ._invoke method unifies the implementations of the .next,
-    // .throw, and .return methods.
-    generator._invoke = makeInvokeMethod(innerFn, self, context);
-
-    return generator;
-  }
-  runtime.wrap = wrap;
-
-  // Try/catch helper to minimize deoptimizations. Returns a completion
-  // record like context.tryEntries[i].completion. This interface could
-  // have been (and was previously) designed to take a closure to be
-  // invoked without arguments, but in all the cases we care about we
-  // already have an existing method we want to call, so there's no need
-  // to create a new function object. We can even get away with assuming
-  // the method takes exactly one argument, since that happens to be true
-  // in every case, so we don't have to touch the arguments object. The
-  // only additional allocation required is the completion record, which
-  // has a stable shape and so hopefully should be cheap to allocate.
-  function tryCatch(fn, obj, arg) {
-    try {
-      return { type: "normal", arg: fn.call(obj, arg) };
-    } catch (err) {
-      return { type: "throw", arg: err };
-    }
-  }
-
-  var GenStateSuspendedStart = "suspendedStart";
-  var GenStateSuspendedYield = "suspendedYield";
-  var GenStateExecuting = "executing";
-  var GenStateCompleted = "completed";
-
-  // Returning this object from the innerFn has the same effect as
-  // breaking out of the dispatch switch statement.
-  var ContinueSentinel = {};
-
-  // Dummy constructor functions that we use as the .constructor and
-  // .constructor.prototype properties for functions that return Generator
-  // objects. For full spec compliance, you may wish to configure your
-  // minifier not to mangle the names of these two functions.
-  function Generator() {}
-  function GeneratorFunction() {}
-  function GeneratorFunctionPrototype() {}
-
-  // This is a polyfill for %IteratorPrototype% for environments that
-  // don't natively support it.
-  var IteratorPrototype = {};
-  IteratorPrototype[iteratorSymbol] = function () {
-    return this;
-  };
-
-  var getProto = Object.getPrototypeOf;
-  var NativeIteratorPrototype = getProto && getProto(getProto(values([])));
-  if (NativeIteratorPrototype &&
-      NativeIteratorPrototype !== Op &&
-      hasOwn.call(NativeIteratorPrototype, iteratorSymbol)) {
-    // This environment has a native %IteratorPrototype%; use it instead
-    // of the polyfill.
-    IteratorPrototype = NativeIteratorPrototype;
-  }
-
-  var Gp = GeneratorFunctionPrototype.prototype =
-    Generator.prototype = Object.create(IteratorPrototype);
-  GeneratorFunction.prototype = Gp.constructor = GeneratorFunctionPrototype;
-  GeneratorFunctionPrototype.constructor = GeneratorFunction;
-  GeneratorFunctionPrototype[toStringTagSymbol] =
-    GeneratorFunction.displayName = "GeneratorFunction";
-
-  // Helper for defining the .next, .throw, and .return methods of the
-  // Iterator interface in terms of a single ._invoke method.
-  function defineIteratorMethods(prototype) {
-    ["next", "throw", "return"].forEach(function(method) {
-      prototype[method] = function(arg) {
-        return this._invoke(method, arg);
-      };
-    });
-  }
-
-  runtime.isGeneratorFunction = function(genFun) {
-    var ctor = typeof genFun === "function" && genFun.constructor;
-    return ctor
-      ? ctor === GeneratorFunction ||
-        // For the native GeneratorFunction constructor, the best we can
-        // do is to check its .name property.
-        (ctor.displayName || ctor.name) === "GeneratorFunction"
-      : false;
-  };
-
-  runtime.mark = function(genFun) {
-    if (Object.setPrototypeOf) {
-      Object.setPrototypeOf(genFun, GeneratorFunctionPrototype);
-    } else {
-      genFun.__proto__ = GeneratorFunctionPrototype;
-      if (!(toStringTagSymbol in genFun)) {
-        genFun[toStringTagSymbol] = "GeneratorFunction";
-      }
-    }
-    genFun.prototype = Object.create(Gp);
-    return genFun;
-  };
-
-  // Within the body of any async function, `await x` is transformed to
-  // `yield regeneratorRuntime.awrap(x)`, so that the runtime can test
-  // `hasOwn.call(value, "__await")` to determine if the yielded value is
-  // meant to be awaited.
-  runtime.awrap = function(arg) {
-    return { __await: arg };
-  };
-
-  function AsyncIterator(generator) {
-    function invoke(method, arg, resolve, reject) {
-      var record = tryCatch(generator[method], generator, arg);
-      if (record.type === "throw") {
-        reject(record.arg);
-      } else {
-        var result = record.arg;
-        var value = result.value;
-        if (value &&
-            typeof value === "object" &&
-            hasOwn.call(value, "__await")) {
-          return Promise.resolve(value.__await).then(function(value) {
-            invoke("next", value, resolve, reject);
-          }, function(err) {
-            invoke("throw", err, resolve, reject);
-          });
-        }
-
-        return Promise.resolve(value).then(function(unwrapped) {
-          // When a yielded Promise is resolved, its final value becomes
-          // the .value of the Promise<{value,done}> result for the
-          // current iteration. If the Promise is rejected, however, the
-          // result for this iteration will be rejected with the same
-          // reason. Note that rejections of yielded Promises are not
-          // thrown back into the generator function, as is the case
-          // when an awaited Promise is rejected. This difference in
-          // behavior between yield and await is important, because it
-          // allows the consumer to decide what to do with the yielded
-          // rejection (swallow it and continue, manually .throw it back
-          // into the generator, abandon iteration, whatever). With
-          // await, by contrast, there is no opportunity to examine the
-          // rejection reason outside the generator function, so the
-          // only option is to throw it from the await expression, and
-          // let the generator function handle the exception.
-          result.value = unwrapped;
-          resolve(result);
-        }, reject);
-      }
-    }
-
-    if (typeof process === "object" && process.domain) {
-      invoke = process.domain.bind(invoke);
-    }
-
-    var previousPromise;
-
-    function enqueue(method, arg) {
-      function callInvokeWithMethodAndArg() {
-        return new Promise(function(resolve, reject) {
-          invoke(method, arg, resolve, reject);
-        });
-      }
-
-      return previousPromise =
-        // If enqueue has been called before, then we want to wait until
-        // all previous Promises have been resolved before calling invoke,
-        // so that results are always delivered in the correct order. If
-        // enqueue has not been called before, then it is important to
-        // call invoke immediately, without waiting on a callback to fire,
-        // so that the async generator function has the opportunity to do
-        // any necessary setup in a predictable way. This predictability
-        // is why the Promise constructor synchronously invokes its
-        // executor callback, and why async functions synchronously
-        // execute code before the first await. Since we implement simple
-        // async functions in terms of async generators, it is especially
-        // important to get this right, even though it requires care.
-        previousPromise ? previousPromise.then(
-          callInvokeWithMethodAndArg,
-          // Avoid propagating failures to Promises returned by later
-          // invocations of the iterator.
-          callInvokeWithMethodAndArg
-        ) : callInvokeWithMethodAndArg();
-    }
-
-    // Define the unified helper method that is used to implement .next,
-    // .throw, and .return (see defineIteratorMethods).
-    this._invoke = enqueue;
-  }
-
-  defineIteratorMethods(AsyncIterator.prototype);
-  runtime.AsyncIterator = AsyncIterator;
-
-  // Note that simple async functions are implemented on top of
-  // AsyncIterator objects; they just return a Promise for the value of
-  // the final result produced by the iterator.
-  runtime.async = function(innerFn, outerFn, self, tryLocsList) {
-    var iter = new AsyncIterator(
-      wrap(innerFn, outerFn, self, tryLocsList)
-    );
-
-    return runtime.isGeneratorFunction(outerFn)
-      ? iter // If outerFn is a generator, return the full iterator.
-      : iter.next().then(function(result) {
-          return result.done ? result.value : iter.next();
-        });
-  };
-
-  function makeInvokeMethod(innerFn, self, context) {
-    var state = GenStateSuspendedStart;
-
-    return function invoke(method, arg) {
-      if (state === GenStateExecuting) {
-        throw new Error("Generator is already running");
-      }
-
-      if (state === GenStateCompleted) {
-        if (method === "throw") {
-          throw arg;
-        }
-
-        // Be forgiving, per 25.3.3.3.3 of the spec:
-        // https://people.mozilla.org/~jorendorff/es6-draft.html#sec-generatorresume
-        return doneResult();
-      }
-
-      context.method = method;
-      context.arg = arg;
-
-      while (true) {
-        var delegate = context.delegate;
-        if (delegate) {
-          var delegateResult = maybeInvokeDelegate(delegate, context);
-          if (delegateResult) {
-            if (delegateResult === ContinueSentinel) continue;
-            return delegateResult;
-          }
-        }
-
-        if (context.method === "next") {
-          // Setting context._sent for legacy support of Babel's
-          // function.sent implementation.
-          context.sent = context._sent = context.arg;
-
-        } else if (context.method === "throw") {
-          if (state === GenStateSuspendedStart) {
-            state = GenStateCompleted;
-            throw context.arg;
-          }
-
-          context.dispatchException(context.arg);
-
-        } else if (context.method === "return") {
-          context.abrupt("return", context.arg);
-        }
-
-        state = GenStateExecuting;
-
-        var record = tryCatch(innerFn, self, context);
-        if (record.type === "normal") {
-          // If an exception is thrown from innerFn, we leave state ===
-          // GenStateExecuting and loop back for another invocation.
-          state = context.done
-            ? GenStateCompleted
-            : GenStateSuspendedYield;
-
-          if (record.arg === ContinueSentinel) {
-            continue;
-          }
-
-          return {
-            value: record.arg,
-            done: context.done
-          };
-
-        } else if (record.type === "throw") {
-          state = GenStateCompleted;
-          // Dispatch the exception by looping back around to the
-          // context.dispatchException(context.arg) call above.
-          context.method = "throw";
-          context.arg = record.arg;
-        }
-      }
-    };
-  }
-
-  // Call delegate.iterator[context.method](context.arg) and handle the
-  // result, either by returning a { value, done } result from the
-  // delegate iterator, or by modifying context.method and context.arg,
-  // setting context.delegate to null, and returning the ContinueSentinel.
-  function maybeInvokeDelegate(delegate, context) {
-    var method = delegate.iterator[context.method];
-    if (method === undefined) {
-      // A .throw or .return when the delegate iterator has no .throw
-      // method always terminates the yield* loop.
-      context.delegate = null;
-
-      if (context.method === "throw") {
-        if (delegate.iterator.return) {
-          // If the delegate iterator has a return method, give it a
-          // chance to clean up.
-          context.method = "return";
-          context.arg = undefined;
-          maybeInvokeDelegate(delegate, context);
-
-          if (context.method === "throw") {
-            // If maybeInvokeDelegate(context) changed context.method from
-            // "return" to "throw", let that override the TypeError below.
-            return ContinueSentinel;
-          }
-        }
-
-        context.method = "throw";
-        context.arg = new TypeError(
-          "The iterator does not provide a 'throw' method");
-      }
-
-      return ContinueSentinel;
-    }
-
-    var record = tryCatch(method, delegate.iterator, context.arg);
-
-    if (record.type === "throw") {
-      context.method = "throw";
-      context.arg = record.arg;
-      context.delegate = null;
-      return ContinueSentinel;
-    }
-
-    var info = record.arg;
-
-    if (! info) {
-      context.method = "throw";
-      context.arg = new TypeError("iterator result is not an object");
-      context.delegate = null;
-      return ContinueSentinel;
-    }
-
-    if (info.done) {
-      // Assign the result of the finished delegate to the temporary
-      // variable specified by delegate.resultName (see delegateYield).
-      context[delegate.resultName] = info.value;
-
-      // Resume execution at the desired location (see delegateYield).
-      context.next = delegate.nextLoc;
-
-      // If context.method was "throw" but the delegate handled the
-      // exception, let the outer generator proceed normally. If
-      // context.method was "next", forget context.arg since it has been
-      // "consumed" by the delegate iterator. If context.method was
-      // "return", allow the original .return call to continue in the
-      // outer generator.
-      if (context.method !== "return") {
-        context.method = "next";
-        context.arg = undefined;
-      }
-
-    } else {
-      // Re-yield the result returned by the delegate method.
-      return info;
-    }
-
-    // The delegate iterator is finished, so forget it and continue with
-    // the outer generator.
-    context.delegate = null;
-    return ContinueSentinel;
-  }
-
-  // Define Generator.prototype.{next,throw,return} in terms of the
-  // unified ._invoke helper method.
-  defineIteratorMethods(Gp);
-
-  Gp[toStringTagSymbol] = "Generator";
-
-  Gp.toString = function() {
-    return "[object Generator]";
-  };
-
-  function pushTryEntry(locs) {
-    var entry = { tryLoc: locs[0] };
-
-    if (1 in locs) {
-      entry.catchLoc = locs[1];
-    }
-
-    if (2 in locs) {
-      entry.finallyLoc = locs[2];
-      entry.afterLoc = locs[3];
-    }
-
-    this.tryEntries.push(entry);
-  }
-
-  function resetTryEntry(entry) {
-    var record = entry.completion || {};
-    record.type = "normal";
-    delete record.arg;
-    entry.completion = record;
-  }
-
-  function Context(tryLocsList) {
-    // The root entry object (effectively a try statement without a catch
-    // or a finally block) gives us a place to store values thrown from
-    // locations where there is no enclosing try statement.
-    this.tryEntries = [{ tryLoc: "root" }];
-    tryLocsList.forEach(pushTryEntry, this);
-    this.reset(true);
-  }
-
-  runtime.keys = function(object) {
-    var keys = [];
-    for (var key in object) {
-      keys.push(key);
-    }
-    keys.reverse();
-
-    // Rather than returning an object with a next method, we keep
-    // things simple and return the next function itself.
-    return function next() {
-      while (keys.length) {
-        var key = keys.pop();
-        if (key in object) {
-          next.value = key;
-          next.done = false;
-          return next;
-        }
-      }
-
-      // To avoid creating an additional object, we just hang the .value
-      // and .done properties off the next function object itself. This
-      // also ensures that the minifier will not anonymize the function.
-      next.done = true;
-      return next;
-    };
-  };
-
-  function values(iterable) {
-    if (iterable) {
-      var iteratorMethod = iterable[iteratorSymbol];
-      if (iteratorMethod) {
-        return iteratorMethod.call(iterable);
-      }
-
-      if (typeof iterable.next === "function") {
-        return iterable;
-      }
-
-      if (!isNaN(iterable.length)) {
-        var i = -1, next = function next() {
-          while (++i < iterable.length) {
-            if (hasOwn.call(iterable, i)) {
-              next.value = iterable[i];
-              next.done = false;
-              return next;
-            }
-          }
-
-          next.value = undefined;
-          next.done = true;
-
-          return next;
-        };
-
-        return next.next = next;
-      }
-    }
-
-    // Return an iterator with no values.
-    return { next: doneResult };
-  }
-  runtime.values = values;
-
-  function doneResult() {
-    return { value: undefined, done: true };
-  }
-
-  Context.prototype = {
-    constructor: Context,
-
-    reset: function(skipTempReset) {
-      this.prev = 0;
-      this.next = 0;
-      // Resetting context._sent for legacy support of Babel's
-      // function.sent implementation.
-      this.sent = this._sent = undefined;
-      this.done = false;
-      this.delegate = null;
-
-      this.method = "next";
-      this.arg = undefined;
-
-      this.tryEntries.forEach(resetTryEntry);
-
-      if (!skipTempReset) {
-        for (var name in this) {
-          // Not sure about the optimal order of these conditions:
-          if (name.charAt(0) === "t" &&
-              hasOwn.call(this, name) &&
-              !isNaN(+name.slice(1))) {
-            this[name] = undefined;
-          }
-        }
-      }
-    },
-
-    stop: function() {
-      this.done = true;
-
-      var rootEntry = this.tryEntries[0];
-      var rootRecord = rootEntry.completion;
-      if (rootRecord.type === "throw") {
-        throw rootRecord.arg;
-      }
-
-      return this.rval;
-    },
-
-    dispatchException: function(exception) {
-      if (this.done) {
-        throw exception;
-      }
-
-      var context = this;
-      function handle(loc, caught) {
-        record.type = "throw";
-        record.arg = exception;
-        context.next = loc;
-
-        if (caught) {
-          // If the dispatched exception was caught by a catch block,
-          // then let that catch block handle the exception normally.
-          context.method = "next";
-          context.arg = undefined;
-        }
-
-        return !! caught;
-      }
-
-      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
-        var entry = this.tryEntries[i];
-        var record = entry.completion;
-
-        if (entry.tryLoc === "root") {
-          // Exception thrown outside of any try block that could handle
-          // it, so set the completion value of the entire function to
-          // throw the exception.
-          return handle("end");
-        }
-
-        if (entry.tryLoc <= this.prev) {
-          var hasCatch = hasOwn.call(entry, "catchLoc");
-          var hasFinally = hasOwn.call(entry, "finallyLoc");
-
-          if (hasCatch && hasFinally) {
-            if (this.prev < entry.catchLoc) {
-              return handle(entry.catchLoc, true);
-            } else if (this.prev < entry.finallyLoc) {
-              return handle(entry.finallyLoc);
-            }
-
-          } else if (hasCatch) {
-            if (this.prev < entry.catchLoc) {
-              return handle(entry.catchLoc, true);
-            }
-
-          } else if (hasFinally) {
-            if (this.prev < entry.finallyLoc) {
-              return handle(entry.finallyLoc);
-            }
-
-          } else {
-            throw new Error("try statement without catch or finally");
-          }
-        }
-      }
-    },
-
-    abrupt: function(type, arg) {
-      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
-        var entry = this.tryEntries[i];
-        if (entry.tryLoc <= this.prev &&
-            hasOwn.call(entry, "finallyLoc") &&
-            this.prev < entry.finallyLoc) {
-          var finallyEntry = entry;
-          break;
-        }
-      }
-
-      if (finallyEntry &&
-          (type === "break" ||
-           type === "continue") &&
-          finallyEntry.tryLoc <= arg &&
-          arg <= finallyEntry.finallyLoc) {
-        // Ignore the finally entry if control is not jumping to a
-        // location outside the try/catch block.
-        finallyEntry = null;
-      }
-
-      var record = finallyEntry ? finallyEntry.completion : {};
-      record.type = type;
-      record.arg = arg;
-
-      if (finallyEntry) {
-        this.method = "next";
-        this.next = finallyEntry.finallyLoc;
-        return ContinueSentinel;
-      }
-
-      return this.complete(record);
-    },
-
-    complete: function(record, afterLoc) {
-      if (record.type === "throw") {
-        throw record.arg;
-      }
-
-      if (record.type === "break" ||
-          record.type === "continue") {
-        this.next = record.arg;
-      } else if (record.type === "return") {
-        this.rval = this.arg = record.arg;
-        this.method = "return";
-        this.next = "end";
-      } else if (record.type === "normal" && afterLoc) {
-        this.next = afterLoc;
-      }
-
-      return ContinueSentinel;
-    },
-
-    finish: function(finallyLoc) {
-      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
-        var entry = this.tryEntries[i];
-        if (entry.finallyLoc === finallyLoc) {
-          this.complete(entry.completion, entry.afterLoc);
-          resetTryEntry(entry);
-          return ContinueSentinel;
-        }
-      }
-    },
-
-    "catch": function(tryLoc) {
-      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
-        var entry = this.tryEntries[i];
-        if (entry.tryLoc === tryLoc) {
-          var record = entry.completion;
-          if (record.type === "throw") {
-            var thrown = record.arg;
-            resetTryEntry(entry);
-          }
-          return thrown;
-        }
-      }
-
-      // The context.catch method must only be called with a location
-      // argument that corresponds to a known catch block.
-      throw new Error("illegal catch attempt");
-    },
-
-    delegateYield: function(iterable, resultName, nextLoc) {
-      this.delegate = {
-        iterator: values(iterable),
-        resultName: resultName,
-        nextLoc: nextLoc
-      };
-
-      if (this.method === "next") {
-        // Deliberately forget the last sent value so that we don't
-        // accidentally pass it on to the delegate.
-        this.arg = undefined;
-      }
-
-      return ContinueSentinel;
-    }
-  };
-})(
-  // Among the various tricks for obtaining a reference to the global
-  // object, this seems to be the most reliable technique that does not
-  // use indirect eval (which violates Content Security Policy).
-  typeof global === "object" ? global :
-  typeof window === "object" ? window :
-  typeof self === "object" ? self : this
-);
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(59), __webpack_require__(114)))
-
-/***/ }),
-/* 311 */
-/***/ (function(module, exports) {
-
-// this module is a runtime utility for cleaner component module output and will
-// be included in the final webpack user bundle
-
-module.exports = function normalizeComponent (
-  rawScriptExports,
-  compiledTemplate,
-  scopeId,
-  cssModules
-) {
-  var esModule
-  var scriptExports = rawScriptExports = rawScriptExports || {}
-
-  // ES6 modules interop
-  var type = typeof rawScriptExports.default
-  if (type === 'object' || type === 'function') {
-    esModule = rawScriptExports
-    scriptExports = rawScriptExports.default
-  }
-
-  // Vue.extend constructor export interop
-  var options = typeof scriptExports === 'function'
-    ? scriptExports.options
-    : scriptExports
-
-  // render functions
-  if (compiledTemplate) {
-    options.render = compiledTemplate.render
-    options.staticRenderFns = compiledTemplate.staticRenderFns
-  }
-
-  // scopedId
-  if (scopeId) {
-    options._scopeId = scopeId
-  }
-
-  // inject cssModules
-  if (cssModules) {
-    var computed = Object.create(options.computed || null)
-    Object.keys(cssModules).forEach(function (key) {
-      var module = cssModules[key]
-      computed[key] = function () { return module }
-    })
-    options.computed = computed
-  }
-
-  return {
-    esModule: esModule,
-    exports: scriptExports,
-    options: options
-  }
+/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+var stylesInDom = {},
+	memoize = function(fn) {
+		var memo;
+		return function () {
+			if (typeof memo === "undefined") memo = fn.apply(this, arguments);
+			return memo;
+		};
+	},
+	isOldIE = memoize(function() {
+		// Test for IE <= 9 as proposed by Browserhacks
+		// @see http://browserhacks.com/#hack-e71d8692f65334173fee715c222cb805
+		// Tests for existence of standard globals is to allow style-loader 
+		// to operate correctly into non-standard environments
+		// @see https://github.com/webpack-contrib/style-loader/issues/177
+		return window && document && document.all && !window.atob;
+	}),
+	getElement = (function(fn) {
+		var memo = {};
+		return function(selector) {
+			if (typeof memo[selector] === "undefined") {
+				memo[selector] = fn.call(this, selector);
+			}
+			return memo[selector]
+		};
+	})(function (styleTarget) {
+		return document.querySelector(styleTarget)
+	}),
+	singletonElement = null,
+	singletonCounter = 0,
+	styleElementsInsertedAtTop = [],
+	fixUrls = __webpack_require__(346);
+
+module.exports = function(list, options) {
+	if(typeof DEBUG !== "undefined" && DEBUG) {
+		if(typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
+	}
+
+	options = options || {};
+	options.attrs = typeof options.attrs === "object" ? options.attrs : {};
+
+	// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
+	// tags it will allow on a page
+	if (typeof options.singleton === "undefined") options.singleton = isOldIE();
+
+	// By default, add <style> tags to the <head> element
+	if (typeof options.insertInto === "undefined") options.insertInto = "head";
+
+	// By default, add <style> tags to the bottom of the target
+	if (typeof options.insertAt === "undefined") options.insertAt = "bottom";
+
+	var styles = listToStyles(list);
+	addStylesToDom(styles, options);
+
+	return function update(newList) {
+		var mayRemove = [];
+		for(var i = 0; i < styles.length; i++) {
+			var item = styles[i];
+			var domStyle = stylesInDom[item.id];
+			domStyle.refs--;
+			mayRemove.push(domStyle);
+		}
+		if(newList) {
+			var newStyles = listToStyles(newList);
+			addStylesToDom(newStyles, options);
+		}
+		for(var i = 0; i < mayRemove.length; i++) {
+			var domStyle = mayRemove[i];
+			if(domStyle.refs === 0) {
+				for(var j = 0; j < domStyle.parts.length; j++)
+					domStyle.parts[j]();
+				delete stylesInDom[domStyle.id];
+			}
+		}
+	};
+};
+
+function addStylesToDom(styles, options) {
+	for(var i = 0; i < styles.length; i++) {
+		var item = styles[i];
+		var domStyle = stylesInDom[item.id];
+		if(domStyle) {
+			domStyle.refs++;
+			for(var j = 0; j < domStyle.parts.length; j++) {
+				domStyle.parts[j](item.parts[j]);
+			}
+			for(; j < item.parts.length; j++) {
+				domStyle.parts.push(addStyle(item.parts[j], options));
+			}
+		} else {
+			var parts = [];
+			for(var j = 0; j < item.parts.length; j++) {
+				parts.push(addStyle(item.parts[j], options));
+			}
+			stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
+		}
+	}
+}
+
+function listToStyles(list) {
+	var styles = [];
+	var newStyles = {};
+	for(var i = 0; i < list.length; i++) {
+		var item = list[i];
+		var id = item[0];
+		var css = item[1];
+		var media = item[2];
+		var sourceMap = item[3];
+		var part = {css: css, media: media, sourceMap: sourceMap};
+		if(!newStyles[id])
+			styles.push(newStyles[id] = {id: id, parts: [part]});
+		else
+			newStyles[id].parts.push(part);
+	}
+	return styles;
+}
+
+function insertStyleElement(options, styleElement) {
+	var styleTarget = getElement(options.insertInto)
+	if (!styleTarget) {
+		throw new Error("Couldn't find a style target. This probably means that the value for the 'insertInto' parameter is invalid.");
+	}
+	var lastStyleElementInsertedAtTop = styleElementsInsertedAtTop[styleElementsInsertedAtTop.length - 1];
+	if (options.insertAt === "top") {
+		if(!lastStyleElementInsertedAtTop) {
+			styleTarget.insertBefore(styleElement, styleTarget.firstChild);
+		} else if(lastStyleElementInsertedAtTop.nextSibling) {
+			styleTarget.insertBefore(styleElement, lastStyleElementInsertedAtTop.nextSibling);
+		} else {
+			styleTarget.appendChild(styleElement);
+		}
+		styleElementsInsertedAtTop.push(styleElement);
+	} else if (options.insertAt === "bottom") {
+		styleTarget.appendChild(styleElement);
+	} else {
+		throw new Error("Invalid value for parameter 'insertAt'. Must be 'top' or 'bottom'.");
+	}
+}
+
+function removeStyleElement(styleElement) {
+	styleElement.parentNode.removeChild(styleElement);
+	var idx = styleElementsInsertedAtTop.indexOf(styleElement);
+	if(idx >= 0) {
+		styleElementsInsertedAtTop.splice(idx, 1);
+	}
+}
+
+function createStyleElement(options) {
+	var styleElement = document.createElement("style");
+	options.attrs.type = "text/css";
+
+	attachTagAttrs(styleElement, options.attrs);
+	insertStyleElement(options, styleElement);
+	return styleElement;
+}
+
+function createLinkElement(options) {
+	var linkElement = document.createElement("link");
+	options.attrs.type = "text/css";
+	options.attrs.rel = "stylesheet";
+
+	attachTagAttrs(linkElement, options.attrs);
+	insertStyleElement(options, linkElement);
+	return linkElement;
+}
+
+function attachTagAttrs(element, attrs) {
+	Object.keys(attrs).forEach(function (key) {
+		element.setAttribute(key, attrs[key]);
+	});
+}
+
+function addStyle(obj, options) {
+	var styleElement, update, remove;
+
+	if (options.singleton) {
+		var styleIndex = singletonCounter++;
+		styleElement = singletonElement || (singletonElement = createStyleElement(options));
+		update = applyToSingletonTag.bind(null, styleElement, styleIndex, false);
+		remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true);
+	} else if(obj.sourceMap &&
+		typeof URL === "function" &&
+		typeof URL.createObjectURL === "function" &&
+		typeof URL.revokeObjectURL === "function" &&
+		typeof Blob === "function" &&
+		typeof btoa === "function") {
+		styleElement = createLinkElement(options);
+		update = updateLink.bind(null, styleElement, options);
+		remove = function() {
+			removeStyleElement(styleElement);
+			if(styleElement.href)
+				URL.revokeObjectURL(styleElement.href);
+		};
+	} else {
+		styleElement = createStyleElement(options);
+		update = applyToTag.bind(null, styleElement);
+		remove = function() {
+			removeStyleElement(styleElement);
+		};
+	}
+
+	update(obj);
+
+	return function updateStyle(newObj) {
+		if(newObj) {
+			if(newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap)
+				return;
+			update(obj = newObj);
+		} else {
+			remove();
+		}
+	};
+}
+
+var replaceText = (function () {
+	var textStore = [];
+
+	return function (index, replacement) {
+		textStore[index] = replacement;
+		return textStore.filter(Boolean).join('\n');
+	};
+})();
+
+function applyToSingletonTag(styleElement, index, remove, obj) {
+	var css = remove ? "" : obj.css;
+
+	if (styleElement.styleSheet) {
+		styleElement.styleSheet.cssText = replaceText(index, css);
+	} else {
+		var cssNode = document.createTextNode(css);
+		var childNodes = styleElement.childNodes;
+		if (childNodes[index]) styleElement.removeChild(childNodes[index]);
+		if (childNodes.length) {
+			styleElement.insertBefore(cssNode, childNodes[index]);
+		} else {
+			styleElement.appendChild(cssNode);
+		}
+	}
+}
+
+function applyToTag(styleElement, obj) {
+	var css = obj.css;
+	var media = obj.media;
+
+	if(media) {
+		styleElement.setAttribute("media", media)
+	}
+
+	if(styleElement.styleSheet) {
+		styleElement.styleSheet.cssText = css;
+	} else {
+		while(styleElement.firstChild) {
+			styleElement.removeChild(styleElement.firstChild);
+		}
+		styleElement.appendChild(document.createTextNode(css));
+	}
+}
+
+function updateLink(linkElement, options, obj) {
+	var css = obj.css;
+	var sourceMap = obj.sourceMap;
+
+	/* If convertToAbsoluteUrls isn't defined, but sourcemaps are enabled
+	and there is no publicPath defined then lets turn convertToAbsoluteUrls
+	on by default.  Otherwise default to the convertToAbsoluteUrls option
+	directly
+	*/
+	var autoFixUrls = options.convertToAbsoluteUrls === undefined && sourceMap;
+
+	if (options.convertToAbsoluteUrls || autoFixUrls){
+		css = fixUrls(css);
+	}
+
+	if(sourceMap) {
+		// http://stackoverflow.com/a/26603875
+		css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
+	}
+
+	var blob = new Blob([css], { type: "text/css" });
+
+	var oldSrc = linkElement.href;
+
+	linkElement.href = URL.createObjectURL(blob);
+
+	if(oldSrc)
+		URL.revokeObjectURL(oldSrc);
 }
 
 
 /***/ }),
-/* 312 */
+/* 346 */
+/***/ (function(module, exports) {
+
+
+/**
+ * When source maps are enabled, `style-loader` uses a link element with a data-uri to
+ * embed the css on the page. This breaks all relative urls because now they are relative to a
+ * bundle instead of the current page.
+ *
+ * One solution is to only use full urls, but that may be impossible.
+ *
+ * Instead, this function "fixes" the relative urls to be absolute according to the current page location.
+ *
+ * A rudimentary test suite is located at `test/fixUrls.js` and can be run via the `npm test` command.
+ *
+ */
+
+module.exports = function (css) {
+  // get current location
+  var location = typeof window !== "undefined" && window.location;
+
+  if (!location) {
+    throw new Error("fixUrls requires window.location");
+  }
+
+	// blank or null?
+	if (!css || typeof css !== "string") {
+	  return css;
+  }
+
+  var baseUrl = location.protocol + "//" + location.host;
+  var currentDir = baseUrl + location.pathname.replace(/\/[^\/]*$/, "/");
+
+	// convert each url(...)
+	/*
+	This regular expression is just a way to recursively match brackets within
+	a string.
+
+	 /url\s*\(  = Match on the word "url" with any whitespace after it and then a parens
+	   (  = Start a capturing group
+	     (?:  = Start a non-capturing group
+	         [^)(]  = Match anything that isn't a parentheses
+	         |  = OR
+	         \(  = Match a start parentheses
+	             (?:  = Start another non-capturing groups
+	                 [^)(]+  = Match anything that isn't a parentheses
+	                 |  = OR
+	                 \(  = Match a start parentheses
+	                     [^)(]*  = Match anything that isn't a parentheses
+	                 \)  = Match a end parentheses
+	             )  = End Group
+              *\) = Match anything and then a close parens
+          )  = Close non-capturing group
+          *  = Match anything
+       )  = Close capturing group
+	 \)  = Match a close parens
+
+	 /gi  = Get all matches, not the first.  Be case insensitive.
+	 */
+	var fixedCss = css.replace(/url\s*\(((?:[^)(]|\((?:[^)(]+|\([^)(]*\))*\))*)\)/gi, function(fullMatch, origUrl) {
+		// strip quotes (if they exist)
+		var unquotedOrigUrl = origUrl
+			.trim()
+			.replace(/^"(.*)"$/, function(o, $1){ return $1; })
+			.replace(/^'(.*)'$/, function(o, $1){ return $1; });
+
+		// already a full url? no change
+		if (/^(#|data:|http:\/\/|https:\/\/|file:\/\/\/)/i.test(unquotedOrigUrl)) {
+		  return fullMatch;
+		}
+
+		// convert the url to a full url
+		var newUrl;
+
+		if (unquotedOrigUrl.indexOf("//") === 0) {
+		  	//TODO: should we add protocol?
+			newUrl = unquotedOrigUrl;
+		} else if (unquotedOrigUrl.indexOf("/") === 0) {
+			// path should be relative to the base url
+			newUrl = baseUrl + unquotedOrigUrl; // already starts with '/'
+		} else {
+			// path should be relative to current directory
+			newUrl = currentDir + unquotedOrigUrl.replace(/^\.\//, ""); // Strip leading './'
+		}
+
+		// send back the fixed url(...)
+		return "url(" + JSON.stringify(newUrl) + ")";
+	});
+
+	// send back the fixed css
+	return fixedCss;
+};
+
+
+/***/ }),
+/* 347 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+/* styles */
+__webpack_require__(359)
+
+var Component = __webpack_require__(50)(
+  /* script */
+  __webpack_require__(151),
+  /* template */
+  __webpack_require__(352),
+  /* scopeId */
+  "data-v-a84c527a",
+  /* cssModules */
+  null
+)
+Component.options.__file = "/srv/www/htdocs/owncloud/apps3/market/src/components/app-tile.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key !== "__esModule"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] app-tile.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-loader/node_modules/vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-a84c527a", Component.options)
+  } else {
+    hotAPI.reload("data-v-a84c527a", Component.options)
+  }
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 348 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+/* styles */
+__webpack_require__(356)
+
+var Component = __webpack_require__(50)(
+  /* script */
+  __webpack_require__(152),
+  /* template */
+  __webpack_require__(351),
+  /* scopeId */
+  null,
+  /* cssModules */
+  null
+)
+Component.options.__file = "/srv/www/htdocs/owncloud/apps3/market/src/components/detail-modal.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key !== "__esModule"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] detail-modal.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-loader/node_modules/vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-2088821a", Component.options)
+  } else {
+    hotAPI.reload("data-v-2088821a", Component.options)
+  }
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 349 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+/* styles */
+__webpack_require__(362)
+
+var Component = __webpack_require__(50)(
+  /* script */
+  __webpack_require__(153),
+  /* template */
+  __webpack_require__(355),
+  /* scopeId */
+  "data-v-e590c0e8",
+  /* cssModules */
+  null
+)
+Component.options.__file = "/srv/www/htdocs/owncloud/apps3/market/src/components/nav-main.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key !== "__esModule"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] nav-main.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-loader/node_modules/vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-e590c0e8", Component.options)
+  } else {
+    hotAPI.reload("data-v-e590c0e8", Component.options)
+  }
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 350 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+/* styles */
+__webpack_require__(361)
+
+var Component = __webpack_require__(50)(
+  /* script */
+  __webpack_require__(154),
+  /* template */
+  __webpack_require__(354),
+  /* scopeId */
+  null,
+  /* cssModules */
+  null
+)
+Component.options.__file = "/srv/www/htdocs/owncloud/apps3/market/src/components/star-rating.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key !== "__esModule"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] star-rating.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-loader/node_modules/vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-db96f7c2", Component.options)
+  } else {
+    hotAPI.reload("data-v-db96f7c2", Component.options)
+  }
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 351 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
     staticClass: "example"
-  }, [_c('pre', [_vm._v(_vm._s(_vm.list))])])
+  }, [_vm._v(_vm._s(_vm.msg))])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-aeae57de", module.exports)
+     require("vue-loader/node_modules/vue-hot-reload-api").rerender("data-v-2088821a", module.exports)
   }
 }
 
 /***/ }),
-/* 313 */
+/* 352 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return (!_vm.app.installed) ? _c('li', {
+    staticClass: "uk-width-1-2@m uk-width-1-3@l"
+  }, [_c('div', {
+    staticClass: "uk-card uk-card-default"
+  }, [_c('div', {
+    staticClass: "uk-card-media-top"
+  }, [_c('img', {
+    attrs: {
+      "src": _vm.image,
+      "alt": _vm.title
+    }
+  })]), _c('div', {
+    staticClass: "uk-card-header"
+  }, [_c('h3', {
+    staticClass: "uk-card-title uk-text-truncate uk-margin-remove-bottom"
+  }, [_vm._v(_vm._s(_vm.title))]), _c('p', {
+    staticClass: "uk-text-meta uk-margin-remove-top"
+  }, [_c('span', {
+    staticClass: "uk-margin-small-right",
+    attrs: {
+      "uk-icon": "icon: tag"
+    }
+  }), _vm._v(_vm._s(_vm.app.categories[0]))])]), _c('div', {
+    staticClass: "uk-card-body"
+  }, [_c('p', [_vm._v(_vm._s(_vm.app.description))]), _c('div', {
+    staticClass: "uk-child-width-1-2@s",
+    attrs: {
+      "uk-grid": "uk-grid"
+    }
+  }, [_c('div', [_c('StarRating', {
+    attrs: {
+      "rating": _vm.app.rating
+    }
+  })], 1), _c('div', [_c('button', {
+    staticClass: "uk-button uk-button-default uk-button-small uk-align-right",
+    on: {
+      "click": _vm.openDetails
+    }
+  }, [_vm._v("More")])])])])])]) : _vm._e()
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-loader/node_modules/vue-hot-reload-api").rerender("data-v-a84c527a", module.exports)
+  }
+}
+
+/***/ }),
+/* 353 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "market uk-grid-large",
+    attrs: {
+      "uk-grid": "uk-grid"
+    }
+  }, [_c('aside', [_c('NavMain')], 1), _c('main', {
+    staticClass: "uk-width-expand"
+  }, [(_vm.appList != null) ? _c('ul', {
+    attrs: {
+      "uk-grid": "uk-grid"
+    }
+  }, _vm._l((_vm.appList), function(app) {
+    return _c('AppTile', {
+      key: app.id,
+      attrs: {
+        "app": app
+      }
+    })
+  })) : _vm._e(), (!_vm.appList) ? _c('div', {
+    attrs: {
+      "uk-spinner": "uk-spinner"
+    }
+  }) : _vm._e()])])
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-loader/node_modules/vue-hot-reload-api").rerender("data-v-aeae57de", module.exports)
+  }
+}
+
+/***/ }),
+/* 354 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('ul', {
+    staticClass: "uk-padding-remove uk-margin-remove",
+    attrs: {
+      "uk-tooltip": "pos: top-left",
+      "title": _vm._f("textRating")(_vm.overall)
+    }
+  }, _vm._l((_vm.stars.max), function(n) {
+    return _c('li', {
+      staticClass: "uk-inline-block"
+    }, [_c('span', {
+      staticClass: "star",
+      class: (n <= _vm.overall) ? '-on' : '-off',
+      attrs: {
+        "uk-icon": "icon: star; ratio: 0.8"
+      }
+    })])
+  }))
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-loader/node_modules/vue-hot-reload-api").rerender("data-v-db96f7c2", module.exports)
+  }
+}
+
+/***/ }),
+/* 355 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "uk-card uk-card-default"
+  }, [_vm._m(0), _c('div', {
+    staticClass: "uk-card-body"
+  }, [_c('ul', {
+    staticClass: "uk-nav-default uk-nav-parent-icon",
+    attrs: {
+      "uk-nav": "uk-nav"
+    }
+  }, [_c('li', {
+    staticClass: "uk-nav-header"
+  }, [_vm._v("Categories")]), _vm._l((_vm.categories), function(category) {
+    return _c('li', [_c('a', {
+      attrs: {
+        "href": "#"
+      }
+    }, [_vm._v(_vm._s(category.translations.en.name))])])
+  }), _c('li', {
+    staticClass: "uk-nav-header"
+  }, [_vm._v("My Apps")]), _vm._m(1), _vm._m(2)], 2)])])
+},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "uk-card-header"
+  }, [_c('h1', {
+    staticClass: "uk-h3"
+  }, [_vm._v("Market")])])
+},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('li', [_c('a', {
+    attrs: {
+      "href": "#"
+    }
+  }, [_c('span', {
+    staticClass: "uk-margin-small-right",
+    attrs: {
+      "uk-icon": "icon: check"
+    }
+  }), _vm._v("Active")])])
+},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('li', [_c('a', {
+    attrs: {
+      "href": "#"
+    }
+  }, [_c('span', {
+    staticClass: "uk-margin-small-right",
+    attrs: {
+      "uk-icon": "icon: ban"
+    }
+  }), _vm._v("Disabled")])])
+}]}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-loader/node_modules/vue-hot-reload-api").rerender("data-v-e590c0e8", module.exports)
+  }
+}
+
+/***/ }),
+/* 356 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(305);
+var content = __webpack_require__(339);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(314)("3f678546", content, false);
+var update = __webpack_require__(357)("979f02cc", content, false);
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
  if(!content.locals) {
-   module.hot.accept("!!../node_modules/css-loader/index.js!../node_modules/vue-loader/lib/style-compiler/index.js?{\"id\":\"data-v-aeae57de\",\"scoped\":true,\"hasInlineConfig\":false}!../node_modules/less-loader/dist/index.js!../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./App.vue", function() {
-     var newContent = require("!!../node_modules/css-loader/index.js!../node_modules/vue-loader/lib/style-compiler/index.js?{\"id\":\"data-v-aeae57de\",\"scoped\":true,\"hasInlineConfig\":false}!../node_modules/less-loader/dist/index.js!../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./App.vue");
+   module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-compiler/index.js?{\"id\":\"data-v-2088821a\",\"scoped\":false,\"hasInlineConfig\":false}!../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./detail-modal.vue", function() {
+     var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-compiler/index.js?{\"id\":\"data-v-2088821a\",\"scoped\":false,\"hasInlineConfig\":false}!../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./detail-modal.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -34643,7 +37420,7 @@ if(false) {
 }
 
 /***/ }),
-/* 314 */
+/* 357 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -34662,7 +37439,7 @@ if (typeof DEBUG !== 'undefined' && DEBUG) {
   ) }
 }
 
-var listToStyles = __webpack_require__(315)
+var listToStyles = __webpack_require__(358)
 
 /*
 type StyleObject = {
@@ -34864,7 +37641,7 @@ function applyToTag (styleElement, obj) {
 
 
 /***/ }),
-/* 315 */
+/* 358 */
 /***/ (function(module, exports) {
 
 /**
@@ -34897,1519 +37674,328 @@ module.exports = function listToStyles (parentId, list) {
 
 
 /***/ }),
-/* 316 */
+/* 359 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(340);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// add the styles to the DOM
+var update = __webpack_require__(62)(content, {});
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-compiler/index.js?{\"id\":\"data-v-a84c527a\",\"scoped\":true,\"hasInlineConfig\":false}!../../node_modules/sass-loader/lib/loader.js!../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./app-tile.vue", function() {
+			var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-compiler/index.js?{\"id\":\"data-v-a84c527a\",\"scoped\":true,\"hasInlineConfig\":false}!../../node_modules/sass-loader/lib/loader.js!../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./app-tile.vue");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 360 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(341);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// add the styles to the DOM
+var update = __webpack_require__(62)(content, {});
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../node_modules/css-loader/index.js!../node_modules/vue-loader/lib/style-compiler/index.js?{\"id\":\"data-v-aeae57de\",\"scoped\":true,\"hasInlineConfig\":false}!../node_modules/sass-loader/lib/loader.js!../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./App.vue", function() {
+			var newContent = require("!!../node_modules/css-loader/index.js!../node_modules/vue-loader/lib/style-compiler/index.js?{\"id\":\"data-v-aeae57de\",\"scoped\":true,\"hasInlineConfig\":false}!../node_modules/sass-loader/lib/loader.js!../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./App.vue");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 361 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(342);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// add the styles to the DOM
+var update = __webpack_require__(62)(content, {});
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-compiler/index.js?{\"id\":\"data-v-db96f7c2\",\"scoped\":false,\"hasInlineConfig\":false}!../../node_modules/sass-loader/lib/loader.js!../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./star-rating.vue", function() {
+			var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-compiler/index.js?{\"id\":\"data-v-db96f7c2\",\"scoped\":false,\"hasInlineConfig\":false}!../../node_modules/sass-loader/lib/loader.js!../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./star-rating.vue");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 362 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(343);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// add the styles to the DOM
+var update = __webpack_require__(62)(content, {});
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-compiler/index.js?{\"id\":\"data-v-e590c0e8\",\"scoped\":true,\"hasInlineConfig\":false}!../../node_modules/sass-loader/lib/loader.js!../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./nav-main.vue", function() {
+			var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-compiler/index.js?{\"id\":\"data-v-e590c0e8\",\"scoped\":true,\"hasInlineConfig\":false}!../../node_modules/sass-loader/lib/loader.js!../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./nav-main.vue");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 363 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var bind = __webpack_require__(322);
+exports.byteLength = byteLength
+exports.toByteArray = toByteArray
+exports.fromByteArray = fromByteArray
 
-/*global toString:true*/
+var lookup = []
+var revLookup = []
+var Arr = typeof Uint8Array !== 'undefined' ? Uint8Array : Array
 
-// utils is a library of generic helper functions non-specific to axios
-
-var toString = Object.prototype.toString;
-
-/**
- * Determine if a value is an Array
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is an Array, otherwise false
- */
-function isArray(val) {
-  return toString.call(val) === '[object Array]';
+var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+for (var i = 0, len = code.length; i < len; ++i) {
+  lookup[i] = code[i]
+  revLookup[code.charCodeAt(i)] = i
 }
 
-/**
- * Determine if a value is an ArrayBuffer
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is an ArrayBuffer, otherwise false
- */
-function isArrayBuffer(val) {
-  return toString.call(val) === '[object ArrayBuffer]';
+revLookup['-'.charCodeAt(0)] = 62
+revLookup['_'.charCodeAt(0)] = 63
+
+function placeHoldersCount (b64) {
+  var len = b64.length
+  if (len % 4 > 0) {
+    throw new Error('Invalid string. Length must be a multiple of 4')
+  }
+
+  // the number of equal signs (place holders)
+  // if there are two placeholders, than the two characters before it
+  // represent one byte
+  // if there is only one, then the three characters before it represent 2 bytes
+  // this is just a cheap hack to not do indexOf twice
+  return b64[len - 2] === '=' ? 2 : b64[len - 1] === '=' ? 1 : 0
 }
 
-/**
- * Determine if a value is a FormData
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is an FormData, otherwise false
- */
-function isFormData(val) {
-  return (typeof FormData !== 'undefined') && (val instanceof FormData);
+function byteLength (b64) {
+  // base64 is 4/3 + up to two characters of the original data
+  return b64.length * 3 / 4 - placeHoldersCount(b64)
 }
 
-/**
- * Determine if a value is a view on an ArrayBuffer
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a view on an ArrayBuffer, otherwise false
- */
-function isArrayBufferView(val) {
-  var result;
-  if ((typeof ArrayBuffer !== 'undefined') && (ArrayBuffer.isView)) {
-    result = ArrayBuffer.isView(val);
+function toByteArray (b64) {
+  var i, j, l, tmp, placeHolders, arr
+  var len = b64.length
+  placeHolders = placeHoldersCount(b64)
+
+  arr = new Arr(len * 3 / 4 - placeHolders)
+
+  // if there are placeholders, only get up to the last complete 4 chars
+  l = placeHolders > 0 ? len - 4 : len
+
+  var L = 0
+
+  for (i = 0, j = 0; i < l; i += 4, j += 3) {
+    tmp = (revLookup[b64.charCodeAt(i)] << 18) | (revLookup[b64.charCodeAt(i + 1)] << 12) | (revLookup[b64.charCodeAt(i + 2)] << 6) | revLookup[b64.charCodeAt(i + 3)]
+    arr[L++] = (tmp >> 16) & 0xFF
+    arr[L++] = (tmp >> 8) & 0xFF
+    arr[L++] = tmp & 0xFF
+  }
+
+  if (placeHolders === 2) {
+    tmp = (revLookup[b64.charCodeAt(i)] << 2) | (revLookup[b64.charCodeAt(i + 1)] >> 4)
+    arr[L++] = tmp & 0xFF
+  } else if (placeHolders === 1) {
+    tmp = (revLookup[b64.charCodeAt(i)] << 10) | (revLookup[b64.charCodeAt(i + 1)] << 4) | (revLookup[b64.charCodeAt(i + 2)] >> 2)
+    arr[L++] = (tmp >> 8) & 0xFF
+    arr[L++] = tmp & 0xFF
+  }
+
+  return arr
+}
+
+function tripletToBase64 (num) {
+  return lookup[num >> 18 & 0x3F] + lookup[num >> 12 & 0x3F] + lookup[num >> 6 & 0x3F] + lookup[num & 0x3F]
+}
+
+function encodeChunk (uint8, start, end) {
+  var tmp
+  var output = []
+  for (var i = start; i < end; i += 3) {
+    tmp = (uint8[i] << 16) + (uint8[i + 1] << 8) + (uint8[i + 2])
+    output.push(tripletToBase64(tmp))
+  }
+  return output.join('')
+}
+
+function fromByteArray (uint8) {
+  var tmp
+  var len = uint8.length
+  var extraBytes = len % 3 // if we have 1 byte left, pad 2 bytes
+  var output = ''
+  var parts = []
+  var maxChunkLength = 16383 // must be multiple of 3
+
+  // go through the array every three bytes, we'll deal with trailing stuff later
+  for (var i = 0, len2 = len - extraBytes; i < len2; i += maxChunkLength) {
+    parts.push(encodeChunk(uint8, i, (i + maxChunkLength) > len2 ? len2 : (i + maxChunkLength)))
+  }
+
+  // pad the end with zeros, but make sure to not forget the extra bytes
+  if (extraBytes === 1) {
+    tmp = uint8[len - 1]
+    output += lookup[tmp >> 2]
+    output += lookup[(tmp << 4) & 0x3F]
+    output += '=='
+  } else if (extraBytes === 2) {
+    tmp = (uint8[len - 2] << 8) + (uint8[len - 1])
+    output += lookup[tmp >> 10]
+    output += lookup[(tmp >> 4) & 0x3F]
+    output += lookup[(tmp << 2) & 0x3F]
+    output += '='
+  }
+
+  parts.push(output)
+
+  return parts.join('')
+}
+
+
+/***/ }),
+/* 364 */
+/***/ (function(module, exports) {
+
+exports.read = function (buffer, offset, isLE, mLen, nBytes) {
+  var e, m
+  var eLen = nBytes * 8 - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var nBits = -7
+  var i = isLE ? (nBytes - 1) : 0
+  var d = isLE ? -1 : 1
+  var s = buffer[offset + i]
+
+  i += d
+
+  e = s & ((1 << (-nBits)) - 1)
+  s >>= (-nBits)
+  nBits += eLen
+  for (; nBits > 0; e = e * 256 + buffer[offset + i], i += d, nBits -= 8) {}
+
+  m = e & ((1 << (-nBits)) - 1)
+  e >>= (-nBits)
+  nBits += mLen
+  for (; nBits > 0; m = m * 256 + buffer[offset + i], i += d, nBits -= 8) {}
+
+  if (e === 0) {
+    e = 1 - eBias
+  } else if (e === eMax) {
+    return m ? NaN : ((s ? -1 : 1) * Infinity)
   } else {
-    result = (val) && (val.buffer) && (val.buffer instanceof ArrayBuffer);
+    m = m + Math.pow(2, mLen)
+    e = e - eBias
   }
-  return result;
+  return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
 }
 
-/**
- * Determine if a value is a String
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a String, otherwise false
- */
-function isString(val) {
-  return typeof val === 'string';
-}
+exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
+  var e, m, c
+  var eLen = nBytes * 8 - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
+  var i = isLE ? 0 : (nBytes - 1)
+  var d = isLE ? 1 : -1
+  var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
 
-/**
- * Determine if a value is a Number
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a Number, otherwise false
- */
-function isNumber(val) {
-  return typeof val === 'number';
-}
+  value = Math.abs(value)
 
-/**
- * Determine if a value is undefined
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if the value is undefined, otherwise false
- */
-function isUndefined(val) {
-  return typeof val === 'undefined';
-}
-
-/**
- * Determine if a value is an Object
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is an Object, otherwise false
- */
-function isObject(val) {
-  return val !== null && typeof val === 'object';
-}
-
-/**
- * Determine if a value is a Date
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a Date, otherwise false
- */
-function isDate(val) {
-  return toString.call(val) === '[object Date]';
-}
-
-/**
- * Determine if a value is a File
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a File, otherwise false
- */
-function isFile(val) {
-  return toString.call(val) === '[object File]';
-}
-
-/**
- * Determine if a value is a Blob
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a Blob, otherwise false
- */
-function isBlob(val) {
-  return toString.call(val) === '[object Blob]';
-}
-
-/**
- * Determine if a value is a Function
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a Function, otherwise false
- */
-function isFunction(val) {
-  return toString.call(val) === '[object Function]';
-}
-
-/**
- * Determine if a value is a Stream
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a Stream, otherwise false
- */
-function isStream(val) {
-  return isObject(val) && isFunction(val.pipe);
-}
-
-/**
- * Determine if a value is a URLSearchParams object
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a URLSearchParams object, otherwise false
- */
-function isURLSearchParams(val) {
-  return typeof URLSearchParams !== 'undefined' && val instanceof URLSearchParams;
-}
-
-/**
- * Trim excess whitespace off the beginning and end of a string
- *
- * @param {String} str The String to trim
- * @returns {String} The String freed of excess whitespace
- */
-function trim(str) {
-  return str.replace(/^\s*/, '').replace(/\s*$/, '');
-}
-
-/**
- * Determine if we're running in a standard browser environment
- *
- * This allows axios to run in a web worker, and react-native.
- * Both environments support XMLHttpRequest, but not fully standard globals.
- *
- * web workers:
- *  typeof window -> undefined
- *  typeof document -> undefined
- *
- * react-native:
- *  navigator.product -> 'ReactNative'
- */
-function isStandardBrowserEnv() {
-  if (typeof navigator !== 'undefined' && navigator.product === 'ReactNative') {
-    return false;
-  }
-  return (
-    typeof window !== 'undefined' &&
-    typeof document !== 'undefined'
-  );
-}
-
-/**
- * Iterate over an Array or an Object invoking a function for each item.
- *
- * If `obj` is an Array callback will be called passing
- * the value, index, and complete array for each item.
- *
- * If 'obj' is an Object callback will be called passing
- * the value, key, and complete object for each property.
- *
- * @param {Object|Array} obj The object to iterate
- * @param {Function} fn The callback to invoke for each item
- */
-function forEach(obj, fn) {
-  // Don't bother if no value provided
-  if (obj === null || typeof obj === 'undefined') {
-    return;
-  }
-
-  // Force an array if not already something iterable
-  if (typeof obj !== 'object' && !isArray(obj)) {
-    /*eslint no-param-reassign:0*/
-    obj = [obj];
-  }
-
-  if (isArray(obj)) {
-    // Iterate over array values
-    for (var i = 0, l = obj.length; i < l; i++) {
-      fn.call(null, obj[i], i, obj);
-    }
+  if (isNaN(value) || value === Infinity) {
+    m = isNaN(value) ? 1 : 0
+    e = eMax
   } else {
-    // Iterate over object keys
-    for (var key in obj) {
-      if (Object.prototype.hasOwnProperty.call(obj, key)) {
-        fn.call(null, obj[key], key, obj);
-      }
+    e = Math.floor(Math.log(value) / Math.LN2)
+    if (value * (c = Math.pow(2, -e)) < 1) {
+      e--
+      c *= 2
     }
-  }
-}
-
-/**
- * Accepts varargs expecting each argument to be an object, then
- * immutably merges the properties of each object and returns result.
- *
- * When multiple objects contain the same key the later object in
- * the arguments list will take precedence.
- *
- * Example:
- *
- * ```js
- * var result = merge({foo: 123}, {foo: 456});
- * console.log(result.foo); // outputs 456
- * ```
- *
- * @param {Object} obj1 Object to merge
- * @returns {Object} Result of all merge properties
- */
-function merge(/* obj1, obj2, obj3, ... */) {
-  var result = {};
-  function assignValue(val, key) {
-    if (typeof result[key] === 'object' && typeof val === 'object') {
-      result[key] = merge(result[key], val);
+    if (e + eBias >= 1) {
+      value += rt / c
     } else {
-      result[key] = val;
+      value += rt * Math.pow(2, 1 - eBias)
     }
-  }
+    if (value * c >= 2) {
+      e++
+      c /= 2
+    }
 
-  for (var i = 0, l = arguments.length; i < l; i++) {
-    forEach(arguments[i], assignValue);
-  }
-  return result;
-}
-
-/**
- * Extends object a by mutably adding to it the properties of object b.
- *
- * @param {Object} a The object to be extended
- * @param {Object} b The object to copy properties from
- * @param {Object} thisArg The object to bind function to
- * @return {Object} The resulting value of object a
- */
-function extend(a, b, thisArg) {
-  forEach(b, function assignValue(val, key) {
-    if (thisArg && typeof val === 'function') {
-      a[key] = bind(val, thisArg);
+    if (e + eBias >= eMax) {
+      m = 0
+      e = eMax
+    } else if (e + eBias >= 1) {
+      m = (value * c - 1) * Math.pow(2, mLen)
+      e = e + eBias
     } else {
-      a[key] = val;
+      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen)
+      e = 0
     }
-  });
-  return a;
+  }
+
+  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
+
+  e = (e << mLen) | m
+  eLen += mLen
+  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
+
+  buffer[offset + i - d] |= s * 128
 }
 
-module.exports = {
-  isArray: isArray,
-  isArrayBuffer: isArrayBuffer,
-  isFormData: isFormData,
-  isArrayBufferView: isArrayBufferView,
-  isString: isString,
-  isNumber: isNumber,
-  isObject: isObject,
-  isUndefined: isUndefined,
-  isDate: isDate,
-  isFile: isFile,
-  isBlob: isBlob,
-  isFunction: isFunction,
-  isStream: isStream,
-  isURLSearchParams: isURLSearchParams,
-  isStandardBrowserEnv: isStandardBrowserEnv,
-  forEach: forEach,
-  merge: merge,
-  extend: extend,
-  trim: trim
-};
-
 
 /***/ }),
-/* 317 */
-/***/ (function(module, exports, __webpack_require__) {
+/* 365 */
+/***/ (function(module, exports) {
 
-"use strict";
-/* WEBPACK VAR INJECTION */(function(process) {
+var toString = {}.toString;
 
-var utils = __webpack_require__(316);
-var normalizeHeaderName = __webpack_require__(338);
-
-var DEFAULT_CONTENT_TYPE = {
-  'Content-Type': 'application/x-www-form-urlencoded'
-};
-
-function setContentTypeIfUnset(headers, value) {
-  if (!utils.isUndefined(headers) && utils.isUndefined(headers['Content-Type'])) {
-    headers['Content-Type'] = value;
-  }
-}
-
-function getDefaultAdapter() {
-  var adapter;
-  if (typeof XMLHttpRequest !== 'undefined') {
-    // For browsers use XHR adapter
-    adapter = __webpack_require__(318);
-  } else if (typeof process !== 'undefined') {
-    // For node use HTTP adapter
-    adapter = __webpack_require__(318);
-  }
-  return adapter;
-}
-
-var defaults = {
-  adapter: getDefaultAdapter(),
-
-  transformRequest: [function transformRequest(data, headers) {
-    normalizeHeaderName(headers, 'Content-Type');
-    if (utils.isFormData(data) ||
-      utils.isArrayBuffer(data) ||
-      utils.isStream(data) ||
-      utils.isFile(data) ||
-      utils.isBlob(data)
-    ) {
-      return data;
-    }
-    if (utils.isArrayBufferView(data)) {
-      return data.buffer;
-    }
-    if (utils.isURLSearchParams(data)) {
-      setContentTypeIfUnset(headers, 'application/x-www-form-urlencoded;charset=utf-8');
-      return data.toString();
-    }
-    if (utils.isObject(data)) {
-      setContentTypeIfUnset(headers, 'application/json;charset=utf-8');
-      return JSON.stringify(data);
-    }
-    return data;
-  }],
-
-  transformResponse: [function transformResponse(data) {
-    /*eslint no-param-reassign:0*/
-    if (typeof data === 'string') {
-      try {
-        data = JSON.parse(data);
-      } catch (e) { /* Ignore */ }
-    }
-    return data;
-  }],
-
-  timeout: 0,
-
-  xsrfCookieName: 'XSRF-TOKEN',
-  xsrfHeaderName: 'X-XSRF-TOKEN',
-
-  maxContentLength: -1,
-
-  validateStatus: function validateStatus(status) {
-    return status >= 200 && status < 300;
-  }
-};
-
-defaults.headers = {
-  common: {
-    'Accept': 'application/json, text/plain, */*'
-  }
-};
-
-utils.forEach(['delete', 'get', 'head'], function forEachMethodNoData(method) {
-  defaults.headers[method] = {};
-});
-
-utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
-  defaults.headers[method] = utils.merge(DEFAULT_CONTENT_TYPE);
-});
-
-module.exports = defaults;
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(114)))
-
-/***/ }),
-/* 318 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(process) {
-
-var utils = __webpack_require__(316);
-var settle = __webpack_require__(330);
-var buildURL = __webpack_require__(333);
-var parseHeaders = __webpack_require__(339);
-var isURLSameOrigin = __webpack_require__(337);
-var createError = __webpack_require__(321);
-var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(332);
-
-module.exports = function xhrAdapter(config) {
-  return new Promise(function dispatchXhrRequest(resolve, reject) {
-    var requestData = config.data;
-    var requestHeaders = config.headers;
-
-    if (utils.isFormData(requestData)) {
-      delete requestHeaders['Content-Type']; // Let the browser set it
-    }
-
-    var request = new XMLHttpRequest();
-    var loadEvent = 'onreadystatechange';
-    var xDomain = false;
-
-    // For IE 8/9 CORS support
-    // Only supports POST and GET calls and doesn't returns the response headers.
-    // DON'T do this for testing b/c XMLHttpRequest is mocked, not XDomainRequest.
-    if (process.env.NODE_ENV !== 'test' &&
-        typeof window !== 'undefined' &&
-        window.XDomainRequest && !('withCredentials' in request) &&
-        !isURLSameOrigin(config.url)) {
-      request = new window.XDomainRequest();
-      loadEvent = 'onload';
-      xDomain = true;
-      request.onprogress = function handleProgress() {};
-      request.ontimeout = function handleTimeout() {};
-    }
-
-    // HTTP basic authentication
-    if (config.auth) {
-      var username = config.auth.username || '';
-      var password = config.auth.password || '';
-      requestHeaders.Authorization = 'Basic ' + btoa(username + ':' + password);
-    }
-
-    request.open(config.method.toUpperCase(), buildURL(config.url, config.params, config.paramsSerializer), true);
-
-    // Set the request timeout in MS
-    request.timeout = config.timeout;
-
-    // Listen for ready state
-    request[loadEvent] = function handleLoad() {
-      if (!request || (request.readyState !== 4 && !xDomain)) {
-        return;
-      }
-
-      // The request errored out and we didn't get a response, this will be
-      // handled by onerror instead
-      // With one exception: request that using file: protocol, most browsers
-      // will return status as 0 even though it's a successful request
-      if (request.status === 0 && !(request.responseURL && request.responseURL.indexOf('file:') === 0)) {
-        return;
-      }
-
-      // Prepare the response
-      var responseHeaders = 'getAllResponseHeaders' in request ? parseHeaders(request.getAllResponseHeaders()) : null;
-      var responseData = !config.responseType || config.responseType === 'text' ? request.responseText : request.response;
-      var response = {
-        data: responseData,
-        // IE sends 1223 instead of 204 (https://github.com/mzabriskie/axios/issues/201)
-        status: request.status === 1223 ? 204 : request.status,
-        statusText: request.status === 1223 ? 'No Content' : request.statusText,
-        headers: responseHeaders,
-        config: config,
-        request: request
-      };
-
-      settle(resolve, reject, response);
-
-      // Clean up request
-      request = null;
-    };
-
-    // Handle low level network errors
-    request.onerror = function handleError() {
-      // Real errors are hidden from us by the browser
-      // onerror should only fire if it's a network error
-      reject(createError('Network Error', config));
-
-      // Clean up request
-      request = null;
-    };
-
-    // Handle timeout
-    request.ontimeout = function handleTimeout() {
-      reject(createError('timeout of ' + config.timeout + 'ms exceeded', config, 'ECONNABORTED'));
-
-      // Clean up request
-      request = null;
-    };
-
-    // Add xsrf header
-    // This is only done if running in a standard browser environment.
-    // Specifically not if we're in a web worker, or react-native.
-    if (utils.isStandardBrowserEnv()) {
-      var cookies = __webpack_require__(335);
-
-      // Add xsrf header
-      var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
-          cookies.read(config.xsrfCookieName) :
-          undefined;
-
-      if (xsrfValue) {
-        requestHeaders[config.xsrfHeaderName] = xsrfValue;
-      }
-    }
-
-    // Add headers to the request
-    if ('setRequestHeader' in request) {
-      utils.forEach(requestHeaders, function setRequestHeader(val, key) {
-        if (typeof requestData === 'undefined' && key.toLowerCase() === 'content-type') {
-          // Remove Content-Type if data is undefined
-          delete requestHeaders[key];
-        } else {
-          // Otherwise add header to the request
-          request.setRequestHeader(key, val);
-        }
-      });
-    }
-
-    // Add withCredentials to request if needed
-    if (config.withCredentials) {
-      request.withCredentials = true;
-    }
-
-    // Add responseType to request if needed
-    if (config.responseType) {
-      try {
-        request.responseType = config.responseType;
-      } catch (e) {
-        // Expected DOMException thrown by browsers not compatible XMLHttpRequest Level 2.
-        // But, this can be suppressed for 'json' type as it can be parsed by default 'transformResponse' function.
-        if (config.responseType !== 'json') {
-          throw e;
-        }
-      }
-    }
-
-    // Handle progress if needed
-    if (typeof config.onDownloadProgress === 'function') {
-      request.addEventListener('progress', config.onDownloadProgress);
-    }
-
-    // Not all browsers support upload events
-    if (typeof config.onUploadProgress === 'function' && request.upload) {
-      request.upload.addEventListener('progress', config.onUploadProgress);
-    }
-
-    if (config.cancelToken) {
-      // Handle cancellation
-      config.cancelToken.promise.then(function onCanceled(cancel) {
-        if (!request) {
-          return;
-        }
-
-        request.abort();
-        reject(cancel);
-        // Clean up request
-        request = null;
-      });
-    }
-
-    if (requestData === undefined) {
-      requestData = null;
-    }
-
-    // Send the request
-    request.send(requestData);
-  });
-};
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(114)))
-
-/***/ }),
-/* 319 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-/**
- * A `Cancel` is an object that is thrown when an operation is canceled.
- *
- * @class
- * @param {string=} message The message.
- */
-function Cancel(message) {
-  this.message = message;
-}
-
-Cancel.prototype.toString = function toString() {
-  return 'Cancel' + (this.message ? ': ' + this.message : '');
-};
-
-Cancel.prototype.__CANCEL__ = true;
-
-module.exports = Cancel;
-
-
-/***/ }),
-/* 320 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = function isCancel(value) {
-  return !!(value && value.__CANCEL__);
-};
-
-
-/***/ }),
-/* 321 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var enhanceError = __webpack_require__(329);
-
-/**
- * Create an Error with the specified message, config, error code, and response.
- *
- * @param {string} message The error message.
- * @param {Object} config The config.
- * @param {string} [code] The error code (for example, 'ECONNABORTED').
- @ @param {Object} [response] The response.
- * @returns {Error} The created error.
- */
-module.exports = function createError(message, config, code, response) {
-  var error = new Error(message);
-  return enhanceError(error, config, code, response);
-};
-
-
-/***/ }),
-/* 322 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = function bind(fn, thisArg) {
-  return function wrap() {
-    var args = new Array(arguments.length);
-    for (var i = 0; i < args.length; i++) {
-      args[i] = arguments[i];
-    }
-    return fn.apply(thisArg, args);
-  };
-};
-
-
-/***/ }),
-/* 323 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(324);
-
-/***/ }),
-/* 324 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var utils = __webpack_require__(316);
-var bind = __webpack_require__(322);
-var Axios = __webpack_require__(326);
-var defaults = __webpack_require__(317);
-
-/**
- * Create an instance of Axios
- *
- * @param {Object} defaultConfig The default config for the instance
- * @return {Axios} A new instance of Axios
- */
-function createInstance(defaultConfig) {
-  var context = new Axios(defaultConfig);
-  var instance = bind(Axios.prototype.request, context);
-
-  // Copy axios.prototype to instance
-  utils.extend(instance, Axios.prototype, context);
-
-  // Copy context to instance
-  utils.extend(instance, context);
-
-  return instance;
-}
-
-// Create the default instance to be exported
-var axios = createInstance(defaults);
-
-// Expose Axios class to allow class inheritance
-axios.Axios = Axios;
-
-// Factory for creating new instances
-axios.create = function create(instanceConfig) {
-  return createInstance(utils.merge(defaults, instanceConfig));
-};
-
-// Expose Cancel & CancelToken
-axios.Cancel = __webpack_require__(319);
-axios.CancelToken = __webpack_require__(325);
-axios.isCancel = __webpack_require__(320);
-
-// Expose all/spread
-axios.all = function all(promises) {
-  return Promise.all(promises);
-};
-axios.spread = __webpack_require__(340);
-
-module.exports = axios;
-
-// Allow use of default import syntax in TypeScript
-module.exports.default = axios;
-
-
-/***/ }),
-/* 325 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var Cancel = __webpack_require__(319);
-
-/**
- * A `CancelToken` is an object that can be used to request cancellation of an operation.
- *
- * @class
- * @param {Function} executor The executor function.
- */
-function CancelToken(executor) {
-  if (typeof executor !== 'function') {
-    throw new TypeError('executor must be a function.');
-  }
-
-  var resolvePromise;
-  this.promise = new Promise(function promiseExecutor(resolve) {
-    resolvePromise = resolve;
-  });
-
-  var token = this;
-  executor(function cancel(message) {
-    if (token.reason) {
-      // Cancellation has already been requested
-      return;
-    }
-
-    token.reason = new Cancel(message);
-    resolvePromise(token.reason);
-  });
-}
-
-/**
- * Throws a `Cancel` if cancellation has been requested.
- */
-CancelToken.prototype.throwIfRequested = function throwIfRequested() {
-  if (this.reason) {
-    throw this.reason;
-  }
-};
-
-/**
- * Returns an object that contains a new `CancelToken` and a function that, when called,
- * cancels the `CancelToken`.
- */
-CancelToken.source = function source() {
-  var cancel;
-  var token = new CancelToken(function executor(c) {
-    cancel = c;
-  });
-  return {
-    token: token,
-    cancel: cancel
-  };
-};
-
-module.exports = CancelToken;
-
-
-/***/ }),
-/* 326 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var defaults = __webpack_require__(317);
-var utils = __webpack_require__(316);
-var InterceptorManager = __webpack_require__(327);
-var dispatchRequest = __webpack_require__(328);
-var isAbsoluteURL = __webpack_require__(336);
-var combineURLs = __webpack_require__(334);
-
-/**
- * Create a new instance of Axios
- *
- * @param {Object} instanceConfig The default config for the instance
- */
-function Axios(instanceConfig) {
-  this.defaults = instanceConfig;
-  this.interceptors = {
-    request: new InterceptorManager(),
-    response: new InterceptorManager()
-  };
-}
-
-/**
- * Dispatch a request
- *
- * @param {Object} config The config specific for this request (merged with this.defaults)
- */
-Axios.prototype.request = function request(config) {
-  /*eslint no-param-reassign:0*/
-  // Allow for axios('example/url'[, config]) a la fetch API
-  if (typeof config === 'string') {
-    config = utils.merge({
-      url: arguments[0]
-    }, arguments[1]);
-  }
-
-  config = utils.merge(defaults, this.defaults, { method: 'get' }, config);
-
-  // Support baseURL config
-  if (config.baseURL && !isAbsoluteURL(config.url)) {
-    config.url = combineURLs(config.baseURL, config.url);
-  }
-
-  // Hook up interceptors middleware
-  var chain = [dispatchRequest, undefined];
-  var promise = Promise.resolve(config);
-
-  this.interceptors.request.forEach(function unshiftRequestInterceptors(interceptor) {
-    chain.unshift(interceptor.fulfilled, interceptor.rejected);
-  });
-
-  this.interceptors.response.forEach(function pushResponseInterceptors(interceptor) {
-    chain.push(interceptor.fulfilled, interceptor.rejected);
-  });
-
-  while (chain.length) {
-    promise = promise.then(chain.shift(), chain.shift());
-  }
-
-  return promise;
-};
-
-// Provide aliases for supported request methods
-utils.forEach(['delete', 'get', 'head', 'options'], function forEachMethodNoData(method) {
-  /*eslint func-names:0*/
-  Axios.prototype[method] = function(url, config) {
-    return this.request(utils.merge(config || {}, {
-      method: method,
-      url: url
-    }));
-  };
-});
-
-utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
-  /*eslint func-names:0*/
-  Axios.prototype[method] = function(url, data, config) {
-    return this.request(utils.merge(config || {}, {
-      method: method,
-      url: url,
-      data: data
-    }));
-  };
-});
-
-module.exports = Axios;
-
-
-/***/ }),
-/* 327 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var utils = __webpack_require__(316);
-
-function InterceptorManager() {
-  this.handlers = [];
-}
-
-/**
- * Add a new interceptor to the stack
- *
- * @param {Function} fulfilled The function to handle `then` for a `Promise`
- * @param {Function} rejected The function to handle `reject` for a `Promise`
- *
- * @return {Number} An ID used to remove interceptor later
- */
-InterceptorManager.prototype.use = function use(fulfilled, rejected) {
-  this.handlers.push({
-    fulfilled: fulfilled,
-    rejected: rejected
-  });
-  return this.handlers.length - 1;
-};
-
-/**
- * Remove an interceptor from the stack
- *
- * @param {Number} id The ID that was returned by `use`
- */
-InterceptorManager.prototype.eject = function eject(id) {
-  if (this.handlers[id]) {
-    this.handlers[id] = null;
-  }
-};
-
-/**
- * Iterate over all the registered interceptors
- *
- * This method is particularly useful for skipping over any
- * interceptors that may have become `null` calling `eject`.
- *
- * @param {Function} fn The function to call for each interceptor
- */
-InterceptorManager.prototype.forEach = function forEach(fn) {
-  utils.forEach(this.handlers, function forEachHandler(h) {
-    if (h !== null) {
-      fn(h);
-    }
-  });
-};
-
-module.exports = InterceptorManager;
-
-
-/***/ }),
-/* 328 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var utils = __webpack_require__(316);
-var transformData = __webpack_require__(331);
-var isCancel = __webpack_require__(320);
-var defaults = __webpack_require__(317);
-
-/**
- * Throws a `Cancel` if cancellation has been requested.
- */
-function throwIfCancellationRequested(config) {
-  if (config.cancelToken) {
-    config.cancelToken.throwIfRequested();
-  }
-}
-
-/**
- * Dispatch a request to the server using the configured adapter.
- *
- * @param {object} config The config that is to be used for the request
- * @returns {Promise} The Promise to be fulfilled
- */
-module.exports = function dispatchRequest(config) {
-  throwIfCancellationRequested(config);
-
-  // Ensure headers exist
-  config.headers = config.headers || {};
-
-  // Transform request data
-  config.data = transformData(
-    config.data,
-    config.headers,
-    config.transformRequest
-  );
-
-  // Flatten headers
-  config.headers = utils.merge(
-    config.headers.common || {},
-    config.headers[config.method] || {},
-    config.headers || {}
-  );
-
-  utils.forEach(
-    ['delete', 'get', 'head', 'post', 'put', 'patch', 'common'],
-    function cleanHeaderConfig(method) {
-      delete config.headers[method];
-    }
-  );
-
-  var adapter = config.adapter || defaults.adapter;
-
-  return adapter(config).then(function onAdapterResolution(response) {
-    throwIfCancellationRequested(config);
-
-    // Transform response data
-    response.data = transformData(
-      response.data,
-      response.headers,
-      config.transformResponse
-    );
-
-    return response;
-  }, function onAdapterRejection(reason) {
-    if (!isCancel(reason)) {
-      throwIfCancellationRequested(config);
-
-      // Transform response data
-      if (reason && reason.response) {
-        reason.response.data = transformData(
-          reason.response.data,
-          reason.response.headers,
-          config.transformResponse
-        );
-      }
-    }
-
-    return Promise.reject(reason);
-  });
-};
-
-
-/***/ }),
-/* 329 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-/**
- * Update an Error with the specified config, error code, and response.
- *
- * @param {Error} error The error to update.
- * @param {Object} config The config.
- * @param {string} [code] The error code (for example, 'ECONNABORTED').
- @ @param {Object} [response] The response.
- * @returns {Error} The error.
- */
-module.exports = function enhanceError(error, config, code, response) {
-  error.config = config;
-  if (code) {
-    error.code = code;
-  }
-  error.response = response;
-  return error;
-};
-
-
-/***/ }),
-/* 330 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var createError = __webpack_require__(321);
-
-/**
- * Resolve or reject a Promise based on response status.
- *
- * @param {Function} resolve A function that resolves the promise.
- * @param {Function} reject A function that rejects the promise.
- * @param {object} response The response.
- */
-module.exports = function settle(resolve, reject, response) {
-  var validateStatus = response.config.validateStatus;
-  // Note: status is not exposed by XDomainRequest
-  if (!response.status || !validateStatus || validateStatus(response.status)) {
-    resolve(response);
-  } else {
-    reject(createError(
-      'Request failed with status code ' + response.status,
-      response.config,
-      null,
-      response
-    ));
-  }
-};
-
-
-/***/ }),
-/* 331 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var utils = __webpack_require__(316);
-
-/**
- * Transform the data for a request or a response
- *
- * @param {Object|String} data The data to be transformed
- * @param {Array} headers The headers for the request or response
- * @param {Array|Function} fns A single function or Array of functions
- * @returns {*} The resulting transformed data
- */
-module.exports = function transformData(data, headers, fns) {
-  /*eslint no-param-reassign:0*/
-  utils.forEach(fns, function transform(fn) {
-    data = fn(data, headers);
-  });
-
-  return data;
-};
-
-
-/***/ }),
-/* 332 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-// btoa polyfill for IE<10 courtesy https://github.com/davidchambers/Base64.js
-
-var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
-
-function E() {
-  this.message = 'String contains an invalid character';
-}
-E.prototype = new Error;
-E.prototype.code = 5;
-E.prototype.name = 'InvalidCharacterError';
-
-function btoa(input) {
-  var str = String(input);
-  var output = '';
-  for (
-    // initialize result and counter
-    var block, charCode, idx = 0, map = chars;
-    // if the next str index does not exist:
-    //   change the mapping table to "="
-    //   check if d has no fractional digits
-    str.charAt(idx | 0) || (map = '=', idx % 1);
-    // "8 - idx % 1 * 8" generates the sequence 2, 4, 6, 8
-    output += map.charAt(63 & block >> 8 - idx % 1 * 8)
-  ) {
-    charCode = str.charCodeAt(idx += 3 / 4);
-    if (charCode > 0xFF) {
-      throw new E();
-    }
-    block = block << 8 | charCode;
-  }
-  return output;
-}
-
-module.exports = btoa;
-
-
-/***/ }),
-/* 333 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var utils = __webpack_require__(316);
-
-function encode(val) {
-  return encodeURIComponent(val).
-    replace(/%40/gi, '@').
-    replace(/%3A/gi, ':').
-    replace(/%24/g, '$').
-    replace(/%2C/gi, ',').
-    replace(/%20/g, '+').
-    replace(/%5B/gi, '[').
-    replace(/%5D/gi, ']');
-}
-
-/**
- * Build a URL by appending params to the end
- *
- * @param {string} url The base of the url (e.g., http://www.google.com)
- * @param {object} [params] The params to be appended
- * @returns {string} The formatted url
- */
-module.exports = function buildURL(url, params, paramsSerializer) {
-  /*eslint no-param-reassign:0*/
-  if (!params) {
-    return url;
-  }
-
-  var serializedParams;
-  if (paramsSerializer) {
-    serializedParams = paramsSerializer(params);
-  } else if (utils.isURLSearchParams(params)) {
-    serializedParams = params.toString();
-  } else {
-    var parts = [];
-
-    utils.forEach(params, function serialize(val, key) {
-      if (val === null || typeof val === 'undefined') {
-        return;
-      }
-
-      if (utils.isArray(val)) {
-        key = key + '[]';
-      }
-
-      if (!utils.isArray(val)) {
-        val = [val];
-      }
-
-      utils.forEach(val, function parseValue(v) {
-        if (utils.isDate(v)) {
-          v = v.toISOString();
-        } else if (utils.isObject(v)) {
-          v = JSON.stringify(v);
-        }
-        parts.push(encode(key) + '=' + encode(v));
-      });
-    });
-
-    serializedParams = parts.join('&');
-  }
-
-  if (serializedParams) {
-    url += (url.indexOf('?') === -1 ? '?' : '&') + serializedParams;
-  }
-
-  return url;
-};
-
-
-/***/ }),
-/* 334 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-/**
- * Creates a new URL by combining the specified URLs
- *
- * @param {string} baseURL The base URL
- * @param {string} relativeURL The relative URL
- * @returns {string} The combined URL
- */
-module.exports = function combineURLs(baseURL, relativeURL) {
-  return relativeURL
-    ? baseURL.replace(/\/+$/, '') + '/' + relativeURL.replace(/^\/+/, '')
-    : baseURL;
-};
-
-
-/***/ }),
-/* 335 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var utils = __webpack_require__(316);
-
-module.exports = (
-  utils.isStandardBrowserEnv() ?
-
-  // Standard browser envs support document.cookie
-  (function standardBrowserEnv() {
-    return {
-      write: function write(name, value, expires, path, domain, secure) {
-        var cookie = [];
-        cookie.push(name + '=' + encodeURIComponent(value));
-
-        if (utils.isNumber(expires)) {
-          cookie.push('expires=' + new Date(expires).toGMTString());
-        }
-
-        if (utils.isString(path)) {
-          cookie.push('path=' + path);
-        }
-
-        if (utils.isString(domain)) {
-          cookie.push('domain=' + domain);
-        }
-
-        if (secure === true) {
-          cookie.push('secure');
-        }
-
-        document.cookie = cookie.join('; ');
-      },
-
-      read: function read(name) {
-        var match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));
-        return (match ? decodeURIComponent(match[3]) : null);
-      },
-
-      remove: function remove(name) {
-        this.write(name, '', Date.now() - 86400000);
-      }
-    };
-  })() :
-
-  // Non standard browser env (web workers, react-native) lack needed support.
-  (function nonStandardBrowserEnv() {
-    return {
-      write: function write() {},
-      read: function read() { return null; },
-      remove: function remove() {}
-    };
-  })()
-);
-
-
-/***/ }),
-/* 336 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-/**
- * Determines whether the specified URL is absolute
- *
- * @param {string} url The URL to test
- * @returns {boolean} True if the specified URL is absolute, otherwise false
- */
-module.exports = function isAbsoluteURL(url) {
-  // A URL is considered absolute if it begins with "<scheme>://" or "//" (protocol-relative URL).
-  // RFC 3986 defines scheme name as a sequence of characters beginning with a letter and followed
-  // by any combination of letters, digits, plus, period, or hyphen.
-  return /^([a-z][a-z\d\+\-\.]*:)?\/\//i.test(url);
-};
-
-
-/***/ }),
-/* 337 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var utils = __webpack_require__(316);
-
-module.exports = (
-  utils.isStandardBrowserEnv() ?
-
-  // Standard browser envs have full support of the APIs needed to test
-  // whether the request URL is of the same origin as current location.
-  (function standardBrowserEnv() {
-    var msie = /(msie|trident)/i.test(navigator.userAgent);
-    var urlParsingNode = document.createElement('a');
-    var originURL;
-
-    /**
-    * Parse a URL to discover it's components
-    *
-    * @param {String} url The URL to be parsed
-    * @returns {Object}
-    */
-    function resolveURL(url) {
-      var href = url;
-
-      if (msie) {
-        // IE needs attribute set twice to normalize properties
-        urlParsingNode.setAttribute('href', href);
-        href = urlParsingNode.href;
-      }
-
-      urlParsingNode.setAttribute('href', href);
-
-      // urlParsingNode provides the UrlUtils interface - http://url.spec.whatwg.org/#urlutils
-      return {
-        href: urlParsingNode.href,
-        protocol: urlParsingNode.protocol ? urlParsingNode.protocol.replace(/:$/, '') : '',
-        host: urlParsingNode.host,
-        search: urlParsingNode.search ? urlParsingNode.search.replace(/^\?/, '') : '',
-        hash: urlParsingNode.hash ? urlParsingNode.hash.replace(/^#/, '') : '',
-        hostname: urlParsingNode.hostname,
-        port: urlParsingNode.port,
-        pathname: (urlParsingNode.pathname.charAt(0) === '/') ?
-                  urlParsingNode.pathname :
-                  '/' + urlParsingNode.pathname
-      };
-    }
-
-    originURL = resolveURL(window.location.href);
-
-    /**
-    * Determine if a URL shares the same origin as the current location
-    *
-    * @param {String} requestURL The URL to test
-    * @returns {boolean} True if URL shares the same origin, otherwise false
-    */
-    return function isURLSameOrigin(requestURL) {
-      var parsed = (utils.isString(requestURL)) ? resolveURL(requestURL) : requestURL;
-      return (parsed.protocol === originURL.protocol &&
-            parsed.host === originURL.host);
-    };
-  })() :
-
-  // Non standard browser envs (web workers, react-native) lack needed support.
-  (function nonStandardBrowserEnv() {
-    return function isURLSameOrigin() {
-      return true;
-    };
-  })()
-);
-
-
-/***/ }),
-/* 338 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var utils = __webpack_require__(316);
-
-module.exports = function normalizeHeaderName(headers, normalizedName) {
-  utils.forEach(headers, function processHeader(value, name) {
-    if (name !== normalizedName && name.toUpperCase() === normalizedName.toUpperCase()) {
-      headers[normalizedName] = value;
-      delete headers[name];
-    }
-  });
-};
-
-
-/***/ }),
-/* 339 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var utils = __webpack_require__(316);
-
-/**
- * Parse headers into an object
- *
- * ```
- * Date: Wed, 27 Aug 2014 08:58:49 GMT
- * Content-Type: application/json
- * Connection: keep-alive
- * Transfer-Encoding: chunked
- * ```
- *
- * @param {String} headers Headers needing to be parsed
- * @returns {Object} Headers parsed into an object
- */
-module.exports = function parseHeaders(headers) {
-  var parsed = {};
-  var key;
-  var val;
-  var i;
-
-  if (!headers) { return parsed; }
-
-  utils.forEach(headers.split('\n'), function parser(line) {
-    i = line.indexOf(':');
-    key = utils.trim(line.substr(0, i)).toLowerCase();
-    val = utils.trim(line.substr(i + 1));
-
-    if (key) {
-      parsed[key] = parsed[key] ? parsed[key] + ', ' + val : val;
-    }
-  });
-
-  return parsed;
-};
-
-
-/***/ }),
-/* 340 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-/**
- * Syntactic sugar for invoking a function and expanding an array for arguments.
- *
- * Common use case would be to use `Function.prototype.apply`.
- *
- *  ```js
- *  function f(x, y, z) {}
- *  var args = [1, 2, 3];
- *  f.apply(null, args);
- *  ```
- *
- * With `spread` this example can be re-written.
- *
- *  ```js
- *  spread(function(x, y, z) {})([1, 2, 3]);
- *  ```
- *
- * @param {Function} callback
- * @returns {Function}
- */
-module.exports = function spread(callback) {
-  return function wrap(arr) {
-    return callback.apply(null, arr);
-  };
+module.exports = Array.isArray || function (arr) {
+  return toString.call(arr) == '[object Array]';
 };
 
 
