@@ -12,7 +12,7 @@
 				div.uk-text-right
 					star-rating(:rating="app.rating")
 		.uk-card-media-top
-			img(src="https://unsplash.it/800/450/?random", alt="app.title")
+			img(:src="image", :alt="app.title")
 
 		.uk-card-body
 			p {{ app.description }}
@@ -55,6 +55,10 @@
 
 			platform () {
 				return oc_config.version;
+			},
+
+			image : function(){
+				return this.app.screenshots[0].url;
 			}
 		},
 		filters : {

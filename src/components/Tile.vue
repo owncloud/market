@@ -33,18 +33,7 @@
 			},
 
 			image : function(){
-
-				// TODO: replace with actual screenshot when available
-
-				let x = 0;
-				let y = 1000;
-				let no = Math.floor(Math.random() * ((y-x)+1) + x);
-				let image = 'https://unsplash.it/800/450/?image=' + no;
-
-				return image;
-
-//				 this is the correct screenshot
-//				 return this.app.screenshots[0];
+				 return this.app.screenshots[0].url;
 			}
 		}
 

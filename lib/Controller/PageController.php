@@ -33,8 +33,12 @@ class PageController extends Controller {
 	public function index() {
 		$templateResponse = new TemplateResponse($this->appName, 'index', []);
 		$policy = new ContentSecurityPolicy();
+		// live storage
 		$policy->addAllowedImageDomain('https://storage.marketplace.owncloud.com');
-		$policy->addAllowedImageDomain('https://unsplash.it');
+		// staging - for internal testing
+		$policy->addAllowedImageDomain('https://marketplace-storage.int.owncloud.com');
+		// local dev storage
+		$policy->addAllowedImageDomain('http://minio:9000');
 		$templateResponse->setContentSecurityPolicy($policy);
 
 		return $templateResponse;
