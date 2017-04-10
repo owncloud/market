@@ -20,8 +20,5 @@
  *
  */
 
-style('market', 'market.min');
 script('market', 'market.bundle');
 ?>
-
-<div id="app"></div>

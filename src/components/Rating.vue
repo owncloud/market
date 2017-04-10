@@ -1,5 +1,5 @@
 <template lang="pug">
-	ul.uk-padding-remove.uk-margin-remove(uk-tooltip="pos: top-left", :title="overall | textRating")
+	ul.uk-padding-remove.uk-margin-remove.uk-inline-block(uk-tooltip, :title="overall | rating")
 		li(v-for="n in stars.max").uk-inline-block
 			span(:class="(n<=overall) ? '-on' : '-off'",  uk-icon="icon: star; ratio: 0.8").star
 
@@ -19,14 +19,9 @@
 				}
 			}
 		},
-		filter : {
-			textRating : function (value) {
-				return "Rating: " + value;
-			}
-		},
-		computed: {
-			rounded : function () {
-				return Math.round(this.overall)
+		filters : {
+			rating : function (float) {
+				return "&Oslash " + (Math.round(float * 100) / 100) + " stars";
 			}
 		}
 	}
