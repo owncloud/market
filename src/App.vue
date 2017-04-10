@@ -1,62 +1,53 @@
 <template lang="pug">
-	.market.uk-grid-large(uk-grid)
-		aside
-			NavMain
-		main.uk-width-expand
-			ul(v-if="appList!=null", uk-grid)
-				AppTile(v-for="app in appList", :app="app", :key="app.id")
-
-			div(uk-spinner, v-if="!appList")
+	.uk-padding
+		.uk-grid-large(uk-grid)
+			aside.uk-width-auto
+				nav-main
+			main.uk-width-expand
+				router-view
 </template>
 
 <script>
-
 	import Axios from 'axios';
 
-	// Components
-	import AppTile from './components/app-tile.vue';
-	import NavMain from './components/nav-main.vue';
-
 	export default {
-		components: {
-			AppTile,
-			NavMain
+		mounted : function() {
+			// Initially fetch data
+			this.fetchAll();
 		},
-		data () {
-			return {
-				menu : null,
-				endpoint: OC.generateUrl('/apps/market/apps'),
-				appList: null
-			}
-		},
-		mounted: function() {
-			this.get();
-		},
-		methods: {
-			get : function () {
+		methods : {
+			fetchAll () {
+				this.fetchAppsList();
+				this.fetchCategoriesList();
+			},
+			fetchAppsList () {
 				let self = this;
-				Axios.get(this.endpoint)
+
+				Axios.get(OC.generateUrl('/apps/market/apps'))
 					.then(function (response) {
-						self.appList = response.data;
+						self.$store.state.apps = response.data;
 					})
 					.catch(function (error) {
 						console.log(error);
 					});
-			}
+			},
+			fetchCategoriesList () {
+				let self = this;
+
+				Axios.get(OC.generateUrl('/apps/market/categories'))
+					.then(function (response) {
+						self.$store.state.categories = response.data;
+					})
+					.catch(function (error) {
+						console.log(error);
+					});
+			},
 		}
 	}
 </script>
 
-<style lang="scss" scoped>
-
-	@import "styles/variables-theme";
-
+<style scoped>
 	aside {
-		width: 260px;
+		width: 300px;
 	}
-
-	.market {
-		padding: $global-gutter;
-	}
-
 </style>

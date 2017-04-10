@@ -84,39 +84,6 @@ class MarketController extends Controller {
 
 	private function generateTestData($category = null) {
 		$apps = [
-'activity',
-'admin_audit',
-'comments',
-'dav',
-'enterprise_key',
-'federatedfilesharing',
-'federation',
-'files',
-'files_external',
-'files_pdfviewer',
-'files_sharing',
-'files_texteditor',
-'files_trashbin',
-'files_versions',
-'firewall',
-'market',
-'provisioning_api',
-'systemtags',
-'systemtags_management',
-'templateeditor',
-'updatenotification',
-'workflow',
-'calendar',
-'clockwork',
-'contacts',
-'customgroups',
-'documents',
-'encryption',
-'example-theme',
-'files_antivirus',
-'files_drop',
-'files_external_ftp',
-'files_primary_swift',
 'gpxpod',
 'impersonate',
 'mail',
@@ -155,36 +122,35 @@ class MarketController extends Controller {
 				"id" => $appId,
 				"name" => ucfirst(str_replace('_', ' ', $appId)),
 				"categories" => [ $category	],
-				"description" => "The new and improved app for your Contacts.",
+				"description" => "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt.",
 				"screenshots" => [
 					"url" => "https =>//marketplace.owncloud-content.com/screenshots/contacts-58e1f3a995950"
 				],
 				"marketplace" => "https =>//marketplace.owncloud.com/apps/contacts",
 				"downloads" => 0,
 				"rating" => [
-					"1" => 0,
+					"1" => 7,
 					"2" => 0,
-					"3" => 0,
-					"4" => 0,
-					"5" => 0,
-					"mean" => 0
+					"3" => 1,
+					"4" => 70,
+					"5" => 23,
+					"mean" => 4.00990099
 				],
 				"publisher" => [
 					"name" => "ownCloud",
 					"url" => "https =>//marketplace.owncloud.com/publisher/owncloud"
 				],
-				"releases" => [
-					[
-						"platformMin" => "9.0.0",
-						"platformMax" => "10.0.9999",
-						"version" => "1.5.1",
-						"download" => "https =>//marketplace.owncloud.com/api/v1/apps/contacts/1.5.1",
-						"license" => "GNU Affero General Public License",
-						"created" => "2017-04-03T00 =>00 =>00+00 =>00",
-						"canInstall" => true,
-						"missingDependencies" => [
-
-						]
+				"release" => [
+					"platformMin" => "9.0.0",
+					"platformMax" => "10.0.9999",
+					"version" => "1.5.1",
+					"download" => "https =>//marketplace.owncloud.com/api/v1/apps/contacts/1.5.1",
+					"license" => "GNU Affero General Public License",
+					"created" => 1086438197,
+					"canInstall" => false,
+					"missingDependencies" => [
+						"PHP >= 7.0",
+						"MySQL >= 5.7.17"
 					]
 				],
 				"installed" => false,

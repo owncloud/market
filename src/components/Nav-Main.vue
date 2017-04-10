@@ -24,18 +24,10 @@
 	import Axios from 'axios';
 
 	export default {
-		data () {
-			return { categories : null }
-		},
-		mounted : function () {
-			let self = this;
-			Axios.get(OC.generateUrl('/apps/market/categories'))
-				.then(function (response) {
-					self.categories = response.data;
-				})
-				.catch(function (error) {
-					console.log(error);
-				});
+		computed : {
+			categories() {
+				return this.$store.state.categories;
+			}
 		}
 	}
 </script>
