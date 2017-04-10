@@ -28,6 +28,7 @@ use OCP\App\IAppManager;
 use OCP\ICacheFactory;
 use OCP\IConfig;
 use OCP\Util;
+use function Symfony\Component\Debug\Tests\testHeader;
 
 class MarketService {
 
@@ -41,6 +42,8 @@ class MarketService {
 	private $config;
 	/** @var string */
 	private $storeUrl;
+	/** @var array */
+	private $categories;
 
 	/**
 	 * Service constructor.
@@ -279,24 +282,8 @@ class MarketService {
 		if (!is_null($this->apps)) {
 			return $this->apps;
 		}
-		// read from cache
-		if ($this->cacheFactory->isAvailable()) {
-			$cache = $this->cacheFactory->create('ocmp');
-			$data = $cache->get("apps_$version");
-			$this->apps = json_decode($data, true);
-			return $this->apps;
-		}
 
-		// ask the server
-		$response = $this->httpGet($this->storeUrl . "/api/v1/platform/$version/apps.json");
-		$data = $response->getBody();
-		if ($this->cacheFactory->isAvailable()) {
-			// cache if for a day - TODO: evaluate the response header
-			$cache = $this->cacheFactory->create('ocmp');
-			$cache->set("apps_$version", $data, 60*60*24);
-		}
-		$this->apps = json_decode($data, true);
-		return $this->apps;
+		return $this->queryData("apps_$version", "/api/v1/platform/$version/apps.json");
 	}
 
 	/**
@@ -316,10 +303,42 @@ class MarketService {
 		return $response;
 	}
 
-	public function listApps() {
+	public function listApps($category = null) {
 		$apps = $this->getApps();
-		// TODO: filter?
+		if ($category !== null) {
+			$apps = array_filter($apps, function ($app) use ($category) {
+				return in_array($category, $app['categories']);
+			});
+		}
 		return $apps;
+	}
+
+	public function getCategories() {
+		if ($this->categories !== null) {
+			return $this->categories;
+		}
+
+		return $this->queryData('categories', "/api/v1/categories.json");
+	}
+
+	private function queryData($key, $uri) {
+		// read from cache
+		if ($this->cacheFactory->isAvailable()) {
+			$cache = $this->cacheFactory->create('ocmp');
+			$data = $cache->get($key);
+			return json_decode($data, true);
+		}
+
+		// ask the server
+		$response = $this->httpGet($this->storeUrl . $uri);
+		$data = $response->getBody();
+		if ($this->cacheFactory->isAvailable()) {
+			// cache if for a day - TODO: evaluate the response header
+			$cache = $this->cacheFactory->create('ocmp');
+			$cache->set($key, $data, 60*60*24);
+		}
+		return json_decode($data, true);
+
 	}
 
 }

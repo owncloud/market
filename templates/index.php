@@ -1,6 +1,7 @@
 <?php
 /**
  * @author Thomas Müller <thomas.mueller@tmit.eu>
+ * @author Felix Heidecke <felix@heidecke.me>
  *
  * @copyright Copyright (c) 2016, ownCloud GmbH
  * @license AGPL-3.0
@@ -19,14 +20,8 @@
  *
  */
 
-style('market', 'market');
-script('market', 'market');
+style('market', 'market.min');
+script('market', 'market.bundle');
 ?>
 
-<div id="app">
-	<div id="app-navigation" class="icon-loading">
-	</div>
-	<div id="app-content">
-		<div class="container icon-loading"></div>
-	</div>
-</div>
+<div id="app"></div>

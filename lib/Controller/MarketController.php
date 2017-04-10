@@ -27,155 +27,6 @@ use OCP\IRequest;
 
 class MarketController extends Controller {
 
-	private static $testData =<<<EOL
-[
-  {
-    "id": "marvel-theme",
-    "name": "Marvelous Cloud",
-    "categories": [
-      "customization"
-    ],
-    "description": "For the super hero cloud",
-    "screenshots": [
-      {
-        "url": "https:\/\/marketplace.owncloud-content.com\/screenshots\/marvel-theme-58e1f08b4ac79"
-      }
-    ],
-    "marketplace": "https:\/\/marketplace.owncloud.com\/apps\/marvel-theme",
-    "downloads": 0,
-    "rating": {
-      "1": 0,
-      "2": 0,
-      "3": 0,
-      "4": 0,
-      "5": 0,
-      "mean": 0
-    },
-    "publisher": {
-      "name": "ownCloud",
-      "url": "https:\/\/marketplace.owncloud.com\/publisher\/owncloud"
-    },
-    "releases": [
-      {
-        "platformMin": "9.0.0",
-        "platformMax": "100.9999.0",
-        "version": "0.0.1",
-        "download": "https:\/\/marketplace.owncloud.com\/api\/v1\/apps\/marvel-theme\/0.0.1",
-        "license": "GNU Affero General Public License",
-        "created": "2017-04-03T00:00:00+00:00",
-        "canInstall": true,
-        "missingDependencies": [
-          
-        ]
-      }
-    ],
-    "installed": true,
-    "updateInfo": false,
-    "installInfo": {
-      "id": "marvel-theme",
-      "name": "Marvelous Cloud",
-      "description": "For the super hero cloud",
-      "licence": "AGPL",
-      "author": "Starlord",
-      "version": "0.0.1",
-      "category": "customization",
-      "screenshot": "https:\/\/raw.githubusercontent.com\/DeepDiver1975\/marvel-theme\/ee746d66a779775053fc4e299a6f41f49d0152bc\/img\/322791.jpg",
-      "dependencies": {
-        "owncloud": {
-          "@attributes": {
-            "min-version": "10.0",
-            "max-version": "10.0"
-          }
-        }
-      },
-      "types": [
-        "theme"
-      ],
-      "info": [
-        
-      ],
-      "remote": [
-        
-      ],
-      "public": [
-        
-      ],
-      "repair-steps": {
-        "install": [
-          
-        ],
-        "pre-migration": [
-          
-        ],
-        "post-migration": [
-          
-        ],
-        "live-migration": [
-          
-        ],
-        "uninstall": [
-          
-        ]
-      },
-      "background-jobs": [
-        
-      ],
-      "two-factor-providers": [
-        
-      ],
-      "commands": [
-        
-      ]
-    }
-  },
-  {
-    "id": "contacts",
-    "name": "Contacts",
-    "categories": [
-      "collaboration"
-    ],
-    "description": "The new and improved app for your Contacts.",
-    "screenshots": [
-      {
-        "url": "https:\/\/marketplace.owncloud-content.com\/screenshots\/contacts-58e1f3a995950"
-      }
-    ],
-    "marketplace": "https:\/\/marketplace.owncloud.com\/apps\/contacts",
-    "downloads": 0,
-    "rating": {
-      "1": 0,
-      "2": 0,
-      "3": 0,
-      "4": 0,
-      "5": 0,
-      "mean": 0
-    },
-    "publisher": {
-      "name": "ownCloud",
-      "url": "https:\/\/marketplace.owncloud.com\/publisher\/owncloud"
-    },
-    "releases": [
-      {
-        "platformMin": "9.0.0",
-        "platformMax": "10.0.9999",
-        "version": "1.5.1",
-        "download": "https:\/\/marketplace.owncloud.com\/api\/v1\/apps\/contacts\/1.5.1",
-        "license": "GNU Affero General Public License",
-        "created": "2017-04-03T00:00:00+00:00",
-        "canInstall": true,
-        "missingDependencies": [
-          
-        ]
-      }
-    ],
-    "installed": false,
-    "updateInfo": [
-      
-    ]
-  }
-]
-EOL;
-
 	/** @var MarketService  */
 	private $marketService;
 
@@ -188,28 +39,29 @@ EOL;
 	 * @NoCSRFRequired
 	 *
 	 * @return array|mixed
+	 * @param $category
+	 */
+	public function appPerCategory($category) {
+		return $this->queryData($category);
+	}
+
+	/**
+	 * @NoCSRFRequired
+	 *
+	 * @return array|mixed
+	 */
+	public function categories() {
+		return json_decode('[{"id":"automation","translations":{"en":{"name":"Automation"}}},{"id":"collaboration","translations":{"en":{"name":"Collaboration"}}},{"id":"customization","translations":{"en":{"name":"Customization"}}},{"id":"external-plugins","translations":{"en":{"name":"External plugins"}}},{"id":"games","translations":{"en":{"name":"Games"}}},{"id":"integration","translations":{"en":{"name":"Integration"}}},{"id":"multimedia","translations":{"en":{"name":"Multimedia"}}},{"id":"productivity","translations":{"en":{"name":"Productivity"}}},{"id":"security","translations":{"en":{"name":"Security"}}},{"id":"storage","translations":{"en":{"name":"Storage"}}},{"id":"tools","translations":{"en":{"name":"Tools"}}}]');
+		// real code below
+		return $this->marketService->getCategories();
+	}
+	/**
+	 * @NoCSRFRequired
+	 *
+	 * @return array|mixed
 	 */
 	public function index() {
-		return json_decode(self::$testData);
-
-		// TODO: verify if app can be installed
-		$apps = $this->marketService->listApps();
-
-		return array_map(function($app) {
-			$app['installed'] = $this->marketService->isAppInstalled($app['id']);
-			$app['updateInfo'] = [];
-			if ($app['installed']) {
-				$app['installInfo'] = $this->marketService->getInstalledAppInfo($app['id']);
-				$app['updateInfo'] = $this->marketService->getAvailableUpdateVersion($app['id']);
-			}
-			$app['releases'] = array_map(function($release) {
-				$missing = $this->marketService->getMissingDependencies($release);
-				$release['canInstall'] = empty($missing);
-				$release['missingDependencies'] = $missing;
-				return $release;
-			}, $app['releases']);
-			return $app;
-		}, $apps);
+		return $this->queryData();
 	}
 
 	/**
@@ -228,5 +80,145 @@ EOL;
 	public function update($appId) {
 		$this->marketService->updateApp($appId);
 		return [];
+	}
+
+	private function generateTestData($category = null) {
+		$apps = [
+'activity',
+'admin_audit',
+'comments',
+'dav',
+'enterprise_key',
+'federatedfilesharing',
+'federation',
+'files',
+'files_external',
+'files_pdfviewer',
+'files_sharing',
+'files_texteditor',
+'files_trashbin',
+'files_versions',
+'firewall',
+'market',
+'provisioning_api',
+'systemtags',
+'systemtags_management',
+'templateeditor',
+'updatenotification',
+'workflow',
+'calendar',
+'clockwork',
+'contacts',
+'customgroups',
+'documents',
+'encryption',
+'example-theme',
+'files_antivirus',
+'files_drop',
+'files_external_ftp',
+'files_primary_swift',
+'gpxpod',
+'impersonate',
+'mail',
+'maps',
+'notes',
+'oauth2',
+'objectstore',
+'ojsxc',
+'password_policy',
+'rawstorage',
+'sharepoint',
+'testing',
+'twofactor_totp',
+'user_ldap',
+'user_shibboleth',
+		];
+
+		return array_map(function ($appId) use ($category) {
+			if ($category === null) {
+				$categories = [
+					"automation",
+					"collaboration",
+					"customization",
+					"external-plugins",
+					"games",
+					"integration",
+					"multimedia",
+					"productivity",
+					"security",
+					"storage",
+					"tools"
+				];
+				$category = $categories[mt_rand(0, count($categories) - 1)];
+			}
+			return [
+				"id" => $appId,
+				"name" => ucfirst(str_replace('_', ' ', $appId)),
+				"categories" => [ $category	],
+				"description" => "The new and improved app for your Contacts.",
+				"screenshots" => [
+					"url" => "https =>//marketplace.owncloud-content.com/screenshots/contacts-58e1f3a995950"
+				],
+				"marketplace" => "https =>//marketplace.owncloud.com/apps/contacts",
+				"downloads" => 0,
+				"rating" => [
+					"1" => 0,
+					"2" => 0,
+					"3" => 0,
+					"4" => 0,
+					"5" => 0,
+					"mean" => 0
+				],
+				"publisher" => [
+					"name" => "ownCloud",
+					"url" => "https =>//marketplace.owncloud.com/publisher/owncloud"
+				],
+				"releases" => [
+					[
+						"platformMin" => "9.0.0",
+						"platformMax" => "10.0.9999",
+						"version" => "1.5.1",
+						"download" => "https =>//marketplace.owncloud.com/api/v1/apps/contacts/1.5.1",
+						"license" => "GNU Affero General Public License",
+						"created" => "2017-04-03T00 =>00 =>00+00 =>00",
+						"canInstall" => true,
+						"missingDependencies" => [
+
+						]
+					]
+				],
+				"installed" => false,
+				"updateInfo" => [
+
+				]
+
+			];
+		}, $apps);
+	}
+
+	/**
+	 * @return array
+	 */
+	protected function queryData($category = null) {
+		return $this->generateTestData($category);
+
+		// TODO: verify if app can be installed
+		$apps = $this->marketService->listApps($category);
+
+		return array_map(function ($app) {
+			$app['installed'] = $this->marketService->isAppInstalled($app['id']);
+			$app['updateInfo'] = [];
+			if ($app['installed']) {
+				$app['installInfo'] = $this->marketService->getInstalledAppInfo($app['id']);
+				$app['updateInfo'] = $this->marketService->getAvailableUpdateVersion($app['id']);
+			}
+			$app['releases'] = array_map(function ($release) {
+				$missing = $this->marketService->getMissingDependencies($release);
+				$release['canInstall'] = empty($missing);
+				$release['missingDependencies'] = $missing;
+				return $release;
+			}, $app['releases']);
+			return $app;
+		}, $apps);
 	}
 }

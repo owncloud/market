@@ -1,2 +1,5 @@
 /l10n/.transifexrc
 /vendor/
+/node_modules/
+*.bundle.js
+market.min.css
