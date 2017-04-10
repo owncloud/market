@@ -51,8 +51,6 @@ class MarketController extends Controller {
 	 * @return array|mixed
 	 */
 	public function categories() {
-		return json_decode('[{"id":"automation","translations":{"en":{"name":"Automation"}}},{"id":"collaboration","translations":{"en":{"name":"Collaboration"}}},{"id":"customization","translations":{"en":{"name":"Customization"}}},{"id":"external-plugins","translations":{"en":{"name":"External plugins"}}},{"id":"games","translations":{"en":{"name":"Games"}}},{"id":"integration","translations":{"en":{"name":"Integration"}}},{"id":"multimedia","translations":{"en":{"name":"Multimedia"}}},{"id":"productivity","translations":{"en":{"name":"Productivity"}}},{"id":"security","translations":{"en":{"name":"Security"}}},{"id":"storage","translations":{"en":{"name":"Storage"}}},{"id":"tools","translations":{"en":{"name":"Tools"}}}]');
-		// real code below
 		return $this->marketService->getCategories();
 	}
 	/**
@@ -82,93 +80,11 @@ class MarketController extends Controller {
 		return [];
 	}
 
-	private function generateTestData($category = null) {
-		$apps = [
-'gpxpod',
-'impersonate',
-'mail',
-'maps',
-'notes',
-'oauth2',
-'objectstore',
-'ojsxc',
-'password_policy',
-'rawstorage',
-'sharepoint',
-'testing',
-'twofactor_totp',
-'user_ldap',
-'user_shibboleth',
-		];
-
-		return array_map(function ($appId) use ($category) {
-			if ($category === null) {
-				$categories = [
-					"automation",
-					"collaboration",
-					"customization",
-					"external-plugins",
-					"games",
-					"integration",
-					"multimedia",
-					"productivity",
-					"security",
-					"storage",
-					"tools"
-				];
-				$category = $categories[mt_rand(0, count($categories) - 1)];
-			}
-			return [
-				"id" => $appId,
-				"name" => ucfirst(str_replace('_', ' ', $appId)),
-				"categories" => [ $category	],
-				"description" => "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt.",
-				"screenshots" => [
-					"url" => "https =>//marketplace.owncloud-content.com/screenshots/contacts-58e1f3a995950"
-				],
-				"marketplace" => "https =>//marketplace.owncloud.com/apps/contacts",
-				"downloads" => 0,
-				"rating" => [
-					"1" => 7,
-					"2" => 0,
-					"3" => 1,
-					"4" => 70,
-					"5" => 23,
-					"mean" => 4.00990099
-				],
-				"publisher" => [
-					"name" => "ownCloud",
-					"url" => "https =>//marketplace.owncloud.com/publisher/owncloud"
-				],
-				"release" => [
-					"platformMin" => "9.0.0",
-					"platformMax" => "10.0.9999",
-					"version" => "1.5.1",
-					"download" => "https =>//marketplace.owncloud.com/api/v1/apps/contacts/1.5.1",
-					"license" => "GNU Affero General Public License",
-					"created" => 1086438197,
-					"canInstall" => false,
-					"missingDependencies" => [
-						"PHP >= 7.0",
-						"MySQL >= 5.7.17"
-					]
-				],
-				"installed" => false,
-				"updateInfo" => [
-
-				]
-
-			];
-		}, $apps);
-	}
-
 	/**
+	 * @param string | null $category
 	 * @return array
 	 */
 	protected function queryData($category = null) {
-		return $this->generateTestData($category);
-
-		// TODO: verify if app can be installed
 		$apps = $this->marketService->listApps($category);
 
 		return array_map(function ($app) {
@@ -178,12 +94,13 @@ class MarketController extends Controller {
 				$app['installInfo'] = $this->marketService->getInstalledAppInfo($app['id']);
 				$app['updateInfo'] = $this->marketService->getAvailableUpdateVersion($app['id']);
 			}
-			$app['releases'] = array_map(function ($release) {
+			$releases = array_map(function ($release) {
 				$missing = $this->marketService->getMissingDependencies($release);
 				$release['canInstall'] = empty($missing);
 				$release['missingDependencies'] = $missing;
 				return $release;
 			}, $app['releases']);
+			$app['release'] = $releases[0];
 			return $app;
 		}, $apps);
 	}

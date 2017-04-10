@@ -59,7 +59,7 @@
 		},
 		filters : {
 			formDate (unixtime) {
-				return moment.unix(unixtime).format('LL');
+				return moment(unixtime).format('LL');
 			}
 		}
 	}

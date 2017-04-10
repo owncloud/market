@@ -57,7 +57,7 @@ class MarketService {
 
 		$this->appManager = $appManager;
 		$this->config = $config;
-		$this->storeUrl = $storeUrl;
+		$this->storeUrl = rtrim($storeUrl, '/');
 		$this->cacheFactory = $cacheFactory;
 	}
 
