@@ -36,12 +36,13 @@
 				p.uk-text-small {{ app.name }} can't be installed due to missing dependencies
 
 		.uk-card-footer
-			button.uk-button.uk-button-primary.uk-align-right(:disabled="(app.release.canInstall) ? false : true") Install
+			button.uk-button.uk-button-primary.uk-align-right(:disabled="(app.release.canInstall) ? false : true", @click="search") Install
 
 
 </template>
 
 <script>
+	import Axios from 'axios';
 	export default {
 
 		computed : {
@@ -64,6 +65,24 @@
 		filters : {
 			formDate (unixtime) {
 				return moment(unixtime).format('LL');
+			}
+		},
+
+		methods: {
+			search: function (e) {
+				e.preventDefault();
+				console.log('Installing ....');
+
+				//?requesttoken={requesttoken}', {'requesttoken': OC.requestToken}
+				Axios.post(OC.generateUrl('/apps/market/apps/{appId}/install', {appId: this.app.id}),{},
+					{headers: {requesttoken: OC.requestToken}})
+					.then(function (response) {
+						console.log(response);
+					})
+					.catch(function (error) {
+						console.log(error);
+					});
+
 			}
 		}
 	}
