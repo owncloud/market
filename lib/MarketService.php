@@ -323,9 +323,15 @@ class MarketService {
 	 */
 	private function httpGet($path, $options = []) {
 		$apiKey = $this->config->getSystemValue('marketplace.key', null);
+		$ca = $this->config->getSystemValue('marketplace.ca', null);
 		if ($apiKey !== null) {
 			$options = array_merge([
 				'headers' => ['Authorization' => "apikey: $apiKey"]
+			], $options);
+		}
+		if ($ca !== null) {
+			$options = array_merge([
+				'verify' => $ca
 			], $options);
 		}
 		$client = \OC::$server->getHTTPClientService()->newClient();
