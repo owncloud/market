@@ -1,5 +1,6 @@
 /l10n/.transifexrc
 /vendor/
+/build/
 /node_modules/
 *.bundle.js
 !/l10n/locale/
