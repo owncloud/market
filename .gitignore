@@ -2,3 +2,5 @@
 /vendor/
 /node_modules/
 *.bundle.js
+!/l10n/locale/
+!/l10n/template.pot
