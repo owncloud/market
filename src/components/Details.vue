@@ -66,7 +66,7 @@
 					version: this.$gettext('Version'),
 					date: this.$gettext('Date'),
 					license: this.$gettext('License'),
-					missingDep: this.$gettextInterpolate("%{ name } can't be installed due to missing dependencies", {name: app.name}),
+					missingDep: this.$gettextInterpolate("%{ name } can't be installed due to missing dependencies", {name: this.app.name}),
 				}
 			}
 		},
