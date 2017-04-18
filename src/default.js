@@ -14,6 +14,12 @@ import VueRouter from 'vue-router';
 
 Vue.use(VueRouter);
 
+import GetTextPlugin from 'vue-gettext'
+import translations from '../l10n/translations.json'
+
+Vue.use(GetTextPlugin, {translations: translations})
+Vue.config.language = OC.getLocale()
+
 // --------------------------------------------------------------- Vue setup ---
 
 import App     from './App.vue'
