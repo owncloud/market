@@ -19,9 +19,9 @@
 
 			table.uk-table
 				tr
-					th Version
-					th Datum
-					th Lizenz
+					th {{ t.version }}
+					th {{ t.date }}
+					th {{ t.license }}
 				tr
 					td {{ app.release.version }}
 					td {{ app.release.created | formDate }}
@@ -33,7 +33,7 @@
 						span(uk-icon="icon: warning; ratio: 0.75").uk-margin-small-right
 						| {{ dependency }}
 
-				p.uk-text-small {{ app.name }} can't be installed due to missing dependencies
+				p.uk-text-small t.missingDep
 
 		.uk-card-footer
 			button.uk-button.uk-button-primary.uk-align-right(:disabled="(app.release.canInstall) ? false : true", @click="search") Install
@@ -58,8 +58,16 @@
 				return oc_config.version;
 			},
 
-			image : function(){
+			image() {
 				return this.app.screenshots[0].url;
+			},
+			t() {
+				return {
+					version: this.$gettext('Version'),
+					date: this.$gettext('Date'),
+					license: this.$gettext('License'),
+					missingDep: this.$gettextInterpolate("%{ name } can't be installed due to missing dependencies", {name: app.name}),
+				}
 			}
 		},
 		filters : {

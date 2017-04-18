@@ -4,19 +4,19 @@
 			h1.uk-h3 {{ title }}
 		.uk-card-body
 			ul.uk-nav-default.uk-nav-parent-icon(uk-nav)
-				li.uk-nav-header Categories
+				li.uk-nav-header {{ categoriesTitle }}
 				li(v-for="category in categories")
 					a(href='#') {{ category.translations.en.name }}
 
-				li.uk-nav-header My Apps
+				li.uk-nav-header {{ myApps }}
 				li
 					a(href='#')
 						span.uk-margin-small-right(uk-icon='icon: check')
-						| Active
+						| {{ active }}
 				li
 					a(href='#')
 						span.uk-margin-small-right(uk-icon='icon: ban')
-						| Disabled
+						| {{ disabled }}
 
 </template>
 
@@ -30,6 +30,18 @@
 			},
 			title() {
 				return this.$gettext('Market');
+			},
+			myApps() {
+				return this.$gettext('My Apps');
+			},
+			categoriesTitle() {
+				return this.$gettext('Categories');
+			},
+			active() {
+				return this.$gettext('Active');
+			},
+			disabled() {
+				return this.$gettext('Disabled');
 			}
 		}
 	}

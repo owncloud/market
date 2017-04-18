@@ -2,7 +2,7 @@ NODE_BINDIR = ../node_modules/.bin
 export PATH := $(NODE_BINDIR):$(PATH)
 
 # Available locales for the app.
-LOCALES = de
+LOCALES = bg_BG  ca  cs_CZ  da  de  de_DE  el  en_GB  es  es_MX  et_EE  fi_FI  fr  he  hu_HU  is  it  ja  ko  nb_NO  nl  oc  pl  pt_BR  pt_PT  ru  sl  sq  th_TH
 
 # Name of the generated .po files for each available locale.
 LOCALE_FILES ?= $(patsubst %,locale/%/market.po,$(LOCALES))
@@ -11,7 +11,7 @@ LOCALE_FILES ?= $(patsubst %,locale/%/market.po,$(LOCALES))
 .PHONY: clean makemessages translations push pull
 
 clean:
-	rm -f template.pot translations.json
+	rm -rf template.pot translations.json locale
 
 makemessages:
 	touch template.pot
