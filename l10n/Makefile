@@ -2,7 +2,7 @@ NODE_BINDIR = ../node_modules/.bin
 export PATH := $(NODE_BINDIR):$(PATH)
 
 # Available locales for the app.
-LOCALES = bg_BG  ca  cs_CZ  da  de  de_DE  el  en_GB  es  es_MX  et_EE  fi_FI  fr  he  hu_HU  is  it  ja  ko  nb_NO  nl  oc  pl  pt_BR  pt_PT  ru  sl  sq  th_TH
+LOCALES = ast bg_BG ca cs_CZ da de de_DE el en_GB eo es es_MX et_EE eu fa fi_FI fr gl he hu_HU id is it ja ko nb_NO nl oc pl pt_BR pt_PT ro ru sk_SK sl sq sr sv th_TH tr uk
 
 # Name of the generated .po files for each available locale.
 LOCALE_FILES ?= $(patsubst %,locale/%/market.po,$(LOCALES))
