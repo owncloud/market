@@ -24,6 +24,8 @@ namespace OCA\Market;
 
 
 use OCP\AppFramework\App;
+use OC\Updater;
+use Symfony\Component\EventDispatcher\GenericEvent;
 
 class Application extends App {
 
@@ -34,5 +36,16 @@ class Application extends App {
 		parent::__construct('market', $urlParams);
 		// needed for translation
 		// t('Market')
+
+		$listener = $this->getContainer()->query(Listener::class);
+		$dispatcher = $this->getContainer()->getServer()->getEventDispatcher();
+		$dispatcher->addListener(
+			Updater::class . '::upgradeAppStoreApps',
+			function ($event) use ($listener) {
+				if ($event instanceof GenericEvent) {
+					$listener->upgradeAppStoreApp($event->getSubject());
+				}
+			}
+		);
 	}
 }
