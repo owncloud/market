@@ -2,7 +2,7 @@
 /**
  * @author Victor Dubiniuk <dubiniuk@owncloud.com>
  *
- * @copyright Copyright (c) 2017, ownCloud GmbH
+ * @copyright Copyright (c) 2016, ownCloud GmbH
  * @license AGPL-3.0
  *
  * This code is free software: you can redistribute it and/or modify
@@ -19,22 +19,5 @@
  *
  */
 
-namespace OCA\Market;
-
-
-class Listener {
-	/** @var MarketService */
-	private $marketService;
-
-	public function __construct(MarketService $marketService) {
-		$this->marketService = $marketService;
-	}
-
-	public function upgradeAppStoreApp($app){
-		$this->marketService->updateApp($app);
-	}
-
-	public function repairAppStoreApp($app){
-		$this->marketService->installApp($app);
-	}
-}
+ $app = new OCA\Market\Application();
+ 
