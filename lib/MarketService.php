@@ -362,7 +362,9 @@ class MarketService {
 		if ($this->cacheFactory->isAvailable()) {
 			$cache = $this->cacheFactory->create('ocmp');
 			$data = $cache->get($key);
-			return json_decode($data, true);
+			if ($data !== null) {
+				return json_decode($data, true);
+			}
 		}
 
 		// ask the server
