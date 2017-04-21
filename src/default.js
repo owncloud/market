@@ -27,16 +27,22 @@ import Details from './components/Details.vue'
 import List    from './components/List.vue'
 
 // Store
-import { store } from './store'
+import store from './store'
 
 // Routing
 const routes = [
 	{
 		path: '/app/:id',
-		component: Details
+		component: Details,
+		name: 'details'
+	}, {
+		path: '/by/category/:category',
+		component: List,
+		name: 'byCategory'
 	}, {
 		path: '/',
-		component: List
+		component: List,
+		name: 'index'
 	}
 ];
 
@@ -51,14 +57,7 @@ const MarketApp = new Vue({
 	render: h => h(App)
 });
 
-// --------------------------------------------------- Global Vue components ---
-
-import StarRating from './components/Rating.vue';
-import NavMain    from './components/Nav-Main.vue';
-
-// Global components
-Vue.component('star-rating', StarRating);
-Vue.component('nav-main', NavMain);
+// --------------------------------------------------------------- Vue mount ---
 
 // Need to wait for window to load
 window.onload = () => MarketApp.$mount('.app-market');
