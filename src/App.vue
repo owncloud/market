@@ -2,51 +2,23 @@
 	.uk-padding
 		.uk-grid-large(uk-grid)
 			aside.uk-width-auto
-				nav-main
+				navigation
+
 			main.uk-width-expand
 				router-view
 </template>
 
 <script>
-	import Axios from 'axios';
+	import Navigation from './components/Navigation.vue';
 
 	export default {
-		mounted : function() {
-			// Initially fetch data
-			this.fetchAll();
-		},
-		methods : {
-			fetchAll () {
-				this.fetchAppsList();
-				this.fetchCategoriesList();
-			},
-			fetchAppsList () {
-				let self = this;
-
-				Axios.get(OC.generateUrl('/apps/market/apps'))
-					.then(function (response) {
-						self.$store.state.apps = response.data;
-					})
-					.catch(function (error) {
-						console.log(error);
-					});
-			},
-			fetchCategoriesList () {
-				let self = this;
-
-				Axios.get(OC.generateUrl('/apps/market/categories'))
-					.then(function (response) {
-						self.$store.state.categories = response.data;
-					})
-					.catch(function (error) {
-						console.log(error);
-					});
-			},
+		components: {
+			Navigation
 		}
 	}
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 	aside {
 		width: 300px;
 	}

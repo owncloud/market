@@ -21,4 +21,3 @@
  */
 
 script('market', 'market.bundle');
-?>

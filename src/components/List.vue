@@ -1,30 +1,41 @@
 <template lang="pug">
 	div
-		ul(v-if="appList", uk-grid)
-			AppTile(v-for="(app, index) in appList", :app="app", :key="app.id", :index="index")
-
-		div(uk-spinner, v-if="!appList")
+		ul(v-if="!loading && !failed && applications", uk-grid)
+			Tile(v-for="application in applications", :application="application", :key="application.id")
 </template>
 
 <script>
-
-	// Components
-	import AppTile from './Tile.vue';
+	import Tile from './Tile.vue';
 
 	export default {
 		components: {
-			AppTile
+			Tile
+		},
+		mounted: function () {
+			this.$store.dispatch('FETCH_APPLICATIONS')
 		},
 		computed : {
-			appList() {
-				return this.$store.getters.apps;
+			loading() {
+				return this.$store.state.applications.loading
+			},
+			failed() {
+				return this.$store.state.applications.failed
+			},
+			applications() {
+				if (this.loading || this.failed) {
+					return []
+				} else {
+					return this.$store.getters.applications(this.category)
+				}
+			},
+			category() {
+				return this.$route.params.category
 			}
 		}
 	}
 </script>
 
 <style lang="scss" scoped>
-
 	@import "../styles/variables-theme";
 
 	aside {
@@ -34,5 +45,4 @@
 	.market {
 		padding: $global-gutter;
 	}
-
 </style>
