@@ -67,8 +67,18 @@ class MarketController extends Controller {
 	 * @return array
 	 */
 	public function install($appId) {
-		$this->marketService->installApp($appId);
-		return [];
+		try {
+			$this->marketService->installApp($appId);
+			$this->marketService->enableApp($appId);
+			return [
+				'error' => false,
+				'message' => "App $appId installed successfully"
+			];
+		} catch(\Exception $ex) {
+			return ['error' => true,
+				'message' => $ex->getMessage()
+			];
+		}
 	}
 
 	/**
@@ -76,8 +86,17 @@ class MarketController extends Controller {
 	 * @return array
 	 */
 	public function update($appId) {
-		$this->marketService->updateApp($appId);
-		return [];
+		try {
+			$this->marketService->updateApp($appId);
+			return [
+				'error' => false,
+				'message' => "App $appId updated successfully"
+			];
+		} catch(\Exception $ex) {
+			return ['error' => true,
+				'message' => $ex->getMessage()
+			];
+		}
 	}
 
 	/**
