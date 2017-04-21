@@ -264,7 +264,7 @@ class MarketService {
 							'id' => $appId
 						];
 					}
-				} catch (\InvalidArgumentException $ex) {
+				} catch (AppNotInstalledException $ex) {
 					// ignore exceptions thrown by getAvailableUpdateVersion
 				}
 			}
