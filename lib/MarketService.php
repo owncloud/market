@@ -29,6 +29,10 @@ use OCP\ICacheFactory;
 use OCP\IConfig;
 use OCP\Util;
 use function Symfony\Component\Debug\Tests\testHeader;
+use OCP\App\AppAlreadyInstalledException;
+use OCP\App\AppNotFoundException;
+use OCP\App\AppNotInstalledException;
+use OCP\App\AppUpdateNotFoundException;
 
 class MarketService {
 
@@ -69,7 +73,7 @@ class MarketService {
 
 		$info = $this->getInstalledAppInfo($appId);
 		if (!is_null($info)) {
-			throw new \InvalidArgumentException('App is already installed');
+			throw new AppAlreadyInstalledException("App ($appId) is already installed");
 		}
 
 		// download package
@@ -107,7 +111,7 @@ class MarketService {
 
 		$data = $this->getAppInfo($appId);
 		if (empty($data)) {
-			throw new \Exception('Unknown app');
+			throw new AppNotFoundException("Unknown app ($appId)");
 		}
 
 		$version = $this->getPlatformVersion();
@@ -120,7 +124,7 @@ class MarketService {
 			return $tooSmall === false && $tooBig === false;
 		});
 		if (empty($release)) {
-			throw new \Exception('No matching version');
+			throw new AppUpdateNotFoundException("No compatible version for $appId");
 		}
 		$release = $release[0];
 		$downloadLink = $release['download'];
@@ -153,11 +157,11 @@ class MarketService {
 	public function getAvailableUpdateVersion($appId) {
 		$info = $this->getInstalledAppInfo($appId);
 		if (is_null($info)) {
-			throw new \InvalidArgumentException("App ($appId) is not installed");
+			throw new AppNotInstalledException("App ($appId) is not installed");
 		}
 		$marketInfo = $this->getAppInfo($appId);
 		if (is_null($marketInfo)) {
-			throw new \InvalidArgumentException("App ($appId) is not known at the marketplace.");
+			throw new AppNotFoundException("App ($appId) is not known at the marketplace.");
 		}
 		$releases = $marketInfo['releases'];
 		$currentVersion = (string) $info['version'];
@@ -209,7 +213,7 @@ class MarketService {
 	public function updateApp($appId) {
 		$info = $this->getInstalledAppInfo($appId);
 		if (is_null($info)) {
-			throw new \InvalidArgumentException("App $appId is not installed");
+			throw new AppNotInstalledException("App ($appId) is not installed");
 		}
 
 		// download package
@@ -260,7 +264,7 @@ class MarketService {
 							'id' => $appId
 						];
 					}
-				} catch (\InvalidArgumentException $ex) {
+				} catch (AppNotInstalledException $ex) {
 					// ignore exceptions thrown by getAvailableUpdateVersion
 				}
 			}
