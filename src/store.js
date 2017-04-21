@@ -129,6 +129,8 @@ const actions = {
 		).then((response) => {
 			if (response.status !== 200 && response.data.error) {
 				OC.Notification.showTemporary(response.data.message)
+			} else {
+				context.dispatch('FETCH_APPLICATIONS')
 			}
 
 			context.commit('FINISH_INSTALL', id)
@@ -150,6 +152,8 @@ const actions = {
 		).then((response) => {
 			if (response.status !== 200 && response.data.error) {
 				OC.Notification.showTemporary(response.data.message)
+			} else {
+				context.dispatch('FETCH_APPLICATIONS')
 			}
 
 			context.commit('FINISH_UPDATE', id)
