@@ -127,13 +127,13 @@ const actions = {
 				}
 			}
 		).then((response) => {
-			if (response.status !== 200) {
-				OC.Notification.showTemporary('Failed to install')
+			if (response.status !== 200 && response.data.error) {
+				OC.Notification.showTemporary(response.data.message)
 			}
 
 			context.commit('FINISH_INSTALL', id)
 		}).catch((error) => {
-			OC.Notification.showTemporary('Failed to install')
+			OC.Notification.showTemporary(response.statusText)
 			context.commit('FINISH_INSTALL', id)
 		})
 	},
@@ -148,13 +148,13 @@ const actions = {
 				}
 			}
 		).then((response) => {
-			if (response.status !== 200) {
-				OC.Notification.showTemporary('Failed to update')
+			if (response.status !== 200 && response.data.error) {
+				OC.Notification.showTemporary(response.data.message)
 			}
 
 			context.commit('FINISH_UPDATE', id)
 		}).catch((error) => {
-			OC.Notification.showTemporary('Failed to update')
+			OC.Notification.showTemporary(response.statusText)
 			context.commit('FINISH_UPDATE', id)
 		})
 	},
