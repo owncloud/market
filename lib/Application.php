@@ -52,7 +52,7 @@ class Application extends App {
 			IRepairStep::class . '::repairAppStoreApps',
 			function ($event) use ($listener) {
 				if ($event instanceof GenericEvent) {
-					$listener->repairAppStoreApp($event->getSubject());
+					$listener->upgradeAppStoreApp($event->getSubject());
 				}
 			}
 		);

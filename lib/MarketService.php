@@ -22,8 +22,10 @@
 
 namespace OCA\Market;
 
+use GuzzleHttp\Exception\ServerException;
 use OC\App\DependencyAnalyzer;
 use OC\App\Platform;
+use OCP\App\AppManagerException;
 use OCP\App\IAppManager;
 use OCP\ICacheFactory;
 use OCP\IConfig;
@@ -67,19 +69,26 @@ class MarketService {
 
 	/**
 	 * Install an app for the given app id
+	 *
 	 * @param string $appId
+	 * @throws AppAlreadyInstalledException
+	 * @throws AppManagerException
 	 */
 	public function installApp($appId) {
+		try {
+			$info = $this->getInstalledAppInfo($appId);
+			if (!is_null($info)) {
+				throw new AppAlreadyInstalledException("App ($appId) is already installed");
+			}
 
-		$info = $this->getInstalledAppInfo($appId);
-		if (!is_null($info)) {
-			throw new AppAlreadyInstalledException("App ($appId) is already installed");
+			// download package
+			$package = $this->downloadPackage($appId);
+			$this->installPackage($package);
+			$this->appManager->enableApp($appId);
+		} catch (ServerException $e){
+			//Market is down or misfunctional
+			throw new AppManagerException('No marketplace connection');
 		}
-
-		// download package
-		$package = $this->downloadPackage($appId);
-		$this->installPackage($package);
-		$this->appManager->enableApp($appId);
 	}
 
 	/**
@@ -204,14 +213,18 @@ class MarketService {
 	 * @param string $appId
 	 */
 	public function updateApp($appId) {
-		$info = $this->getInstalledAppInfo($appId);
-		if (is_null($info)) {
-			throw new AppNotInstalledException("App ($appId) is not installed");
-		}
+		try {
+			$info = $this->getInstalledAppInfo($appId);
+			if (is_null($info)) {
+				throw new AppNotInstalledException("App ($appId) is not installed");
+			}
 
-		// download package
-		$package = $this->downloadPackage($appId);
-		$this->updatePackage($package);
+			// download package
+			$package = $this->downloadPackage($appId);
+			$this->updatePackage($package);
+		} catch (ServerException $e){
+			throw new AppManagerException('No marketplace connection');
+		}
 	}
 
 	/**
@@ -266,7 +279,7 @@ class MarketService {
 							'id' => $appId
 						];
 					}
-				} catch (AppNotInstalledException $ex) {
+				} catch (AppNotInstalledException $e) {
 					// ignore exceptions thrown by getAvailableUpdateVersion
 				}
 			}
