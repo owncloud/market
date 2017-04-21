@@ -25,7 +25,6 @@ namespace OCA\Market;
 
 use OCP\AppFramework\App;
 use OCP\Migration\IRepairStep;
-use OC\Updater;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
 class Application extends App {
@@ -41,7 +40,7 @@ class Application extends App {
 		$listener = $this->getContainer()->query(Listener::class);
 		$dispatcher = $this->getContainer()->getServer()->getEventDispatcher();
 		$dispatcher->addListener(
-			Updater::class . '::upgradeAppStoreApps',
+			IRepairStep::class . '::upgradeAppStoreApp',
 			function ($event) use ($listener) {
 				if ($event instanceof GenericEvent) {
 					$listener->upgradeAppStoreApp($event->getSubject());
@@ -49,10 +48,10 @@ class Application extends App {
 			}
 		);
 		$dispatcher->addListener(
-			IRepairStep::class . '::repairAppStoreApps',
+			IRepairStep::class . '::reinstallAppStoreApp',
 			function ($event) use ($listener) {
 				if ($event instanceof GenericEvent) {
-					$listener->upgradeAppStoreApp($event->getSubject());
+					$listener->reinstallAppStoreApp($event->getSubject());
 				}
 			}
 		);

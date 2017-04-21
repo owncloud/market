@@ -34,7 +34,7 @@ class Listener {
 		$this->marketService->updateApp($app);
 	}
 
-	public function repairAppStoreApp($app){
+	public function reinstallAppStoreApp($app){
 		$this->marketService->installApp($app);
 	}
 }
