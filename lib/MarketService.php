@@ -78,6 +78,14 @@ class MarketService {
 	}
 
 	/**
+	 * Enable an app for the given app id
+	 * @param string $appId
+	 */
+	public function enableApp($appId) {
+		$this->appManager->enableApp($appId);
+	}
+
+	/**
 	 * Install downloaded package
 	 * @param string $package
 	 * @return string appId
