@@ -25,6 +25,7 @@ use OCA\Market\MarketService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class InstallApp extends Command {
@@ -42,34 +43,72 @@ class InstallApp extends Command {
 			->setName('market:install')
 			->setDescription('Install apps from the marketplace. If already installed and an update is available the update will be installed.')
 			->addArgument('ids',
-				InputArgument::REQUIRED | InputArgument::IS_ARRAY,
-				'Ids of the apps');
+				InputArgument::OPTIONAL | InputArgument::IS_ARRAY,
+				'Ids of the apps')
+			->addOption('local',
+				'l',
+				InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
+				'Optional path to a local app packages'
+			);
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$appIds = $input->getArgument('ids');
 		$appIds = array_unique($appIds);
+		$localPackagesArray = $input->getOption('local');
+		$localPackagesArray = array_unique($localPackagesArray);
 
-		foreach ($appIds as $appId) {
-			try {
-				if ($this->marketService->isAppInstalled($appId)) {
-					$updateVersion = $this->marketService->getAvailableUpdateVersion($appId);
-					if ($updateVersion !== false) {
-						$output->writeln("$appId: Installing new version $updateVersion ...");
-						$this->marketService->updateApp($appId);
-						$output->writeln("$appId: App updated.");
+		if (!count($localPackagesArray) && !count($appIds)){
+			$output->writeln("No appId or path to a local package specified. Nothing to do.");
+			return;
+		}
+
+		if (count($localPackagesArray)){
+			foreach ($localPackagesArray as $localPackage){
+				try {
+					$appInfo = $this->marketService->readAppPackage($localPackage);
+					$appId = $appInfo['id'];
+					if ($this->marketService->isAppInstalled($appId)) {
+						$installedAppInfo = $this->marketService->getInstalledAppInfo($appId);
+						$currentVersion = (string) $installedAppInfo['version'];
+						$packageVersion = (string) $appInfo['version'];
+						if (version_compare($packageVersion, $currentVersion, '>')){
+							$output->writeln("$appId: Installing new version from $localPackage");
+							$this->marketService->updatePackage($localPackage);
+							$output->writeln("$appId: App updated.");
+						} else {
+							$output->writeln("$appId: $localPackage has the same or older version of the app");
+						}
 					} else {
-						$output->writeln("$appId: App already installed and no update available");
+						$output->writeln("$appId: Installing new app from $localPackage");
+						$this->marketService->installPackage($localPackage);
+						$output->writeln("$appId: App installed.");
 					}
-				} else {
-					$output->writeln("$appId: Installing new app ...");
-					$this->marketService->installApp($appId);
-					$output->writeln("$appId: App installed.");
+				} catch (\Exception $ex) {
+					$output->writeln("$appId: {$ex->getMessage()}");
 				}
-			} catch (\Exception $ex) {
-				$output->writeln("$appId: {$ex->getMessage()}");
+			}
+		} else {
+			foreach ($appIds as $appId) {
+				try {
+					if ($this->marketService->isAppInstalled($appId)) {
+						$updateVersion = $this->marketService->getAvailableUpdateVersion($appId);
+						if ($updateVersion !== false) {
+							$output->writeln("$appId: Installing new version $updateVersion ...");
+							$this->marketService->updateApp($appId);
+							$output->writeln("$appId: App updated.");
+						} else {
+							$output->writeln("$appId: App already installed and no update available");
+						}
+					} else {
+						$output->writeln("$appId: Installing new app ...");
+						$this->marketService->installApp($appId);
+						$output->writeln("$appId: App installed.");
+					}
+				} catch (\Exception $ex) {
+					$output->writeln("$appId: {$ex->getMessage()}");
+				}
 			}
 		}
 	}
-
 }

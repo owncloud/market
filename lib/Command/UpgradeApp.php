@@ -25,6 +25,7 @@ use OCA\Market\MarketService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class UpgradeApp extends Command {
@@ -44,11 +45,44 @@ class UpgradeApp extends Command {
 			->addArgument('ids',
 				InputArgument::OPTIONAL | InputArgument::IS_ARRAY,
 				'Ids of the apps')
+			->addOption('local',
+				'l',
+				InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
+				'Optional path to a local app packages'
+			)
 			->addOption('list')
 			->addOption('all');
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
+		$localPackagesArray = $input->getOption('local');
+		$localPackagesArray = array_unique($localPackagesArray);
+		if (count($localPackagesArray)){
+			foreach ($localPackagesArray as $localPackage){
+				try {
+					$appInfo = $this->marketService->readAppPackage($localPackage);
+					$appId = $appInfo['id'];
+					if ($this->marketService->isAppInstalled($appId)) {
+						$installedAppInfo = $this->marketService->getInstalledAppInfo($appId);
+						$currentVersion = (string) $installedAppInfo['version'];
+						$packageVersion = (string) $appInfo['version'];
+						if (version_compare($packageVersion, $currentVersion, '>')){
+							$output->writeln("$appId: Installing new version from $localPackage");
+							$this->marketService->updatePackage($localPackage);
+							$output->writeln("$appId: App updated.");
+						} else {
+							$output->writeln("$appId: $localPackage has the same or older version of the app");
+						}
+					} else {
+						$output->writeln("$appId: Not installed ...");
+					}
+				} catch (\Exception $ex) {
+					$output->writeln("$appId: {$ex->getMessage()}");
+				}
+			}
+			return;
+		}
+
 		if ($input->getOption('list')) {
 			$updates = $this->marketService->getUpdates();
 			foreach ($updates as $name => $info) {

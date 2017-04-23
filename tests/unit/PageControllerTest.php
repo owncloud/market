@@ -21,10 +21,15 @@ class PageControllerTest extends TestCase {
 
 	public function testIndex() {
 
-		$expected = new \OCP\AppFramework\Http\TemplateResponse($this->appName, 'index', []);
 		$response = $this->controller->index();
 
-		$this->assertEquals($expected, $response);
+		$policy = new \OCP\AppFramework\Http\ContentSecurityPolicy();
+		$policy->addAllowedImageDomain('https://storage.marketplace.owncloud.com');
+		$policy->addAllowedImageDomain('https://marketplace-storage.int.owncloud.com');
+		$policy->addAllowedImageDomain('http://minio:9000');
+		$this->assertEquals($policy, $response->getContentSecurityPolicy());
+
+		$this->assertEquals('index', $response->getTemplateName());
 	}
 
 }

@@ -1,9 +1,8 @@
 <?php
 /**
- * @author Thomas Müller <thomas.mueller@tmit.eu>
- * @author Felix Heidecke <felix@heidecke.me>
+ * @author Victor Dubiniuk <dubiniuk@owncloud.com>
  *
- * @copyright Copyright (c) 2016, ownCloud GmbH
+ * @copyright Copyright (c) 2017, ownCloud GmbH
  * @license AGPL-3.0
  *
  * This code is free software: you can redistribute it and/or modify
@@ -20,4 +19,18 @@
  *
  */
 
-script('market', 'market.bundle');
+namespace OCA\Market;
+
+
+class Listener {
+	/** @var MarketService */
+	private $marketService;
+
+	public function __construct(MarketService $marketService) {
+		$this->marketService = $marketService;
+	}
+
+	public function upgradeAppStoreApp($app){
+		$this->marketService->updateApp($app);
+	}
+}

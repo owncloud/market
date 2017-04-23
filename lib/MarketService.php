@@ -28,6 +28,11 @@ use OCP\App\IAppManager;
 use OCP\ICacheFactory;
 use OCP\IConfig;
 use OCP\Util;
+use function Symfony\Component\Debug\Tests\testHeader;
+use OCP\App\AppAlreadyInstalledException;
+use OCP\App\AppNotFoundException;
+use OCP\App\AppNotInstalledException;
+use OCP\App\AppUpdateNotFoundException;
 
 class MarketService {
 
@@ -41,6 +46,8 @@ class MarketService {
 	private $config;
 	/** @var string */
 	private $storeUrl;
+	/** @var array */
+	private $categories;
 
 	/**
 	 * Service constructor.
@@ -54,7 +61,7 @@ class MarketService {
 
 		$this->appManager = $appManager;
 		$this->config = $config;
-		$this->storeUrl = $storeUrl;
+		$this->storeUrl = rtrim($storeUrl, '/');
 		$this->cacheFactory = $cacheFactory;
 	}
 
@@ -66,19 +73,45 @@ class MarketService {
 
 		$info = $this->getInstalledAppInfo($appId);
 		if (!is_null($info)) {
-			throw new \InvalidArgumentException('App is already installed');
+			throw new AppAlreadyInstalledException("App ($appId) is already installed");
 		}
 
 		// download package
 		$package = $this->downloadPackage($appId);
-		$this->appManager->installApp($package);
+		$this->installPackage($package);
+	}
+
+	/**
+	 * Enable an app for the given app id
+	 * @param string $appId
+	 */
+	public function enableApp($appId) {
+		$this->appManager->enableApp($appId);
+	}
+
+	/**
+	 * Install downloaded package
+	 * @param string $package
+	 * @return string appId
+	 */
+	public function installPackage($package){
+		return $this->appManager->installApp($package);
+	}
+
+	/**
+	 * Get appinfo from package
+	 * @param string $path
+	 * @return string[] app info
+	 */
+	public function readAppPackage($path){
+		return $this->appManager->readAppPackage($path);
 	}
 
 	private function downloadPackage($appId) {
 
 		$data = $this->getAppInfo($appId);
 		if (empty($data)) {
-			throw new \Exception('Unknown app');
+			throw new AppNotFoundException("Unknown app ($appId)");
 		}
 
 		$version = $this->getPlatformVersion();
@@ -91,7 +124,7 @@ class MarketService {
 			return $tooSmall === false && $tooBig === false;
 		});
 		if (empty($release)) {
-			throw new \Exception('No matching version');
+			throw new AppUpdateNotFoundException("No compatible version for $appId");
 		}
 		$release = $release[0];
 		$downloadLink = $release['download'];
@@ -124,11 +157,11 @@ class MarketService {
 	public function getAvailableUpdateVersion($appId) {
 		$info = $this->getInstalledAppInfo($appId);
 		if (is_null($info)) {
-			throw new \InvalidArgumentException("App ($appId) is not installed");
+			throw new AppNotInstalledException("App ($appId) is not installed");
 		}
 		$marketInfo = $this->getAppInfo($appId);
 		if (is_null($marketInfo)) {
-			throw new \InvalidArgumentException("App ($appId) is not known at the marketplace.");
+			throw new AppNotFoundException("App ($appId) is not known at the marketplace.");
 		}
 		$releases = $marketInfo['releases'];
 		$currentVersion = (string) $info['version'];
@@ -136,8 +169,11 @@ class MarketService {
 			$marketVersion = $r['version'];
 			return version_compare($marketVersion, $currentVersion, '>');
 		});
+		usort($releases, function ($a, $b) {
+			return version_compare($a, $b, '>');
+		});
 		if (!empty($releases)) {
-			return $releases[0]['version'];
+			return array_pop($releases)['version'];
 		}
 		return false;
 	}
@@ -150,7 +186,7 @@ class MarketService {
 		if (empty($data)) {
 			return null;
 		}
-		return $data[0];
+		return reset($data);
 	}
 
 	/**
@@ -177,12 +213,21 @@ class MarketService {
 	public function updateApp($appId) {
 		$info = $this->getInstalledAppInfo($appId);
 		if (is_null($info)) {
-			throw new \InvalidArgumentException("App $appId is not installed");
+			throw new AppNotInstalledException("App ($appId) is not installed");
 		}
 
 		// download package
 		$package = $this->downloadPackage($appId);
-		$this->appManager->updateApp($package);
+		$this->updatePackage($package);
+	}
+
+	/**
+	 * Update downloaded package
+	 * @param string $package
+	 * @return string appId
+	 */
+	public function updatePackage($package){
+		return $this->appManager->updateApp($package);
 	}
 
 	/**
@@ -219,7 +264,7 @@ class MarketService {
 							'id' => $appId
 						];
 					}
-				} catch (\InvalidArgumentException $ex) {
+				} catch (AppNotInstalledException $ex) {
 					// ignore exceptions thrown by getAvailableUpdateVersion
 				}
 			}
@@ -279,24 +324,8 @@ class MarketService {
 		if (!is_null($this->apps)) {
 			return $this->apps;
 		}
-		// read from cache
-		if ($this->cacheFactory->isAvailable()) {
-			$cache = $this->cacheFactory->create('ocmp');
-			$data = $cache->get("apps_$version");
-			$this->apps = json_decode($data, true);
-			return $this->apps;
-		}
 
-		// ask the server
-		$response = $this->httpGet($this->storeUrl . "/api/v1/platform/$version/apps.json");
-		$data = $response->getBody();
-		if ($this->cacheFactory->isAvailable()) {
-			// cache if for a day - TODO: evaluate the response header
-			$cache = $this->cacheFactory->create('ocmp');
-			$cache->set("apps_$version", $data, 60*60*24);
-		}
-		$this->apps = json_decode($data, true);
-		return $this->apps;
+		return $this->queryData("apps_$version", "/api/v1/platform/$version/apps.json");
 	}
 
 	/**
@@ -306,9 +335,15 @@ class MarketService {
 	 */
 	private function httpGet($path, $options = []) {
 		$apiKey = $this->config->getSystemValue('marketplace.key', null);
+		$ca = $this->config->getSystemValue('marketplace.ca', null);
 		if ($apiKey !== null) {
 			$options = array_merge([
 				'headers' => ['Authorization' => "apikey: $apiKey"]
+			], $options);
+		}
+		if ($ca !== null) {
+			$options = array_merge([
+				'verify' => $ca
 			], $options);
 		}
 		$client = \OC::$server->getHTTPClientService()->newClient();
@@ -316,10 +351,44 @@ class MarketService {
 		return $response;
 	}
 
-	public function listApps() {
+	public function listApps($category = null) {
 		$apps = $this->getApps();
-		// TODO: filter?
+		if ($category !== null) {
+			$apps = array_filter($apps, function ($app) use ($category) {
+				return in_array($category, $app['categories']);
+			});
+		}
 		return $apps;
+	}
+
+	public function getCategories() {
+		if ($this->categories !== null) {
+			return $this->categories;
+		}
+
+		return $this->queryData('categories', "/api/v1/categories.json");
+	}
+
+	private function queryData($key, $uri) {
+		// read from cache
+		if ($this->cacheFactory->isAvailable()) {
+			$cache = $this->cacheFactory->create('ocmp');
+			$data = $cache->get($key);
+			if ($data !== null) {
+				return json_decode($data, true);
+			}
+		}
+
+		// ask the server
+		$response = $this->httpGet($this->storeUrl . $uri);
+		$data = $response->getBody();
+		if ($this->cacheFactory->isAvailable()) {
+			// cache if for a day - TODO: evaluate the response header
+			$cache = $this->cacheFactory->create('ocmp');
+			$cache->set($key, $data, 60*60*24);
+		}
+		return json_decode($data, true);
+
 	}
 
 }

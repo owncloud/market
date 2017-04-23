@@ -24,9 +24,13 @@ return [
 		// ui controller
 		['name' => 'page#index', 'url' => '/', 'verb' => 'GET'],
 		// market controller
+		['name' => 'market#categories', 'url' => '/categories', 'verb' => 'GET'],
 		['name' => 'market#index', 'url' => '/apps', 'verb' => 'GET'],
+		['name' => 'market#appPerCategory', 'url' => '/apps/{category}', 'verb' => 'GET'],
 		['name' => 'market#install', 'url' => '/apps/{appId}/install', 'verb' => 'POST'],
 		['name' => 'market#update', 'url' => '/apps/{appId}/update', 'verb' => 'POST'],
+		// local apps
+		['name' => 'localApps#index', 'url' => '/installed-apps/{state}', 'verb' => 'GET', 'defaults' => ['state' => 'enabled']],
 	],
 	'resources' => []
 ];

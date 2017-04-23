@@ -22,6 +22,7 @@
 namespace OCA\Market\Controller;
 
 use OCP\AppFramework\Controller;
+use OCP\AppFramework\Http\ContentSecurityPolicy;
 use OCP\AppFramework\Http\TemplateResponse;
 
 class PageController extends Controller {
@@ -30,6 +31,16 @@ class PageController extends Controller {
 	 * @NoCSRFRequired
 	 */
 	public function index() {
-		return new TemplateResponse($this->appName, 'index', []);
+		$templateResponse = new TemplateResponse($this->appName, 'index', []);
+		$policy = new ContentSecurityPolicy();
+		// live storage
+		$policy->addAllowedImageDomain('https://storage.marketplace.owncloud.com');
+		// staging - for internal testing
+		$policy->addAllowedImageDomain('https://marketplace-storage.int.owncloud.com');
+		// local dev storage
+		$policy->addAllowedImageDomain('http://minio:9000');
+		$templateResponse->setContentSecurityPolicy($policy);
+
+		return $templateResponse;
 	}
 }
