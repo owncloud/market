@@ -1,7 +1,7 @@
 <template lang="pug">
 	div
 		.uk-position-fixed.uk-position-center(v-show="loading", uk-spinner, uk-icon="icon: spinner")
-		.uk-card.uk-card-default(v-if="!failed && application").uk-animation-slide-top-small
+		.uk-card.uk-card-default(v-if="!failed && application")
 			.uk-card-header
 				div(uk-grid)
 					.uk-width-expand
@@ -19,26 +19,20 @@
 				img(:src="application.screenshots[0].url", :alt="application.title")
 
 			.uk-card-body
+				p
+					span.uk-margin-small-right Developed by:
+					a.uk-text-bold(:href="application.publisher.url", target="_blank") {{ application.publisher.name }}
+
 				p {{ application.description }}
 
-				table.uk-table.uk-table-divider.uk-table-responsive.uk-table-justify(v-if="application.release")
+				table.uk-table(v-if="application.release")
 					tr
-						th
-							span {{ t('Developer') }}
-
-						th
-							span {{ t('Version') }}
-
-						th
-							span {{ t('License') }}
-
+						th {{ t.version }}
+						th {{ t.date }}
+						th {{ t.license }}
 					tr
-						td
-							a(:href="application.publisher.url", target="_blank") {{ application.publisher.name }}
-
 						td {{ application.release.version }}
-							i.uk-margin-small-left ({{ application.release.created | formatDate }})
-
+						td {{ application.release.created | formatDate }}
 						td {{ application.release.license }}
 
 				div(v-if="application.release && !application.release.canInstall", uk-alert).uk-alert-danger
@@ -51,28 +45,20 @@
 						t.missingDep
 
 			.uk-card-footer
-				div(v-if="!updateable && !updating")
-					// Installation
-					button.uk-button.uk-button-primary.uk-align-right.uk-margin-remove-bottom.uk-margin-small-left.uk-position-relative(:disabled="!installable || loading", @click="install")
-						span(v-if="installing")
-							.uk-position-small.uk-position-center-left(uk-spinner, uk-icon="icon: spinner; ratio: 0.8")
-							| &nbsp;&nbsp;&nbsp;&nbsp; {{ t('installing') }}
-						span(v-else-if="loading")
-							.uk-position-small.uk-position-center-left(uk-spinner, uk-icon="icon: spinner; ratio: 0.8")
-							| &nbsp;&nbsp;&nbsp;&nbsp; {{ t('loading') }}
-						span(v-else-if="installed")
-							| {{ t('installed') }}
-						span(v-else)
-							| {{ t('install') }}
+				button.uk-button.uk-button-primary.uk-align-right.uk-margin-remove-bottom.uk-margin-small-left.uk-position-relative(v-if="installable", @click="install") install
 
-				button.uk-button.uk-button-primary.uk-align-right.uk-margin-remove-bottom.uk-margin-small-left.uk-position-relative(v-if="updateable", @click="update", :disabled="updating")
-					span(v-if="updating")
-						.uk-position-small.uk-position-center-left(uk-spinner, uk-icon="icon: spinner; ratio: 0.8")
-						| &nbsp;&nbsp;&nbsp;&nbsp; {{ t('updating') }}
-					span(v-else)
-						| {{ t('update') }}
+				// Installation spinner
+				.uk-button.uk-button-default.uk-align-right.uk-margin-remove-bottom.uk-margin-small-left.uk-position-relative(v-if="installing")
+					//- TODO: This needs to be done propperly
+					.uk-position-small.uk-position-center-left(uk-spinner, uk-icon="icon: spinner; ratio: 0.8")
+					span &nbsp;&nbsp;&nbsp;&nbsp;installing
 
-				button.uk-button.uk-button-default.uk-align-left.uk-margin-remove-bottom.uk-margin-small-left(v-if="installed", disabled) {{ t('remove') }}
+				button.uk-button.uk-button-primary.uk-align-right.uk-margin-remove-bottom.uk-margin-small-left(v-if="updateable", @click="update")
+					| {{ updating ? t.updating : t.update }}
+
+
+				.uk-button.uk-button-default.uk-align-right.uk-margin-remove-bottom.uk-margin-small-left.uk-position-relative(v-if="installed", @click="uninstall") uninstall
+
 </template>
 
 <script>
@@ -94,7 +80,7 @@
 				return this.$store.state.applications.failed
 			},
 			application() {
-				if (this.failed) {
+				if (this.loading || this.failed) {
 					return []
 				} else {
 					return this.$store.getters.application(this.$route.params.id)
@@ -104,7 +90,7 @@
 				return this.application.installed && !this.installing
 			},
 			installable() {
-				return this.application.release && this.application.release.canInstall && !this.installed && !this.installing
+				return this.application.release && this.application.release.canInstall && !this.installed
 			},
 			installing() {
 				return _.contains(this.$store.state.installing, this.application.id)
@@ -114,28 +100,35 @@
 			},
 			updating() {
 				return _.contains(this.$store.state.updating, this.application.id)
+			},
+			t() {
+				return {
+					version: this.$gettext('Version'),
+					date: this.$gettext('Date'),
+					license: this.$gettext('License'),
+					missingDep: this.$gettextInterpolate("%{name} can't be installed due to missing dependencies", { name: this.application.name }),
+					installFailed: this.$gettextInterpolate('Failed to install %{name}', { name: this.application.name }),
+					updateFailed: this.$gettextInterpolate('Failed to update %{name}', { name: this.application.name }),
+					install: this.$gettext('Install'),
+					installing: this.$gettext('Installing...'),
+					update: this.$gettext('Update'),
+					updating: this.$gettext('Updating...')
+				}
 			}
 		},
-		filters: {
+		filters : {
 			formatDate (unixtime) {
 				return moment(unixtime).format('LL');
 			}
 		},
 		methods: {
-			install () {
+			install: function (e) {
+				e.preventDefault();
 				this.$store.dispatch('INSTALL_APPLICATION', this.application.id)
 			},
-			update () {
+			update: function (e) {
+				e.preventDefault();
 				this.$store.dispatch('UPDATE_APPLICATION', this.application.id)
-			},
-			t (string, interpolation) {
-				if (!interpolation) {
-					return this.$gettext(string);
-				}
-				else {
-					// %{interplate} with object
-					return this.$gettextInterpolate(string, interpolation);
-				}
 			}
 		}
 	}
@@ -152,7 +145,10 @@
 		margin: 0 auto;
 	}
 
-	.uk-label {
-		font-size: .75rem;
+	.uk-table {
+		margin: {
+			left: -12px;
+			right: -12px;
+		}
 	}
 </style>
