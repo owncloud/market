@@ -22,6 +22,8 @@
 namespace OCA\Market;
 
 
+use OCP\App\AppUpdateNotFoundException;
+
 class Listener {
 	/** @var MarketService */
 	private $marketService;
@@ -31,7 +33,12 @@ class Listener {
 	}
 
 	public function upgradeAppStoreApp($app){
-		$this->marketService->updateApp($app);
+		$updateVersion = $this->marketService->getAvailableUpdateVersion($app);
+		if ($updateVersion !== false) {
+			$this->marketService->updateApp($app);
+		} else {
+			throw new AppUpdateNotFoundException();
+		}
 	}
 
 	public function reinstallAppStoreApp($app){
