@@ -69,7 +69,6 @@ class MarketController extends Controller {
 	public function install($appId) {
 		try {
 			$this->marketService->installApp($appId);
-			$this->marketService->enableApp($appId);
 			return [
 				'error' => false,
 				'message' => "App $appId installed successfully"
