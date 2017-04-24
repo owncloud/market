@@ -135,7 +135,7 @@ class MarketController extends Controller {
 			if ($app['installed']) {
 				$app['installInfo'] = $this->marketService->getInstalledAppInfo($app['id']);
 				$app['updateInfo'] = $this->marketService->getAvailableUpdateVersion($app['id']);
-				
+
 				$filteredReleases = array_filter($releases, function ($release) use ($app) {
 					if (empty($app['updateInfo'])) {
 						return $release['version'] === $app['updateInfo'];
@@ -144,7 +144,7 @@ class MarketController extends Controller {
 				});
 				$app['release'] = array_pop($filteredReleases);
 			} else {
-				$app['updateInfo'] = [];
+				$app['updateInfo'] = false;
 				usort($releases, function ($a, $b) {
 					return version_compare($a, $b, '>');
 				});
