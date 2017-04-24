@@ -23,6 +23,7 @@
 namespace OCA\Market;
 
 use GuzzleHttp\Exception\ServerException;
+use GuzzleHttp\Exception\ClientException;
 use OC\App\DependencyAnalyzer;
 use OC\App\Platform;
 use OCP\App\AppManagerException;
@@ -85,6 +86,9 @@ class MarketService {
 			$package = $this->downloadPackage($appId);
 			$this->installPackage($package);
 			$this->appManager->enableApp($appId);
+		} catch (ClientException $e){
+			//Market is down or misfunctional
+			throw new AppManagerException('No marketplace connection');
 		} catch (ServerException $e){
 			//Market is down or misfunctional
 			throw new AppManagerException('No marketplace connection');
@@ -222,6 +226,8 @@ class MarketService {
 			// download package
 			$package = $this->downloadPackage($appId);
 			$this->updatePackage($package);
+		} catch (ClientException $e){
+			throw new AppManagerException('No marketplace connection');
 		} catch (ServerException $e){
 			throw new AppManagerException('No marketplace connection');
 		}
