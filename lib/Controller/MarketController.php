@@ -69,10 +69,27 @@ class MarketController extends Controller {
 	public function install($appId) {
 		try {
 			$this->marketService->installApp($appId);
-			$this->marketService->enableApp($appId);
 			return [
 				'error' => false,
 				'message' => "App $appId installed successfully"
+			];
+		} catch(\Exception $ex) {
+			return ['error' => true,
+				'message' => $ex->getMessage()
+			];
+		}
+	}
+
+	/**
+	 * @param string $appId
+	 * @return array
+	 */
+	public function uninstall($appId) {
+		try {
+			$this->marketService->uninstallApp($appId);
+			return [
+				'error' => false,
+				'message' => "App $appId uninstalled successfully"
 			];
 		} catch(\Exception $ex) {
 			return ['error' => true,

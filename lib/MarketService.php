@@ -22,8 +22,11 @@
 
 namespace OCA\Market;
 
+use GuzzleHttp\Exception\ServerException;
+use GuzzleHttp\Exception\ClientException;
 use OC\App\DependencyAnalyzer;
 use OC\App\Platform;
+use OCP\App\AppManagerException;
 use OCP\App\IAppManager;
 use OCP\ICacheFactory;
 use OCP\IConfig;
@@ -67,26 +70,27 @@ class MarketService {
 
 	/**
 	 * Install an app for the given app id
+	 *
 	 * @param string $appId
+	 * @throws AppAlreadyInstalledException
+	 * @throws AppManagerException
 	 */
 	public function installApp($appId) {
+		try {
+			$info = $this->getInstalledAppInfo($appId);
+			if (!is_null($info)) {
+				throw new AppAlreadyInstalledException("App ($appId) is already installed");
+			}
 
-		$info = $this->getInstalledAppInfo($appId);
-		if (!is_null($info)) {
-			throw new AppAlreadyInstalledException("App ($appId) is already installed");
+			// download package
+			$package = $this->downloadPackage($appId);
+			$this->installPackage($package);
+			$this->appManager->enableApp($appId);
+		} catch (ClientException $e){
+			throw new AppManagerException('No marketplace connection', 0, $e);
+		} catch (ServerException $e){
+			throw new AppManagerException('No marketplace connection', 0, $e);
 		}
-
-		// download package
-		$package = $this->downloadPackage($appId);
-		$this->installPackage($package);
-	}
-
-	/**
-	 * Enable an app for the given app id
-	 * @param string $appId
-	 */
-	public function enableApp($appId) {
-		$this->appManager->enableApp($appId);
 	}
 
 	/**
@@ -211,14 +215,29 @@ class MarketService {
 	 * @param string $appId
 	 */
 	public function updateApp($appId) {
-		$info = $this->getInstalledAppInfo($appId);
-		if (is_null($info)) {
-			throw new AppNotInstalledException("App ($appId) is not installed");
-		}
+		try {
+			$info = $this->getInstalledAppInfo($appId);
+			if (is_null($info)) {
+				throw new AppNotInstalledException("App ($appId) is not installed");
+			}
 
-		// download package
-		$package = $this->downloadPackage($appId);
-		$this->updatePackage($package);
+			// download package
+			$package = $this->downloadPackage($appId);
+			$this->updatePackage($package);
+		} catch (ClientException $e){
+			throw new AppManagerException('No marketplace connection', 0, $e);
+		} catch (ServerException $e){
+			throw new AppManagerException('No marketplace connection', 0, $e);
+		}
+	}
+
+	/**
+	 * Uninstall the app
+	 *
+	 * @param string $appId
+	 */
+	public function uninstallApp($appId) {
+		\OC_App::removeApp($appId);
 	}
 
 	/**
@@ -264,7 +283,7 @@ class MarketService {
 							'id' => $appId
 						];
 					}
-				} catch (AppNotInstalledException $ex) {
+				} catch (AppNotInstalledException $e) {
 					// ignore exceptions thrown by getAvailableUpdateVersion
 				}
 			}
