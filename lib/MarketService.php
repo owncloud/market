@@ -87,11 +87,9 @@ class MarketService {
 			$this->installPackage($package);
 			$this->appManager->enableApp($appId);
 		} catch (ClientException $e){
-			//Market is down or misfunctional
-			throw new AppManagerException('No marketplace connection');
+			throw new AppManagerException('No marketplace connection', 0, $e);
 		} catch (ServerException $e){
-			//Market is down or misfunctional
-			throw new AppManagerException('No marketplace connection');
+			throw new AppManagerException('No marketplace connection', 0, $e);
 		}
 	}
 
@@ -227,9 +225,9 @@ class MarketService {
 			$package = $this->downloadPackage($appId);
 			$this->updatePackage($package);
 		} catch (ClientException $e){
-			throw new AppManagerException('No marketplace connection');
+			throw new AppManagerException('No marketplace connection', 0, $e);
 		} catch (ServerException $e){
-			throw new AppManagerException('No marketplace connection');
+			throw new AppManagerException('No marketplace connection', 0, $e);
 		}
 	}
 
