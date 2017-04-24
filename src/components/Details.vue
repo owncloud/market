@@ -1,24 +1,28 @@
 <template lang="pug">
-	.uk-card.uk-card-default
-		div(v-if="!loading && !failed && application")
+	div
+		.uk-position-fixed.uk-position-center(v-show="loading", uk-spinner, uk-icon="icon: spinner")
+		.uk-card.uk-card-default(v-if="!failed && application")
 			.uk-card-header
-				div(uk-grid, class="uk-child-width-1-2@s")
-					div
+				div(uk-grid)
+					.uk-width-expand
 						.uk-flex.uk-flex-middle
 							h3.uk-card-title.uk-text-truncate.uk-margin-remove-bottom.uk-float-left.uk-margin-small-right {{ application.name }}
-							a(:href="application.publisher.url", target="_blank").app-author.uk-float-left by {{ application.publisher.name }}
 
 						p.uk-text-meta.uk-margin-remove-top
 							span(uk-icon="icon: tag").uk-margin-small-right
 							| {{ application.categories[0] }}
 
-					div.uk-text-right
+					.uk-width-small.uk-text-right
 						rating(:rating="application.rating")
 
 			.uk-card-media-top
 				img(:src="application.screenshots[0].url", :alt="application.title")
 
 			.uk-card-body
+				p
+					span.uk-margin-small-right Developed by:
+					a.uk-text-bold(:href="application.publisher.url", target="_blank") {{ application.publisher.name }}
+
 				p {{ application.description }}
 
 				table.uk-table(v-if="application.release")
@@ -41,10 +45,20 @@
 						t.missingDep
 
 			.uk-card-footer
-				button.uk-button.uk-button-primary.uk-align-right(:disabled="!installable || installing", @click="install")
-					| {{ installing ? t.installing : t.install }}
-				button.uk-button.uk-button-primary.uk-align-right(:disabled="!updateable || updating", @click="update")
+				button.uk-button.uk-button-primary.uk-align-right.uk-margin-remove-bottom.uk-margin-small-left.uk-position-relative(v-if="installable", @click="install") install
+
+				// Installation spinner
+				.uk-button.uk-button-default.uk-align-right.uk-margin-remove-bottom.uk-margin-small-left.uk-position-relative(v-if="installing")
+					//- TODO: This needs to be done propperly
+					.uk-position-small.uk-position-center-left(uk-spinner, uk-icon="icon: spinner; ratio: 0.8")
+					span &nbsp;&nbsp;&nbsp;&nbsp;installing
+
+				button.uk-button.uk-button-primary.uk-align-right.uk-margin-remove-bottom.uk-margin-small-left(v-if="updateable", @click="update")
 					| {{ updating ? t.updating : t.update }}
+
+
+				.uk-button.uk-button-default.uk-align-right.uk-margin-remove-bottom.uk-margin-small-left.uk-position-relative(v-if="installed", @click="uninstall") uninstall
+
 </template>
 
 <script>
@@ -72,8 +86,11 @@
 					return this.$store.getters.application(this.$route.params.id)
 				}
 			},
+			installed() {
+				return this.application.installed && !this.installing
+			},
 			installable() {
-				return this.application.release && this.application.release.canInstall && !this.application.installed
+				return this.application.release && this.application.release.canInstall && !this.installed
 			},
 			installing() {
 				return _.contains(this.$store.state.installing, this.application.id)
@@ -118,18 +135,20 @@
 </script>
 
 <style lang="scss" scoped>
+
+	main {
+		position: relative;
+	}
+
 	.uk-card {
 		max-width: 720px;
 		margin: 0 auto;
 	}
 
-	.uk-card-footer {
-		button {
-			margin-bottom: 0;
+	.uk-table {
+		margin: {
+			left: -12px;
+			right: -12px;
 		}
-	}
-
-	.app-author {
-		margin-top: 6px;
 	}
 </style>
