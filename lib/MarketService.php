@@ -222,6 +222,15 @@ class MarketService {
 	}
 
 	/**
+	 * Uninstall the app
+	 *
+	 * @param string $appId
+	 */
+	public function uninstallApp($appId) {
+		\OC_App::removeApp($appId);
+	}
+
+	/**
 	 * Update downloaded package
 	 * @param string $package
 	 * @return string appId
