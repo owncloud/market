@@ -7,7 +7,6 @@
 		.uk-card-body
 			ul.uk-nav-default.uk-nav-parent-icon(uk-nav, :v-if="!loading && !failed")
 				li.uk-nav-header {{ t.categories }}
-
 				li(v-for="category in categories")
 					router-link(:to="{ name: 'byCategory', params: { category: category.id }}") {{ category.translations.en.name }}
 </template>
