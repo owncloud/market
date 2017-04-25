@@ -14,7 +14,7 @@
 				classOn: "on",
 				classOff: "off",
 				overall: this.rating.mean,
-				stars:  5
+				stars: 5
 			}
 		},
 		filters: {

@@ -6,9 +6,7 @@
 
 		transition(name="fade")
 			.uk-card.uk-card-default.uk-card-body.uk-position-center(v-if="applications.length === 0 && !loading")
-				p.uk-text-center No Apps in&nbsp;
-					span.uk-text-capitalize {{ category }}
-
+				p.uk-text-center {{ t('No apps in %{category}', { category }) }}
 </template>
 
 <script>
@@ -21,7 +19,7 @@
 		mounted: function () {
 			this.$store.dispatch('FETCH_APPLICATIONS')
 		},
-		computed : {
+		computed: {
 			loading() {
 				return this.$store.state.applications.loading
 			},
@@ -37,6 +35,17 @@
 			},
 			category() {
 				return this.$route.params.category
+			}
+		},
+		methods: {
+			t (string, interpolation) {
+				if (!interpolation) {
+					return this.$gettext(string);
+				}
+				else {
+					// %{interplate} with object
+					return this.$gettextInterpolate(string, interpolation);
+				}
 			}
 		}
 	}

@@ -24,14 +24,22 @@
 
 					table.uk-table.uk-table-responsive(v-if="application.release")
 						tr
-							th {{ t.developer }}
-							th {{ t.version }}
-							th {{ t.license }}
+							th
+								span {{ t('Developer') }}
+
+							th
+								span {{ t('Version') }}
+
+							th
+								span {{ t('License') }}
+
 						tr
 							td
 								a(:href="application.publisher.url", target="_blank") {{ application.publisher.name }}
+
 							td {{ application.release.version }}
 								i.uk-margin-small-left ({{ application.release.created | formatDate }})
+
 							td {{ application.release.license }}
 
 					div(v-if="application.release && !application.release.canInstall", uk-alert).uk-alert-danger
@@ -44,30 +52,25 @@
 							t.missingDep
 
 				.uk-card-footer
-
-
 					div(v-if="!updateable && !updating")
 						// Installation
 						button.uk-button.uk-button-primary.uk-align-right.uk-margin-remove-bottom.uk-margin-small-left.uk-position-relative(:disabled="!installable", @click="install")
-							div(v-if="installing")
+							span(v-if="installing")
 								.uk-position-small.uk-position-center-left(uk-spinner, uk-icon="icon: spinner; ratio: 0.8")
-								| &nbsp;&nbsp;&nbsp;&nbsp;installing
-							div(v-else-if="installed")
-								// .uk-position-small.uk-position-center-left(uk-icon="icon: check")
-								| installed
-							div(v-else)
-								| install
+								| &nbsp;&nbsp;&nbsp;&nbsp; {{ t('installing') }}
+							span(v-else-if="installed")
+								| {{ t('installed') }}
+							span(v-else)
+								| {{ t('install') }}
 
 					button.uk-button.uk-button-primary.uk-align-right.uk-margin-remove-bottom.uk-margin-small-left.uk-position-relative(v-if="updateable", @click="update", :disabled="updating")
-						div(v-if="updating")
+						span(v-if="updating")
 							.uk-position-small.uk-position-center-left(uk-spinner, uk-icon="icon: spinner; ratio: 0.8")
-							| &nbsp;&nbsp;&nbsp;&nbsp;updating
-						div(v-else)
-							| update
+							| &nbsp;&nbsp;&nbsp;&nbsp; {{ t('updating') }}
+						span(v-else)
+							| {{ t('update') }}
 
-					button.uk-button.uk-button-default.uk-align-left.uk-margin-remove-bottom.uk-margin-small-left(v-if="installed", disabled) remove
-
-
+					button.uk-button.uk-button-default.uk-align-left.uk-margin-remove-bottom.uk-margin-small-left(v-if="installed", disabled) {{ t('remove') }}
 </template>
 
 <script>
@@ -109,25 +112,9 @@
 			},
 			updating() {
 				return _.contains(this.$store.state.updating, this.application.id)
-			},
-			t() {
-				return {
-					version: this.$gettext('Version'),
-					date: this.$gettext('Date'),
-					license: this.$gettext('License'),
-					missingDep: this.$gettextInterpolate("%{name} can't be installed due to missing dependencies", { name: this.application.name }),
-					installFailed: this.$gettextInterpolate('Failed to install %{name}', { name: this.application.name }),
-					updateFailed: this.$gettextInterpolate('Failed to update %{name}', { name: this.application.name }),
-					install: this.$gettext('Install'),
-					installing: this.$gettext('Installing...'),
-					update: this.$gettext('Update'),
-					updating: this.$gettext('Updating...'),
-					updateAvailable: this.$gettext('Update available'),
-					developer: this.$gettext('Developer'),
-				}
 			}
 		},
-		filters : {
+		filters: {
 			formatDate (unixtime) {
 				return moment(unixtime).format('LL');
 			}
@@ -138,6 +125,15 @@
 			},
 			update () {
 				this.$store.dispatch('UPDATE_APPLICATION', this.application.id)
+			},
+			t (string, interpolation) {
+				if (!interpolation) {
+					return this.$gettext(string);
+				}
+				else {
+					// %{interplate} with object
+					return this.$gettextInterpolate(string, interpolation);
+				}
 			}
 		}
 	}
