@@ -9,7 +9,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "webpack  --progress --colors --watch",
-    "build": "webpack"
+    "build": "webpack -p"
   },
   "repository": {
     "type": "git",
@@ -51,7 +51,8 @@
   },
   "dependencies": {
     "babel-polyfill": "^6.23.0",
-    "vue-gettext": "^2.0.10"
+    "vue-gettext": "^2.0.10",
+    "uglify-js": "git+https://github.com/mishoo/UglifyJS2.git#harmony"
   },
   "bugs": {
     "url": "https://github.com/owncloud/market/issues"
