@@ -20,6 +20,8 @@ import translations from '../l10n/translations.json'
 Vue.use(GetTextPlugin, {translations: translations})
 Vue.config.language = OC.getLocale()
 
+// TODO: Write plugin for global t() method
+
 // --------------------------------------------------------------- Vue setup ---
 
 import App        from './App.vue'

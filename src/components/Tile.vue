@@ -12,7 +12,7 @@
 							p.uk-text-meta.uk-margin-remove-top
 								span(uk-icon="icon: tag")
 								span.category &nbsp;{{ application.categories[0] }}
-								span(v-if="application.updateInfo && application.updateInfo.length != 0").uk-label.uk-margin-small-left {{ t.updateAvailable }}!
+								span(v-if="application.updateInfo && application.updateInfo.length != 0").uk-label.uk-margin-small-left {{ t('Update available') }}!
 
 						.uk-width-small.uk-text-right
 							rating(:rating="application.rating")
@@ -37,12 +37,9 @@
 				return 'background-image:url("' + image + '");';
 			}
 		},
-		computed : {
-			t() {
-				return {
-					more: this.$gettext('More'),
-					updateAvailable: this.$gettext('Update available')
-				}
+		methods: {
+			t(string) {
+				return this.$gettext(string);
 			}
 		}
 	}
