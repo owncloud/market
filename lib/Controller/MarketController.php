@@ -23,6 +23,8 @@ namespace OCA\Market\Controller;
 
 use OCA\Market\MarketService;
 use OCP\AppFramework\Controller;
+use OCP\AppFramework\Http;
+use OCP\AppFramework\Http\DataResponse;
 use OCP\IRequest;
 
 class MarketController extends Controller {
@@ -51,7 +53,12 @@ class MarketController extends Controller {
 	 * @return array|mixed
 	 */
 	public function categories() {
-		return $this->marketService->getCategories();
+		try {
+			return $this->marketService->getCategories();
+		} catch (\Exception $ex) {
+			return new DataResponse(['message' => $ex->getMessage() ],
+				Http::STATUS_NO_CONTENT);
+		}
 	}
 	/**
 	 * @NoCSRFRequired
@@ -59,7 +66,12 @@ class MarketController extends Controller {
 	 * @return array|mixed
 	 */
 	public function index() {
-		return $this->queryData();
+		try {
+			return $this->queryData();
+		} catch (\Exception $ex) {
+			return new DataResponse(['message' => $ex->getMessage() ],
+				Http::STATUS_NO_CONTENT);
+		}
 	}
 
 	/**
