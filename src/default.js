@@ -22,9 +22,10 @@ Vue.config.language = OC.getLocale()
 
 // --------------------------------------------------------------- Vue setup ---
 
-import App     from './App.vue'
-import Details from './components/Details.vue'
-import List    from './components/List.vue'
+import App        from './App.vue'
+import Details    from './components/Details.vue'
+import List       from './components/List.vue'
+import UpdateList from './components/UpdateList.vue'
 
 // Store
 import store from './store'
@@ -39,6 +40,10 @@ const routes = [
 		path: '/by/category/:category',
 		component: List,
 		name: 'byCategory'
+	}, {
+		path: '/updates',
+		component: UpdateList,
+		name: 'UpdateList'
 	}, {
 		path: '/',
 		component: List,
