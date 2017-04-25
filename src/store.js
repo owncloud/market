@@ -24,11 +24,11 @@ const state = {
 
 // Retrieve computed values from state.
 const getters = {
-	categories (state) {
+	categories: (state) => () => {
 		return state.categories.records;
 	},
 	category: (state) => (id) => {
-		return _.find(state.categories.records, function (category) {
+		return _.find(state.categories.records, function(category) {
 			return category.id == id;
 		});
 	},
@@ -37,17 +37,17 @@ const getters = {
 			return state.applications.records;
 		}
 
-		return _.filter(state.applications.records, function (application) {
+		return _.filter(state.applications.records, function(application) {
 			return _.contains(application.categories, category);
 		});
 	},
 	application: (state) => (id) => {
-		return _.find(state.applications.records, function (application) {
+		return _.find(state.applications.records, function(application) {
 			return application.id == id;
 		});
 	},
 	updateList: (state) => {
-		return _.filter(state.applications.records, function (application) {
+		return _.filter(state.applications.records, function(application) {
 			return application.updateInfo != false;
 		});
 	}
@@ -58,7 +58,8 @@ const mutations = {
 	LOADING_APPLICATIONS (state) {
 		_.extend(state['applications'], {
 			loading: true,
-			failed: false
+			failed: false,
+			records: {}
 		})
 	},
 	FAILED_APPLICATIONS (state) {
@@ -123,7 +124,7 @@ const actions = {
 	INSTALL_APPLICATION (context, id) {
 		context.commit('START_INSTALL', id)
 
-		Axios.post(OC.generateUrl('/apps/market/apps/{id}/install', {id}),
+		Axios.post(OC.generateUrl('/apps/market/apps/{id}/install', { id }),
 			{},
 			{
 				headers: {
@@ -146,7 +147,7 @@ const actions = {
 	UPDATE_APPLICATION (context, id) {
 		context.commit('START_UPDATE', id)
 
-		Axios.post(OC.generateUrl('/apps/market/apps/{id}/update', {id}),
+		Axios.post(OC.generateUrl('/apps/market/apps/{id}/update', { id }),
 			{},
 			{
 				headers: {
