@@ -4,15 +4,15 @@
 		transition(name="fade")
 			.uk-card.uk-card-default(v-if="!loading && !failed && applications")
 				.uk-card-header
-					h2.uk-h3 Updates
+					h2.uk-h3 {{ t('Updates') }}
 
 				.uk-card-body
 					table.uk-table.uk-table-striped
 						thead
 							tr
-								th App
-								th Developer
-								th Update Info
+								th {{ t('App') }}
+								th {{ t('Developer') }}
+								th {{ t('Update Info') }}
 								th &nbsp;
 						tbody
 							tr(v-for="application in applications")
@@ -24,14 +24,14 @@
 									span {{ application.updateInfo }}
 								td
 									button.uk-button.uk-button-small.uk-button-primary.uk-align-right.uk-margin-remove.uk-position-relative(@click="update(application.id)", :disabled="updating(application.id)")
-										div(v-if="updating(application.id)")
+										span(v-if="updating(application.id)")
 											.uk-position-center-left(uk-spinner, uk-icon="icon: spinner; ratio: 0.4", style="left:5px;")
 											| &nbsp;&nbsp;&nbsp;&nbsp;updating
-										div(v-else)
+										span(v-else)
 											| update
 							tr(v-if="applications.length === 0")
 								td(colspan="4").uk-text-center
-									span.uk-text-primary All apps are up to date
+									span.uk-text-primary {{ t('All apps are up to date') }}
 
 </template>
 
@@ -52,6 +52,9 @@
 			updating(id) {
 				return _.contains(this.$store.state.updating, id)
 			},
+			t(string) {
+				return this.$gettext(string);
+			}
 		},
 		computed : {
 			loading() {
