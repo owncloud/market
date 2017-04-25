@@ -146,7 +146,7 @@ class MarketController extends Controller {
 			} else {
 				$app['updateInfo'] = [];
 				usort($releases, function ($a, $b) {
-					return version_compare($a, $b, '>');
+					return version_compare($a['version'], $b['version'], '>');
 				});
 				if (!empty($releases)) {
 					$app['release'] = array_pop($releases);
