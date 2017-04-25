@@ -1,76 +1,75 @@
 <template lang="pug">
 	div
 		.uk-position-fixed.uk-position-center(v-show="loading", uk-spinner, uk-icon="icon: spinner")
-		transition(name="fade")
-			.uk-card.uk-card-default(v-if="!failed && application").uk-animation-slide-top-small
-				.uk-card-header
-					div(uk-grid)
-						.uk-width-expand
-							.uk-flex.uk-flex-middle
-								h3.uk-card-title.uk-text-truncate.uk-margin-remove-bottom.uk-float-left.uk-margin-small-right {{ application.name }}
+		.uk-card.uk-card-default(v-if="!failed && !loading && application").uk-animation-slide-top-small
+			.uk-card-header
+				div(uk-grid)
+					.uk-width-expand
+						.uk-flex.uk-flex-middle
+							h3.uk-card-title.uk-text-truncate.uk-margin-remove-bottom.uk-float-left.uk-margin-small-right {{ application.name }}
 
-							p.uk-text-meta.uk-margin-remove-top
-								span(uk-icon="icon: tag").uk-margin-small-right
-								| {{ application.categories[0] }}
+						p.uk-text-meta.uk-margin-remove-top
+							span(uk-icon="icon: tag").uk-margin-small-right
+							| {{ application.categories[0] }}
 
-						.uk-width-small.uk-text-right
-							rating(:rating="application.rating")
+					.uk-width-small.uk-text-right
+						rating(:rating="application.rating")
 
-				.uk-card-media-top
-					img(:src="application.screenshots[0].url", :alt="application.title")
+			.uk-card-media-top
+				img(:src="application.screenshots[0].url", :alt="application.title")
 
-				.uk-card-body
-					p {{ application.description }}
+			.uk-card-body
+				p {{ application.description }}
 
-					table.uk-table.uk-table-responsive(v-if="application.release")
-						tr
-							th
-								span {{ t('Developer') }}
+				table.uk-table.uk-table-responsive(v-if="application.release")
+					tr
+						th
+							span {{ t('Developer') }}
 
-							th
-								span {{ t('Version') }}
+						th
+							span {{ t('Version') }}
 
-							th
-								span {{ t('License') }}
+						th
+							span {{ t('License') }}
 
-						tr
-							td
-								a(:href="application.publisher.url", target="_blank") {{ application.publisher.name }}
+					tr
+						td
+							a(:href="application.publisher.url", target="_blank") {{ application.publisher.name }}
 
-							td {{ application.release.version }}
-								i.uk-margin-small-left ({{ application.release.created | formatDate }})
+						td {{ application.release.version }}
+							i.uk-margin-small-left ({{ application.release.created | formatDate }})
 
-							td {{ application.release.license }}
+						td {{ application.release.license }}
 
-					div(v-if="application.release && !application.release.canInstall", uk-alert).uk-alert-danger
-						ul(v-if="!application.release.canInstall").uk-list
-							li(v-for="dependency in application.release.missingDependencies")
-								span(uk-icon="icon: warning; ratio: 0.75").uk-margin-small-right
-								| {{ dependency }}
+				div(v-if="application.release && !application.release.canInstall", uk-alert).uk-alert-danger
+					ul(v-if="!application.release.canInstall").uk-list
+						li(v-for="dependency in application.release.missingDependencies")
+							span(uk-icon="icon: warning; ratio: 0.75").uk-margin-small-right
+							| {{ dependency }}
 
-						p.uk-text-small
-							t.missingDep
+					p.uk-text-small
+						t.missingDep
 
-				.uk-card-footer
-					div(v-if="!updateable && !updating")
-						// Installation
-						button.uk-button.uk-button-primary.uk-align-right.uk-margin-remove-bottom.uk-margin-small-left.uk-position-relative(:disabled="!installable", @click="install")
-							span(v-if="installing")
-								.uk-position-small.uk-position-center-left(uk-spinner, uk-icon="icon: spinner; ratio: 0.8")
-								| &nbsp;&nbsp;&nbsp;&nbsp; {{ t('installing') }}
-							span(v-else-if="installed")
-								| {{ t('installed') }}
-							span(v-else)
-								| {{ t('install') }}
-
-					button.uk-button.uk-button-primary.uk-align-right.uk-margin-remove-bottom.uk-margin-small-left.uk-position-relative(v-if="updateable", @click="update", :disabled="updating")
-						span(v-if="updating")
+			.uk-card-footer
+				div(v-if="!updateable && !updating")
+					// Installation
+					button.uk-button.uk-button-primary.uk-align-right.uk-margin-remove-bottom.uk-margin-small-left.uk-position-relative(:disabled="!installable", @click="install")
+						span(v-if="installing")
 							.uk-position-small.uk-position-center-left(uk-spinner, uk-icon="icon: spinner; ratio: 0.8")
-							| &nbsp;&nbsp;&nbsp;&nbsp; {{ t('updating') }}
+							| &nbsp;&nbsp;&nbsp;&nbsp; {{ t('installing') }}
+						span(v-else-if="installed")
+							| {{ t('installed') }}
 						span(v-else)
-							| {{ t('update') }}
+							| {{ t('install') }}
 
-					button.uk-button.uk-button-default.uk-align-left.uk-margin-remove-bottom.uk-margin-small-left(v-if="installed", disabled) {{ t('remove') }}
+				button.uk-button.uk-button-primary.uk-align-right.uk-margin-remove-bottom.uk-margin-small-left.uk-position-relative(v-if="updateable", @click="update", :disabled="updating")
+					span(v-if="updating")
+						.uk-position-small.uk-position-center-left(uk-spinner, uk-icon="icon: spinner; ratio: 0.8")
+						| &nbsp;&nbsp;&nbsp;&nbsp; {{ t('updating') }}
+					span(v-else)
+						| {{ t('update') }}
+
+				button.uk-button.uk-button-default.uk-align-left.uk-margin-remove-bottom.uk-margin-small-left(v-if="installed", disabled) {{ t('remove') }}
 </template>
 
 <script>
@@ -92,7 +91,7 @@
 				return this.$store.state.applications.failed
 			},
 			application() {
-				if (this.loading || this.failed) {
+				if (this.failed) {
 					return []
 				} else {
 					return this.$store.getters.application(this.$route.params.id)
