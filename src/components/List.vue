@@ -1,7 +1,14 @@
 <template lang="pug">
 	div
+		.uk-position-fixed.uk-position-center(v-show="loading", uk-spinner, uk-icon="icon: spinner")
 		ul(v-if="!loading && !failed && applications", uk-grid)
 			Tile(v-for="application in applications", :application="application", :key="application.id")
+
+		transition(name="fade")
+			.uk-card.uk-card-default.uk-card-body.uk-position-center(v-if="applications.length === 0 && !loading")
+				p.uk-text-center No Apps in&nbsp;
+					span.uk-text-capitalize {{ category }}
+
 </template>
 
 <script>
