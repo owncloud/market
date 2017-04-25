@@ -46,6 +46,11 @@ const getters = {
 			return application.id == id;
 		});
 	},
+	updateList: (state) => {
+		return _.filter(state.applications.records, function(application) {
+			return application.updateInfo != false;
+		});
+	}
 }
 
 // Manipulate from the current state.
