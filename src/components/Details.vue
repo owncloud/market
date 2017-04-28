@@ -21,7 +21,7 @@
 			.uk-card-body
 				p {{ application.description }}
 
-				table.uk-table.uk-table-responsive(v-if="application.release")
+				table.uk-table.uk-table-divider.uk-table-responsive(v-if="application.release")
 					tr
 						th
 							span {{ t('Developer') }}
