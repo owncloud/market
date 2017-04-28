@@ -22,6 +22,7 @@
 
 namespace OCA\Market;
 
+use function foo\func;
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Exception\ClientException;
 use OC\App\DependencyAnalyzer;
@@ -130,6 +131,9 @@ class MarketService {
 		if (empty($release)) {
 			throw new AppUpdateNotFoundException("No compatible version for $appId");
 		}
+		usort($release, function($a, $b) {
+			return version_compare($b['version'], $a['version']);
+		});
 		$release = $release[0];
 		$downloadLink = $release['download'];
 
