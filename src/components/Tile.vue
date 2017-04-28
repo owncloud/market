@@ -12,7 +12,8 @@
 							p.uk-text-meta.uk-margin-remove-top
 								span(uk-icon="icon: tag")
 								span.category &nbsp;{{ application.categories[0] }}
-								span(v-if="application.updateInfo && application.updateInfo.length != 0").uk-label.uk-margin-small-left {{ t('Update available') }}!
+								span.uk-position-bottom-right.uk-position-small(v-if="application.updateInfo").uk-box-shadow-small.uk-label.uk-label-warning.uk-margin-small-left {{ t('Update available') }}!
+								span.uk-position-bottom-right.uk-position-small(v-if="application.installed && !application.updateInfo").uk-box-shadow-small.uk-label.uk-margin-small-left {{ t('Installed') }}!
 
 						.uk-width-small.uk-text-right
 							rating(:rating="application.rating")
@@ -48,10 +49,6 @@
 <style lang="scss" scoped>
 	@import "../styles/variables-theme";
 
-	.uk-label {
-		font-size: .75rem;
-	}
-
 	.category {
 		text-transform: capitalize;
 	}
@@ -61,5 +58,9 @@
 			size: cover;
 			position: left center;
 		}
+	}
+
+	.uk-label {
+		border: 1px solid #fff;
 	}
 </style>
