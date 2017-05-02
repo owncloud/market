@@ -19,6 +19,10 @@
 </script>
 
 <style lang="scss" scoped>
+	#market-app {
+		min-height: 100%;
+	}
+
 	aside {
 		width: 300px;
 	}
