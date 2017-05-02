@@ -1,7 +1,7 @@
 <template lang="pug">
 	div
 		.uk-position-fixed.uk-position-center(v-show="loading", uk-spinner, uk-icon="icon: spinner")
-		.uk-card.uk-card-default(v-if="!failed && !loading && application").uk-animation-slide-top-small
+		.uk-card.uk-card-default(v-if="!failed && application").uk-animation-slide-top-small
 			.uk-card-header
 				div(uk-grid)
 					.uk-width-expand
@@ -21,7 +21,7 @@
 			.uk-card-body
 				p {{ application.description }}
 
-				table.uk-table.uk-table-divider.uk-table-responsive(v-if="application.release")
+				table.uk-table.uk-table-divider.uk-table-responsive.uk-table-justify(v-if="application.release")
 					tr
 						th
 							span {{ t('Developer') }}
@@ -53,10 +53,13 @@
 			.uk-card-footer
 				div(v-if="!updateable && !updating")
 					// Installation
-					button.uk-button.uk-button-primary.uk-align-right.uk-margin-remove-bottom.uk-margin-small-left.uk-position-relative(:disabled="!installable", @click="install")
+					button.uk-button.uk-button-primary.uk-align-right.uk-margin-remove-bottom.uk-margin-small-left.uk-position-relative(:disabled="!installable || loading", @click="install")
 						span(v-if="installing")
 							.uk-position-small.uk-position-center-left(uk-spinner, uk-icon="icon: spinner; ratio: 0.8")
 							| &nbsp;&nbsp;&nbsp;&nbsp; {{ t('installing') }}
+						span(v-else-if="loading")
+							.uk-position-small.uk-position-center-left(uk-spinner, uk-icon="icon: spinner; ratio: 0.8")
+							| &nbsp;&nbsp;&nbsp;&nbsp; {{ t('loading') }}
 						span(v-else-if="installed")
 							| {{ t('installed') }}
 						span(v-else)
@@ -147,13 +150,6 @@
 	.uk-card {
 		max-width: 720px;
 		margin: 0 auto;
-	}
-
-	.uk-table {
-		margin: {
-			left: -12px;
-			right: -12px;
-		}
 	}
 
 	.uk-label {
