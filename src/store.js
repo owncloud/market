@@ -58,8 +58,7 @@ const mutations = {
 	LOADING_APPLICATIONS (state) {
 		_.extend(state['applications'], {
 			loading: true,
-			failed: false,
-			records: {}
+			failed: false
 		})
 	},
 	FAILED_APPLICATIONS (state) {
