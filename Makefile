@@ -80,7 +80,7 @@ clean-js-deps:
 # build
 #
 .PHONY: js/market.bundle.js
-js/market.bundle.js:
+js/market.bundle.js: $(js_deps)
 	$(NPM) run build
 
 #
