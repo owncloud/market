@@ -1,15 +1,28 @@
-$font-family: "Open Sans", Frutiger, Calibri, "Myriad Pro", Myriad, sans-serif;
-
 @import "variables-theme.scss";
 
+#market-app {
+  font-family: "Open Sans", Frutiger, Calibri, sans-serif;
+  @extend .uk-background-muted;
 
-@mixin hook-base-body(){ font-size: $font-family }
+  .uk-button * {
+    cursor: pointer;
+  }
+}
 
-// 3. Your custom mixin overwrites.
-//@mixin hook-base-h1(){ font-family: $font-family }
-//@mixin hook-base-h2(){ font-family: $font-family }
-//@mixin hook-base-h3(){ font-family: $font-family }
-//@mixin hook-base-h4(){ font-family: $font-family }
-
-// 4. Import UIkit.
 @import "../../node_modules/uikit/src/scss/uikit-theme.scss";
+
+// Animations
+
+.fade-enter-active, .fade-leave-active {
+  transition: transform .5s, opacity .45s
+}
+
+.fade-enter {
+  transform: translateY(-10px);
+  opacity: 0;
+}
+
+.fade-leave-to {
+  transform: translateY(10px);
+  opacity: 0;
+}

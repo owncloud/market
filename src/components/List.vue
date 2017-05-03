@@ -1,7 +1,12 @@
 <template lang="pug">
 	div
+		.uk-position-fixed.uk-position-center(v-show="loading", uk-spinner, uk-icon="icon: spinner")
 		ul(v-if="!loading && !failed && applications", uk-grid)
 			Tile(v-for="application in applications", :application="application", :key="application.id")
+
+		transition(name="fade")
+			.uk-card.uk-card-default.uk-card-body.uk-position-center(v-if="applications.length === 0 && !loading")
+				p.uk-text-center {{ t('No apps in %{category}', { category }) }}
 </template>
 
 <script>
@@ -14,7 +19,7 @@
 		mounted: function () {
 			this.$store.dispatch('FETCH_APPLICATIONS')
 		},
-		computed : {
+		computed: {
 			loading() {
 				return this.$store.state.applications.loading
 			},
@@ -30,6 +35,17 @@
 			},
 			category() {
 				return this.$route.params.category
+			}
+		},
+		methods: {
+			t (string, interpolation) {
+				if (!interpolation) {
+					return this.$gettext(string);
+				}
+				else {
+					// %{interplate} with object
+					return this.$gettextInterpolate(string, interpolation);
+				}
 			}
 		}
 	}
