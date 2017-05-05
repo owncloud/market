@@ -24,8 +24,8 @@
 									span(uk-icon="icon: arrow-right").uk-margin-small-left.uk-margin-small-right
 									span {{ application.updateInfo }}
 								td
-									button.uk-button.uk-button-primary.uk-align-right.uk-margin-remove.uk-position-relative(@click="update(application.id)", :disabled="updating(application.id)")
-										span(v-if="updating(application.id)")
+									button.uk-button.uk-button-primary.uk-align-right.uk-margin-remove.uk-position-relative(@click="update(application.id)", :disabled="processing(application.id)")
+										span(v-if="processing(application.id)")
 											span.uk-position-small.uk-position-center-left(uk-spinner, uk-icon="icon: spinner; ratio: 0.8")
 											span.uk-margin-small-left &nbsp;&nbsp; {{ t('updating') }}
 										span(v-else)
@@ -51,10 +51,10 @@
 		},
 		methods: {
 			update (id) {
-				this.$store.dispatch('UPDATE_APPLICATION', id)
+				this.$store.dispatch('PROCESS_APPLICATION', [id, 'update'])
 			},
-			updating(id) {
-				return _.contains(this.$store.state.updating, id)
+			processing(id) {
+				return _.contains(this.$store.state.processing, id)
 			},
 			t(string) {
 				return this.$gettext(string);

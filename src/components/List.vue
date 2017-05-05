@@ -16,9 +16,6 @@
 		components: {
 			Tile
 		},
-		mounted: function () {
-			this.$store.dispatch('FETCH_APPLICATIONS')
-		},
 		computed: {
 			loading() {
 				return this.$store.state.applications.loading

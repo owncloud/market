@@ -12,6 +12,10 @@
 	import Navigation from './components/Navigation.vue';
 
 	export default {
+		mounted: function () {
+			this.$store.dispatch('FETCH_APPLICATIONS')
+			this.$store.dispatch('FETCH_CATEGORIES')
+		},
 		components: {
 			Navigation
 		}

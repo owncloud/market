@@ -18,8 +18,7 @@ const state = {
 		records: {}
 	},
 
-	installing: [],
-	updating: []
+	processing: []
 }
 
 // Retrieve computed values from state.
@@ -104,66 +103,36 @@ const mutations = {
 			records: content
 		})
 	},
-	START_INSTALL (state, id) {
-		state['installing'].push(id)
+	START_PROCESSING (state, id) {
+		state['processing'].push(id)
 	},
-	FINISH_INSTALL (state, id) {
-		state['installing'] = _.without(state['installing'], id)
+	FINISH_PROCESSING (state, id) {
+		state['processing'] = _.without(state['processing'], id)
 	},
-	START_UPDATE (state, id) {
-		state['updating'].push(id)
-	},
-	FINISH_UPDATE (state, id) {
-		state['updating'] = _.without(state['updating'], id)
-	}
 }
 
 // Request content from the remote API.
 const actions = {
-	INSTALL_APPLICATION (context, id) {
-		context.commit('START_INSTALL', id)
+	PROCESS_APPLICATION (context, payload) {
 
-		Axios.post(OC.generateUrl('/apps/market/apps/{id}/install', {id}),
-			{},
-			{
+		let id    = payload[0];
+		let route = payload[1];
+
+		context.commit('START_PROCESSING', id)
+
+		Axios.post(OC.generateUrl('/apps/market/apps/{id}/' + route, {id}),
+			{}, {
 				headers: {
 					requesttoken: OC.requestToken
 				}
 			}
 		).then((response) => {
-			if (response.status !== 200 && response.data.error) {
-				OC.Notification.showTemporary(response.data.message)
-			} else {
-				context.dispatch('FETCH_APPLICATIONS')
-			}
-
-			context.commit('FINISH_INSTALL', id)
+			UIkit.notification(response.data.message, {status:'success', pos: 'bottom-right'})
+			context.commit('FINISH_PROCESSING', id)
+			context.dispatch('FETCH_APPLICATIONS')
 		}).catch((error) => {
-			OC.Notification.showTemporary(response.statusText)
-			context.commit('FINISH_INSTALL', id)
-		})
-	},
-	UPDATE_APPLICATION (context, id) {
-		context.commit('START_UPDATE', id)
-
-		Axios.post(OC.generateUrl('/apps/market/apps/{id}/update', {id}),
-			{},
-			{
-				headers: {
-					requesttoken: OC.requestToken
-				}
-			}
-		).then((response) => {
-			if (response.status !== 200 && response.data.error) {
-				OC.Notification.showTemporary(response.data.message)
-			} else {
-				context.dispatch('FETCH_APPLICATIONS')
-			}
-
-			context.commit('FINISH_UPDATE', id)
-		}).catch((error) => {
-			OC.Notification.showTemporary(response.statusText)
-			context.commit('FINISH_UPDATE', id)
+			UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'});
+			context.commit('FINISH_PROCESSING', id);
 		})
 	},
 	FETCH_APPLICATIONS (context) {
@@ -171,16 +140,11 @@ const actions = {
 
 		Axios.get(OC.generateUrl('/apps/market/apps'))
 			.then((response) => {
-				if (response.status !== 200) {
-					console.error(response.statusText)
-					context.commit('FAILED_APPLICATIONS')
-				} else {
-					context.commit('SET_APPLICATIONS', response.data)
-					context.commit('FINISH_APPLICATIONS')
-				}
+				context.commit('SET_APPLICATIONS', response.data)
+				context.commit('FINISH_APPLICATIONS')
 			})
 			.catch((error) => {
-				console.error(error)
+				UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'})
 				context.commit('FAILED_APPLICATIONS')
 			});
 	},
@@ -189,16 +153,11 @@ const actions = {
 
 		Axios.get(OC.generateUrl('/apps/market/categories'))
 			.then((response) => {
-				if (response.status !== 200) {
-					console.error(response.statusText)
-					context.commit('FAILED_CATEGORIES')
-				} else {
-					context.commit('SET_CATEGORIES', response.data)
-					context.commit('FINISH_CATEGORIES')
-				}
+				context.commit('SET_CATEGORIES', response.data)
+				context.commit('FINISH_CATEGORIES')
 			})
 			.catch((error) => {
-				console.error(error)
+				UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'})
 				context.commit('FAILED_CATEGORIES')
 			});
 	}
