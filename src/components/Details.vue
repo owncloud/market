@@ -51,28 +51,38 @@
 						t.missingDep
 
 			.uk-card-footer
-				div(v-if="!updateable && !updating")
-					// Installation
-					button.uk-button.uk-button-primary.uk-align-right.uk-margin-remove-bottom.uk-margin-small-left.uk-position-relative(:disabled="!installable || loading", @click="install")
-						span(v-if="installing")
-							.uk-position-small.uk-position-center-left(uk-spinner, uk-icon="icon: spinner; ratio: 0.8")
-							| &nbsp;&nbsp;&nbsp;&nbsp; {{ t('installing') }}
-						span(v-else-if="loading")
-							.uk-position-small.uk-position-center-left(uk-spinner, uk-icon="icon: spinner; ratio: 0.8")
-							| &nbsp;&nbsp;&nbsp;&nbsp; {{ t('loading') }}
-						span(v-else-if="installed")
-							| {{ t('installed') }}
-						span(v-else)
-							| {{ t('install') }}
-
-				button.uk-button.uk-button-primary.uk-align-right.uk-margin-remove-bottom.uk-margin-small-left.uk-position-relative(v-if="updateable", @click="update", :disabled="updating")
-					span(v-if="updating")
+				div(v-if="loading")
+					button.uk-button.uk-button-primary.uk-align-right.uk-margin-remove-bottom.uk-margin-small-left.uk-position-relative(disabled)
 						.uk-position-small.uk-position-center-left(uk-spinner, uk-icon="icon: spinner; ratio: 0.8")
-						| &nbsp;&nbsp;&nbsp;&nbsp; {{ t('updating') }}
-					span(v-else)
-						| {{ t('update') }}
+						| &nbsp;&nbsp;&nbsp;&nbsp; {{ t('loading') }}
 
-				button.uk-button.uk-button-default.uk-align-left.uk-margin-remove-bottom.uk-margin-small-left(v-if="installed && !loading", disabled) {{ t('remove') }}
+				div(v-else)
+					// Install
+					div(v-if="!installed")
+						button.uk-button.uk-button-primary.uk-align-right.uk-margin-remove-bottom.uk-margin-small-left.uk-position-relative(:disabled="processing && !installable", @click="install")
+							span(v-if="processing")
+								.uk-position-small.uk-position-center-left(uk-spinner, uk-icon="icon: spinner; ratio: 0.8")
+								| &nbsp;&nbsp;&nbsp;&nbsp; {{ t('installing') }}
+							span(v-else)
+								| {{ t('install') }}
+
+					// Uninstall
+					div(v-else)
+						button.uk-button.uk-button-default.uk-align-right.uk-margin-remove-bottom.uk-margin-small-left(:disabled="processing", @click="uninstall")
+							span(v-if="processing")
+								.uk-position-small.uk-position-center-left(uk-spinner, uk-icon="icon: spinner; ratio: 0.8")
+								| &nbsp;&nbsp;&nbsp;&nbsp; {{ t('uninstalling') }}
+							span(v-else)
+								| {{ t('uninstall') }}
+
+					// Update
+					div(v-if="updateable")
+						button.uk-button.uk-button-primary.uk-align-right.uk-margin-remove-bottom.uk-margin-small-left.uk-position-relative(:disabled="processing", @click="update")
+							span(v-if="processing")
+								.uk-position-small.uk-position-center-left(uk-spinner, uk-icon="icon: spinner; ratio: 0.8")
+								| &nbsp;&nbsp;&nbsp;&nbsp; {{ t('updating') }}
+							span(v-else)
+								| {{ t('update') }}
 </template>
 
 <script>
@@ -82,9 +92,6 @@
 	export default {
 		components: {
 			Rating
-		},
-		mounted: function () {
-			this.$store.dispatch('FETCH_APPLICATIONS')
 		},
 		computed: {
 			loading() {
@@ -101,19 +108,18 @@
 				}
 			},
 			installed() {
-				return this.application.installed && !this.installing
+				return this.application.installed && !this.processing
 			},
 			installable() {
-				return this.application.release && this.application.release.canInstall && !this.installed && !this.installing
-			},
-			installing() {
-				return _.contains(this.$store.state.installing, this.application.id)
+				return this.application.release && this.application.release.canInstall && !this.installed && !this.processing
 			},
 			updateable() {
 				return this.application.installed && this.application.updateInfo !== false
 			},
-			updating() {
-				return _.contains(this.$store.state.updating, this.application.id)
+
+			// Any kind of installing, updating or uninstalling process
+			processing() {
+				return _.contains(this.$store.state.processing, this.application.id)
 			}
 		},
 		filters: {
@@ -123,10 +129,21 @@
 		},
 		methods: {
 			install () {
-				this.$store.dispatch('INSTALL_APPLICATION', this.application.id)
+				this.$store.dispatch('PROCESS_APPLICATION', [this.application.id, 'install'])
+			},
+			uninstall () {
+
+				UIkit.modal.confirm(this.t('Are you sure you want to remove <span class="uk-h5">%{appName}</span> from your system?', {appName : this.application.name }), {
+					center : true,
+					escClose : true
+				}).then(() => {
+					this.$store.dispatch('PROCESS_APPLICATION', [this.application.id, 'uninstall'])
+				}, function () {
+					null
+				});
 			},
 			update () {
-				this.$store.dispatch('UPDATE_APPLICATION', this.application.id)
+				this.$store.dispatch('PROCESS_APPLICATION', [this.application.id, 'update'])
 			},
 			t (string, interpolation) {
 				if (!interpolation) {

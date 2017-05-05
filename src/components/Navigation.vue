@@ -21,9 +21,6 @@
 
 <script>
 	export default {
-		mounted: function () {
-			this.$store.dispatch('FETCH_CATEGORIES')
-		},
 		methods: {
 			t(string) {
 				return this.$gettext(string);
