@@ -44,7 +44,9 @@ script:
 
   # Create coverage report
   - sh -c "if [ '$JSTESTS' != '1' -a '$CODECHECK' != '1' -a '$CODECHECK' != '2' ]; then vendor/bin/ocular code-coverage:upload --format=php-clover clover.xml; fi"
-  - cd ../
+
+  # Build the app package
+  - sh -c "if [ '$JSTESTS' != '1' -a '$CODECHECK' != '1' -a '$CODECHECK' != '2' ]; then make clean dist; fi"
 
   # Run Javascript unit tests
 #  - cd tests/js
