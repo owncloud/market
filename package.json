@@ -51,8 +51,8 @@
   },
   "dependencies": {
     "babel-polyfill": "^6.23.0",
-    "vue-gettext": "^2.0.10",
-    "uglify-js": "git+https://github.com/mishoo/UglifyJS2.git#harmony"
+    "uglify-js": "^3.0.1",
+    "vue-gettext": "^2.0.10"
   },
   "bugs": {
     "url": "https://github.com/owncloud/market/issues"
