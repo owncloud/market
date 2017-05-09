@@ -57,7 +57,7 @@ class MarketController extends Controller {
 			return $this->marketService->getCategories();
 		} catch (\Exception $ex) {
 			return new DataResponse(['message' => $ex->getMessage() ],
-				Http::STATUS_NO_CONTENT);
+				Http::STATUS_SERVICE_UNAVAILABLE);
 		}
 	}
 	/**
@@ -70,61 +70,58 @@ class MarketController extends Controller {
 			return $this->queryData();
 		} catch (\Exception $ex) {
 			return new DataResponse(['message' => $ex->getMessage() ],
-				Http::STATUS_NO_CONTENT);
+				Http::STATUS_SERVICE_UNAVAILABLE);
 		}
 	}
 
 	/**
 	 * @param string $appId
-	 * @return array
+	 * @return array | DataResponse
 	 */
 	public function install($appId) {
 		try {
 			$this->marketService->installApp($appId);
 			return [
-				'error' => false,
 				'message' => "App $appId installed successfully"
 			];
 		} catch(\Exception $ex) {
-			return ['error' => true,
+			return new DataResponse([
 				'message' => $ex->getMessage()
-			];
+			], Http::STATUS_BAD_REQUEST);
 		}
 	}
 
 	/**
 	 * @param string $appId
-	 * @return array
+	 * @return array | DataResponse
 	 */
 	public function uninstall($appId) {
 		try {
 			$this->marketService->uninstallApp($appId);
 			return [
-				'error' => false,
 				'message' => "App $appId uninstalled successfully"
 			];
 		} catch(\Exception $ex) {
-			return ['error' => true,
+			return new DataResponse([
 				'message' => $ex->getMessage()
-			];
+			], Http::STATUS_BAD_REQUEST);
 		}
 	}
 
 	/**
 	 * @param string $appId
-	 * @return array
+	 * @return array | DataResponse
 	 */
 	public function update($appId) {
 		try {
 			$this->marketService->updateApp($appId);
 			return [
-				'error' => false,
 				'message' => "App $appId updated successfully"
 			];
 		} catch(\Exception $ex) {
-			return ['error' => true,
+			return new DataResponse([
 				'message' => $ex->getMessage()
-			];
+			], Http::STATUS_BAD_REQUEST);
 		}
 	}
 
