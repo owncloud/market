@@ -133,13 +133,13 @@
 			},
 			uninstall () {
 
-				UIkit.modal.confirm(this.t('Are you sure you want to remove <span class="uk-h5">%{appName}</span> from your system?', {appName : this.application.name }), {
+				UIkit.modal.confirm(this.t('Are you sure you want to remove <strong>%{appName}</strong> from your system?', {appName : this.application.name }), {
 					center : true,
 					escClose : true
 				}).then(() => {
 					this.$store.dispatch('PROCESS_APPLICATION', [this.application.id, 'uninstall'])
 				}, function () {
-					null
+					return null
 				});
 			},
 			update () {

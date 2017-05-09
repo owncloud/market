@@ -5,7 +5,7 @@
 			Tile(v-for="application in applications", :application="application", :key="application.id")
 
 		transition(name="fade")
-			.uk-card.uk-card-default.uk-card-body.uk-position-center(v-if="applications.length === 0 && !loading")
+			.uk-card.uk-card-default.uk-card-body.uk-position-center(v-if="applications.length === 0 && !loading && !failed")
 				p.uk-text-center {{ t('No apps in %{category}', { category }) }}
 </template>
 
