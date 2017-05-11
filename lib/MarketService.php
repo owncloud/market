@@ -241,7 +241,12 @@ class MarketService {
 	 * @param string $appId
 	 */
 	public function uninstallApp($appId) {
-		\OC_App::removeApp($appId);
+		if ($this->appManager->isShipped($appId)) {
+			throw new AppManagerException('Shipped apps cannot be uninstalled');
+		}
+		if (!\OC_App::removeApp($appId)) {
+			throw new AppManagerException('App could not be uninstalled. Please check the server logs.');
+		}
 	}
 
 	/**
