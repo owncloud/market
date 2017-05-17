@@ -26,3 +26,15 @@
   transform: translateY(10px);
   opacity: 0;
 }
+
+// Reset overwritten core css styles
+
+#expanddiv ul,
+#apps ul {
+  margin-bottom: 0;
+  padding-left: 0;
+
+  a:hover {
+    text-decoration: none;
+  }
+}
