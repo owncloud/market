@@ -15,7 +15,7 @@ clean:
 
 makemessages:
 	touch template.pot
-	xgettext --language=JavaScript --keyword=npgettext:1c,2,3 \
+	xgettext --language=JavaScript --keyword=t \
 		--from-code=utf-8 --join-existing --no-wrap \
 		--package-name=Market \
 		--package-version=0.0.1 \
