@@ -1,6 +1,6 @@
 @import "variables-theme.scss";
 
-#market-app {
+#content-wrapper {
   font-family: "Open Sans", Frutiger, Calibri, sans-serif;
   @extend .uk-background-muted;
 
@@ -36,5 +36,9 @@
 
   a:hover {
     text-decoration: none;
+  }
+
+  img {
+    max-width: inherit;
   }
 }
