@@ -73,10 +73,11 @@ class MarketService {
 	 * Install an app for the given app id
 	 *
 	 * @param string $appId
+	 * @param bool $skipMigrations whether to skip migrations
 	 * @throws AppAlreadyInstalledException
 	 * @throws AppManagerException
 	 */
-	public function installApp($appId) {
+	public function installApp($appId, $skipMigrations = false) {
 		try {
 			$info = $this->getInstalledAppInfo($appId);
 			if (!is_null($info)) {
@@ -85,7 +86,7 @@ class MarketService {
 
 			// download package
 			$package = $this->downloadPackage($appId);
-			$this->installPackage($package);
+			$this->installPackage($package, $skipMigrations);
 			$this->appManager->enableApp($appId);
 		} catch (ClientException $e){
 			throw new AppManagerException('No marketplace connection', 0, $e);
@@ -96,11 +97,12 @@ class MarketService {
 
 	/**
 	 * Install downloaded package
-	 * @param string $package
+	 * @param string $package package path
+	 * @param bool $skipMigrations whether to skip migrations
 	 * @return string appId
 	 */
-	public function installPackage($package){
-		return $this->appManager->installApp($package);
+	public function installPackage($package, $skipMigrations = false){
+		return $this->appManager->installApp($package, $skipMigrations);
 	}
 
 	/**
