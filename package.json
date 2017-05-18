@@ -9,6 +9,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "webpack  --progress --colors --watch",
+    "build-dev": "webpack",
     "build": "webpack -p"
   },
   "repository": {
