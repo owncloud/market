@@ -42,6 +42,7 @@ class Listener {
 	}
 
 	public function reinstallAppStoreApp($app){
-		$this->marketService->installApp($app);
+		// only reinstall the code, do not run migrations
+		$this->marketService->installApp($app,  true);
 	}
 }
