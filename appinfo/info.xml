@@ -4,9 +4,11 @@
 	<name>Market</name>
 	<description>ownCloud marketplace integration and app management</description>
 	<licence>AGPL</licence>
-	<author>Thomas Müller</author>
+	<author>Thomas Müller, Florian Heidecke, Thomas Börger</author>
 	<version>0.1.0</version>
 	<default_enable/>
+	<category>tools</category>
+	<screenshot>https://raw.githubusercontent.com/owncloud/screenshots/master/market/screenshot.png</screenshot>
 	<dependencies>
 		<owncloud min-version="10.0" max-version="10.0" />
 	</dependencies>
