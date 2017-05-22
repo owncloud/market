@@ -7,6 +7,25 @@ NPM := $(shell command -v npm 2> /dev/null)
 ifndef NPM
     $(error npm is not available on your system, please install npm)
 endif
+app_name=$(notdir $(CURDIR))
+project_directory=$(CURDIR)/../$(app_name)
+build_tools_directory=$(CURDIR)/build/tools
+appstore_package_name=$(CURDIR)/build/dist/$(app_name)
+npm=$(shell which npm 2> /dev/null)
+composer=$(shell which composer 2> /dev/null)
+
+occ=$(CURDIR)/../../occ
+private_key=$(HOME)/.owncloud/certificates/$(app_name).key
+certificate=$(HOME)/.owncloud/certificates/$(app_name).crt
+sign=php -f $(occ) integrity:sign-app --privateKey="$(private_key)" --certificate="$(certificate)"
+sign_skip_msg="Skipping signing, either no key and certificate found in $(private_key) and $(certificate) or occ can not be found at $(occ)"
+ifneq (,$(wildcard $(private_key)))
+ifneq (,$(wildcard $(certificate)))
+ifneq (,$(wildcard $(occ)))
+	CAN_SIGN=true
+endif
+endif
+endif
 
 PHPUNIT="$(PWD)/lib/composer/phpunit/phpunit/phpunit"
 
@@ -97,7 +116,13 @@ $(dist_dir)/market: $(composer_deps)  $(js_deps)  js/market.bundle.js
 	find $@/vendor -iname \*.exe -delete
 
 .PHONY: dist
-dist: $(dist_dir)/market
+dist: clean $(dist_dir)/market
+ifdef CAN_SIGN
+	$(sign) --path="$(appstore_package_name)"
+else
+	@echo $(sign_skip_msg)
+endif
+	tar -czf $(appstore_package_name).tar.gz -C $(appstore_package_name)/../ $(app_name)
 
 .PHONY: clean-dist
 clean-dist:
