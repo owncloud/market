@@ -102,7 +102,7 @@ class InstallApp extends Command {
 						}
 					} else {
 						$output->writeln("$appId: Installing new app ...");
-						$this->marketService->installApp($appId);
+						$this->marketService->installApp($appId, true);
 						$output->writeln("$appId: App installed.");
 					}
 				} catch (\Exception $ex) {
