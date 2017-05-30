@@ -24,6 +24,7 @@ To use this application click on "Files" in the top left corner and click on "Ma
 		<command>OCA\Market\Command\UnInstallApp</command>
 		<command>OCA\Market\Command\ListApps</command>
 		<command>OCA\Market\Command\UpgradeApp</command>
+		<command>OCA\Market\Command\UpdateCrl</command>
 	</commands>
 	<navigation role="admin">
 		<route>market.page.index</route>

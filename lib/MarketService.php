@@ -21,7 +21,6 @@
 
 namespace OCA\Market;
 
-use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\TransferException;
 use OC\App\DependencyAnalyzer;
@@ -87,7 +86,7 @@ class MarketService {
 	 */
 	public function installApp($appId, $skipMigrations = false) {
 		if (!$this->canInstall()) {
-			throw new \Exception("Installing apps is not supported because the app folder is not writable.");
+			throw new \Exception('Installing apps is not supported because the app folder is not writable.');
 		}
 
 		$availableReleases = array_column($this->getApps(), 'releases', 'id')[$appId];
@@ -111,7 +110,7 @@ class MarketService {
 
 
 		$info = $this->getInstalledAppInfo($appId);
-		if (!is_null($info)) {
+		if ($info !== null) {
 			throw new AppAlreadyInstalledException($this->l10n->t('App %s is already installed', $appId));
 		}
 
@@ -180,7 +179,7 @@ class MarketService {
 	 */
 	public function isAppInstalled($appId) {
 		$info = $this->getInstalledAppInfo($appId);
-		return !is_null($info);
+		return $info !== null;
 	}
 
 	/**
@@ -193,11 +192,11 @@ class MarketService {
 	 */
 	public function getAvailableUpdateVersion($appId) {
 		$info = $this->getInstalledAppInfo($appId);
-		if (is_null($info)) {
+		if ($info === null) {
 			throw new AppNotInstalledException($this->l10n->t('App (%s) is not installed', $appId));
 		}
 		$marketInfo = $this->getAppInfo($appId);
-		if (is_null($marketInfo)) {
+		if ($marketInfo === null) {
 			throw new AppNotFoundException($this->l10n->t('App (%s) is not known at the marketplace.', $appId));
 		}
 		$releases = $marketInfo['releases'];
@@ -251,11 +250,11 @@ class MarketService {
 	 */
 	public function updateApp($appId) {
 		if (!$this->canInstall()) {
-			throw new \Exception("Installing apps is not supported because the app folder is not writable.");
+			throw new \Exception('Installing apps is not supported because the app folder is not writable.');
 		}
 
 		$info = $this->getInstalledAppInfo($appId);
-		if (is_null($info)) {
+		if ($info === null) {
 			throw new AppNotInstalledException($this->l10n->t('App (%s) is not installed', $appId));
 		}
 
@@ -272,7 +271,7 @@ class MarketService {
 	 */
 	public function uninstallApp($appId) {
 		if (!$this->canInstall()) {
-			throw new \Exception("Installing apps is not supported because the app folder is not writable.");
+			throw new \Exception('Installing apps is not supported because the app folder is not writable.');
 		}
 
 		if ($this->appManager->isShipped($appId)) {
@@ -386,7 +385,7 @@ class MarketService {
 	private function getApps() {
 		$version = $this->getPlatformVersion();
 		list($version,) = $this->normalizeVersions($version, '1.2.3');
-		if (!is_null($this->apps)) {
+		if ($this->apps !== null) {
 			return $this->apps;
 		}
 
@@ -397,7 +396,7 @@ class MarketService {
 		if ($this->bundles !== null) {
 			return $this->bundles;
 		}
-		$this->bundles = $this->queryData("bundles", "/api/v1/bundles.json");
+		$this->bundles = $this->queryData('bundles', '/api/v1/bundles.json');
 		return $this->bundles;
 	}
 
@@ -441,6 +440,7 @@ class MarketService {
 	 * @param array $options
 	 * @param string | null $apiKey
 	 * @return \OCP\Http\Client\IResponse
+	 * @throws AppManagerException
 	 */
 	private function httpGet($path, $options = [], $apiKey = null) {
 		if ($apiKey === null) {
@@ -481,7 +481,7 @@ class MarketService {
 		$apps = $this->getApps();
 		if ($category !== null) {
 			$apps = array_filter($apps, function ($app) use ($category) {
-				return in_array($category, $app['categories']);
+				return in_array($category, $app['categories'], true);
 			});
 		}
 		return $apps;
@@ -492,7 +492,7 @@ class MarketService {
 			return $this->categories;
 		}
 
-		$this->categories = $this->queryData('categories', "/api/v1/categories.json");
+		$this->categories = $this->queryData('categories', '/api/v1/categories.json');
 		return $this->categories;
 	}
 
@@ -612,4 +612,10 @@ class MarketService {
 		$cache = $this->cacheFactory->create('ocmp');
 		$cache->clear();
 	}
+
+	public function downloadCrl() {
+		$response = $this->httpGet($this->storeUrl . '/code-signing/intermediate.crl.pem');
+		return $response->getBody();
+	}
+
 }
