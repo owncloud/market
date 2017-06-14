@@ -1,6 +1,16 @@
 // 1. Your custom variables and variable overwrites.
 
-$global-link-color: #1d2d44;
-
 @import "../../node_modules/uikit/src/scss/variables-theme.scss";
 @import "../../node_modules/uikit/src/scss/mixins-theme.scss";
+
+$global-link-color: #1d2d44;
+
+$button-secondary-background: #f8f8f8;
+$button-secondary-color: $global-color;
+
+$button-secondary-hover-background: darken($button-secondary-background, 5%);
+$button-secondary-hover-color: $button-secondary-color;
+
+@mixin hook-button-secondary() {
+  border: 1px solid lighten($button-secondary-color, 50%);
+}
