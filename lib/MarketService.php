@@ -52,6 +52,8 @@ class MarketService {
 	private $storeUrl;
 	/** @var array */
 	private $categories;
+	/** @var array */
+	private $bundles;
 
 	/**
 	 * Service constructor.
@@ -358,6 +360,19 @@ class MarketService {
 		return $this->queryData("apps_$version", "/api/v1/platform/$version/apps.json");
 	}
 
+	public function getBundles() {
+		if ($this->bundles !== null) {
+			return $this->bundles;
+		}
+		$version = $this->getPlatformVersion();
+		list($version,) = $this->normalizeVersions($version, '1.2.3');
+
+		$this->bundles = $this->queryData("bundles_$version", "/api/v1/platform/$version/bundles.json");
+		return $this->bundles;
+	}
+
+
+
 	/**
 	 * @param string $path
 	 * @param array $options
@@ -396,7 +411,8 @@ class MarketService {
 			return $this->categories;
 		}
 
-		return $this->queryData('categories', "/api/v1/categories.json");
+		$this->categories = $this->queryData('categories', "/api/v1/categories.json");
+		return $this->categories;
 	}
 
 	private function queryData($key, $uri) {
