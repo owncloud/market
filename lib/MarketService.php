@@ -27,7 +27,6 @@ use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Exception\ClientException;
 use OC\App\DependencyAnalyzer;
 use OC\App\Platform;
-use OCA\Enterprise_Key\EnterpriseKey;
 use OCP\App\AppManagerException;
 use OCP\App\IAppManager;
 use OCP\ICacheFactory;
