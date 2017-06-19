@@ -60,6 +60,21 @@ class MarketController extends Controller {
 				Http::STATUS_SERVICE_UNAVAILABLE);
 		}
 	}
+
+	/**
+	 * @NoCSRFRequired
+	 *
+	 * @return array|mixed
+	 */
+	public function bundles() {
+		try {
+			return $this->marketService->getBundles();
+		} catch (\Exception $ex) {
+			return new DataResponse(['message' => $ex->getMessage() ],
+				Http::STATUS_SERVICE_UNAVAILABLE);
+		}
+	}
+
 	/**
 	 * @NoCSRFRequired
 	 *
