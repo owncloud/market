@@ -107,6 +107,36 @@ class MarketController extends Controller {
 	}
 
 	/**
+	 * @NoCSRFRequired
+	 *
+	 * @param $apiKey
+	 * @return array|mixed
+	 */
+	public function changeApiKey($apiKey) {
+		if (!$this->marketService->setApiKey($apiKey)) {
+			return new DataResponse([
+				'message' =>'Can not change api key because it is configured in config.php'
+				]
+			);
+		}
+
+		return (new Http\Response())
+			->setStatus(\OC\AppFramework\Http::STATUS_OK);
+	}
+
+	/**
+	 *
+	 * @return array|mixed
+	 */
+	public function getApiKey() {
+
+		return new DataResponse( [
+			'apiKey' => $this->marketService->getApiKey(),
+			'changeable' => $this->marketService->isApiKeyChangeableByUser(),
+		], Http::STATUS_OK);
+	}
+
+	/**
 	 * @param string $appId
 	 * @return array | DataResponse
 	 */

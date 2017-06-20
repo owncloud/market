@@ -31,6 +31,9 @@ return [
 		['name' => 'market#install', 'url' => '/apps/{appId}/install', 'verb' => 'POST'],
 		['name' => 'market#update', 'url' => '/apps/{appId}/update', 'verb' => 'POST'],
 		['name' => 'market#uninstall', 'url' => '/apps/{appId}/uninstall', 'verb' => 'POST'],
+		['name' => 'market#getApiKey', 'url' => '/apikey', 'verb' => 'GET'],
+		['name' => 'market#changeApiKey', 'url' => '/apikey', 'verb' => 'PUT'],
+
 		// local apps
 		['name' => 'localApps#index', 'url' => '/installed-apps/{state}', 'verb' => 'GET', 'defaults' => ['state' => 'enabled']],
 	],
