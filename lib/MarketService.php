@@ -372,6 +372,39 @@ class MarketService {
 	}
 
 
+	public function getApiKey() {
+		$configFileApiKey = $this->config->getSystemValue('marketplace.key', null);
+
+		if ($configFileApiKey) {
+			return $configFileApiKey;
+		}
+
+		return $this->config->getAppValue('market', 'key', null);
+	}
+
+	public function setApiKey($apiKey) {
+		if ($this->isApiKeyChangeableByUser()) {
+			$this->config->setAppValue('market', 'key', $apiKey);
+
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * ApiKey can only be changed by user if no key is configured in config.php
+	 * @return bool
+	 */
+	public function isApiKeyChangeableByUser() {
+		$configFileApiKey = $this->config->getSystemValue('marketplace.key', null);
+
+		if ($configFileApiKey) {
+			return false;
+		}
+
+		return true;
+	}
 
 	/**
 	 * @param string $path
