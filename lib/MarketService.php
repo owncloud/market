@@ -364,7 +364,7 @@ class MarketService {
 		if ($this->bundles !== null) {
 			return $this->bundles;
 		}
-		$this->bundles = $this->queryData("bundles", "/api/v1/platform/bundles.json");
+		$this->bundles = $this->queryData("bundles", "/api/v1/bundles.json");
 		return $this->bundles;
 	}
 
