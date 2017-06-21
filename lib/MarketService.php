@@ -53,6 +53,8 @@ class MarketService {
 	private $categories;
 	/** @var array */
 	private $bundles;
+	/** @var IL10N */
+	private $l10n;
 
 	/**
 	 * Service constructor.
@@ -139,7 +141,7 @@ class MarketService {
 	}
 
 	private function downloadPackage($appId) {
-
+		$this->checkInternetConnection();
 		$data = $this->getAppInfo($appId);
 		if (empty($data)) {
 			throw new AppNotFoundException($this->l10n->t('Unknown app (%s)', $appId));
@@ -488,6 +490,8 @@ class MarketService {
 			}
 		}
 
+		$this->checkInternetConnection();
+		
 		// ask the server
 		$response = $this->httpGet($this->storeUrl . $uri);
 		$data = $response->getBody();
@@ -498,6 +502,15 @@ class MarketService {
 		}
 		return json_decode($data, true);
 
+	}
+	
+	private function checkInternetConnection(){
+		if ($this->config->getSystemValue('has_internet_connection', true) !== true){
+			throw new AppManagerException(
+				$this->l10n->t('The Internet connection is disabled.'
+				)
+			);
+		}
 	}
 
 	/**
