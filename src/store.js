@@ -160,6 +160,7 @@ const mutations = {
 // Request content from the remote API.
 const actions = {
 	PROCESS_APPLICATION (context, payload) {
+
 		let id    = payload[0];
 		let route = payload[1];
 
@@ -248,8 +249,7 @@ const actions = {
 				context.commit('FINISH_CATEGORIES')
 			})
 			.catch((error) => {
-				// UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'})
-				console.log(error);
+				UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'})
 				context.commit('FAILED_CATEGORIES')
 			});
 	},

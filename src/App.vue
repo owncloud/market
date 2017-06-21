@@ -16,6 +16,9 @@
 	export default {
 		mounted () {
 			this.$store.dispatch('FETCH_APPLICATIONS');
+		mounted () {
+			this.$store.dispatch('FETCH_APPLICATIONS');
+			this.$store.dispatch('FETCH_BUNDLES');
 		},
 		components: {
 			Navigation,
