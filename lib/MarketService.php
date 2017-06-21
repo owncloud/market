@@ -180,7 +180,7 @@ class MarketService {
 			return version_compare($marketVersion, $currentVersion, '>');
 		});
 		usort($releases, function ($a, $b) {
-			return version_compare($a, $b, '>');
+			return version_compare($a['version'], $b['version'], '>');
 		});
 		if (!empty($releases)) {
 			return array_pop($releases)['version'];
