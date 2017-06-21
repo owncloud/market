@@ -1,5 +1,5 @@
 <template lang="pug">
-	.uk-card.uk-card-default
+	.uk-card.uk-card-default.uk-margin-bottom
 		.uk-card-header
 			h1.uk-h3
 				router-link(:to="{ name: 'index' }") {{ t('Market') }}
@@ -13,7 +13,8 @@
 				li.uk-nav-divider
 				li
 					router-link(:to="{ name: 'index' }") {{ t('Show all') }}
-
+				li
+					router-link(:to="{ name: 'Bundles' }") {{ t('App Bundles') }}
 				li(v-if="updateList.length > 0")
 					router-link(:to="{ name: 'UpdateList' }") {{ t('Updates') }}
 						span.uk-badge.uk-margin-small-left {{ updateList.length }}
@@ -62,5 +63,4 @@
 	.uk-badge {
 		font-size: 0.75rem;
 	}
-
 </style>
