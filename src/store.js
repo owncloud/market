@@ -210,9 +210,7 @@ const actions = {
 	WRITE_APIKEY (context, payload) {
 		let key = payload;
 
-		console.log(key);
-
-		Axios.post(OC.generateUrl('/apps/market/apikey/'),
+		Axios.put(OC.generateUrl('/apps/market/apikey'),
 			{
 				'apiKey' : key
 			}, {
@@ -222,10 +220,8 @@ const actions = {
 			}
 		).then((response) => {
 			UIkit.notification(response.data.message, {status:'success', pos: 'bottom-right'});
-			console.log(response);
 		}).catch((error) => {
 			UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'});
-			console.log(error);
 		})
 	},
 }

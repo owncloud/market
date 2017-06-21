@@ -125,6 +125,7 @@ class MarketController extends Controller {
 	}
 
 	/**
+	 * @NoCSRFRequired
 	 *
 	 * @return array|mixed
 	 */

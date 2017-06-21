@@ -412,7 +412,8 @@ class MarketService {
 	 * @return \OCP\Http\Client\IResponse
 	 */
 	private function httpGet($path, $options = []) {
-		$apiKey = $this->config->getSystemValue('marketplace.key', null);
+		$apiKey = $this->getApiKey();
+
 		$ca = $this->config->getSystemValue('marketplace.ca', null);
 		if ($apiKey !== null) {
 			$options = array_merge([
