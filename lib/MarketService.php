@@ -364,10 +364,7 @@ class MarketService {
 		if ($this->bundles !== null) {
 			return $this->bundles;
 		}
-		$version = $this->getPlatformVersion();
-		list($version,) = $this->normalizeVersions($version, '1.2.3');
-
-		$this->bundles = $this->queryData("bundles_$version", "/api/v1/platform/$version/bundles.json");
+		$this->bundles = $this->queryData("bundles", "/api/v1/platform/bundles.json");
 		return $this->bundles;
 	}
 
