@@ -18,6 +18,17 @@ const state = {
 		records: {}
 	},
 
+	bundles: {
+		loading: false,
+		failed: false,
+		records: {}
+	},
+
+	apikey : {
+		key : null,
+		changeable : false
+	},
+
 	processing: []
 }
 
@@ -40,6 +51,9 @@ const getters = {
 			return _.contains(application.categories, category);
 		});
 	},
+	bundles: (state) => {
+		return state.bundles.records;
+	},
 	application: (state) => (id) => {
 		return _.find(state.applications.records, function (application) {
 			return application.id == id;
@@ -49,8 +63,11 @@ const getters = {
 		return _.filter(state.applications.records, function (application) {
 			return application.updateInfo != false;
 		});
+	},
+	apikey (state) {
+		return state.apikey;
 	}
-}
+};
 
 // Manipulate from the current state.
 const mutations = {
@@ -75,6 +92,11 @@ const mutations = {
 	},
 	SET_APPLICATIONS (state, content) {
 		_.extend(state['applications'], {
+			records: content
+		})
+	},
+	SET_BUNDLES (state, content) {
+		_.extend(state['bundles'], {
 			records: content
 		})
 	},
@@ -109,12 +131,14 @@ const mutations = {
 	FINISH_PROCESSING (state, id) {
 		state['processing'] = _.without(state['processing'], id)
 	},
-}
+	SET_APIKEY (state, key) {
+		state['apikey'] = key
+	},
+};
 
 // Request content from the remote API.
 const actions = {
 	PROCESS_APPLICATION (context, payload) {
-
 		let id    = payload[0];
 		let route = payload[1];
 
@@ -148,6 +172,19 @@ const actions = {
 				context.commit('FAILED_APPLICATIONS')
 			});
 	},
+	FETCH_BUNDLES (context) {
+		context.commit('LOADING_APPLICATIONS')
+
+		Axios.get(OC.generateUrl('/apps/market/bundles'))
+			.then((response) => {
+				context.commit('SET_BUNDLES', response.data)
+				context.commit('FINISH_APPLICATIONS')
+			})
+			.catch((error) => {
+				UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'})
+				context.commit('FAILED_APPLICATIONS')
+			});
+	},
 	FETCH_CATEGORIES (context) {
 		context.commit('LOADING_CATEGORIES')
 
@@ -160,7 +197,37 @@ const actions = {
 				UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'})
 				context.commit('FAILED_CATEGORIES')
 			});
-	}
+	},
+	FETCH_APIKEY (context) {
+		Axios.get(OC.generateUrl('/apps/market/apikey'))
+			.then((response) => {
+				context.commit('SET_APIKEY', response.data)
+			})
+			.catch((error) => {
+				UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'})
+			});
+	},
+	WRITE_APIKEY (context, payload) {
+		let key = payload;
+
+		console.log(key);
+
+		Axios.post(OC.generateUrl('/apps/market/apikey/'),
+			{
+				'apiKey' : key
+			}, {
+				headers: {
+					requesttoken: OC.requestToken
+				}
+			}
+		).then((response) => {
+			UIkit.notification(response.data.message, {status:'success', pos: 'bottom-right'});
+			console.log(response);
+		}).catch((error) => {
+			UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'});
+			console.log(error);
+		})
+	},
 }
 
 export default new Vuex.Store({
