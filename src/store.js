@@ -193,9 +193,8 @@ const actions = {
 				context.commit('FINISH_APPLICATIONS')
 			})
 			.catch((error) => {
-				// UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'})
-				context.commit('FAILED_APPLICATIONS');
-				console.log(error);
+				UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'})
+				context.commit('FAILED_APPLICATIONS')
 			});
 	},
 	INSTALL_BUNDLE (context, payload) {
@@ -235,8 +234,7 @@ const actions = {
 				context.commit('FINISH_APPLICATIONS')
 			})
 			.catch((error) => {
-				// UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'})
-				console.log(error);
+				UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'})
 				context.commit('FAILED_APPLICATIONS')
 			});
 	},
