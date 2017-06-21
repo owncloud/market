@@ -22,6 +22,7 @@
 namespace OCA\Market\Controller;
 
 use OCA\Market\MarketService;
+use OCP\App\AppManagerException;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\DataResponse;
@@ -32,8 +33,8 @@ class MarketController extends Controller {
 
 	/** @var MarketService */
 	private $marketService;
-	/** @var IL10N */
 
+	/** @var IL10N */
 	private $l10n;
 
 	public function __construct($appName,
@@ -75,6 +76,10 @@ class MarketController extends Controller {
 			}, $bundles);
 
 			return $bundles;
+		} catch (AppManagerException $ex) {
+			return new DataResponse([
+				'message' => $ex->getMessage()
+			]);
 		} catch (\Exception $ex) {
 			return new DataResponse(['message' => $ex->getMessage() ],
 				Http::STATUS_SERVICE_UNAVAILABLE);
@@ -89,6 +94,10 @@ class MarketController extends Controller {
 	public function index() {
 		try {
 			return $this->queryData();
+		} catch (AppManagerException $ex) {
+			return new DataResponse([
+				'message' => $ex->getMessage()
+			]);
 		} catch (\Exception $ex) {
 			return new DataResponse(['message' => $ex->getMessage() ],
 				Http::STATUS_SERVICE_UNAVAILABLE);
