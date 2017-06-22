@@ -68,7 +68,15 @@ class MarketController extends Controller {
 	 */
 	public function bundles() {
 		try {
-			return $this->marketService->getBundles();
+			$bundles = $this->marketService->getBundles();
+			$bundles = array_map(function ($bundle) {
+				$bundle['products'] = array_map(function ($product) {
+					return $this->enrichApp($product);
+				}, $bundle['products']);
+				return $bundle;
+			}, $bundles);
+
+			return $bundles;
 		} catch (\Exception $ex) {
 			return new DataResponse(['message' => $ex->getMessage() ],
 				Http::STATUS_SERVICE_UNAVAILABLE);
@@ -179,35 +187,39 @@ class MarketController extends Controller {
 		$apps = $this->marketService->listApps($category);
 
 		return array_map(function ($app) {
-			$app['installed'] = $this->marketService->isAppInstalled($app['id']);
-			$releases = array_map(function ($release) {
-				$missing = $this->marketService->getMissingDependencies($release);
-				$release['canInstall'] = empty($missing);
-				$release['missingDependencies'] = $missing;
-				return $release;
-			}, $app['releases']);
-			unset($app['releases']);
-			if ($app['installed']) {
-				$app['installInfo'] = $this->marketService->getInstalledAppInfo($app['id']);
-				$app['updateInfo'] = $this->marketService->getAvailableUpdateVersion($app['id']);
-
-				$filteredReleases = array_filter($releases, function ($release) use ($app) {
-					if (empty($app['updateInfo'])) {
-						return $release['version'] === $app['updateInfo'];
-					}
-					return $release['version'] === $app['updateInfo'];
-				});
-				$app['release'] = array_pop($filteredReleases);
-			} else {
-				$app['updateInfo'] = false;
-				usort($releases, function ($a, $b) {
-					return version_compare($a['version'], $b['version'], '>');
-				});
-				if (!empty($releases)) {
-					$app['release'] = array_pop($releases);
-				}
-			}
-			return $app;
+			return $this->enrichApp($app);
 		}, $apps);
+	}
+
+	private function enrichApp($app) {
+		$app['installed'] = $this->marketService->isAppInstalled($app['id']);
+		$releases = array_map(function ($release) {
+			$missing = $this->marketService->getMissingDependencies($release);
+			$release['canInstall'] = empty($missing);
+			$release['missingDependencies'] = $missing;
+			return $release;
+		}, $app['releases']);
+		unset($app['releases']);
+		if ($app['installed']) {
+			$app['installInfo'] = $this->marketService->getInstalledAppInfo($app['id']);
+			$app['updateInfo'] = $this->marketService->getAvailableUpdateVersion($app['id']);
+
+			$filteredReleases = array_filter($releases, function ($release) use ($app) {
+				if (empty($app['updateInfo'])) {
+					return $release['version'] === $app['updateInfo'];
+				}
+				return $release['version'] === $app['updateInfo'];
+			});
+			$app['release'] = array_pop($filteredReleases);
+		} else {
+			$app['updateInfo'] = false;
+			usort($releases, function ($a, $b) {
+				return version_compare($a['version'], $b['version'], '>');
+			});
+			if (!empty($releases)) {
+				$app['release'] = array_pop($releases);
+			}
+		}
+		return $app;
 	}
 }
