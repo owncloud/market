@@ -279,6 +279,8 @@ const actions = {
 				context.commit('SET_APIKEY_VALIDITY', true);
 				context.dispatch('FETCH_APIKEY');
 				context.dispatch('FETCH_APPLICATIONS');
+				context.dispatch('FETCH_CATEGORIES');
+				context.dispatch('FETCH_BUNDLES');
 			}
 			context.commit('APIKEY_PROCESSING', false);
 		}).catch((error) => {
