@@ -121,9 +121,15 @@ class MarketController extends Controller {
 	 * @return array|mixed
 	 */
 	public function changeApiKey($apiKey) {
+		if (!$this->marketService->isApiKeyValid($apiKey)) {
+			return new DataResponse([
+					'message' =>'The api key is not valid.'
+				]
+			);
+		}
 		if (!$this->marketService->setApiKey($apiKey)) {
 			return new DataResponse([
-				'message' =>'Can not change api key because it is configured in config.php'
+					'message' =>'Can not change api key because it is configured in config.php'
 				]
 			);
 		}
