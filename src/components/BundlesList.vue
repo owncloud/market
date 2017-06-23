@@ -16,6 +16,9 @@
 		components: {
 			Tile
 		},
+		mounted () {
+			this.$store.dispatch('FETCH_BUNDLES');
+		},
 		computed: {
 			loading() {
 				return this.$store.state.applications.loading

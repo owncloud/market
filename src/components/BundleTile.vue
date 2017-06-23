@@ -10,35 +10,39 @@
 					p {{ bundle.description }}
 					p(v-html="t('Contains <strong>%{no}</strong> Application(s)', { no : this.bundle.products.length })")
 
-					ul.uk-grid-match.uk-child-width-expand.uk-text-center(uk-grid)
-						li(v-for="application in bundle.products")
-							.uk-card.uk-card-default.uk-card-small.uk-card-body.uk-box-shadow-small
-								p.uk-text-large.uk-text-truncate.uk-float-left {{ application.title }}
-								.uk-card-media-top
-									router-link(:to="{ name: 'details', params: { id: application.id }}")
-										canvas(v-if="application.screenshots.length > 0", width="800", height="450", :style="application.screenshots[0].url | cssBackgroundImage").app-preview
 
-					// table.uk-table.uk-table-hover.uk-table-divider.uk-table-middle.uk-table-justify
+					//table.uk-table.uk-table-divider
+						thead
+							tr
+								th Name
+								th(colspan="2") Version
+						tbody
+							tr(v-for="application in bundle.products")
+								th
+									router-link(:to="{ name: 'details', params: { id: application.id }}") {{ application.title }}
+								th {{ latestVersion(application.release) }}
+
+
+					table.uk-table.uk-table-divider.uk-table-middle.uk-table-justify
 						thead
 							tr
 								th {{ t('App') }}
 								th {{ t('Version') }}
-								// th &nbsp;
+								th {{ t('Info') }}
 						tbody
 							tr(v-for="application in bundle.products")
 								td
 									router-link(:to="{ name: 'details', params: { id: application.id }}") {{ application.title }}
 								td
-									span {{ latestVersion(application.releases) }}
-								// td
-									button.uk-button.uk-button-primary.uk-align-right.uk-margin-remove.uk-position-relative
-										span {{ t('update') }}
-							// tr(v-if="applications.length === 0 && !loading")
-								td(colspan="4").uk-text-center
-									span.uk-text-primary {{ t('All apps are up to date') }
-							// tr(v-show="loading")
-								td(colspan="4").uk-text-center
-									span(uk-spinner, uk-icon="icon: spinner")
+									span {{ (application.release) ? application.release.version : application.installInfo.version }}
+								td
+									span(v-if="application.installed", :title="t('installed')" uk-tooltip)
+										span(uk-icon="icon: check; ratio: 0.8")
+									span(v-else-if="isProcessing(application.id)", :title="t('installing')" uk-tooltip)
+										span(uk-spinner, uk-icon="icon: spinner; ratio: 0.8")
+
+					button(v-if="bundle.downloadable", @click="install").uk-button.uk-button-primary {{ t('install bundle') }}
+					a(v-else, :href="bundle.marketplace", target="_blank").uk-button.uk-button-default {{ t('view in marketplace') }}
 </template>
 
 <script>
@@ -59,10 +63,18 @@
 			}
 		},
 		methods: {
-			latestVersion (releases) {
-				let last = releases.length - 1;
-				return releases[last].version;
+			install () {
+				this.$store.dispatch('INSTALL_BUNDLE', this.bundle.products)
 			},
+
+			isIntalled (id) {
+				return _.contains(this.$store.state.processing, id)
+			},
+
+			isProcessing (id) {
+				return _.contains(this.$store.state.processing, id)
+			},
+
 			t (string, interpolation) {
 				if (!interpolation) {
 					return this.$gettext(string);

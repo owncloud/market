@@ -2,8 +2,8 @@
 	div
 		.uk-card.uk-card-default
 			.uk-card-body
-				a.uk-button.uk-button-small.uk-width-1-1(v-if="changeable", @click="openModalEditKey", href="#", :class="[ apiKey ? 'uk-button-default' : 'uk-button-primary']") {{ apiKey ? 'Edit API Key' : 'Set API Key' }}
-				a.uk-button.uk-button-small.uk-button-default.uk-width-1-1(v-else, @click="openModalViewKey") View API Key
+				button.uk-button.uk-button-small.uk-width-1-1(v-if="changeable", @click="openModalEditKey", :disabled="loading" ,:class="[ key ? 'uk-button-default' : 'uk-button-primary']") {{ key ? 'Edit API Key' : 'Set API Key' }}
+				button.uk-button.uk-button-small.uk-button-default.uk-width-1-1(v-else, @click="openModalViewKey") View API Key
 
 		#edit-api-key(uk-modal='center: true')
 			.uk-modal-dialog
@@ -13,10 +13,16 @@
 				.uk-modal-body
 					p Your API-Key is needed inside the ownCloud Market App. Copy and paste it to retrieve your purchased products inside your ownCloud instance.
 					label.uk-text-meta.uk-display-block.uk-margin-small-bottom Your personal API Key
-					input.uk-input.uk-text-center.-monospace(v-model="newApiKey")
+					input.uk-input.uk-text-center.-monospace(v-model="newKey", :class="{ 'uk-form-success' : valid && key === newKey }")
+					.uk-alert-danger(v-if="!valid", uk-alert)
+						p.uk-text-center The API-Key is invalid!
 				.uk-modal-footer
-					button.uk-button.uk-button-default.uk-modal-close(type='button') Cancel
-					button.uk-button.uk-button-primary(type='button', @click="setKey") Save
+					button.uk-button.uk-button-default.uk-modal-close.uk-margin-small-right(type='button') Close
+
+					button(v-if="!loading", type='button', @click="setKey", :disabled="loading").uk-button.uk-button-primary.uk-align-right Save
+					button(v-else, type='button', disabled).uk-button.uk-button-primary.uk-position-relative.uk-align-right
+						.uk-position-small.uk-position-center-left(uk-spinner, uk-icon="icon: spinner; ratio: 0.8")
+						| &nbsp;&nbsp;&nbsp;&nbsp; saving
 
 		#view-api-key(uk-modal='center: true')
 			.uk-modal-dialog
@@ -24,16 +30,16 @@
 				.uk-modal-header
 					h2.uk-modal-title Marketplace API Key
 				.uk-modal-body
-					p
-						strong Your API-Key is needed here!
-						| Copy and paste it from your Marketplace-Account to retrieve your purchased products here.
-					label.uk-text-meta.uk-display-block.uk-margin-small-bottom Your personal API Key
-					input.uk-input.uk-text-center.-monospace(v-model="apiKey", readonly)
 					.uk-alert-danger(uk-alert)
-						p Your API-Key resides in the config.php file which can't be changed here!<br>
+						p
+							| Your API Key resides in the config.php file which can't be changed here!<br>
+							| Please contact your administrator, if the Key appears to be wrong.
+
+					label.uk-text-meta.uk-display-block.uk-margin-small-bottom API Key
+					input.uk-input.uk-text-center.-monospace(v-model="key", readonly)
+
 				.uk-modal-footer
 					button.uk-button.uk-button-default.uk-modal-close(type='button') Close
-
 </template>
 
 <script>
@@ -43,7 +49,7 @@
 	export default {
 		data () {
 			return {
-				newApiKey : null
+				newKey : null
 			}
 		},
 		methods : {
@@ -54,19 +60,25 @@
 				UIkit.modal('#view-api-key').toggle();
 			},
 			setKey () {
-				this.$store.dispatch('WRITE_APIKEY', this.newApiKey);
-
+				console.log("setKey");
+				this.$store.dispatch('WRITE_APIKEY', this.newKey);
 			}
 		},
 		mounted () {
 			this.$store.dispatch('FETCH_APIKEY');
 		},
 		computed : {
-			apiKey () {
-				return this.newApiKey = this.$store.state.apikey.apiKey;
+			key () {
+				return this.newKey = this.$store.state.apikey.key;
 			},
 			changeable () {
 				return this.$store.state.apikey.changeable;
+			},
+			loading () {
+				return this.$store.state.apikey.loading;
+			},
+			valid () {
+				return this.$store.state.apikey.valid;
 			},
 		}
 	}
