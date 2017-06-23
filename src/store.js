@@ -26,10 +26,13 @@ const state = {
 
 	apikey : {
 		key : null,
+		loading: false,
+		valid : true,
 		changeable : false
 	},
 
-	processing: []
+	processing: [],
+	installed: []
 }
 
 // Retrieve computed values from state.
@@ -131,9 +134,22 @@ const mutations = {
 	FINISH_PROCESSING (state, id) {
 		state['processing'] = _.without(state['processing'], id)
 	},
+
 	SET_APIKEY (state, key) {
-		state['apikey'] = key
+		state['apikey']['key'] = key
 	},
+
+	SET_APIKEY_CHANGEABLE (state, changeable) {
+		state['apikey']['changeable'] = changeable
+	},
+
+	SET_APIKEY_VALIDITY (state, valid) {
+		state['apikey']['valid'] = valid
+	},
+
+	APIKEY_PROCESSING (state, keystate) {
+		state['apikey']['loading'] = keystate
+	}
 };
 
 // Request content from the remote API.
@@ -155,7 +171,7 @@ const actions = {
 			context.commit('FINISH_PROCESSING', id)
 			context.dispatch('FETCH_APPLICATIONS')
 		}).catch((error) => {
-			UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'});
+			// UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'});
 			context.commit('FINISH_PROCESSING', id);
 		})
 	},
@@ -168,9 +184,34 @@ const actions = {
 				context.commit('FINISH_APPLICATIONS')
 			})
 			.catch((error) => {
-				UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'})
+				// UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'})
 				context.commit('FAILED_APPLICATIONS')
+				console.log(error);
 			});
+	},
+	INSTALL_BUNDLE (context, payload) {
+
+		_.forEach(payload, (app, key) => {
+			if (!app.installed) {
+				context.commit('START_PROCESSING', app.id)
+
+				Axios.post(OC.generateUrl('/apps/market/apps/' + app.id + '/install'),
+					{}, {
+						headers: {
+							requesttoken: OC.requestToken
+						}
+					}
+				).then((response) => {
+					UIkit.notification(response.data.message, {status:'success', pos: 'bottom-right'})
+					context.commit('FINISH_PROCESSING', app.id)
+				}).catch((error) => {
+					// UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'});
+					console.log(error + ' --- ' + app.id);
+					context.commit('FINISH_PROCESSING', app.id)
+				})
+			}
+		});
+
 	},
 	FETCH_BUNDLES (context) {
 		context.commit('LOADING_APPLICATIONS')
@@ -181,7 +222,8 @@ const actions = {
 				context.commit('FINISH_APPLICATIONS')
 			})
 			.catch((error) => {
-				UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'})
+				// UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'})
+				console.log(error);
 				context.commit('FAILED_APPLICATIONS')
 			});
 	},
@@ -194,21 +236,31 @@ const actions = {
 				context.commit('FINISH_CATEGORIES')
 			})
 			.catch((error) => {
-				UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'})
+				// UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'})
+				console.log(error);
 				context.commit('FAILED_CATEGORIES')
 			});
 	},
 	FETCH_APIKEY (context) {
+
+		context.commit('APIKEY_PROCESSING', true);
+
 		Axios.get(OC.generateUrl('/apps/market/apikey'))
 			.then((response) => {
-				context.commit('SET_APIKEY', response.data)
+				console.log(response.data.apiKey);
+				context.commit('SET_APIKEY', response.data.apiKey);
+				context.commit('SET_APIKEY_CHANGEABLE', response.data.changeable);
+				context.commit('APIKEY_PROCESSING', false);
 			})
 			.catch((error) => {
-				UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'})
+				console.log(error);
+				context.commit('APIKEY_PROCESSING', false);
 			});
 	},
 	WRITE_APIKEY (context, payload) {
 		let key = payload;
+
+		context.commit('APIKEY_PROCESSING', true);
 
 		Axios.put(OC.generateUrl('/apps/market/apikey'),
 			{
@@ -219,9 +271,19 @@ const actions = {
 				}
 			}
 		).then((response) => {
-			UIkit.notification(response.data.message, {status:'success', pos: 'bottom-right'});
+
+			if (response.data.message == "The api key is not valid.") {
+				context.commit('SET_APIKEY_VALIDITY', false);
+			}
+			else {
+				context.commit('SET_APIKEY_VALIDITY', true);
+				context.dispatch('FETCH_APIKEY');
+				context.dispatch('FETCH_APPLICATIONS');
+			}
+			context.commit('APIKEY_PROCESSING', false);
 		}).catch((error) => {
-			UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'});
+			console.log(error);
+			context.commit('APIKEY_PROCESSING', false);
 		})
 	},
 }
