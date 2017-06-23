@@ -406,17 +406,19 @@ class MarketService {
 	/**
 	 * @param string $path
 	 * @param array $options
+	 * @param string | null $apiKey
 	 * @return \OCP\Http\Client\IResponse
 	 */
-	private function httpGet($path, $options = []) {
-		$apiKey = $this->getApiKey();
-
-		$ca = $this->config->getSystemValue('marketplace.ca', null);
+	private function httpGet($path, $options = [], $apiKey = null) {
+		if ($apiKey === null) {
+			$apiKey = $this->getApiKey();
+		}
 		if ($apiKey !== null) {
 			$options = array_merge([
 				'headers' => ['Authorization' => "apikey: $apiKey"]
 			], $options);
 		}
+		$ca = $this->config->getSystemValue('marketplace.ca', null);
 		if ($ca !== null) {
 			$options = array_merge([
 				'verify' => $ca
@@ -466,6 +468,22 @@ class MarketService {
 		}
 		return json_decode($data, true);
 
+	}
+
+	/**
+	 * @param string $apiKey
+	 * @return bool
+	 */
+	public function isApiKeyValid($apiKey) {
+		if ($apiKey === '') {
+			return true;
+		}
+		try {
+			$response = $this->httpGet($this->storeUrl . '/api/v1/categories.json', [], $apiKey);
+			return true;
+		} catch (\Exception $ex) {
+			return false;
+		}
 	}
 
 }
