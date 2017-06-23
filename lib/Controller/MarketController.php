@@ -25,16 +25,24 @@ use OCA\Market\MarketService;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\DataResponse;
+use OCP\IL10N;
 use OCP\IRequest;
 
 class MarketController extends Controller {
 
-	/** @var MarketService  */
+	/** @var MarketService */
 	private $marketService;
+	/** @var IL10N */
 
-	public function __construct($appName, IRequest $request, MarketService $marketService) {
+	private $l10n;
+
+	public function __construct($appName,
+								IRequest $request,
+								MarketService $marketService,
+								IL10N $l10n) {
 		parent::__construct($appName, $request);
 		$this->marketService = $marketService;
+		$this->l10n = $l10n;
 	}
 
 	/**
@@ -105,7 +113,7 @@ class MarketController extends Controller {
 		try {
 			$this->marketService->installApp($appId);
 			return [
-				'message' => "App $appId installed successfully"
+				'message' => $this->l10n->t('App %s installed successfully', $appId)
 			];
 		} catch(\Exception $ex) {
 			return new DataResponse([
@@ -123,13 +131,13 @@ class MarketController extends Controller {
 	public function changeApiKey($apiKey) {
 		if (!$this->marketService->isApiKeyValid($apiKey)) {
 			return new DataResponse([
-					'message' =>'The api key is not valid.'
+					'message' => $this->l10n->t('The api key is not valid.')
 				]
 			);
 		}
 		if (!$this->marketService->setApiKey($apiKey)) {
 			return new DataResponse([
-					'message' =>'Can not change api key because it is configured in config.php'
+					'message' => $this->l10n->t('Can not change api key because it is configured in config.php')
 				]
 			);
 		}
@@ -176,7 +184,7 @@ class MarketController extends Controller {
 		try {
 			$this->marketService->updateApp($appId);
 			return [
-				'message' => "App $appId updated successfully"
+				'message' => $this->l10n->t('App %s updated successfully', $appId)
 			];
 		} catch(\Exception $ex) {
 			return new DataResponse([
