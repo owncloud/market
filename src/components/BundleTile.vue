@@ -36,7 +36,7 @@
 								td
 									span {{ (application.release) ? application.release.version : application.installInfo.version }}
 								td
-									span(v-if="isInstalled(application.id)", :title="t('installed')" uk-tooltip)
+									span(v-if="isInstalled(application.id) || application.installed", :title="t('installed')" uk-tooltip)
 										span(uk-icon="icon: check; ratio: 0.8")
 									span(v-else-if="isProcessing(application.id)", :title="t('installing')" uk-tooltip)
 										span(uk-spinner, uk-icon="icon: spinner; ratio: 0.8")
@@ -62,18 +62,13 @@
 				return 'background-image:url("' + image + '");';
 			}
 		},
-		computed: {
-			installed () {
-				return this.$store.getters.installed("files_texteditor");
-			},
-		},
 		methods: {
 			install () {
 				this.$store.dispatch('INSTALL_BUNDLE', this.bundle.products)
 			},
 
 			isInstalled (id) {
-				return this.$store.getters.installed(id);
+				return _.contains(this.$store.state.installed, id)
 			},
 
 			isProcessing (id) {
