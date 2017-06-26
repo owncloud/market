@@ -27,13 +27,13 @@ const state = {
 	apikey : {
 		key : null,
 		loading: false,
-		valid : true,
+		valid : undefined,
 		changeable : false
 	},
 
 	processing: [],
 	installed: []
-}
+};
 
 // Retrieve computed values from state.
 const getters = {
@@ -69,6 +69,22 @@ const getters = {
 	},
 	apikey (state) {
 		return state.apikey;
+	},
+	installed: (state) => (id) => {
+
+		let filtered = _.filter(state.applications.records, function (application) {
+			if (!id)
+				return application.installed === true;
+			else
+				return application.installed === true && application.id === id;
+		});
+
+		if (!id) {
+			return filtered
+		}
+
+		console.log("Installed: " + filtered.length);
+		return (filtered.length === 1);
 	}
 };
 
@@ -80,6 +96,7 @@ const mutations = {
 			failed: false
 		})
 	},
+
 	FAILED_APPLICATIONS (state) {
 		_.extend(state['applications'], {
 			loading: false,
@@ -87,22 +104,26 @@ const mutations = {
 			records: {}
 		})
 	},
+
 	FINISH_APPLICATIONS (state) {
 		_.extend(state['applications'], {
 			loading: false,
 			failed: false
 		})
 	},
+
 	SET_APPLICATIONS (state, content) {
 		_.extend(state['applications'], {
 			records: content
 		})
 	},
+
 	SET_BUNDLES (state, content) {
 		_.extend(state['bundles'], {
 			records: content
 		})
 	},
+
 	LOADING_CATEGORIES (state) {
 		_.extend(state['categories'], {
 			loading: true,
@@ -110,6 +131,7 @@ const mutations = {
 			records: {}
 		})
 	},
+
 	FAILED_CATEGORIES (state) {
 		_.extend(state['categories'], {
 			loading: false,
@@ -117,39 +139,31 @@ const mutations = {
 			records: {}
 		})
 	},
+
 	FINISH_CATEGORIES (state) {
 		_.extend(state['categories'], {
 			loading: false,
 			failed: false
 		})
 	},
+
 	SET_CATEGORIES (state, content) {
 		_.extend(state['categories'], {
 			records: content
 		})
 	},
+
 	START_PROCESSING (state, id) {
 		state['processing'].push(id)
 	},
+
 	FINISH_PROCESSING (state, id) {
 		state['processing'] = _.without(state['processing'], id)
 	},
 
-	SET_APIKEY (state, key) {
-		state['apikey']['key'] = key
+	APIKEY (state, changes) {
+		_.extend(state['apikey'], changes);
 	},
-
-	SET_APIKEY_CHANGEABLE (state, changeable) {
-		state['apikey']['changeable'] = changeable
-	},
-
-	SET_APIKEY_VALIDITY (state, valid) {
-		state['apikey']['valid'] = valid
-	},
-
-	APIKEY_PROCESSING (state, keystate) {
-		state['apikey']['loading'] = keystate
-	}
 };
 
 // Request content from the remote API.
@@ -167,11 +181,14 @@ const actions = {
 				}
 			}
 		).then((response) => {
-			UIkit.notification(response.data.message, {status:'success', pos: 'bottom-right'})
-			context.commit('FINISH_PROCESSING', id)
+			UIkit.notification(response.data.message, {
+				status: 'success',
+				pos: 'bottom-right'
+			});
+			context.commit('FINISH_PROCESSING', id);
 			context.dispatch('FETCH_APPLICATIONS')
 		}).catch((error) => {
-			// UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'});
+			UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'});
 			context.commit('FINISH_PROCESSING', id);
 		})
 	},
@@ -180,22 +197,23 @@ const actions = {
 
 		Axios.get(OC.generateUrl('/apps/market/apps'))
 			.then((response) => {
-				context.commit('SET_APPLICATIONS', response.data)
+				context.commit('SET_APPLICATIONS', response.data);
 				context.commit('FINISH_APPLICATIONS')
 			})
 			.catch((error) => {
 				// UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'})
-				context.commit('FAILED_APPLICATIONS')
+				context.commit('FAILED_APPLICATIONS');
 				console.log(error);
 			});
 	},
 	INSTALL_BUNDLE (context, payload) {
 
-		_.forEach(payload, (app, key) => {
-			if (!app.installed) {
-				context.commit('START_PROCESSING', app.id)
+		let install = (i) => {
 
-				Axios.post(OC.generateUrl('/apps/market/apps/' + app.id + '/install'),
+			if (payload[i]) {
+				context.commit('START_PROCESSING', payload[i].id)
+
+				Axios.post(OC.generateUrl('/apps/market/apps/' + payload[i].id + '/install'),
 					{}, {
 						headers: {
 							requesttoken: OC.requestToken
@@ -203,15 +221,18 @@ const actions = {
 					}
 				).then((response) => {
 					UIkit.notification(response.data.message, {status:'success', pos: 'bottom-right'})
-					context.commit('FINISH_PROCESSING', app.id)
+					context.commit('FINISH_PROCESSING', payload[i].id)
+					install(++i);
 				}).catch((error) => {
 					// UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'});
-					console.log(error + ' --- ' + app.id);
-					context.commit('FINISH_PROCESSING', app.id)
+					console.log(error);
+					context.commit('FINISH_PROCESSING', payload[i].id)
+					install(++i);
 				})
 			}
-		});
+		};
 
+		install(0);
 	},
 	FETCH_BUNDLES (context) {
 		context.commit('LOADING_APPLICATIONS')
@@ -242,26 +263,24 @@ const actions = {
 			});
 	},
 	FETCH_APIKEY (context) {
-
-		context.commit('APIKEY_PROCESSING', true);
-
+		context.commit('APIKEY', {'loading': true });
 		Axios.get(OC.generateUrl('/apps/market/apikey'))
 			.then((response) => {
-				console.log(response.data.apiKey);
-				context.commit('SET_APIKEY', response.data.apiKey);
-				context.commit('SET_APIKEY_CHANGEABLE', response.data.changeable);
-				context.commit('APIKEY_PROCESSING', false);
+				context.commit('APIKEY', {
+					'key'        : response.data.apiKey,
+					'changeable' : response.data.changeable,
+					'loading'    : false,
+					'processing' : false
+				});
 			})
 			.catch((error) => {
 				console.log(error);
-				context.commit('APIKEY_PROCESSING', false);
+				context.commit('APIKEY', {'loading': false });
 			});
 	},
 	WRITE_APIKEY (context, payload) {
 		let key = payload;
-
-		context.commit('APIKEY_PROCESSING', true);
-
+		context.commit('APIKEY', {'loading': true });
 		Axios.put(OC.generateUrl('/apps/market/apikey'),
 			{
 				'apiKey' : key
@@ -273,19 +292,21 @@ const actions = {
 		).then((response) => {
 
 			if (response.data.message == "The api key is not valid.") {
-				context.commit('SET_APIKEY_VALIDITY', false);
+				context.commit('APIKEY', {
+					'loading': false,
+					'valid'  : false
+				});
 			}
 			else {
-				context.commit('SET_APIKEY_VALIDITY', true);
+				context.commit('APIKEY', {'valid' : true});
 				context.dispatch('FETCH_APIKEY');
 				context.dispatch('FETCH_APPLICATIONS');
 				context.dispatch('FETCH_CATEGORIES');
 				context.dispatch('FETCH_BUNDLES');
 			}
-			context.commit('APIKEY_PROCESSING', false);
 		}).catch((error) => {
 			console.log(error);
-			context.commit('APIKEY_PROCESSING', false);
+			context.commit('APIKEY', {'loading' : false});
 		})
 	},
 }
