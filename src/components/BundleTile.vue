@@ -3,8 +3,7 @@
 		li(v-if="bundle").uk-animation-slide-top-small
 			.uk-card.uk-card-default
 				.uk-card-header
-					h3.uk-card-title.uk-text-truncate.uk-margin-remove-bottom.uk-float-left.uk-margin-small-right
-						router-link(:to="{ name: 'details', params: { id: bundle.id }}") {{ bundle.title }}
+					h3.uk-card-title.uk-text-truncate.uk-margin-remove-bottom.uk-float-left.uk-margin-small-right {{ bundle.title }}
 
 				.uk-card-body
 					p {{ bundle.description }}
