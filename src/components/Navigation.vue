@@ -9,8 +9,7 @@
 				li.uk-nav-header {{ t('Categories') }}
 				li(v-for="category in categories")
 					router-link(:to="{ name: 'byCategory', params: { category: category.id }}") {{ category.translations.en.name }}
-
-				li.uk-nav-divider
+				li.uk-nav-header {{ t('More') }}
 				li
 					router-link(:to="{ name: 'index' }") {{ t('Show all') }}
 				li

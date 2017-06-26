@@ -14,7 +14,7 @@
 					p Your API-Key is needed inside the ownCloud Market App. Copy and paste it to retrieve your purchased products inside your ownCloud instance.
 					label.uk-text-meta.uk-display-block.uk-margin-small-bottom Your personal API Key
 					input.uk-input.uk-text-center.-monospace(v-model="newKey", :class="{ 'uk-form-success' : valid && key === newKey }")
-					.uk-alert-danger(v-if="!valid", uk-alert)
+					.uk-alert-danger(v-if="!valid && valid != undefined", uk-alert)
 						p.uk-text-center The API-Key is invalid!
 				.uk-modal-footer
 					button.uk-button.uk-button-default.uk-modal-close.uk-margin-small-right(type='button') Close
