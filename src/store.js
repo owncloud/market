@@ -40,11 +40,13 @@ const getters = {
 	categories (state) {
 		return state.categories.records;
 	},
+
 	category: (state) => (id) => {
 		return _.find(state.categories.records, function (category) {
 			return category.id == id;
 		});
 	},
+
 	applications: (state) => (category) => {
 		if (category === undefined) {
 			return state.applications.records;
@@ -54,37 +56,25 @@ const getters = {
 			return _.contains(application.categories, category);
 		});
 	},
+
 	bundles: (state) => {
 		return state.bundles.records;
 	},
+
 	application: (state) => (id) => {
 		return _.find(state.applications.records, function (application) {
 			return application.id == id;
 		});
 	},
+
 	updateList: (state) => {
 		return _.filter(state.applications.records, function (application) {
 			return application.updateInfo != false;
 		});
 	},
+
 	apikey (state) {
 		return state.apikey;
-	},
-	installed: (state) => (id) => {
-
-		let filtered = _.filter(state.applications.records, function (application) {
-			if (!id)
-				return application.installed === true;
-			else
-				return application.installed === true && application.id === id;
-		});
-
-		if (!id) {
-			return filtered
-		}
-
-		console.log("Installed: " + filtered.length);
-		return (filtered.length === 1);
 	}
 };
 
@@ -159,6 +149,7 @@ const mutations = {
 
 	FINISH_PROCESSING (state, id) {
 		state['processing'] = _.without(state['processing'], id)
+		state['installed'].push(id)
 	},
 
 	APIKEY (state, changes) {
