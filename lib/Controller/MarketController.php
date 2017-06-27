@@ -167,7 +167,7 @@ class MarketController extends Controller {
 		try {
 			$this->marketService->uninstallApp($appId);
 			return [
-				'message' => "App $appId uninstalled successfully"
+				'message' => $this->l10n->t('App %s uninstalled successfully', $appId)
 			];
 		} catch(\Exception $ex) {
 			return new DataResponse([
