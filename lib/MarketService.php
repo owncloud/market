@@ -83,7 +83,7 @@ class MarketService {
 	public function installApp($appId, $skipMigrations = false) {
 
 		$availableReleases = array_column($this->getApps(), 'releases', 'id')[$appId];
-		if (array_pop($availableReleases)['license'] == 'ownCloud Commercial License') {
+		if (array_pop($availableReleases)['license'] == 'ownCloud Commercial License' && $appId != 'enterprise_key') {
 			try {
 				$this->appManager->enableApp('enterprise_key');
 			} catch (\Exception $e) {
