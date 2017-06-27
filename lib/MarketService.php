@@ -105,7 +105,7 @@ class MarketService {
 		try {
 			$info = $this->getInstalledAppInfo($appId);
 			if (!is_null($info)) {
-				throw new AppAlreadyInstalledException("App ($appId) is already installed");
+				throw new AppAlreadyInstalledException($this->l10n->t('App %s is already installed', $appId));
 			}
 
 			// download package
@@ -113,9 +113,9 @@ class MarketService {
 			$this->installPackage($package, $skipMigrations);
 			$this->appManager->enableApp($appId);
 		} catch (ClientException $e){
-			throw new AppManagerException('No marketplace connection', 0, $e);
+			throw new AppManagerException($this->l10n->t('No marketplace connection'), 0, $e);
 		} catch (ServerException $e){
-			throw new AppManagerException('No marketplace connection', 0, $e);
+			throw new AppManagerException($this->l10n->t('No marketplace connection'), 0, $e);
 		}
 	}
 
@@ -155,7 +155,7 @@ class MarketService {
 			return $tooSmall === false && $tooBig === false;
 		});
 		if (empty($release)) {
-			throw new AppUpdateNotFoundException("No compatible version for $appId");
+			throw new AppUpdateNotFoundException($this->l10n->t('No compatible version for %s', $appId));
 		}
 		usort($release, function($a, $b) {
 			return version_compare($b['version'], $a['version']);
@@ -193,11 +193,11 @@ class MarketService {
 	public function getAvailableUpdateVersion($appId) {
 		$info = $this->getInstalledAppInfo($appId);
 		if (is_null($info)) {
-			throw new AppNotInstalledException("App ($appId) is not installed");
+			throw new AppNotInstalledException($this->l10n->t('App (%s) is not installed', $appId));
 		}
 		$marketInfo = $this->getAppInfo($appId);
 		if (is_null($marketInfo)) {
-			throw new AppNotFoundException("App ($appId) is not known at the marketplace.");
+			throw new AppNotFoundException($this->l10n->t('App (%s) is not known at the marketplace.', $appId));
 		}
 		$releases = $marketInfo['releases'];
 		$currentVersion = (string) $info['version'];
@@ -252,16 +252,16 @@ class MarketService {
 		try {
 			$info = $this->getInstalledAppInfo($appId);
 			if (is_null($info)) {
-				throw new AppNotInstalledException("App ($appId) is not installed");
+				throw new AppNotInstalledException($this->l10n->t('App (%s) is not installed', $appId));
 			}
 
 			// download package
 			$package = $this->downloadPackage($appId);
 			$this->updatePackage($package);
 		} catch (ClientException $e){
-			throw new AppManagerException('No marketplace connection', 0, $e);
+			throw new AppManagerException($this->l10n->t('No marketplace connection'), 0, $e);
 		} catch (ServerException $e){
-			throw new AppManagerException('No marketplace connection', 0, $e);
+			throw new AppManagerException($this->l10n->t('No marketplace connection'), 0, $e);
 		}
 	}
 
@@ -273,10 +273,10 @@ class MarketService {
 	 */
 	public function uninstallApp($appId) {
 		if ($this->appManager->isShipped($appId)) {
-			throw new AppManagerException('Shipped apps cannot be uninstalled');
+			throw new AppManagerException($this->l10n->t('Shipped apps cannot be uninstalled'));
 		}
 		if (!\OC_App::removeApp($appId)) {
-			throw new AppManagerException('App could not be uninstalled. Please check the server logs.');
+			throw new AppManagerException($this->l10n->t('App (%s) could not be uninstalled. Please check the server logs.', $appId));
 		}
 	}
 
