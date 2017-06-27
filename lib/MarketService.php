@@ -81,6 +81,18 @@ class MarketService {
 	 * @throws \Exception
 	 */
 	public function installApp($appId, $skipMigrations = false) {
+
+		$availableReleases = array_column($this->getApps(), 'releases', 'id')[$appId];
+		if (array_pop($availableReleases)['license'] == 'ownCloud Commercial License') {
+			try {
+				$this->appManager->enableApp('enterprise_key');
+			} catch (\Exception $e) {
+				throw new \Exception(
+					'Please install enterprise_key app and enter a license-key in config.php first.'
+				);
+			}
+		}
+
 		try {
 			$info = $this->getInstalledAppInfo($appId);
 			if (!is_null($info)) {
