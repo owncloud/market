@@ -22,18 +22,16 @@
 
 namespace OCA\Market;
 
-use function foo\func;
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Exception\ClientException;
 use OC\App\DependencyAnalyzer;
 use OC\App\Platform;
-use OCA\Enterprise_Key\EnterpriseKey;
 use OCP\App\AppManagerException;
 use OCP\App\IAppManager;
 use OCP\ICacheFactory;
 use OCP\IConfig;
+use OCP\IL10N;
 use OCP\Util;
-use function Symfony\Component\Debug\Tests\testHeader;
 use OCP\App\AppAlreadyInstalledException;
 use OCP\App\AppNotFoundException;
 use OCP\App\AppNotInstalledException;
@@ -62,14 +60,16 @@ class MarketService {
 	 * @param IAppManager $appManager
 	 * @param IConfig $config
 	 * @param ICacheFactory $cacheFactory
+	 * @param IL10N $l10n
 	 */
-	public function __construct(IAppManager $appManager, IConfig $config, ICacheFactory $cacheFactory) {
+	public function __construct(IAppManager $appManager, IConfig $config, ICacheFactory $cacheFactory, IL10N $l10n) {
 		$storeUrl = $config->getSystemValue('appstoreurl', 'https://marketplace.owncloud.com');
 
 		$this->appManager = $appManager;
 		$this->config = $config;
 		$this->storeUrl = rtrim($storeUrl, '/');
 		$this->cacheFactory = $cacheFactory;
+		$this->l10n = $l10n;
 	}
 
 	/**
@@ -84,17 +84,21 @@ class MarketService {
 	public function installApp($appId, $skipMigrations = false) {
 
 		$availableReleases = array_column($this->getApps(), 'releases', 'id')[$appId];
-		if (array_pop($availableReleases)['license'] == 'ownCloud Commercial License' && $appId != 'enterprise_key') {
-			try {
-				if (!$this->config->getSystemValue('license-key', null)) {
-					throw new \Exception('Please enter a license-key in to config.php');
+		if (array_pop($availableReleases)['license'] == 'ownCloud Commercial License') {
+			$license = $this->config->getSystemValue('license-key', null);
+			if ($license === null) {
+				throw new \Exception($this->l10n->t('Please enter a license-key in to config.php'));
+			}
+			if ($appId !== 'enterprise_key') {
+				if (!$this->appManager->isEnabledForUser('enterprise_key')) {
+					throw new \Exception($this->l10n->t('Please install and enable the enterprise_key app and enter a license-key in config.php first.'));
 				}
-
-				$this->appManager->enableApp('enterprise_key');
-			} catch (\Exception $e) {
-				throw new \Exception(
-					'Please install enterprise_key app and enter a license-key in config.php first.'
-				);
+				if (class_exists('\OCA\Enterprise_Key\EnterpriseKey')) {
+					$e = new \OCA\Enterprise_Key\EnterpriseKey($license);
+					if (!$e->check()) {
+						throw new \Exception($this->l10n->t('Your license-key is not valid.'));
+					}
+				}
 			}
 		}
 
@@ -183,6 +187,8 @@ class MarketService {
 	 *
 	 * @param string $appId
 	 * @return bool|string
+	 * @throws AppNotFoundException
+	 * @throws AppNotInstalledException
 	 */
 	public function getAvailableUpdateVersion($appId) {
 		$info = $this->getInstalledAppInfo($appId);
@@ -239,6 +245,8 @@ class MarketService {
 	 * Update the app
 	 *
 	 * @param string $appId
+	 * @throws AppManagerException
+	 * @throws AppNotInstalledException
 	 */
 	public function updateApp($appId) {
 		try {
@@ -261,6 +269,7 @@ class MarketService {
 	 * Uninstall the app
 	 *
 	 * @param string $appId
+	 * @throws AppManagerException
 	 */
 	public function uninstallApp($appId) {
 		if ($this->appManager->isShipped($appId)) {
@@ -284,7 +293,7 @@ class MarketService {
 	 * Verify if all requirements are met
 	 *
 	 * @param [] $appInfo
-	 * @return []
+	 * @return array []
 	 */
 	public function getMissingDependencies($appInfo) {
 		// bad hack - should use OCP
@@ -497,7 +506,7 @@ class MarketService {
 			return true;
 		}
 		try {
-			$response = $this->httpGet($this->storeUrl . '/api/v1/categories.json', [], $apiKey);
+			$this->httpGet($this->storeUrl . '/api/v1/categories.json', [], $apiKey);
 			return true;
 		} catch (\Exception $ex) {
 			return false;
