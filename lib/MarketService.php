@@ -27,6 +27,7 @@ use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Exception\ClientException;
 use OC\App\DependencyAnalyzer;
 use OC\App\Platform;
+use OCA\Enterprise_Key\EnterpriseKey;
 use OCP\App\AppManagerException;
 use OCP\App\IAppManager;
 use OCP\ICacheFactory;
@@ -85,6 +86,10 @@ class MarketService {
 		$availableReleases = array_column($this->getApps(), 'releases', 'id')[$appId];
 		if (array_pop($availableReleases)['license'] == 'ownCloud Commercial License' && $appId != 'enterprise_key') {
 			try {
+				if (!$this->config->getSystemValue('license-key', null)) {
+					throw new \Exception('Please enter a license-key in to config.php');
+				}
+
 				$this->appManager->enableApp('enterprise_key');
 			} catch (\Exception $e) {
 				throw new \Exception(
