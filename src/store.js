@@ -196,9 +196,8 @@ const actions = {
 				context.commit('FINISH_APPLICATIONS')
 			})
 			.catch((error) => {
-				// UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'})
+				UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'})
 				context.commit('FAILED_APPLICATIONS');
-				console.log(error);
 			});
 	},
 	INSTALL_BUNDLE (context, payload) {
@@ -208,15 +207,15 @@ const actions = {
 		});
 	},
 	FETCH_BUNDLES (context) {
-		context.commit('LOADING_APPLICATIONS')
+		context.commit('LOADING_APPLICATIONS');
 
 		Axios.get(OC.generateUrl('/apps/market/bundles'))
 			.then((response) => {
-				context.commit('SET_BUNDLES', response.data)
+				context.commit('SET_BUNDLES', response.data);
 				context.commit('FINISH_APPLICATIONS')
 			})
 			.catch((error) => {
-				UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'})
+				UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'});
 				context.commit('FAILED_APPLICATIONS')
 			});
 	},
@@ -225,11 +224,11 @@ const actions = {
 
 		Axios.get(OC.generateUrl('/apps/market/categories'))
 			.then((response) => {
-				context.commit('SET_CATEGORIES', response.data)
+				context.commit('SET_CATEGORIES', response.data);
 				context.commit('FINISH_CATEGORIES')
 			})
 			.catch((error) => {
-				UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'})
+				UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'});
 				context.commit('FAILED_CATEGORIES')
 			});
 	},
@@ -261,7 +260,6 @@ const actions = {
 				}
 			}
 		).then((response) => {
-
 			if (response.data.message == "The api key is not valid.") {
 				context.commit('APIKEY', {
 					'loading': false,
