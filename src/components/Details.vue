@@ -21,7 +21,7 @@
 			.uk-card-body
 				p {{ application.description }}
 
-				table.uk-table.uk-table-divider.uk-table-responsive.uk-table-justify(v-if="application.release")
+				table.uk-table.uk-table-divider.uk-table-responsive.uk-table-justify
 					tr
 						th
 							span {{ t('Developer') }}
@@ -36,10 +36,10 @@
 						td
 							a(:href="application.publisher.url", target="_blank") {{ application.publisher.name }}
 
-						td {{ application.release.version }}
-							i.uk-margin-small-left ({{ application.release.created | formatDate }})
+						td {{ details.version }}
+							//i.uk-margin-small-left ({{ details.created | formatDate }})
 
-						td {{ application.release.license }}
+						td {{ license }}
 
 				div(v-if="application.release && !application.release.canInstall", uk-alert).uk-alert-danger
 					ul(v-if="!application.release.canInstall").uk-list
@@ -120,7 +120,16 @@
 			// Any kind of installing, updating or uninstalling process
 			processing() {
 				return _.contains(this.$store.state.processing, this.application.id)
+			},
+
+			details () {
+				return (this.installed) ? this.application.installInfo : this.application.release;
+			},
+
+			license () {
+				return (this.installed) ? this.application.installInfo.licence : this.application.release.license;
 			}
+
 		},
 		filters: {
 			formatDate (unixtime) {
