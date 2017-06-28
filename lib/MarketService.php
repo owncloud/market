@@ -142,7 +142,7 @@ class MarketService {
 
 		$data = $this->getAppInfo($appId);
 		if (empty($data)) {
-			throw new AppNotFoundException("Unknown app ($appId)");
+			throw new AppNotFoundException($this->l10n->t('Unknown app (%s)', $appId));
 		}
 
 		$version = $this->getPlatformVersion();
@@ -214,7 +214,7 @@ class MarketService {
 		return false;
 	}
 
-	private function getAppInfo($appId) {
+	public function getAppInfo($appId) {
 		$data = $this->getApps();
 		$data = array_filter($data, function($element) use ($appId) {
 			return $element['id'] === $appId;
