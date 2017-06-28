@@ -9,19 +9,6 @@
 					p {{ bundle.description }}
 					p(v-html="t('Contains <strong>%{no}</strong> Application(s)', { no : this.bundle.products.length })")
 
-
-					//table.uk-table.uk-table-divider
-						thead
-							tr
-								th Name
-								th(colspan="2") Version
-						tbody
-							tr(v-for="application in bundle.products")
-								th
-									router-link(:to="{ name: 'details', params: { id: application.id }}") {{ application.title }}
-								th {{ latestVersion(application.release) }}
-
-
 					table.uk-table.uk-table-divider.uk-table-middle.uk-table-justify
 						thead
 							tr
@@ -35,8 +22,7 @@
 								td
 									span {{ (application.release) ? application.release.version : application.installInfo.version }}
 								td
-									span(v-if="isInstalled(application.id) || application.installed", :title="t('installed')" uk-tooltip)
-										span(uk-icon="icon: check; ratio: 0.8")
+									span(v-if="isInstalled(application.id) || application.installed") {{ t('installed') }}
 									span(v-else-if="isProcessing(application.id)", :title="t('installing')" uk-tooltip)
 										span(uk-spinner, uk-icon="icon: spinner; ratio: 0.8")
 

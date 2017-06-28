@@ -160,10 +160,11 @@ const mutations = {
 // Request content from the remote API.
 const actions = {
 	PROCESS_APPLICATION (context, payload) {
-		let id    = payload[0];
-		let route = payload[1];
+		let id           = payload[0];
+		let route        = payload[1];
+		let preventFetch = payload[2];
 
-		context.commit('START_PROCESSING', id)
+		context.commit('START_PROCESSING', id);
 
 		Axios.post(OC.generateUrl('/apps/market/apps/{id}/' + route, {id}),
 			{}, {
@@ -177,14 +178,17 @@ const actions = {
 				pos: 'bottom-right'
 			});
 			context.commit('FINISH_PROCESSING', id);
-			context.dispatch('FETCH_APPLICATIONS')
+
+			if (!preventFetch)
+				context.dispatch('FETCH_APPLICATIONS')
+
 		}).catch((error) => {
 			UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'});
 			context.commit('FINISH_PROCESSING', id);
 		})
 	},
 	FETCH_APPLICATIONS (context) {
-		context.commit('LOADING_APPLICATIONS')
+		context.commit('LOADING_APPLICATIONS');
 
 		Axios.get(OC.generateUrl('/apps/market/apps'))
 			.then((response) => {
@@ -198,32 +202,11 @@ const actions = {
 			});
 	},
 	INSTALL_BUNDLE (context, payload) {
-
-		let install = (i) => {
-
-			if (payload[i]) {
-				context.commit('START_PROCESSING', payload[i].id)
-
-				Axios.post(OC.generateUrl('/apps/market/apps/' + payload[i].id + '/install'),
-					{}, {
-						headers: {
-							requesttoken: OC.requestToken
-						}
-					}
-				).then((response) => {
-					UIkit.notification(response.data.message, {status:'success', pos: 'bottom-right'})
-					context.commit('FINISH_PROCESSING', payload[i].id)
-					install(++i);
-				}).catch((error) => {
-					// UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'});
-					console.log(error);
-					context.commit('FINISH_PROCESSING', payload[i].id)
-					install(++i);
-				})
-			}
-		};
-
-		install(0);
+		_.each(payload, (app, i) => {
+			let fetch = payload.length === (i+1);
+			if (!app.installed)
+				context.dispatch('PROCESS_APPLICATION', [app.id, 'install', fetch]);
+		});
 	},
 	FETCH_BUNDLES (context) {
 		context.commit('LOADING_APPLICATIONS')
@@ -234,8 +217,7 @@ const actions = {
 				context.commit('FINISH_APPLICATIONS')
 			})
 			.catch((error) => {
-				// UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'})
-				console.log(error);
+				UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'})
 				context.commit('FAILED_APPLICATIONS')
 			});
 	},
@@ -248,8 +230,7 @@ const actions = {
 				context.commit('FINISH_CATEGORIES')
 			})
 			.catch((error) => {
-				// UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'})
-				console.log(error);
+				UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'})
 				context.commit('FAILED_CATEGORIES')
 			});
 	},
