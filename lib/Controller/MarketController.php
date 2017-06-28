@@ -49,16 +49,6 @@ class MarketController extends Controller {
 	 * @NoCSRFRequired
 	 *
 	 * @return array|mixed
-	 * @param $category
-	 */
-	public function appPerCategory($category) {
-		return $this->queryData($category);
-	}
-
-	/**
-	 * @NoCSRFRequired
-	 *
-	 * @return array|mixed
 	 */
 	public function categories() {
 		try {
@@ -99,6 +89,22 @@ class MarketController extends Controller {
 	public function index() {
 		try {
 			return $this->queryData();
+		} catch (\Exception $ex) {
+			return new DataResponse(['message' => $ex->getMessage() ],
+				Http::STATUS_SERVICE_UNAVAILABLE);
+		}
+	}
+
+	/**
+	 * @NoCSRFRequired
+	 *
+	 * @param string $appId
+	 * @return array|mixed
+	 */
+	public function app($appId) {
+		try {
+			$info = $this->marketService->getAppInfo($appId);
+			return $this->enrichApp($info);
 		} catch (\Exception $ex) {
 			return new DataResponse(['message' => $ex->getMessage() ],
 				Http::STATUS_SERVICE_UNAVAILABLE);

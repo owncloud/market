@@ -27,7 +27,7 @@ return [
 		['name' => 'market#categories', 'url' => '/categories', 'verb' => 'GET'],
 		['name' => 'market#bundles', 'url' => '/bundles', 'verb' => 'GET'],
 		['name' => 'market#index', 'url' => '/apps', 'verb' => 'GET'],
-		['name' => 'market#appPerCategory', 'url' => '/apps/{category}', 'verb' => 'GET'],
+		['name' => 'market#app', 'url' => '/apps/{appId}', 'verb' => 'GET'],
 		['name' => 'market#install', 'url' => '/apps/{appId}/install', 'verb' => 'POST'],
 		['name' => 'market#update', 'url' => '/apps/{appId}/update', 'verb' => 'POST'],
 		['name' => 'market#uninstall', 'url' => '/apps/{appId}/uninstall', 'verb' => 'POST'],
