@@ -2,7 +2,8 @@ NODE_BINDIR = ../node_modules/.bin
 export PATH := $(NODE_BINDIR):$(PATH)
 
 # Available locales for the app.
-LOCALES = ca cs_CZ da de de_DE el en_GB es et_EE fi_FI fr he is it ja nb_NO nl pl pt_BR pt_PT ru sl sq th_TH tr zh_CN
+LOCALES = el eo fi_FI ko pt_PT et_EE eu th_TH gl id es ru nl tr hu_HU ja lt_LT it ca en_GB bg_BG fr pt_BR de da fa sk_SK de_DE es_MX cs_CZ is he zh_CN sq oc sv pl uk sl nb_NO
+
 
 # Name of the generated .po files for each available locale.
 LOCALE_FILES ?= $(patsubst %,locale/%/market.po,$(LOCALES))
@@ -37,6 +38,6 @@ translations:
 push:
 	tx -d push -s
 pull:
-	tx -d pull -a --minimum-perc=20
+	tx -d pull -a --minimum-perc=15
 
 transifex-sync: clean makemessages push pull translations
