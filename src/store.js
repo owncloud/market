@@ -222,8 +222,10 @@ const actions = {
 					context.commit('FINISH_PROCESSING', payload[i].id)
 					install(++i);
 
-					if (count === i)
+					if (count === i) {
+						context.dispatch('FETCH_APPLICATIONS');
 						context.dispatch('FETCH_BUNDLES');
+					}
 
 				}).catch((error) => {
 					// UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'});
@@ -231,8 +233,10 @@ const actions = {
 					context.commit('FINISH_PROCESSING', payload[i].id)
 					install(++i);
 
-					if (count === i)
+					if (count === i) {
+						context.dispatch('FETCH_APPLICATIONS');
 						context.dispatch('FETCH_BUNDLES');
+					}
 				})
 			}
 		};
