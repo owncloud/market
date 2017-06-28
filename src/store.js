@@ -148,7 +148,7 @@ const mutations = {
 	},
 
 	FINISH_PROCESSING (state, id) {
-		state['processing'] = _.without(state['processing'], id)
+		state['processing'] = _.without(state['processing'], id);
 		state['installed'].push(id)
 	},
 
@@ -162,7 +162,6 @@ const actions = {
 	PROCESS_APPLICATION (context, payload) {
 		let id           = payload[0];
 		let route        = payload[1];
-		let preventFetch = payload[2];
 
 		context.commit('START_PROCESSING', id);
 
@@ -178,15 +177,14 @@ const actions = {
 				pos: 'bottom-right'
 			});
 			context.commit('FINISH_PROCESSING', id);
-
-			if (!preventFetch)
-				context.dispatch('FETCH_APPLICATIONS')
+			context.dispatch('FETCH_APPLICATIONS')
 
 		}).catch((error) => {
 			UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'});
 			context.commit('FINISH_PROCESSING', id);
 		})
 	},
+
 	FETCH_APPLICATIONS (context) {
 		context.commit('LOADING_APPLICATIONS');
 
@@ -200,12 +198,48 @@ const actions = {
 				context.commit('FAILED_APPLICATIONS');
 			});
 	},
+
 	INSTALL_BUNDLE (context, payload) {
-		_.each(payload, (app, i) => {
-			if (!app.installed)
-				context.dispatch('PROCESS_APPLICATION', [app.id, 'install', true]);
-		});
+
+		let count = payload.length;
+
+		let install = (i) => {
+
+			if (payload[i]) {
+				context.commit('START_PROCESSING', payload[i].id)
+
+				Axios.post(OC.generateUrl('/apps/market/apps/' + payload[i].id + '/install'),
+					{}, {
+						headers: {
+							requesttoken: OC.requestToken
+						}
+					}
+				).then((response) => {
+					UIkit.notification(response.data.message, {
+						status: 'success',
+						pos: 'bottom-right'
+					})
+					context.commit('FINISH_PROCESSING', payload[i].id)
+					install(++i);
+
+					if (count === i)
+						context.dispatch('FETCH_BUNDLES');
+
+				}).catch((error) => {
+					// UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'});
+					console.log(error.status);
+					context.commit('FINISH_PROCESSING', payload[i].id)
+					install(++i);
+
+					if (count === i)
+						context.dispatch('FETCH_BUNDLES');
+				})
+			}
+		};
+
+		install(0);
 	},
+
 	FETCH_BUNDLES (context) {
 		context.commit('LOADING_APPLICATIONS');
 
@@ -219,6 +253,7 @@ const actions = {
 				context.commit('FAILED_APPLICATIONS')
 			});
 	},
+
 	FETCH_CATEGORIES (context) {
 		context.commit('LOADING_CATEGORIES')
 
@@ -232,6 +267,7 @@ const actions = {
 				context.commit('FAILED_CATEGORIES')
 			});
 	},
+
 	FETCH_APIKEY (context) {
 		context.commit('APIKEY', {'loading': true });
 		Axios.get(OC.generateUrl('/apps/market/apikey'))
@@ -248,6 +284,7 @@ const actions = {
 				context.commit('APIKEY', {'loading': false });
 			});
 	},
+
 	WRITE_APIKEY (context, payload) {
 		let key = payload;
 		context.commit('APIKEY', {'loading': true });

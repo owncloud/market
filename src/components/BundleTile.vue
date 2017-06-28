@@ -22,12 +22,12 @@
 								td
 									span {{ (application.release) ? application.release.version : application.installInfo.version }}
 								td
-									span(v-if="isInstalled(application.id) || application.installed") {{ t('installed') }}
+									span(v-if="isInstalled(application.id) || application.installed").uk-label {{ t('installed') }}
 									span(v-else-if="isProcessing(application.id)", :title="t('installing')" uk-tooltip)
 										span(uk-spinner, uk-icon="icon: spinner; ratio: 0.8")
 
-					button(v-if="bundle.downloadable", @click="install").uk-button.uk-button-primary {{ t('install bundle') }}
-					a(v-else, :href="bundle.marketplace", target="_blank").uk-button.uk-button-default {{ t('view in marketplace') }}
+					button(v-if="bundle.downloadable && installable.length > 0", @click="install").uk-button.uk-button-primary {{ t('install bundle') }}
+					a(v-else-if="!bundle.downloadable && installable.length === 0", :href="bundle.marketplace", target="_blank").uk-button.uk-button-default {{ t('view in marketplace') }}
 </template>
 
 <script>
@@ -47,9 +47,16 @@
 				return 'background-image:url("' + image + '");';
 			}
 		},
+		computed : {
+			installable () {
+				return _.filter(this.bundle.products, function (application) {
+					return !application.installed;
+				});
+			}
+		},
 		methods: {
 			install () {
-				this.$store.dispatch('INSTALL_BUNDLE', this.bundle.products)
+				this.$store.dispatch('INSTALL_BUNDLE', this.installable)
 			},
 
 			isInstalled (id) {
