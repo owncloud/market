@@ -203,9 +203,8 @@ const actions = {
 	},
 	INSTALL_BUNDLE (context, payload) {
 		_.each(payload, (app, i) => {
-			let fetch = payload.length === (i+1);
 			if (!app.installed)
-				context.dispatch('PROCESS_APPLICATION', [app.id, 'install', fetch]);
+				context.dispatch('PROCESS_APPLICATION', [app.id, 'install', true]);
 		});
 	},
 	FETCH_BUNDLES (context) {
