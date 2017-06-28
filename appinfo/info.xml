@@ -2,7 +2,8 @@
 <info>
 	<id>market</id>
 	<name>Market</name>
-	<description>ownCloud marketplace integration and app management</description>
+	<summary>ownCloud Marketplace integration</summary>
+	<description>Connect an ownCloud instance with the ownCloud Marketplace to browse, install and update ownCloud apps easily from within the ownCloud web interface. To use this application you have to be logged in as an administrator.</description>
 	<licence>AGPL</licence>
 	<author>Thomas Müller, Felix Heidecke, Thomas Börger</author>
 	<version>0.1.0</version>
