@@ -25,26 +25,24 @@ use OCA\Market\MarketService;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\DataResponse;
+use OCP\IL10N;
 use OCP\IRequest;
 
 class MarketController extends Controller {
 
-	/** @var MarketService  */
+	/** @var MarketService */
 	private $marketService;
+	/** @var IL10N */
 
-	public function __construct($appName, IRequest $request, MarketService $marketService) {
+	private $l10n;
+
+	public function __construct($appName,
+								IRequest $request,
+								MarketService $marketService,
+								IL10N $l10n) {
 		parent::__construct($appName, $request);
 		$this->marketService = $marketService;
-	}
-
-	/**
-	 * @NoCSRFRequired
-	 *
-	 * @return array|mixed
-	 * @param $category
-	 */
-	public function appPerCategory($category) {
-		return $this->queryData($category);
+		$this->l10n = $l10n;
 	}
 
 	/**
@@ -60,6 +58,29 @@ class MarketController extends Controller {
 				Http::STATUS_SERVICE_UNAVAILABLE);
 		}
 	}
+
+	/**
+	 * @NoCSRFRequired
+	 *
+	 * @return array|mixed
+	 */
+	public function bundles() {
+		try {
+			$bundles = $this->marketService->getBundles();
+			$bundles = array_map(function ($bundle) {
+				$bundle['products'] = array_map(function ($product) {
+					return $this->enrichApp($product);
+				}, $bundle['products']);
+				return $bundle;
+			}, $bundles);
+
+			return $bundles;
+		} catch (\Exception $ex) {
+			return new DataResponse(['message' => $ex->getMessage() ],
+				Http::STATUS_SERVICE_UNAVAILABLE);
+		}
+	}
+
 	/**
 	 * @NoCSRFRequired
 	 *
@@ -75,6 +96,22 @@ class MarketController extends Controller {
 	}
 
 	/**
+	 * @NoCSRFRequired
+	 *
+	 * @param string $appId
+	 * @return array|mixed
+	 */
+	public function app($appId) {
+		try {
+			$info = $this->marketService->getAppInfo($appId);
+			return $this->enrichApp($info);
+		} catch (\Exception $ex) {
+			return new DataResponse(['message' => $ex->getMessage() ],
+				Http::STATUS_SERVICE_UNAVAILABLE);
+		}
+	}
+
+	/**
 	 * @param string $appId
 	 * @return array | DataResponse
 	 */
@@ -82,13 +119,50 @@ class MarketController extends Controller {
 		try {
 			$this->marketService->installApp($appId);
 			return [
-				'message' => "App $appId installed successfully"
+				'message' => $this->l10n->t('App %s installed successfully', $appId)
 			];
 		} catch(\Exception $ex) {
 			return new DataResponse([
 				'message' => $ex->getMessage()
 			], Http::STATUS_BAD_REQUEST);
 		}
+	}
+
+	/**
+	 * @NoCSRFRequired
+	 *
+	 * @param $apiKey
+	 * @return array|mixed
+	 */
+	public function changeApiKey($apiKey) {
+		if (!$this->marketService->isApiKeyValid($apiKey)) {
+			return new DataResponse([
+					'message' => $this->l10n->t('The api key is not valid.')
+				]
+			);
+		}
+		if (!$this->marketService->setApiKey($apiKey)) {
+			return new DataResponse([
+					'message' => $this->l10n->t('Can not change api key because it is configured in config.php')
+				]
+			);
+		}
+
+		return (new Http\Response())
+			->setStatus(\OC\AppFramework\Http::STATUS_OK);
+	}
+
+	/**
+	 * @NoCSRFRequired
+	 *
+	 * @return array|mixed
+	 */
+	public function getApiKey() {
+
+		return new DataResponse( [
+			'apiKey' => $this->marketService->getApiKey(),
+			'changeable' => $this->marketService->isApiKeyChangeableByUser(),
+		], Http::STATUS_OK);
 	}
 
 	/**
@@ -99,7 +173,7 @@ class MarketController extends Controller {
 		try {
 			$this->marketService->uninstallApp($appId);
 			return [
-				'message' => "App $appId uninstalled successfully"
+				'message' => $this->l10n->t('App %s uninstalled successfully', $appId)
 			];
 		} catch(\Exception $ex) {
 			return new DataResponse([
@@ -116,7 +190,7 @@ class MarketController extends Controller {
 		try {
 			$this->marketService->updateApp($appId);
 			return [
-				'message' => "App $appId updated successfully"
+				'message' => $this->l10n->t('App %s updated successfully', $appId)
 			];
 		} catch(\Exception $ex) {
 			return new DataResponse([
@@ -133,35 +207,39 @@ class MarketController extends Controller {
 		$apps = $this->marketService->listApps($category);
 
 		return array_map(function ($app) {
-			$app['installed'] = $this->marketService->isAppInstalled($app['id']);
-			$releases = array_map(function ($release) {
-				$missing = $this->marketService->getMissingDependencies($release);
-				$release['canInstall'] = empty($missing);
-				$release['missingDependencies'] = $missing;
-				return $release;
-			}, $app['releases']);
-			unset($app['releases']);
-			if ($app['installed']) {
-				$app['installInfo'] = $this->marketService->getInstalledAppInfo($app['id']);
-				$app['updateInfo'] = $this->marketService->getAvailableUpdateVersion($app['id']);
-
-				$filteredReleases = array_filter($releases, function ($release) use ($app) {
-					if (empty($app['updateInfo'])) {
-						return $release['version'] === $app['updateInfo'];
-					}
-					return $release['version'] === $app['updateInfo'];
-				});
-				$app['release'] = array_pop($filteredReleases);
-			} else {
-				$app['updateInfo'] = false;
-				usort($releases, function ($a, $b) {
-					return version_compare($a['version'], $b['version'], '>');
-				});
-				if (!empty($releases)) {
-					$app['release'] = array_pop($releases);
-				}
-			}
-			return $app;
+			return $this->enrichApp($app);
 		}, $apps);
+	}
+
+	private function enrichApp($app) {
+		$app['installed'] = $this->marketService->isAppInstalled($app['id']);
+		$releases = array_map(function ($release) {
+			$missing = $this->marketService->getMissingDependencies($release);
+			$release['canInstall'] = empty($missing);
+			$release['missingDependencies'] = $missing;
+			return $release;
+		}, $app['releases']);
+		unset($app['releases']);
+		if ($app['installed']) {
+			$app['installInfo'] = $this->marketService->getInstalledAppInfo($app['id']);
+			$app['updateInfo'] = $this->marketService->getAvailableUpdateVersion($app['id']);
+
+			$filteredReleases = array_filter($releases, function ($release) use ($app) {
+				if (empty($app['updateInfo'])) {
+					return $release['version'] === $app['updateInfo'];
+				}
+				return $release['version'] === $app['updateInfo'];
+			});
+			$app['release'] = array_pop($filteredReleases);
+		} else {
+			$app['updateInfo'] = false;
+			usort($releases, function ($a, $b) {
+				return version_compare($a['version'], $b['version'], '>');
+			});
+			if (!empty($releases)) {
+				$app['release'] = array_pop($releases);
+			}
+		}
+		return $app;
 	}
 }

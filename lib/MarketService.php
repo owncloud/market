@@ -22,7 +22,6 @@
 
 namespace OCA\Market;
 
-use function foo\func;
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Exception\ClientException;
 use OC\App\DependencyAnalyzer;
@@ -31,8 +30,8 @@ use OCP\App\AppManagerException;
 use OCP\App\IAppManager;
 use OCP\ICacheFactory;
 use OCP\IConfig;
+use OCP\IL10N;
 use OCP\Util;
-use function Symfony\Component\Debug\Tests\testHeader;
 use OCP\App\AppAlreadyInstalledException;
 use OCP\App\AppNotFoundException;
 use OCP\App\AppNotInstalledException;
@@ -52,6 +51,8 @@ class MarketService {
 	private $storeUrl;
 	/** @var array */
 	private $categories;
+	/** @var array */
+	private $bundles;
 
 	/**
 	 * Service constructor.
@@ -59,14 +60,16 @@ class MarketService {
 	 * @param IAppManager $appManager
 	 * @param IConfig $config
 	 * @param ICacheFactory $cacheFactory
+	 * @param IL10N $l10n
 	 */
-	public function __construct(IAppManager $appManager, IConfig $config, ICacheFactory $cacheFactory) {
+	public function __construct(IAppManager $appManager, IConfig $config, ICacheFactory $cacheFactory, IL10N $l10n) {
 		$storeUrl = $config->getSystemValue('appstoreurl', 'https://marketplace.owncloud.com');
 
 		$this->appManager = $appManager;
 		$this->config = $config;
 		$this->storeUrl = rtrim($storeUrl, '/');
 		$this->cacheFactory = $cacheFactory;
+		$this->l10n = $l10n;
 	}
 
 	/**
@@ -76,12 +79,33 @@ class MarketService {
 	 * @param bool $skipMigrations whether to skip migrations
 	 * @throws AppAlreadyInstalledException
 	 * @throws AppManagerException
+	 * @throws \Exception
 	 */
 	public function installApp($appId, $skipMigrations = false) {
+
+		$availableReleases = array_column($this->getApps(), 'releases', 'id')[$appId];
+		if (array_pop($availableReleases)['license'] == 'ownCloud Commercial License') {
+			$license = $this->config->getSystemValue('license-key', null);
+			if ($license === null) {
+				throw new \Exception($this->l10n->t('Please enter a license-key in to config.php'));
+			}
+			if ($appId !== 'enterprise_key') {
+				if (!$this->appManager->isEnabledForUser('enterprise_key')) {
+					throw new \Exception($this->l10n->t('Please install and enable the enterprise_key app and enter a license-key in config.php first.'));
+				}
+				if (class_exists('\OCA\Enterprise_Key\EnterpriseKey')) {
+					$e = new \OCA\Enterprise_Key\EnterpriseKey($license);
+					if (!$e->check()) {
+						throw new \Exception($this->l10n->t('Your license-key is not valid.'));
+					}
+				}
+			}
+		}
+
 		try {
 			$info = $this->getInstalledAppInfo($appId);
 			if (!is_null($info)) {
-				throw new AppAlreadyInstalledException("App ($appId) is already installed");
+				throw new AppAlreadyInstalledException($this->l10n->t('App %s is already installed', $appId));
 			}
 
 			// download package
@@ -89,9 +113,9 @@ class MarketService {
 			$this->installPackage($package, $skipMigrations);
 			$this->appManager->enableApp($appId);
 		} catch (ClientException $e){
-			throw new AppManagerException('No marketplace connection', 0, $e);
+			throw new AppManagerException($this->l10n->t('No marketplace connection'), 0, $e);
 		} catch (ServerException $e){
-			throw new AppManagerException('No marketplace connection', 0, $e);
+			throw new AppManagerException($this->l10n->t('No marketplace connection'), 0, $e);
 		}
 	}
 
@@ -118,7 +142,7 @@ class MarketService {
 
 		$data = $this->getAppInfo($appId);
 		if (empty($data)) {
-			throw new AppNotFoundException("Unknown app ($appId)");
+			throw new AppNotFoundException($this->l10n->t('Unknown app (%s)', $appId));
 		}
 
 		$version = $this->getPlatformVersion();
@@ -131,7 +155,7 @@ class MarketService {
 			return $tooSmall === false && $tooBig === false;
 		});
 		if (empty($release)) {
-			throw new AppUpdateNotFoundException("No compatible version for $appId");
+			throw new AppUpdateNotFoundException($this->l10n->t('No compatible version for %s', $appId));
 		}
 		usort($release, function($a, $b) {
 			return version_compare($b['version'], $a['version']);
@@ -163,15 +187,17 @@ class MarketService {
 	 *
 	 * @param string $appId
 	 * @return bool|string
+	 * @throws AppNotFoundException
+	 * @throws AppNotInstalledException
 	 */
 	public function getAvailableUpdateVersion($appId) {
 		$info = $this->getInstalledAppInfo($appId);
 		if (is_null($info)) {
-			throw new AppNotInstalledException("App ($appId) is not installed");
+			throw new AppNotInstalledException($this->l10n->t('App (%s) is not installed', $appId));
 		}
 		$marketInfo = $this->getAppInfo($appId);
 		if (is_null($marketInfo)) {
-			throw new AppNotFoundException("App ($appId) is not known at the marketplace.");
+			throw new AppNotFoundException($this->l10n->t('App (%s) is not known at the marketplace.', $appId));
 		}
 		$releases = $marketInfo['releases'];
 		$currentVersion = (string) $info['version'];
@@ -188,7 +214,7 @@ class MarketService {
 		return false;
 	}
 
-	private function getAppInfo($appId) {
+	public function getAppInfo($appId) {
 		$data = $this->getApps();
 		$data = array_filter($data, function($element) use ($appId) {
 			return $element['id'] === $appId;
@@ -219,21 +245,23 @@ class MarketService {
 	 * Update the app
 	 *
 	 * @param string $appId
+	 * @throws AppManagerException
+	 * @throws AppNotInstalledException
 	 */
 	public function updateApp($appId) {
 		try {
 			$info = $this->getInstalledAppInfo($appId);
 			if (is_null($info)) {
-				throw new AppNotInstalledException("App ($appId) is not installed");
+				throw new AppNotInstalledException($this->l10n->t('App (%s) is not installed', $appId));
 			}
 
 			// download package
 			$package = $this->downloadPackage($appId);
 			$this->updatePackage($package);
 		} catch (ClientException $e){
-			throw new AppManagerException('No marketplace connection', 0, $e);
+			throw new AppManagerException($this->l10n->t('No marketplace connection'), 0, $e);
 		} catch (ServerException $e){
-			throw new AppManagerException('No marketplace connection', 0, $e);
+			throw new AppManagerException($this->l10n->t('No marketplace connection'), 0, $e);
 		}
 	}
 
@@ -241,13 +269,14 @@ class MarketService {
 	 * Uninstall the app
 	 *
 	 * @param string $appId
+	 * @throws AppManagerException
 	 */
 	public function uninstallApp($appId) {
 		if ($this->appManager->isShipped($appId)) {
-			throw new AppManagerException('Shipped apps cannot be uninstalled');
+			throw new AppManagerException($this->l10n->t('Shipped apps cannot be uninstalled'));
 		}
 		if (!\OC_App::removeApp($appId)) {
-			throw new AppManagerException('App could not be uninstalled. Please check the server logs.');
+			throw new AppManagerException($this->l10n->t('App (%s) could not be uninstalled. Please check the server logs.', $appId));
 		}
 	}
 
@@ -264,7 +293,7 @@ class MarketService {
 	 * Verify if all requirements are met
 	 *
 	 * @param [] $appInfo
-	 * @return []
+	 * @return array []
 	 */
 	public function getMissingDependencies($appInfo) {
 		// bad hack - should use OCP
@@ -358,19 +387,65 @@ class MarketService {
 		return $this->queryData("apps_$version", "/api/v1/platform/$version/apps.json");
 	}
 
+	public function getBundles() {
+		if ($this->bundles !== null) {
+			return $this->bundles;
+		}
+		$this->bundles = $this->queryData("bundles", "/api/v1/bundles.json");
+		return $this->bundles;
+	}
+
+
+	public function getApiKey() {
+		$configFileApiKey = $this->config->getSystemValue('marketplace.key', null);
+
+		if ($configFileApiKey) {
+			return $configFileApiKey;
+		}
+
+		return $this->config->getAppValue('market', 'key', null);
+	}
+
+	public function setApiKey($apiKey) {
+		if ($this->isApiKeyChangeableByUser()) {
+			$this->config->setAppValue('market', 'key', $apiKey);
+
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * ApiKey can only be changed by user if no key is configured in config.php
+	 * @return bool
+	 */
+	public function isApiKeyChangeableByUser() {
+		$configFileApiKey = $this->config->getSystemValue('marketplace.key', null);
+
+		if ($configFileApiKey) {
+			return false;
+		}
+
+		return true;
+	}
+
 	/**
 	 * @param string $path
 	 * @param array $options
+	 * @param string | null $apiKey
 	 * @return \OCP\Http\Client\IResponse
 	 */
-	private function httpGet($path, $options = []) {
-		$apiKey = $this->config->getSystemValue('marketplace.key', null);
-		$ca = $this->config->getSystemValue('marketplace.ca', null);
+	private function httpGet($path, $options = [], $apiKey = null) {
+		if ($apiKey === null) {
+			$apiKey = $this->getApiKey();
+		}
 		if ($apiKey !== null) {
 			$options = array_merge([
 				'headers' => ['Authorization' => "apikey: $apiKey"]
 			], $options);
 		}
+		$ca = $this->config->getSystemValue('marketplace.ca', null);
 		if ($ca !== null) {
 			$options = array_merge([
 				'verify' => $ca
@@ -396,7 +471,8 @@ class MarketService {
 			return $this->categories;
 		}
 
-		return $this->queryData('categories', "/api/v1/categories.json");
+		$this->categories = $this->queryData('categories', "/api/v1/categories.json");
+		return $this->categories;
 	}
 
 	private function queryData($key, $uri) {
@@ -419,6 +495,22 @@ class MarketService {
 		}
 		return json_decode($data, true);
 
+	}
+
+	/**
+	 * @param string $apiKey
+	 * @return bool
+	 */
+	public function isApiKeyValid($apiKey) {
+		if ($apiKey === '') {
+			return true;
+		}
+		try {
+			$this->httpGet($this->storeUrl . '/api/v1/categories.json', [], $apiKey);
+			return true;
+		} catch (\Exception $ex) {
+			return false;
+		}
 	}
 
 }
