@@ -6,7 +6,7 @@
 	<description>Connect an ownCloud instance with the ownCloud Marketplace to browse, install and update ownCloud apps easily from within the ownCloud web interface. To use this application you have to be logged in as an administrator.</description>
 	<licence>AGPL</licence>
 	<author>Thomas Müller, Felix Heidecke, Thomas Börger</author>
-	<version>0.1.0</version>
+	<version>0.2.0</version>
 	<default_enable/>
 	<category>tools</category>
 	<screenshot>https://raw.githubusercontent.com/owncloud/screenshots/master/market/screenshot.png</screenshot>
