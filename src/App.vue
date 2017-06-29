@@ -3,6 +3,7 @@
 		.uk-grid-large(uk-grid)
 			aside.uk-width-auto
 				navigation
+				apiform
 
 			main.uk-width-expand
 				router-view
@@ -10,13 +11,15 @@
 
 <script>
 	import Navigation from './components/Navigation.vue'
+	import Apiform from './components/ApiForm.vue'
 
 	export default {
-		mounted: function () {
-			this.$store.dispatch('FETCH_APPLICATIONS')
+		mounted () {
+			this.$store.dispatch('FETCH_APPLICATIONS');
 		},
 		components: {
-			Navigation
+			Navigation,
+			Apiform
 		}
 	}
 </script>
