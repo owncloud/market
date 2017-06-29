@@ -56,6 +56,9 @@
 						.uk-position-small.uk-position-center-left(uk-spinner, uk-icon="icon: spinner; ratio: 0.8")
 						| &nbsp;&nbsp;&nbsp;&nbsp; {{ t('loading') }}
 
+				div(v-else-if="!application.downloadable")
+					a.uk-button.uk-button-secondary.uk-align-right.uk-margin-remove-bottom.uk-margin-small-left.uk-position-relative(:href="application.marketplace", target="_blank")
+						| {{ t('view in marketplace') }}
 				div(v-else)
 					// Install
 					div(v-if="!installed")
@@ -141,7 +144,6 @@
 				this.$store.dispatch('PROCESS_APPLICATION', [this.application.id, 'install'])
 			},
 			uninstall () {
-
 				UIkit.modal.confirm(this.t('Are you sure you want to remove <strong>%{appName}</strong> from your system?', {appName : this.application.name }), {
 					center : true,
 					escClose : true
