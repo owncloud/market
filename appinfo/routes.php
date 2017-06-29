@@ -25,11 +25,15 @@ return [
 		['name' => 'page#index', 'url' => '/', 'verb' => 'GET'],
 		// market controller
 		['name' => 'market#categories', 'url' => '/categories', 'verb' => 'GET'],
+		['name' => 'market#bundles', 'url' => '/bundles', 'verb' => 'GET'],
 		['name' => 'market#index', 'url' => '/apps', 'verb' => 'GET'],
-		['name' => 'market#appPerCategory', 'url' => '/apps/{category}', 'verb' => 'GET'],
+		['name' => 'market#app', 'url' => '/apps/{appId}', 'verb' => 'GET'],
 		['name' => 'market#install', 'url' => '/apps/{appId}/install', 'verb' => 'POST'],
 		['name' => 'market#update', 'url' => '/apps/{appId}/update', 'verb' => 'POST'],
 		['name' => 'market#uninstall', 'url' => '/apps/{appId}/uninstall', 'verb' => 'POST'],
+		['name' => 'market#getApiKey', 'url' => '/apikey', 'verb' => 'GET'],
+		['name' => 'market#changeApiKey', 'url' => '/apikey', 'verb' => 'PUT'],
+
 		// local apps
 		['name' => 'localApps#index', 'url' => '/installed-apps/{state}', 'verb' => 'GET', 'defaults' => ['state' => 'enabled']],
 	],

@@ -1,22 +1,25 @@
 <template lang="pug">
-	.uk-card.uk-card-default
+	.uk-card.uk-card-default.uk-margin-bottom
 		.uk-card-header
 			h1.uk-h3
 				router-link(:to="{ name: 'index' }") {{ t('Market') }}
 
 		.uk-card-body
 			ul.uk-nav-default.uk-nav-parent-icon(uk-nav, :v-if="!loading && !failed")
-				li.uk-nav-header {{ t('Categories') }}
-				li(v-for="category in categories")
-					router-link(:to="{ name: 'byCategory', params: { category: category.id }}") {{ category.translations.en.name }}
-
-				li.uk-nav-divider
 				li
 					router-link(:to="{ name: 'index' }") {{ t('Show all') }}
+				li
+					router-link(:to="{ name: 'Bundles' }") {{ t('App Bundles') }}
+
+				li.uk-nav-header {{ t('Categories') }}
+
+				li(v-for="category in categories")
+					router-link(:to="{ name: 'byCategory', params: { category: category.id }}") {{ category.translations.en.name }}
 
 				li(v-if="updateList.length > 0")
 					router-link(:to="{ name: 'UpdateList' }") {{ t('Updates') }}
 						span.uk-badge.uk-margin-small-left {{ updateList.length }}
+
 </template>
 
 <script>
@@ -62,5 +65,4 @@
 	.uk-badge {
 		font-size: 0.75rem;
 	}
-
 </style>
