@@ -30,7 +30,7 @@ endif
 PHPUNIT="$(PWD)/lib/composer/phpunit/phpunit/phpunit"
 
 market_doc_files=LICENSE README.md
-market_src_dirs=appinfo css img js lib templates vendor
+market_src_dirs=appinfo img js lib templates vendor
 market_all_src=$(market_src_dirs) $(market_doc_files)
 build_dir=build
 dist_dir=$(build_dir)/dist
