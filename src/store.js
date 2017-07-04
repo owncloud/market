@@ -31,6 +31,8 @@ const state = {
 		changeable : false
 	},
 
+	licenseKeyExists : false,
+
 	processing: [],
 	installed: []
 };
@@ -100,6 +102,10 @@ const mutations = {
 			loading: false,
 			failed: false
 		})
+	},
+
+	SET_LICENSE_KEY_AVAILABILITY (state, available) {
+		state['licenseKeyExists'] = available;
 	},
 
 	SET_APPLICATIONS (state, content) {
@@ -199,6 +205,16 @@ const actions = {
 			});
 	},
 
+	CHECK_LICENSE_KEY (context) {
+		Axios.get(OC.generateUrl('/apps/market/has-license-key'))
+			.then((response) => {
+				context.commit('SET_LICENSE_KEY_AVAILABILITY', true)
+			})
+			.catch((error) => {
+				context.commit('SET_LICENSE_KEY_AVAILABILITY', false)
+			});
+	},
+
 	INSTALL_BUNDLE (context, payload) {
 
 		let count = payload.length;
@@ -228,8 +244,7 @@ const actions = {
 					}
 
 				}).catch((error) => {
-					// UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'});
-					console.log(error.status);
+					UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'});
 					context.commit('FINISH_PROCESSING', payload[i].id)
 					install(++i);
 
