@@ -33,7 +33,7 @@ return [
 		['name' => 'market#uninstall', 'url' => '/apps/{appId}/uninstall', 'verb' => 'POST'],
 		['name' => 'market#getApiKey', 'url' => '/apikey', 'verb' => 'GET'],
 		['name' => 'market#changeApiKey', 'url' => '/apikey', 'verb' => 'PUT'],
-
+		['name' => 'market#hasLicenseKey', 'url' => '/has-license-key', 'verb' => 'GET'],
 		// local apps
 		['name' => 'localApps#index', 'url' => '/installed-apps/{state}', 'verb' => 'GET', 'defaults' => ['state' => 'enabled']],
 	],
