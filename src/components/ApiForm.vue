@@ -1,9 +1,5 @@
 <template lang="pug">
-	div
-		.uk-card.uk-card-default
-			.uk-card-body
-				button.uk-button.uk-button-small.uk-width-1-1(v-if="changeable", @click="openModalEditKey", :disabled="loading" ,:class="[ key ? 'uk-button-default' : 'uk-button-primary']") {{ key ? 'Edit API Key' : 'Set API Key' }}
-				button.uk-button.uk-button-small.uk-button-default.uk-width-1-1(v-else, @click="openModalViewKey") View API Key
+	a(href="#", @click.prevent="openModalEditKey", v-if="!loading && changeable") {{ key ? 'Edit API Key' : 'Add API Key' }}
 
 		#edit-api-key(uk-modal='center: true')
 			.uk-modal-dialog
@@ -23,23 +19,6 @@
 					button(v-else, type='button', disabled).uk-button.uk-button-primary.uk-position-relative.uk-align-right
 						.uk-position-small.uk-position-center-left(uk-spinner, uk-icon="icon: spinner; ratio: 0.8")
 						| &nbsp;&nbsp;&nbsp;&nbsp; saving
-
-		#view-api-key(uk-modal='center: true')
-			.uk-modal-dialog
-				button.uk-modal-close-default(type='button', uk-close='')
-				.uk-modal-header
-					h2.uk-modal-title Marketplace API Key
-				.uk-modal-body
-					.uk-alert-danger(uk-alert)
-						p
-							| Your API Key resides in the config.php file which can't be changed here!<br>
-							| Please contact your administrator, if the Key appears to be wrong.
-
-					label.uk-text-meta.uk-display-block.uk-margin-small-bottom API Key
-					input.uk-input.uk-text-center.-monospace(v-model="key", readonly)
-
-				.uk-modal-footer
-					button.uk-button.uk-button-default.uk-modal-close(type='button') Close
 </template>
 
 <script>

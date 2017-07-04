@@ -326,7 +326,6 @@ const actions = {
 				context.commit('APIKEY', {'valid' : true});
 				context.dispatch('FETCH_APIKEY');
 				context.dispatch('FETCH_APPLICATIONS');
-				context.dispatch('FETCH_CATEGORIES');
 				context.dispatch('FETCH_BUNDLES');
 			}
 		}).catch((error) => {
