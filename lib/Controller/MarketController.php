@@ -251,4 +251,27 @@ class MarketController extends Controller {
 		}
 		return $app;
 	}
+
+	/**
+	 * @return string
+	 * @NoCSRFRequired
+	 */
+	public function hasLicenseKey() {
+
+		if ($this->marketService->hasLicenseKey()) {
+			return new DataResponse(
+				[
+					'message' => $this->l10n->t('License key available.')
+				],
+				Http::STATUS_OK
+			);
+		}
+
+		return new DataResponse(
+			[
+				'message' => $this->l10n->t('No license key configured.')
+			],
+			Http::STATUS_NOT_FOUND
+		);
+	}
 }

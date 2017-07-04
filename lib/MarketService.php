@@ -526,4 +526,23 @@ class MarketService {
 		}
 	}
 
+	/**
+	 * @return string|null
+	 */
+	private function getLicenseKey() {
+		$licenseKey = $this->config->getSystemValue('license-key');
+
+		if ($licenseKey) {
+			return $licenseKey;
+		}
+
+		return $this->config->getAppValue('enterprise_key', 'license-key', null);
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function hasLicenseKey() {
+		return $this->getLicenseKey() !== null;
+	}
 }
