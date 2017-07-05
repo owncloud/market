@@ -21,6 +21,7 @@
 
 namespace OCA\Market\Controller;
 
+use OCA\Market\Exception\LicenseKeyAlreadyAvailableException;
 use OCA\Market\MarketService;
 use OCP\App\AppManagerException;
 use OCP\AppFramework\Controller;
@@ -257,7 +258,6 @@ class MarketController extends Controller {
 	 * @NoCSRFRequired
 	 */
 	public function hasLicenseKey() {
-
 		if ($this->marketService->hasLicenseKey()) {
 			return new DataResponse(
 				[
@@ -273,5 +273,34 @@ class MarketController extends Controller {
 			],
 			Http::STATUS_NOT_FOUND
 		);
+	}
+
+	/**
+	 * @NoCSRFRequired
+	 */
+	public function requestDemoLicenseKeyFromMarket() {
+		try {
+			$this->marketService->requestLicenseKey();
+			return new DataResponse(
+				[
+					'message' => $this->l10n->t('Demo license key successfully fetched from the marketplace.')
+				],
+				Http::STATUS_OK
+			);
+		} catch (LicenseKeyAlreadyAvailableException $exception) {
+			return new DataResponse(
+				[
+					'message' => $this->l10n->t('A license key is already configured.')
+				],
+				Http::STATUS_CONFLICT
+			);
+		} catch (\Exception $exception) {
+			return new DataResponse(
+				[
+					'message' => $this->l10n->t('Could not request the license key.')
+				],
+				Http::STATUS_INTERNAL_SERVER_ERROR
+			);
+		}
 	}
 }
