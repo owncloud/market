@@ -19,13 +19,14 @@
  *
  */
 
-
 namespace OCA\Market;
 
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Exception\ClientException;
 use OC\App\DependencyAnalyzer;
 use OC\App\Platform;
+use OCA\Market\Exception\LicenseKeyAlreadyAvailableException;
+use OCA\Market\Exception\MarketException;
 use OCP\App\AppManagerException;
 use OCP\App\IAppManager;
 use OCP\ICacheFactory;
@@ -488,7 +489,7 @@ class MarketService {
 		}
 
 		$this->checkInternetConnection();
-		
+
 		// ask the server
 		$response = $this->httpGet($this->storeUrl . $uri);
 		$data = $response->getBody();
@@ -544,5 +545,36 @@ class MarketService {
 	 */
 	public function hasLicenseKey() {
 		return $this->getLicenseKey() !== null;
+	}
+
+	/**
+	 * @return string
+	 * @throws LicenseKeyAlreadyAvailableException
+	 * @throws MarketException
+	 */
+	public function requestLicenseKey() {
+		if ($this->hasLicenseKey()) {
+			throw new LicenseKeyAlreadyAvailableException();
+		}
+
+		$instanceId = $this->config->getSystemValue('instanceid');
+		$data = $this->queryData(
+			'demo_license_information',
+			"/api/v1/instance/$instanceId/demo-key"
+		);
+
+		if (!array_key_exists('license_key', $data)) {
+			throw new MarketException('Marketplace did not return a demo license key.');
+		}
+
+		$demoLicenseKey = $data['license_key'];
+
+		if (!$demoLicenseKey) {
+			throw new MarketException('Marketplace returned an empty demo license key.');
+		}
+
+		$this->config->setAppValue('enterprise_key', 'license', $demoLicenseKey);
+
+		return $demoLicenseKey;
 	}
 }
