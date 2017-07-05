@@ -296,7 +296,10 @@ class MarketService {
 					}
 				} catch (AppNotInstalledException $e) {
 					// ignore exceptions thrown by getAvailableUpdateVersion
+				} catch (AppNotFoundException $e) {
+					// app is not published at marketplace - this is ok
 				}
+
 			}
 		}
 
