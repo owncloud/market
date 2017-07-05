@@ -573,7 +573,7 @@ class MarketService {
 			throw new MarketException('Marketplace returned an empty demo license key.');
 		}
 
-		$this->config->setAppValue('enterprise_key', 'license', $demoLicenseKey);
+		$this->config->setAppValue('enterprise_key', 'license-key', $demoLicenseKey);
 
 		return $demoLicenseKey;
 	}
