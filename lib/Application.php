@@ -23,6 +23,7 @@
 namespace OCA\Market;
 
 
+use OCA\Market\Notifier;
 use OCP\AppFramework\App;
 use OCP\Migration\IRepairStep;
 use Symfony\Component\EventDispatcher\GenericEvent;
@@ -55,5 +56,19 @@ class Application extends App {
 				}
 			}
 		);
+
+		$manager = \OC::$server->getNotificationManager();
+		$manager->registerNotifier(function() use ($manager) {
+			return new Notifier(
+				$manager,
+				\OC::$server->getL10NFactory()
+			);
+		}, function() {
+			$l = \OC::$server->getL10N('market');
+			return [
+				'id' => 'market',
+				'name' => $l->t('Market notifications'),
+			];
+		});
 	}
 }

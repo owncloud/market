@@ -13,7 +13,7 @@
 		<owncloud min-version="10.0" max-version="10.0" />
 	</dependencies>
 	<background-jobs>
-		<job>OCA\Market\SyncJob</job>
+		<job>OCA\Market\CheckUpdateBackgroundJob</job>
 	</background-jobs>
 	<commands>
 		<command>OCA\Market\Command\InstallApp</command>
