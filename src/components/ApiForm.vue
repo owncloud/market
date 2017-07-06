@@ -1,5 +1,6 @@
 <template lang="pug">
-	a(href="#", @click.prevent="openModalEditKey", v-if="!loading && changeable") {{ key ? 'Edit API Key' : 'Add API Key' }}
+	li
+		a(href="#", @click.prevent="openModalEditKey", v-if="!loading && changeable") {{ key ? 'Edit API Key' : 'Add API Key' }}
 
 		#edit-api-key(uk-modal='center: true')
 			.uk-modal-dialog
@@ -15,7 +16,7 @@
 				.uk-modal-footer
 					button.uk-button.uk-button-default.uk-modal-close.uk-margin-small-right(type='button') Close
 
-					button(v-if="!loading", type='button', @click="setKey", :disabled="loading").uk-button.uk-button-primary.uk-align-right Save
+					button(v-if="!key.loading", type='button', @click="setKey", :disabled="loading").uk-button.uk-button-primary.uk-align-right Save
 					button(v-else, type='button', disabled).uk-button.uk-button-primary.uk-position-relative.uk-align-right
 						.uk-position-small.uk-position-center-left(uk-spinner, uk-icon="icon: spinner; ratio: 0.8")
 						| &nbsp;&nbsp;&nbsp;&nbsp; saving
