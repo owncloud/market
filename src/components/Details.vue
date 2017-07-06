@@ -141,12 +141,12 @@
 			license () {
 				if (this.installed) {
 					if (this.application.installInfo)
-						return this.application.installInfo.licence
+						return this.application.installInfo.licence;
 					return false
 				}
 				else {
 					if (this.application.release)
-						return this.application.installInfo.license
+						return this.application.release.license;
 					return false
 				}
 			}

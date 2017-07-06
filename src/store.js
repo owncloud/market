@@ -224,10 +224,10 @@ const actions = {
 	CHECK_LICENSE_KEY (context) {
 		Axios.get(OC.generateUrl('/apps/market/has-license-key'))
 			.then((response) => {
-				context.commit('SET_LICENSE_KEY_AVAILABILITY', true)
+				context.commit('LICENSE_KEY', { 'exists' : true });
 			})
 			.catch((error) => {
-				context.commit('SET_LICENSE_KEY_AVAILABILITY', false)
+				context.commit('LICENSE_KEY', { 'exists' : false });
 			});
 	},
 
