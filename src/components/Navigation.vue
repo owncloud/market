@@ -57,7 +57,7 @@
 			}
 		},
 		components: {
-			Apiform,
+			Apiform
 		}
 	}
 </script>

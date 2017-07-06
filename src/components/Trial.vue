@@ -30,15 +30,18 @@
 
 				.uk-modal-footer
 					button.uk-button.uk-button-default.uk-modal-close.uk-margin-small-right(type='button') Close
-					button.uk-button.uk-button-primary.uk-position-relative.uk-align-right.uk-margin-remove-bottom(v-if="loading", disabled) {{ t('Loading') }}
-					button.uk-button.uk-button-primary.uk-position-relative.uk-align-right.uk-margin-remove-bottom(v-else-if="!licenseKeyExists", @click="requestLicenseKey", :disabled="!legalChecked || !apiKeyExists || loading") {{ t('Start trial') }}
-					button.uk-button.uk-button-primary.uk-position-relative.uk-align-right.uk-margin-remove-bottom(v-else, @click="startInstallProcess", :disabled="!legalChecked || loading") {{ t('Install Enterprise Apps now') }}
+					button.uk-button.uk-button-primary.uk-position-relative.uk-align-right.uk-margin-remove-bottom(v-if="loading", disabled)
+						.uk-position-small.uk-position-center-left(uk-spinner, uk-icon="icon: spinner; ratio: 0.8")
+						| &nbsp;&nbsp;&nbsp;&nbsp; {{ t('Loading') }}
+					button.uk-button.uk-button-primary.uk-position-relative.uk-align-right.uk-margin-remove-bottom(v-if="!licenseKeyExists && !loading", @click="requestLicenseKey", :disabled="!legalChecked || !apiKeyExists || loading") {{ t('Start trial') }}
+					button.uk-button.uk-button-primary.uk-position-relative.uk-align-right.uk-margin-remove-bottom(v-else-if="!loading", @click="startInstallProcess", :disabled="!legalChecked || loading") {{ t('Install Enterprise Apps now') }}
 
 </template>
 
 <script>
 
 	import Axios from 'axios';
+	import _ from 'underscore';
 
 	export default {
 		data () {
@@ -50,15 +53,46 @@
 			openModalStartEnterpriseKey () {
 				UIkit.modal('#start-enterprise-trial').toggle();
 			},
-				openModalEditKey () {
+			openModalEditKey () {
 				UIkit.modal('#edit-api-key').toggle();
 			},
 			requestLicenseKey () {
 				this.$store.dispatch('REQUEST_LICENSE_KEY');
 			},
 			startInstallProcess () {
-				this.$router.push({ name: 'Bundles' });
-				this.$store.dispatch('INSTALL_BUNDLE', this.applications);
+				this.$store.dispatch('FETCH_BUNDLES');
+				this.$store.commit('LICENSE_KEY', {'loading': true });
+
+				if (!this.enterpriseKeyAppIsInstalled) {
+					Axios.post(OC.generateUrl('/apps/market/apps/enterprise_key/install'),
+						{}, {
+							headers: {
+								requesttoken: OC.requestToken
+							}
+						}
+					).then((response) => {
+						this.$router.push({ name: 'Bundles' });
+						this.$store.dispatch('INSTALL_BUNDLE', this.applications);
+						this.$store.commit('LICENSE_KEY', {
+							'loading': false
+						});
+						UIkit.modal('#start-enterprise-trial').toggle();
+					}).catch((error) => {
+						this.$store.commit('LICENSE_KEY', {'loading': false });
+						UIkit.notification(error.response.data.message, {
+							status:'danger',
+							pos: 'bottom-right'
+						});
+					})
+				}
+				else {
+					this.$router.push({ name: 'Bundles' });
+					this.$store.dispatch('INSTALL_BUNDLE', this.applications);
+					this.$store.commit('LICENSE_KEY', {
+						'loading': false
+					});
+					UIkit.modal('#start-enterprise-trial').toggle();
+				}
 			},
 			t (string, interpolation) {
 				if (!interpolation) {
@@ -78,16 +112,19 @@
 				return this.$store.state.licenseKey.exists;
 			},
 
-			applications () {
-				return this.$store.getters.applicationsByLicense('ownCloud Commercial License');
-			},
-
 			apiKeyExists () {
 				if (this.$store.state.apikey.key)
 					return this.$store.state.apikey.key.length > 0;
 
 				return false;
+			},
 
+			enterpriseKeyAppIsInstalled () {
+				return _.find(this.$store.getters.installedApplications, { 'id' : 'enterprise_key' });
+			},
+
+			applications () {
+				return this.$store.getters.applicationsByLicense('ownCloud Commercial License');
 			},
 
 			loading () {
