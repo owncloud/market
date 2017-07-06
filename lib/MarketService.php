@@ -97,7 +97,7 @@ class MarketService {
 					throw new \Exception($this->l10n->t('Please install and enable the enterprise_key app and enter a license-key in config.php first.'));
 				}
 				if (class_exists('\OCA\Enterprise_Key\EnterpriseKey')) {
-					$e = new \OCA\Enterprise_Key\EnterpriseKey($license);
+					$e = new \OCA\Enterprise_Key\EnterpriseKey($license, $this->config);
 					if (!$e->check()) {
 						throw new \Exception($this->l10n->t('Your license-key is not valid.'));
 					}
