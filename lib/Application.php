@@ -61,6 +61,7 @@ class Application extends App {
 		$manager->registerNotifier(function() use ($manager) {
 			return new Notifier(
 				$manager,
+				\OC::$server->getAppManager(),
 				\OC::$server->getL10NFactory()
 			);
 		}, function() {
