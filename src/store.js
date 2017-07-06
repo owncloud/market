@@ -31,7 +31,10 @@ const state = {
 		changeable : false
 	},
 
-	licenseKeyExists : false,
+	licenseKey : {
+		exists : false,
+		loading : false
+	},
 
 	processing: [],
 	installed: []
@@ -56,6 +59,13 @@ const getters = {
 
 		return _.filter(state.applications.records, function (application) {
 			return _.contains(application.categories, category);
+		});
+	},
+
+	applicationsByLicense: (state) => (license) => {
+		return _.filter(state.applications.records, function (application) {
+			if (application.release)
+				return application.release.license === license;
 		});
 	},
 
@@ -104,8 +114,8 @@ const mutations = {
 		})
 	},
 
-	SET_LICENSE_KEY_AVAILABILITY (state, available) {
-		state['licenseKeyExists'] = available;
+	LICENSE_KEY (state, changes) {
+		_.extend(state['licenseKey'], changes);
 	},
 
 	SET_APPLICATIONS (state, content) {
@@ -158,6 +168,10 @@ const mutations = {
 		state['installed'].push(id)
 	},
 
+	SET_APPLICATION_INSTALLED (state, id) {
+		state['installed'].push(id)
+	},
+
 	APIKEY (state, changes) {
 		_.extend(state['apikey'], changes);
 	},
@@ -183,6 +197,7 @@ const actions = {
 				pos: 'bottom-right'
 			});
 			context.commit('FINISH_PROCESSING', id);
+			context.commit('SET_APPLICATION_INSTALLED', id);
 			context.dispatch('FETCH_APPLICATIONS')
 
 		}).catch((error) => {
@@ -200,7 +215,8 @@ const actions = {
 				context.commit('FINISH_APPLICATIONS')
 			})
 			.catch((error) => {
-				UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'})
+				// UIkit.notification(error.response.data.message, {status:'danger', pos: 'bottom-right'});
+				console.log(error);
 				context.commit('FAILED_APPLICATIONS');
 			});
 	},
@@ -212,6 +228,28 @@ const actions = {
 			})
 			.catch((error) => {
 				context.commit('SET_LICENSE_KEY_AVAILABILITY', false)
+			});
+	},
+
+	REQUEST_LICENSE_KEY (context) {
+		context.commit('LICENSE_KEY', {'loading': true });
+
+		Axios.get(OC.generateUrl('/apps/market/request-license-key-from-market'))
+			.then((response) => {
+				context.commit('LICENSE_KEY', {
+					'loading': false,
+					'exists' : true
+				});
+			})
+			.catch((error) => {
+				context.commit('LICENSE_KEY', {
+					'loading': false,
+					'exists' : false
+				});
+				UIkit.notification(error.response.data.message, {
+					status:'danger',
+					pos: 'bottom-right'
+				});
 			});
 	},
 
@@ -236,6 +274,8 @@ const actions = {
 						pos: 'bottom-right'
 					})
 					context.commit('FINISH_PROCESSING', payload[i].id)
+					context.commit('SET_APPLICATION_INSTALLED', payload[i].id)
+
 					install(++i);
 
 					if (count === i) {

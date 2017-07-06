@@ -22,8 +22,7 @@
 
 				li.uk-nav-header {{ t('Settings') }}
 
-				li
-					apiform
+				apiform
 
 </template>
 
