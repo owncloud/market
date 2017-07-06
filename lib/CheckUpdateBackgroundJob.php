@@ -26,6 +26,7 @@ use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\IConfig;
 use OCP\IGroup;
 use OCP\IGroupManager;
+use OCP\IURLGenerator;
 use OCP\Notification\IManager;
 
 /**
@@ -46,6 +47,8 @@ class CheckUpdateBackgroundJob extends TimedJob {
 	protected $groupManager;
 	/** @var MarketService */
 	private $marketService;
+	/** @var IURLGenerator */
+	private $urlGenerator;
 
 	/** @var string[] */
 	private $users;
@@ -56,20 +59,23 @@ class CheckUpdateBackgroundJob extends TimedJob {
 	 * @param IManager $notificationManager
 	 * @param IGroupManager $groupManager
 	 * @param MarketService $marketService
+	 * @param IURLGenerator $urlGenerator
 	 */
 	public function __construct(IConfig $config,
 								ITimeFactory $timeFactory,
 								IManager $notificationManager,
 								IGroupManager $groupManager,
-								MarketService $marketService) {
-		// Run all 10 minutes
-		//$this->setInterval(60 * 10);
-		$this->setInterval(20);
+								MarketService $marketService,
+								IURLGenerator $urlGenerator) {
+		// Run daily
+		$this->setInterval(60 * 60 * 24);
+
 		$this->config = $config;
 		$this->notificationManager = $notificationManager;
 		$this->groupManager = $groupManager;
 		$this->timeFactory = $timeFactory;
 		$this->marketService = $marketService;
+		$this->urlGenerator = $urlGenerator;
 	}
 
 	/**
@@ -77,8 +83,14 @@ class CheckUpdateBackgroundJob extends TimedJob {
 	 */
 	protected function run($argument) {
 		$updates = $this->marketService->getUpdates();
+
 		foreach ($updates as $appId => $appInfo) {
-			$this->createNotifications($appId, $appInfo['version'], 'ohoho');
+			$url = $this->urlGenerator->linkToRouteAbsolute(
+				'market.page.index'
+			);
+			$url .= '#/app/' . $appId;
+
+			$this->createNotifications($appId, $appInfo['version'], $url);
 		}
 	}
 
@@ -98,11 +110,14 @@ class CheckUpdateBackgroundJob extends TimedJob {
 			// Delete old updates
 			$this->deleteOutdatedNotifications($app, $lastNotification);
 		}
-		var_dump($this->notificationManager->listNotifiers());
 
 		$notification = $this->notificationManager->createNotification();
 		$notification->setApp('market')
-			->setDateTime(new \DateTime())
+			->setDateTime(
+				new \DateTime(
+					$this->timeFactory->getTime()
+				)
+			)
 			->setObject($app, $version)
 			->setSubject('update_available')
 			->setLink($url);

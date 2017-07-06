@@ -22,6 +22,7 @@
 namespace OCA\Market;
 
 
+use OCP\App\IAppManager;
 use OCP\L10N\IFactory;
 use OCP\Notification\IManager;
 use OCP\Notification\INotification;
@@ -32,22 +33,24 @@ class Notifier implements INotifier {
 	/** @var IManager */
 	protected $notificationManager;
 
+	/** @var IAppManager */
+	protected $appManager;
+
 	/** @var IFactory */
 	protected $l10NFactory;
 
-	/** @var string[] */
-	protected $appVersions;
 
 	/**
 	 * Notifier constructor.
 	 *
 	 * @param IManager $notificationManager
+	 * @param IAppManager $appManager
 	 * @param IFactory $l10NFactory
 	 */
-	public function __construct(IManager $notificationManager, IFactory $l10NFactory) {
+	public function __construct(IManager $notificationManager, IAppManager $appManager, IFactory $l10NFactory) {
 		$this->notificationManager = $notificationManager;
+		$this->appManager = $appManager;
 		$this->l10NFactory = $l10NFactory;
-		$this->appVersions = $this->getAppVersions();
 	}
 
 	/**
@@ -57,25 +60,27 @@ class Notifier implements INotifier {
 	 * @throws \InvalidArgumentException When the notification was not prepared by a notifier
 	 */
 	public function prepare(INotification $notification, $languageCode) {
-		if ($notification->getApp() !== 'market') {
+		if (
+			$notification->getApp() !== 'market'
+			|| $notification->getObjectType() === 'core'
+		) {
 			throw new \InvalidArgumentException();
 		}
 
 		$l = $this->l10NFactory->get('market', $languageCode);
-		if ($notification->getObjectType() === 'core') {
-			$appName = $l->t('ownCloud core');
-
-			$this->updateAlreadyInstalledCheck($notification, $this->getCoreVersions());
-		} else {
-			$appInfo = $this->getAppInfo($notification->getObjectType());
-			$appName = ($appInfo === null) ? $notification->getObjectType() : $appInfo['name'];
-
-			if (isset($this->appVersions[$notification->getObjectType()])) {
-				$this->updateAlreadyInstalledCheck($notification, $this->appVersions[$notification->getObjectType()]);
-			}
+		$appInfo = $this->getAppInfo($notification->getObjectType());
+		$appName = ($appInfo === null) ? $notification->getObjectType() : $appInfo['name'];
+		$appVersions = $this->getAppVersions();
+		if (isset($appVersions[$notification->getObjectType()])) {
+			$this->updateAlreadyInstalledCheck($notification, $appVersions[$notification->getObjectType()]);
 		}
 
-		$notification->setParsedSubject($l->t('Update for %1$s to version %2$s is available.', [$appName, $notification->getObjectId()]));
+		$notification->setParsedSubject(
+			$l->t(
+				'Update for %1$s to version %2$s is available.',
+				[$appName, $notification->getObjectId()]
+			)
+		);
 		return $notification;
 	}
 
@@ -93,15 +98,15 @@ class Notifier implements INotifier {
 		}
 	}
 
-	protected function getCoreVersions() {
-		return implode('.', \OCP\Util::getVersion());
-	}
-
 	protected function getAppVersions() {
 		return \OC_App::getAppVersions();
 	}
 
+	/**
+	 * @param string $appId
+	 * @return string[]
+	 */
 	protected function getAppInfo($appId) {
-		return \OC_App::getAppInfo($appId);
+		return $this->appManager->getAppInfo($appId);
 	}
 }
