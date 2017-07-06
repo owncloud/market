@@ -26,8 +26,8 @@
 									span(v-else-if="isProcessing(application.id)", :title="t('installing')" uk-tooltip)
 										span(uk-spinner, uk-icon="icon: spinner; ratio: 0.8")
 
-					button(v-if="bundle.downloadable && installable.length > 0", @click="install").uk-button.uk-button-primary {{ t('install bundle') }}
-					a(v-else-if="!bundle.downloadable && installable.length === 0", :href="bundle.marketplace", target="_blank").uk-button.uk-button-default {{ t('view in marketplace') }}
+					button(v-if="bundle.downloadable && installableApps.length > 0", @click="install").uk-button.uk-button-primary {{ t('install bundle') }}
+					a(v-else-if="!bundle.downloadable && installableApps.length === 0", :href="bundle.marketplace", target="_blank").uk-button.uk-button-default {{ t('view in marketplace') }}
 </template>
 
 <script>
@@ -48,7 +48,7 @@
 			}
 		},
 		computed : {
-			installable () {
+			installableApps () {
 				return _.filter(this.bundle.products, function (application) {
 					return !application.installed;
 				});
@@ -56,7 +56,7 @@
 		},
 		methods: {
 			install () {
-				this.$store.dispatch('INSTALL_BUNDLE', this.installable)
+				this.$store.dispatch('INSTALL_BUNDLE', this.installableApps)
 			},
 
 			isInstalled (id) {

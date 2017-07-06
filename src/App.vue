@@ -3,7 +3,7 @@
 		.uk-grid-large(uk-grid)
 			aside.uk-width-auto
 				navigation
-				apiform
+				trial
 
 			main.uk-width-expand
 				router-view
@@ -11,7 +11,7 @@
 
 <script>
 	import Navigation from './components/Navigation.vue'
-	import Apiform from './components/ApiForm.vue'
+	import Trial from './components/Trial.vue'
 
 	export default {
 		mounted () {
@@ -19,7 +19,7 @@
 		},
 		components: {
 			Navigation,
-			Apiform
+			Trial
 		}
 	}
 </script>
