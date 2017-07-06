@@ -37,7 +37,7 @@
 							a(:href="application.publisher.url", target="_blank") {{ application.publisher.name }}
 
 						td {{ details.version }}
-							//i.uk-margin-small-left ({{ details.created | formatDate }})
+							i.uk-margin-small-left ({{ details.created | formatDate }})
 
 						td {{ license }}
 
@@ -126,13 +126,30 @@
 			},
 
 			details () {
-				return (this.installed) ? this.application.installInfo : this.application.release;
+				if (this.installed) {
+					if (this.application.installInfo)
+						return this.application.installInfo
+					return false
+				}
+				else {
+					if (this.application.release)
+						return this.application.release
+					return false
+				}
 			},
 
 			license () {
-				return (this.installed) ? this.application.installInfo.licence : this.application.release.license;
+				if (this.installed) {
+					if (this.application.installInfo)
+						return this.application.installInfo.licence;
+					return false
+				}
+				else {
+					if (this.application.release)
+						return this.application.release.license;
+					return false
+				}
 			}
-
 		},
 		filters: {
 			formatDate (unixtime) {

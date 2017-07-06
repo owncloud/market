@@ -1,4 +1,5 @@
 module.exports = {
+	devtool: 'cheap-eval-source-map',
 	entry: './src/default.js',
 	output : {
 		filename : './js/market.bundle.js'
@@ -19,8 +20,8 @@ module.exports = {
 			loader: 'vue-loader',
 			options: {
 				loaders: {
-					scss: 'vue-style-loader!css-loader!sass-loader', // <style lang="scss">
-					less: 'vue-style-loader!css-loader!less-loader' // <style lang="less">
+					scss: 'vue-style-loader!css-loader!sass-loader',
+					less: 'vue-style-loader!css-loader!less-loader'
 				}
 			}
 		}]

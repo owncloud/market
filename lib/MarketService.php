@@ -19,13 +19,14 @@
  *
  */
 
-
 namespace OCA\Market;
 
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Exception\ClientException;
 use OC\App\DependencyAnalyzer;
 use OC\App\Platform;
+use OCA\Market\Exception\LicenseKeyAlreadyAvailableException;
+use OCA\Market\Exception\MarketException;
 use OCP\App\AppManagerException;
 use OCP\App\IAppManager;
 use OCP\ICacheFactory;
@@ -87,7 +88,7 @@ class MarketService {
 
 		$availableReleases = array_column($this->getApps(), 'releases', 'id')[$appId];
 		if (array_pop($availableReleases)['license'] == 'ownCloud Commercial License') {
-			$license = $this->config->getSystemValue('license-key', null);
+			$license = $this->getLicenseKey();
 			if ($license === null) {
 				throw new \Exception($this->l10n->t('Please enter a license-key in to config.php'));
 			}
@@ -96,7 +97,7 @@ class MarketService {
 					throw new \Exception($this->l10n->t('Please install and enable the enterprise_key app and enter a license-key in config.php first.'));
 				}
 				if (class_exists('\OCA\Enterprise_Key\EnterpriseKey')) {
-					$e = new \OCA\Enterprise_Key\EnterpriseKey($license);
+					$e = new \OCA\Enterprise_Key\EnterpriseKey($license, $this->config);
 					if (!$e->check()) {
 						throw new \Exception($this->l10n->t('Your license-key is not valid.'));
 					}
@@ -491,7 +492,7 @@ class MarketService {
 		}
 
 		$this->checkInternetConnection();
-		
+
 		// ask the server
 		$response = $this->httpGet($this->storeUrl . $uri);
 		$data = $response->getBody();
@@ -529,4 +530,54 @@ class MarketService {
 		}
 	}
 
+	/**
+	 * @return string|null
+	 */
+	private function getLicenseKey() {
+		$licenseKey = $this->config->getSystemValue('license-key');
+
+		if ($licenseKey) {
+			return $licenseKey;
+		}
+
+		return $this->config->getAppValue('enterprise_key', 'license-key', null);
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function hasLicenseKey() {
+		return $this->getLicenseKey() !== null;
+	}
+
+	/**
+	 * @return string
+	 * @throws LicenseKeyAlreadyAvailableException
+	 * @throws MarketException
+	 */
+	public function requestLicenseKey() {
+		if ($this->hasLicenseKey()) {
+			throw new LicenseKeyAlreadyAvailableException();
+		}
+
+		$instanceId = $this->config->getSystemValue('instanceid');
+		$data = $this->queryData(
+			'demo_license_information',
+			"/api/v1/instance/$instanceId/demo-key"
+		);
+
+		if (!array_key_exists('license_key', $data)) {
+			throw new MarketException('Marketplace did not return a demo license key.');
+		}
+
+		$demoLicenseKey = $data['license_key'];
+
+		if (!$demoLicenseKey) {
+			throw new MarketException('Marketplace returned an empty demo license key.');
+		}
+
+		$this->config->setAppValue('enterprise_key', 'license-key', $demoLicenseKey);
+
+		return $demoLicenseKey;
+	}
 }
