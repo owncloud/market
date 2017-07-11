@@ -20,9 +20,15 @@
 					router-link(:to="{ name: 'UpdateList' }") {{ t('Updates') }}
 						span.uk-badge.uk-margin-small-left {{ updateList.length }}
 
+				li.uk-nav-header {{ t('Settings') }}
+
+				apiform
+
 </template>
 
 <script>
+	import Apiform from './ApiForm.vue'
+
 	export default {
 		mounted () {
 			this.$store.dispatch('FETCH_CATEGORIES')
@@ -49,6 +55,9 @@
 			updateList() {
 				return this.$store.getters.updateList
 			}
+		},
+		components: {
+			Apiform
 		}
 	}
 </script>
