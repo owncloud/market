@@ -44,6 +44,11 @@ class ListApps extends Command {
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$apps = $this->marketService->listApps();
+
+		usort($apps, function ($a, $b) {
+			return strcmp($a['id'], $b['id']);
+		});
+
 		foreach ($apps as $app) {
 			$output->writeln("{$app['id']}");
 		}
