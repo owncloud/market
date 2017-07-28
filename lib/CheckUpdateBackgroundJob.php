@@ -114,7 +114,8 @@ class CheckUpdateBackgroundJob extends TimedJob {
 		$notification = $this->notificationManager->createNotification();
 		$notification->setApp('market')
 			->setDateTime(
-				new \DateTime(
+				\DateTime::createFromFormat(
+					'U',
 					$this->timeFactory->getTime()
 				)
 			)
