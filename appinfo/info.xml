@@ -14,13 +14,14 @@ To use this application click on "Files" in the top left corner and click on "Ma
 	<category>tools</category>
 	<screenshot>https://raw.githubusercontent.com/owncloud/screenshots/master/market/ownCloud-market-app.jpg</screenshot>
 	<dependencies>
-		<owncloud min-version="10.0" max-version="10.0" />
+		<owncloud min-version="10.0.3" max-version="10.0" />
 	</dependencies>
 	<background-jobs>
 		<job>OCA\Market\CheckUpdateBackgroundJob</job>
 	</background-jobs>
 	<commands>
 		<command>OCA\Market\Command\InstallApp</command>
+		<command>OCA\Market\Command\UnInstallApp</command>
 		<command>OCA\Market\Command\ListApps</command>
 		<command>OCA\Market\Command\UpgradeApp</command>
 	</commands>
