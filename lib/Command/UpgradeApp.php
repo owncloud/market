@@ -55,6 +55,9 @@ class UpgradeApp extends Command {
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
+		if (!$this->marketService->canInstall()) {
+			throw new \Exception("Installing apps is not supported because the app folder is not writable.");
+		}
 		$localPackagesArray = $input->getOption('local');
 		$localPackagesArray = array_unique($localPackagesArray);
 		if (count($localPackagesArray)){

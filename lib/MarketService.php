@@ -85,6 +85,9 @@ class MarketService {
 	 * @throws \Exception
 	 */
 	public function installApp($appId, $skipMigrations = false) {
+		if (!$this->appManager->canInstall()) {
+			throw new \Exception("Installing apps is not supported because the app folder is not writable.");
+		}
 
 		$availableReleases = array_column($this->getApps(), 'releases', 'id')[$appId];
 		if (array_pop($availableReleases)['license'] == 'ownCloud Commercial License') {
@@ -579,5 +582,9 @@ class MarketService {
 		$this->config->setAppValue('enterprise_key', 'license-key', $demoLicenseKey);
 
 		return $demoLicenseKey;
+	}
+
+	public function canInstall() {
+		return $this->appManager->canInstall();
 	}
 }
