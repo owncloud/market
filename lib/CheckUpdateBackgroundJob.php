@@ -88,7 +88,7 @@ class CheckUpdateBackgroundJob extends TimedJob {
 			$url = $this->urlGenerator->linkToRouteAbsolute(
 				'market.page.index'
 			);
-			$url .= '#/app/' . $appId;
+			$url .= '#/app/'.$appId;
 
 			$this->createNotifications($appId, $appInfo['version'], $url);
 		}
