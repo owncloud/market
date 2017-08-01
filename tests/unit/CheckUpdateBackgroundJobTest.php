@@ -14,7 +14,7 @@ use OCP\Notification\IManager;
 use OCP\Notification\INotification;
 use Test\TestCase;
 
-class CheckUpdateBackgroundJobTest extends TestCase{
+class CheckUpdateBackgroundJobTest extends TestCase {
 
 	/** @var IConfig|\PHPUnit_Framework_MockObject_MockObject */
 	protected $config;
@@ -73,7 +73,7 @@ class CheckUpdateBackgroundJobTest extends TestCase{
 	public function dataCheckAppUpdate() {
 		return [
 			[
-				[ 'test'=> ['id' => 'test', 'version' => '1.2.4' ]],
+				['test'=> ['id' => 'test', 'version' => '1.2.4']],
 				true,
 			],
 			[
