@@ -85,6 +85,9 @@ class MarketService {
 	 * @throws \Exception
 	 */
 	public function installApp($appId, $skipMigrations = false) {
+		if (!$this->canInstall()) {
+			throw new \Exception("Installing apps is not supported because the app folder is not writable.");
+		}
 
 		$availableReleases = array_column($this->getApps(), 'releases', 'id')[$appId];
 		if (array_pop($availableReleases)['license'] == 'ownCloud Commercial License') {
@@ -252,6 +255,10 @@ class MarketService {
 	 * @throws AppNotInstalledException
 	 */
 	public function updateApp($appId) {
+		if (!$this->canInstall()) {
+			throw new \Exception("Installing apps is not supported because the app folder is not writable.");
+		}
+
 		try {
 			$info = $this->getInstalledAppInfo($appId);
 			if (is_null($info)) {
@@ -275,6 +282,10 @@ class MarketService {
 	 * @throws AppManagerException
 	 */
 	public function uninstallApp($appId) {
+		if (!$this->canInstall()) {
+			throw new \Exception("Installing apps is not supported because the app folder is not writable.");
+		}
+
 		if ($this->appManager->isShipped($appId)) {
 			throw new AppManagerException($this->l10n->t('Shipped apps cannot be uninstalled'));
 		}
@@ -579,5 +590,14 @@ class MarketService {
 		$this->config->setAppValue('enterprise_key', 'license-key', $demoLicenseKey);
 
 		return $demoLicenseKey;
+	}
+
+	public function canInstall() {
+		if (!method_exists($this->appManager, 'canInstall')) {
+			$appsFolder = \OC_App::getInstallPath();
+			return $appsFolder !== null && is_writable($appsFolder) && is_readable($appsFolder);
+		}
+
+		return $this->appManager->canInstall();
 	}
 }

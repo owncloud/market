@@ -1,8 +1,9 @@
 language: php
 php:
   - 5.6
-  - "7.0"
+  - 7.0
   - 7.1
+  - 7.2
 
 env:
   global:
@@ -54,6 +55,8 @@ matrix:
   include:
     - php: 5.6
       env: DB=mysql
+    - php: 5.6
+      env: DB=mysql CORE_BRANCH=stable10
     - php: 5.6
       env: DB=pgsql
     - php: 5.6
