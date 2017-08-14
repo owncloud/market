@@ -85,7 +85,7 @@ class MarketService {
 	 * @throws \Exception
 	 */
 	public function installApp($appId, $skipMigrations = false) {
-		if (!$this->appManager->canInstall()) {
+		if (!$this->canInstall()) {
 			throw new \Exception("Installing apps is not supported because the app folder is not writable.");
 		}
 
@@ -255,7 +255,7 @@ class MarketService {
 	 * @throws AppNotInstalledException
 	 */
 	public function updateApp($appId) {
-		if (!$this->appManager->canInstall()) {
+		if (!$this->canInstall()) {
 			throw new \Exception("Installing apps is not supported because the app folder is not writable.");
 		}
 
@@ -282,7 +282,7 @@ class MarketService {
 	 * @throws AppManagerException
 	 */
 	public function uninstallApp($appId) {
-		if (!$this->appManager->canInstall()) {
+		if (!$this->canInstall()) {
 			throw new \Exception("Installing apps is not supported because the app folder is not writable.");
 		}
 
@@ -593,6 +593,11 @@ class MarketService {
 	}
 
 	public function canInstall() {
+		if (!method_exists($this->appManager, 'canInstall')) {
+			$appsFolder = \OC_App::getInstallPath();
+			return $appsFolder !== null && is_writable($appsFolder) && is_readable($appsFolder);
+		}
+
 		return $this->appManager->canInstall();
 	}
 }
