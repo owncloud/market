@@ -1,6 +1,6 @@
 <template lang="pug">
 	transition(name="fade")
-		li(class='uk-width-1-2@m uk-width-1-3@xl', v-if="application").uk-animation-slide-top-small_
+		li(class='uk-width-1-2@m uk-width-1-3@xl', v-if="application").uk-animation-slide-top-small
 			.uk-card.uk-card-default
 				.uk-card-header
 					div(uk-grid)
