@@ -12,7 +12,7 @@ $button-secondary-hover-background: darken($button-secondary-background, 5%);
 $button-secondary-hover-color: $button-secondary-color;
 
 @mixin hook-card-default() {
-  box-shadow: 0 5px 15px rgba($global-link-color, .2);
+  box-shadow: 0 5px 15px rgba($global-link-color, .333);
 }
 
 @mixin hook-button-secondary() {
