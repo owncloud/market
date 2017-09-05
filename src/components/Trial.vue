@@ -1,6 +1,6 @@
 <template lang="pug">
 	div
-		button.uk-button.uk-button-primary.uk-margin-small-top.uk-width-1-1(@click="openModalStartEnterpriseKey", :disabled="licenseKeyExists") {{ t('Start Enterprise trial') }}
+		button.uk-button.uk-button-primary.uk-margin-small-top.uk-width-1-1(v-if="!licenseKeyExists", @click="openModalStartEnterpriseKey") {{ t('Start Enterprise trial') }}
 
 		#start-enterprise-trial(uk-modal='center: true')
 			.uk-modal-dialog
