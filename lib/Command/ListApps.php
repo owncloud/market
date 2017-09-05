@@ -43,7 +43,12 @@ class ListApps extends Command {
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
-		$apps = $this->marketService->listApps();
+		try {
+			$apps = $this->marketService->listApps();
+		} catch (\Exception $ex) {
+			$output->writeln("<error>{$ex->getMessage()} </error>");
+			return 1;
+		}
 
 		usort($apps, function ($a, $b) {
 			return strcmp($a['id'], $b['id']);
