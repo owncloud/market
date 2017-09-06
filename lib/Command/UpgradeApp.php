@@ -33,6 +33,9 @@ class UpgradeApp extends Command {
 	/** @var MarketService */
 	private $marketService;
 
+	/** @var int  */
+	private $exitCode = 0;
+
 	public function __construct(MarketService $marketService) {
 		parent::__construct();
 		$this->marketService = $marketService;
@@ -80,10 +83,11 @@ class UpgradeApp extends Command {
 						$output->writeln("$appId: Not installed ...");
 					}
 				} catch (\Exception $ex) {
-					$output->writeln("$appId: {$ex->getMessage()}");
+					$output->writeln("<error>$appId: {$ex->getMessage()}</error>");
+					$this->exitCode = 1;
 				}
 			}
-			return;
+			return $this->exitCode;
 		}
 
 		if ($input->getOption('list')) {
@@ -116,8 +120,10 @@ class UpgradeApp extends Command {
 					$output->writeln("$appId: Not installed ...");
 				}
 			} catch (\Exception $ex) {
-				$output->writeln("$appId: {$ex->getMessage()}");
+				$output->writeln("<error>$appId: {$ex->getMessage()}</error>");
+				$this->exitCode = 1;
 			}
 		}
+		return $this->exitCode;
 	}
 }
