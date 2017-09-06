@@ -23,6 +23,7 @@ namespace OCA\Market;
 
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\TransferException;
 use OC\App\DependencyAnalyzer;
 use OC\App\Platform;
 use OCA\Market\Exception\LicenseKeyAlreadyAvailableException;
@@ -167,15 +168,7 @@ class MarketService {
 		$pathInfo = pathinfo($downloadLink);
 		$extension = isset($pathInfo['extension']) ? '.' . $pathInfo['extension'] : '';
 		$path = \OC::$server->getTempManager()->getTemporaryFile($extension);
-		try {
-			$this->httpGet($downloadLink, ['save_to' => $path]);
-		} catch (ClientException $e) {
-			// product requires a purchase
-			if ($e->getCode() === 402) {
-				throw new AppManagerException($this->l10n->t('Active subscription on marketplace required'));
-			}
-			throw new AppManagerException($this->l10n->t('No marketplace connection'), 0, $e);
-		}
+		$this->httpGet($downloadLink, ['save_to' => $path]);
 		return $path;
 	}
 
@@ -467,16 +460,19 @@ class MarketService {
 		$client = \OC::$server->getHTTPClientService()->newClient();
 		try {
 			$response = $client->get($path, $options);
-		} catch (ClientException $e) {
-			if ($e->getCode() === 401) {
-				if ($apiKey !== null) {
-					throw new AppManagerException($this->l10n->t('Invalid marketplace API key provided'));
+		} catch (TransferException $e) {
+			if ($e instanceof ClientException) {
+				if ($e->getCode() === 401) {
+					if ($apiKey !== null) {
+						throw new AppManagerException($this->l10n->t('Invalid marketplace API key provided'));
+					}
+					throw new AppManagerException($this->l10n->t('Marketplace API key missing'));
 				}
-				throw new AppManagerException($this->l10n->t('Marketplace API key missing'));
+				if ($e->getCode() === 402) {
+					throw new AppManagerException($this->l10n->t('Active subscription on marketplace required'));
+				}
 			}
-			throw $e;
-		} catch (ServerException $e) {
-			throw new AppManagerException($this->l10n->t('No marketplace connection'), 0, $e);
+			throw new AppManagerException($this->l10n->t('No marketplace connection: '. $e->getMessage()), 0, $e);
 		}
 		return $response;
 	}
