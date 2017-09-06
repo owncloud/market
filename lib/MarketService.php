@@ -23,6 +23,7 @@ namespace OCA\Market;
 
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\TransferException;
 use OC\App\DependencyAnalyzer;
 use OC\App\Platform;
 use OCA\Market\Exception\LicenseKeyAlreadyAvailableException;
@@ -108,21 +109,16 @@ class MarketService {
 			}
 		}
 
-		try {
-			$info = $this->getInstalledAppInfo($appId);
-			if (!is_null($info)) {
-				throw new AppAlreadyInstalledException($this->l10n->t('App %s is already installed', $appId));
-			}
 
-			// download package
-			$package = $this->downloadPackage($appId);
-			$this->installPackage($package, $skipMigrations);
-			$this->appManager->enableApp($appId);
-		} catch (ClientException $e){
-			throw new AppManagerException($this->l10n->t('No marketplace connection'), 0, $e);
-		} catch (ServerException $e){
-			throw new AppManagerException($this->l10n->t('No marketplace connection'), 0, $e);
+		$info = $this->getInstalledAppInfo($appId);
+		if (!is_null($info)) {
+			throw new AppAlreadyInstalledException($this->l10n->t('App %s is already installed', $appId));
 		}
+
+		// download package
+		$package = $this->downloadPackage($appId);
+		$this->installPackage($package, $skipMigrations);
+		$this->appManager->enableApp($appId);
 	}
 
 	/**
@@ -173,7 +169,6 @@ class MarketService {
 		$extension = isset($pathInfo['extension']) ? '.' . $pathInfo['extension'] : '';
 		$path = \OC::$server->getTempManager()->getTemporaryFile($extension);
 		$this->httpGet($downloadLink, ['save_to' => $path]);
-
 		return $path;
 	}
 
@@ -259,20 +254,14 @@ class MarketService {
 			throw new \Exception("Installing apps is not supported because the app folder is not writable.");
 		}
 
-		try {
-			$info = $this->getInstalledAppInfo($appId);
-			if (is_null($info)) {
-				throw new AppNotInstalledException($this->l10n->t('App (%s) is not installed', $appId));
-			}
-
-			// download package
-			$package = $this->downloadPackage($appId);
-			$this->updatePackage($package);
-		} catch (ClientException $e){
-			throw new AppManagerException($this->l10n->t('No marketplace connection'), 0, $e);
-		} catch (ServerException $e){
-			throw new AppManagerException($this->l10n->t('No marketplace connection'), 0, $e);
+		$info = $this->getInstalledAppInfo($appId);
+		if (is_null($info)) {
+			throw new AppNotInstalledException($this->l10n->t('App (%s) is not installed', $appId));
 		}
+
+		// download package
+		$package = $this->downloadPackage($appId);
+		$this->updatePackage($package);
 	}
 
 	/**
@@ -469,7 +458,22 @@ class MarketService {
 			], $options);
 		}
 		$client = \OC::$server->getHTTPClientService()->newClient();
-		$response = $client->get($path, $options);
+		try {
+			$response = $client->get($path, $options);
+		} catch (TransferException $e) {
+			if ($e instanceof ClientException) {
+				if ($e->getCode() === 401) {
+					if ($apiKey !== null) {
+						throw new AppManagerException($this->l10n->t('Invalid marketplace API key provided'));
+					}
+					throw new AppManagerException($this->l10n->t('Marketplace API key missing'));
+				}
+				if ($e->getCode() === 402) {
+					throw new AppManagerException($this->l10n->t('Active subscription on marketplace required'));
+				}
+			}
+			throw new AppManagerException($this->l10n->t('No marketplace connection: '. $e->getMessage()), 0, $e);
+		}
 		return $response;
 	}
 
