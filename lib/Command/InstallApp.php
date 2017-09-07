@@ -33,6 +33,9 @@ class InstallApp extends Command {
 	/** @var MarketService */
 	private $marketService;
 
+	/** @var int  */
+	private $exitCode = 0;
+
 	public function __construct(MarketService $marketService) {
 		parent::__construct();
 		$this->marketService = $marketService;
@@ -89,7 +92,8 @@ class InstallApp extends Command {
 						$output->writeln("$appId: App installed.");
 					}
 				} catch (\Exception $ex) {
-					$output->writeln("$appId: {$ex->getMessage()}");
+					$output->writeln("<error> $appId: {$ex->getMessage()} </error>");
+					$this->exitCode = 1;
 				}
 			}
 		} else {
@@ -110,9 +114,12 @@ class InstallApp extends Command {
 						$output->writeln("$appId: App installed.");
 					}
 				} catch (\Exception $ex) {
-					$output->writeln("$appId: {$ex->getMessage()}");
+					$output->writeln("<error> $appId: {$ex->getMessage()} </error>");
+					$this->exitCode = 1;
 				}
 			}
 		}
+
+		return $this->exitCode;
 	}
 }
