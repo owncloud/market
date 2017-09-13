@@ -34,7 +34,8 @@
 
 					tr
 						td
-							a(:href="application.publisher.url", target="_blank") {{ application.publisher.name }}
+							a(v-if="application.publisher.isPagePublic", :href="application.publisher.url", target="_blank") {{ application.publisher.name }}
+							span(v-else) {{ application.publisher.name }}
 
 						td {{ details.version }}
 							i.uk-margin-small-left ({{ details.created | formatDate }})
