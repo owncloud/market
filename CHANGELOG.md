@@ -11,6 +11,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+- Show more detailed update information. [#159](https://github.com/owncloud/market/pull/159)
+
 
 ## [10.0.3 / 0.2.2] - 2017-09-15
 ### Added

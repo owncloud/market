@@ -21,13 +21,16 @@
 			.uk-card-body
 				p {{ application.description }}
 
-				table.uk-table.uk-table-divider.uk-table-responsive.uk-table-justify
+				table.uk-table.uk-table-divider.uk-table-responsive.uk-table-justify(v-if="!processing && !loading")
 					tr
 						th
 							span {{ t('Developer') }}
 
 						th
 							span {{ t('Version') }}
+
+						th(v-if="details.created")
+							span {{ t('Release date') }}
 
 						th
 							span {{ t('License') }}
@@ -38,13 +41,21 @@
 							span(v-else) {{ application.publisher.name }}
 
 						td {{ details.version }}
-							i.uk-margin-small-left ({{ details.created | formatDate }})
+
+						td(v-if="details.created") {{ details.created | formatDate }}
 
 						td {{ license }}
 
-				div(v-if="application.release && !application.release.canInstall", uk-alert).uk-alert-danger
-					ul(v-if="!application.release.canInstall").uk-list
-						li(v-for="dependency in application.release.missingDependencies")
+				.uk-alert-primary(v-if="updateable && !processing && !loading", uk-alert)
+					a.uk-alert-close.uk-close
+					p
+						strong {{ t('Version %{version} available', {version: release.version}) }}&nbsp;
+						span {{ t('published on ') }} {{ release.created | formatDate }}.&nbsp;
+						a(:href="application.marketplace", target="_blank") {{ t('Get more info') }}
+
+				div(v-if="updateable && !release.canInstall", uk-alert).uk-alert-danger
+					ul(v-if="!release.canInstall").uk-list
+						li(v-for="dependency in release.missingDependencies")
 							span(uk-icon="icon: warning; ratio: 0.75").uk-margin-small-right
 							| {{ dependency }}
 
@@ -52,7 +63,7 @@
 						t.missingDep
 
 			.uk-card-footer
-				div(v-if="loading")
+				div(v-if="processing || loading")
 					button.uk-button.uk-button-primary.uk-align-right.uk-margin-remove-bottom.uk-margin-small-left.uk-position-relative(disabled)
 						.uk-position-small.uk-position-center-left(uk-spinner, uk-icon="icon: spinner; ratio: 0.8")
 						| &nbsp;&nbsp;&nbsp;&nbsp; {{ t('loading') }}
@@ -60,35 +71,23 @@
 				div(v-else-if="!application.downloadable")
 					a.uk-button.uk-button-secondary.uk-align-right.uk-margin-remove-bottom.uk-margin-small-left.uk-position-relative(:href="application.marketplace", target="_blank")
 						| {{ t('view in marketplace') }}
+
 				div(v-else)
 					// Install
 					div(v-if="!installed")
 						button.uk-button.uk-button-primary.uk-align-right.uk-margin-remove-bottom.uk-margin-small-left.uk-position-relative(:disabled="processing && !installable", @click="install")
-							span(v-if="processing")
-								.uk-position-small.uk-position-center-left(uk-spinner, uk-icon="icon: spinner; ratio: 0.8")
-								| &nbsp;&nbsp;&nbsp;&nbsp; {{ t('installing') }}
-							span(v-else)
-								| {{ t('install') }}
+							| {{ t('install') }}
 
 					// Uninstall
 					div(v-else)
 						button.uk-button.uk-button-default.uk-align-right.uk-margin-remove-bottom.uk-margin-small-left(:disabled="processing", @click="uninstall")
-							span(v-if="processing")
-								.uk-position-small.uk-position-center-left(uk-spinner, uk-icon="icon: spinner; ratio: 0.8")
-								| &nbsp;&nbsp;&nbsp;&nbsp; {{ t('uninstalling') }}
-							span(v-else)
-								| {{ t('uninstall') }}
+							| {{ t('uninstall') }}
 
 					// Update
 					div(v-if="updateable")
 						button.uk-button.uk-button-primary.uk-align-right.uk-margin-remove-bottom.uk-margin-small-left.uk-position-relative(:disabled="processing", @click="update")
-							span(v-if="processing")
-								.uk-position-small.uk-position-center-left(uk-spinner, uk-icon="icon: spinner; ratio: 0.8")
-								| &nbsp;&nbsp;&nbsp;&nbsp; {{ t('updating') }}
-							span(v-else)
-								| {{ t('update') }}
+							| {{ t('update') }}
 </template>
-
 <script>
 	import Rating from './Rating.vue'
 	import _ from 'underscore'
@@ -150,11 +149,18 @@
 						return this.application.release.license;
 					return false
 				}
+			},
+
+			release () {
+				if (!this.updateable)
+					return false;
+
+				return this.application.release;
 			}
 		},
 		filters: {
 			formatDate (unixtime) {
-				return moment(unixtime).format('LL');
+				return moment(unixtime).format('ll');
 			}
 		},
 		methods: {

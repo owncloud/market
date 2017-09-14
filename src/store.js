@@ -70,8 +70,8 @@ const getters = {
     applicationsByLicense: (state) => (license) => {
         return _.filter(state.applications.records, function (application) {
             if (application.release) {
-				return application.release.license === license;
-			}
+                return application.release.license === license;
+            }
         });
     },
 
@@ -185,23 +185,23 @@ const mutations = {
 // Request content from the remote API.
 const actions = {
     INVALIDATE_CACHE (context) {
-		Axios.post(OC.generateUrl("/apps/market/cache/invalidate"),
-			{}, {
-				headers: {
-					requesttoken: OC.requestToken
-				}
-			}
-		).then((response) => {
-			UIkit.notification(response.data.message, {
-				status: "success",
-				pos: "bottom-right"
-			});
+        Axios.post(OC.generateUrl("/apps/market/cache/invalidate"),
+            {}, {
+                headers: {
+                    requesttoken: OC.requestToken
+                }
+            }
+        ).then((response) => {
+            UIkit.notification(response.data.message, {
+                status: "success",
+                pos: "bottom-right"
+            });
 
-			context.dispatch("FETCH_APPLICATIONS")
+            context.dispatch("FETCH_APPLICATIONS")
 
-		}).catch((error) => {
-			UIkit.notification(error.response.data.message, {status:"danger", pos: "bottom-right"});
-		})
+        }).catch((error) => {
+            UIkit.notification(error.response.data.message, {status:"danger", pos: "bottom-right"});
+        })
     },
 
     PROCESS_APPLICATION (context, payload) {
@@ -223,7 +223,8 @@ const actions = {
             });
             context.commit("FINISH_PROCESSING", id);
             context.commit("SET_APPLICATION_INSTALLED", id);
-            context.dispatch("FETCH_APPLICATIONS")
+            context.dispatch("FETCH_APPLICATIONS");
+            context.dispatch("REBUILD_NAVIGATION");
 
         }).catch((error) => {
             UIkit.notification(error.response.data.message, {status:"danger", pos: "bottom-right"});
@@ -312,7 +313,7 @@ const actions = {
 
                 }).catch((error) => {
 
-					UIkit.notification(error.response.data.message, {status:"danger", pos: "bottom-right"});
+                    UIkit.notification(error.response.data.message, {status:"danger", pos: "bottom-right"});
                     context.commit("FINISH_PROCESSING", payload[i].id);
                     install(++i);
 
@@ -400,7 +401,41 @@ const actions = {
             context.commit("APIKEY", {"loading" : false });
         })
     },
-}
+
+    REBUILD_NAVIGATION() {
+        Axios.get(OC.filePath('settings', 'ajax', 'navigationdetect.php'),
+            {
+                headers: {
+                    requesttoken: OC.requestToken
+                }
+            }
+        ).then((response) => {
+
+            let navEntries   = response.data.nav_entries;
+            let $container   = $('#apps ul').html("");
+            let $iconLoading = $('<div>', { "class" : "icon-loading-dark" });
+
+            _.each(navEntries, function (e) {
+                let $li   = $('<li>',   { "data-id" : e.id }),
+                    $link = $('<a>',    { "href" : e.href }),
+                    $icon = $('<img>',  { "class" : "app-icon", "src" : e.icon }),
+                    $name = $('<span>', { "text" : e.name });
+
+                $link
+                    .append($icon, $iconLoading.clone().hide(), $name);
+
+                $li
+                    .append($link)
+                    .appendTo($container);
+
+                if (!OC.Util.hasSVGSupport() && e.icon.match(/\.svg$/i)) {
+                    $icon.addClass('svg');
+                    OC.Util.replaceSVG();
+                }
+            });
+        })
+    }
+};
 
 export default new Vuex.Store({
     state,
