@@ -33,7 +33,8 @@ const state = {
 
     licenseKey : {
         exists : false,
-        loading : false
+        loading : false,
+		unborn: true
     },
 
     processing: [],
@@ -228,10 +229,10 @@ const actions = {
     CHECK_LICENSE_KEY (context) {
         Axios.get(OC.generateUrl("/apps/market/has-license-key"))
             .then(() => {
-                context.commit("LICENSE_KEY", { "exists" : true });
+                context.commit("LICENSE_KEY", { "exists" : true, "unborn" : false });
             })
             .catch(() => {
-                context.commit("LICENSE_KEY", { "exists" : false });
+                context.commit("LICENSE_KEY", { "exists" : false, "unborn" : false });
             });
     },
 
@@ -242,13 +243,15 @@ const actions = {
             .then((response) => {
                 context.commit("LICENSE_KEY", {
                     "loading": false,
-                    "exists" : true
+                    "exists" : true,
+                    "unborn" : false
                 });
             })
             .catch((error) => {
                 context.commit("LICENSE_KEY", {
                     "loading": false,
-                    "exists" : false
+                    "exists" : false,
+                    "unborn" : false
                 });
                 UIkit.notification(error.response.data.message, {
                     status:"danger",
