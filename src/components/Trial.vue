@@ -1,6 +1,6 @@
 <template lang="pug">
-	div
-		button.uk-button.uk-button-primary.uk-margin-small-top.uk-width-1-1(v-if="!licenseKeyExists", @click="openModalStartEnterpriseKey") {{ t('Start Enterprise trial') }}
+	div(v-if="!unborn")
+		button.uk-button.uk-button-primary.uk-margin-small-top.uk-width-1-1(v-if="!licenseKeyExists && !loading", @click="openModalStartEnterpriseKey") {{ t('Start Enterprise trial') }}
 
 		#start-enterprise-trial(uk-modal='center: true')
 			.uk-modal-dialog
@@ -129,6 +129,10 @@
 
 			loading () {
 				return this.$store.state.licenseKey.loading;
+			},
+
+			unborn () {
+				return this.$store.state.licenseKey.unborn;
 			},
 		}
 	}
