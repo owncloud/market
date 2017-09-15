@@ -60,7 +60,7 @@
 		methods: {
 			install () {
 				const promise = new Promise((resolve) => {
-					if (this.$store.dispatch('PROCESS_APPLICATION', ['enterprise_key', 'install', { suppressNotifications: true } ])) {
+					if (this.$store.dispatch('PROCESS_APPLICATION', ['enterprise_key', 'install', { suppressNotifications: true, suppressRefetch: true } ])) {
 						resolve();
 					}
 				});
