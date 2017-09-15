@@ -59,7 +59,16 @@
 		},
 		methods: {
 			install () {
-				this.$store.dispatch('INSTALL_BUNDLE', this.installableApps)
+				const promise = new Promise((resolve) => {
+					if (this.$store.dispatch('PROCESS_APPLICATION', ['enterprise_key', 'install', { suppressNotifications: true } ])) {
+						resolve();
+					}
+				});
+
+				promise.then( () => {
+					this.$store.dispatch('INSTALL_BUNDLE', this.installableApps);
+				});
+
 			},
 
 			isInstalled (id) {
