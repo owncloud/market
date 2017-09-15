@@ -63,37 +63,28 @@
 			},
 			startInstallProcess () {
 				this.$store.dispatch('FETCH_BUNDLES');
-				this.$store.commit('LICENSE_KEY', {'loading': true });
 
-				if (!this.enterpriseKeyAppIsInstalled) {
-					Axios.post(OC.generateUrl('/apps/market/apps/enterprise_key/install'),
-						{}, {
-							headers: {
-								requesttoken: OC.requestToken
-							}
-						}
-					).then((response) => {
-						this.$router.push({ name: 'Bundles' });
-						this.$store.dispatch('INSTALL_BUNDLE', this.applications);
-						this.$store.commit('LICENSE_KEY', {
-							'loading': false
-						});
-						UIkit.modal('#start-enterprise-trial').toggle();
-					}).catch((error) => {
-						this.$store.commit('LICENSE_KEY', {'loading': false });
-						UIkit.notification(error.response.data.message, {
-							status:'danger',
-							pos: 'bottom-right'
-						});
-					})
+				this.$router.push({ name: 'Bundles' });
+
+				const promise = new Promise((resolve) => {
+					if (this.$store.dispatch('PROCESS_APPLICATION', ['enterprise_key', 'install', { suppressNotifications: true } ])) {
+						resolve();
+					}
+				});
+
+				promise.then( () => {
+					this.$store.dispatch('INSTALL_BUNDLE', this.applications);
+				});
+
+				UIkit.modal('#start-enterprise-trial').toggle();
+			},
+			t (string, interpolation) {
+				if (!interpolation) {
+					return this.$gettext(string);
 				}
 				else {
-					this.$router.push({ name: 'Bundles' });
-					this.$store.dispatch('INSTALL_BUNDLE', this.applications);
-					this.$store.commit('LICENSE_KEY', {
-						'loading': false
-					});
-					UIkit.modal('#start-enterprise-trial').toggle();
+					// %{interplate} with object
+					return this.$gettextInterpolate(string, interpolation);
 				}
 			}
 		},
@@ -110,10 +101,6 @@
 					return this.$store.state.apikey.key.length > 0;
 
 				return false;
-			},
-
-			enterpriseKeyAppIsInstalled () {
-				return _.find(this.$store.getters.installedApplications, { 'id' : 'enterprise_key' });
 			},
 
 			applications () {
