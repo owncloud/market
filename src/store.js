@@ -220,8 +220,12 @@ const actions = {
         ).then((response) => {
             context.commit("FINISH_PROCESSING", id);
             context.commit("SET_APPLICATION_INSTALLED", id);
-			context.dispatch("FETCH_APPLICATIONS");
-            if (!options.suppressNotifications) {
+
+			if (!options.suppressRefetch) {
+				context.dispatch("FETCH_APPLICATIONS");
+			}
+
+			if (!options.suppressNotifications) {
 				UIkit.notification(response.data.message, {
 					status: "success",
 					pos: "bottom-right"
