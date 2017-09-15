@@ -207,6 +207,7 @@ const actions = {
     PROCESS_APPLICATION (context, payload) {
         let id           = payload[0];
         let route        = payload[1];
+        let options      = payload[2];
 
         context.commit("START_PROCESSING", id);
 
@@ -217,18 +218,24 @@ const actions = {
                 }
             }
         ).then((response) => {
-            UIkit.notification(response.data.message, {
-                status: "success",
-                pos: "bottom-right"
-            });
             context.commit("FINISH_PROCESSING", id);
             context.commit("SET_APPLICATION_INSTALLED", id);
-            context.dispatch("FETCH_APPLICATIONS");
-            context.dispatch("REBUILD_NAVIGATION");
+			context.dispatch("FETCH_APPLICATIONS");
+            if (!options.suppressNotifications) {
+				UIkit.notification(response.data.message, {
+					status: "success",
+					pos: "bottom-right"
+				});
+			}
 
         }).catch((error) => {
-            UIkit.notification(error.response.data.message, {status:"danger", pos: "bottom-right"});
-            context.commit("FINISH_PROCESSING", id);
+			context.commit("FINISH_PROCESSING", id);
+            if (!options.suppressNotifications) {
+                UIkit.notification(error.response.data.message, {
+                    status:"danger",
+                    pos: "bottom-right"
+                });
+			}
         })
     },
 
