@@ -207,7 +207,7 @@ const actions = {
     PROCESS_APPLICATION (context, payload) {
         let id           = payload[0];
         let route        = payload[1];
-        let options      = payload[2];
+        let options      = !!payload[2];
 
         context.commit("START_PROCESSING", id);
 
@@ -252,7 +252,7 @@ const actions = {
                 context.commit("FINISH_APPLICATIONS")
             })
             .catch((error) => {
-                // UIkit.notification(error.response.data.message, {status:"danger", pos: "bottom-right"});
+                UIkit.notification(error.response.data.message, {status:"danger", pos: "bottom-right"});
                 context.commit("FAILED_APPLICATIONS");
             });
     },
