@@ -604,4 +604,12 @@ class MarketService {
 
 		return $this->appManager->canInstall();
 	}
+
+	public function invalidateCache() {
+		if (!$this->cacheFactory->isAvailable()) {
+			return;
+		}
+		$cache = $this->cacheFactory->create('ocmp');
+		$cache->clear();
+	}
 }
