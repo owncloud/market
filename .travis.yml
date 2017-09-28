@@ -18,6 +18,8 @@ branches:
     - /^stable\d+(\.\d+)?$/
 
 before_install:
+  - nvm install node
+  - npm install -g npm@latest
   - composer install
   - wget https://raw.githubusercontent.com/owncloud/administration/master/travis-ci/before_install.sh
   - bash ./before_install.sh $APP_NAME $CORE_BRANCH $DB
