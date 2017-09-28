@@ -303,4 +303,15 @@ class MarketController extends Controller {
 			);
 		}
 	}
+
+	public function invalidateCache() {
+		$this->marketService->invalidateCache();
+		return new DataResponse(
+			[
+				'message' => $this->l10n->t('Cache invalidate. Reload to grab the latest apps from the marketplace.')
+			],
+			Http::STATUS_OK
+		);
+
+	}
 }
