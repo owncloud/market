@@ -308,7 +308,7 @@ class MarketController extends Controller {
 		$this->marketService->invalidateCache();
 		return new DataResponse(
 			[
-				'message' => $this->l10n->t('Cache invalidate. Reload to grab the latest apps from the marketplace.')
+				'message' => $this->l10n->t('Cache cleared.')
 			],
 			Http::STATUS_OK
 		);
