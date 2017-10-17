@@ -40,10 +40,12 @@
 
 <script>
 
+	import Mixins from '../mixins';
 	import Axios from 'axios';
 	import _ from 'underscore';
 
 	export default {
+		mixins: [Mixins],
 		data () {
 			return {
 				legalChecked : false
@@ -92,15 +94,6 @@
 						'loading': false
 					});
 					UIkit.modal('#start-enterprise-trial').toggle();
-				}
-			},
-			t (string, interpolation) {
-				if (!interpolation) {
-					return this.$gettext(string);
-				}
-				else {
-					// %{interplate} with object
-					return this.$gettextInterpolate(string, interpolation);
 				}
 			}
 		},

@@ -35,38 +35,38 @@ import store from './store'
 
 // Routing
 const routes = [
-	{
-		path: '/app/:id',
-		component: Details,
-		name: 'details'
-	}, {
-		path: '/by/category/:category',
-		component: List,
-		name: 'byCategory'
-	}, {
-		path: '/bundles',
-		component: BundlesList,
-		name: 'Bundles'
-	}, {
-		path: '/updates',
-		component: UpdateList,
-		name: 'UpdateList'
-	}, {
-		path: '/',
-		component: List,
-		name: 'index'
-	}
+    {
+        path: '/app/:id',
+        component: Details,
+        name: 'details'
+    }, {
+        path: '/by/category/:category',
+        component: List,
+        name: 'byCategory'
+    }, {
+        path: '/bundles',
+        component: BundlesList,
+        name: 'Bundles'
+    }, {
+        path: '/updates',
+        component: UpdateList,
+        name: 'UpdateList'
+    }, {
+        path: '/',
+        component: List,
+        name: 'index'
+    }
 ];
 
 const router = new VueRouter({
-	routes
+    routes
 });
 
 // The App itself
 const MarketApp = new Vue({
-	router,
-	store,
-	render: h => h(App)
+    router,
+    store,
+    render: h => h(App)
 });
 
 // --------------------------------------------------------------- Vue mount ---

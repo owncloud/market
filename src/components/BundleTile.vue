@@ -31,10 +31,13 @@
 </template>
 
 <script>
+
+	import Mixins from '../mixins';
 	import Rating from './Rating.vue';
-	import Tile from './Tile.vue';
+	import Tile from   './Tile.vue';
 
 	export default {
+		mixins: [Mixins],
 		components: {
 			Rating,
 			Tile
@@ -65,16 +68,6 @@
 
 			isProcessing (id) {
 				return _.contains(this.$store.state.processing, id)
-			},
-
-			t (string, interpolation) {
-				if (!interpolation) {
-					return this.$gettext(string);
-				}
-				else {
-					// %{interplate} with object
-					return this.$gettextInterpolate(string, interpolation);
-				}
 			}
 		}
 	}
