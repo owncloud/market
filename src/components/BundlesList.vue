@@ -11,8 +11,10 @@
 
 <script>
 	import Tile from './BundleTile.vue';
+	import mixins from '../mixins.js'
 
 	export default {
+		mixins: [mixins],
 		components: {
 			Tile
 		},
@@ -31,17 +33,6 @@
 					return []
 				} else {
 					return this.$store.getters.bundles
-				}
-			}
-		},
-		methods: {
-			t (string, interpolation) {
-				if (!interpolation) {
-					return this.$gettext(string);
-				}
-				else {
-					// %{interplate} with object
-					return this.$gettextInterpolate(string, interpolation);
 				}
 			}
 		}
