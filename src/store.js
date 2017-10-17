@@ -33,7 +33,8 @@ const state = {
 
     licenseKey : {
         exists : false,
-        loading : false
+        loading : false,
+        unborn: true
     },
 
     processing: [],
@@ -183,6 +184,26 @@ const mutations = {
 
 // Request content from the remote API.
 const actions = {
+    INVALIDATE_CACHE (context) {
+		Axios.post(OC.generateUrl("/apps/market/cache/invalidate"),
+			{}, {
+				headers: {
+					requesttoken: OC.requestToken
+				}
+			}
+		).then((response) => {
+			UIkit.notification(response.data.message, {
+				status: "success",
+				pos: "bottom-right"
+			});
+
+			context.dispatch("FETCH_APPLICATIONS")
+
+		}).catch((error) => {
+			UIkit.notification(error.response.data.message, {status:"danger", pos: "bottom-right"});
+		})
+    },
+
     PROCESS_APPLICATION (context, payload) {
         let id           = payload[0];
         let route        = payload[1];
@@ -220,7 +241,6 @@ const actions = {
             })
             .catch((error) => {
                 // UIkit.notification(error.response.data.message, {status:"danger", pos: "bottom-right"});
-                console.log(error);
                 context.commit("FAILED_APPLICATIONS");
             });
     },
@@ -228,10 +248,10 @@ const actions = {
     CHECK_LICENSE_KEY (context) {
         Axios.get(OC.generateUrl("/apps/market/has-license-key"))
             .then(() => {
-                context.commit("LICENSE_KEY", { "exists" : true });
+                context.commit("LICENSE_KEY", { "exists" : true, "unborn" : false });
             })
             .catch(() => {
-                context.commit("LICENSE_KEY", { "exists" : false });
+                context.commit("LICENSE_KEY", { "exists" : false, "unborn" : false });
             });
     },
 
@@ -242,13 +262,15 @@ const actions = {
             .then((response) => {
                 context.commit("LICENSE_KEY", {
                     "loading": false,
-                    "exists" : true
+                    "exists" : true,
+                    "unborn" : false
                 });
             })
             .catch((error) => {
                 context.commit("LICENSE_KEY", {
                     "loading": false,
-                    "exists" : false
+                    "exists" : false,
+                    "unborn" : false
                 });
                 UIkit.notification(error.response.data.message, {
                     status:"danger",
@@ -274,8 +296,6 @@ const actions = {
                     }
                 ).then((response) => {
 
-                    console.log(response);
-
                     UIkit.notification(response.data.message, {
                         status: "success",
                         pos: "bottom-right"
@@ -291,8 +311,6 @@ const actions = {
                     }
 
                 }).catch((error) => {
-
-					console.log(error);
 
 					UIkit.notification(error.response.data.message, {status:"danger", pos: "bottom-right"});
                     context.commit("FINISH_PROCESSING", payload[i].id);
@@ -349,7 +367,6 @@ const actions = {
                 });
             })
             .catch((error) => {
-                console.log(error);
                 context.commit("APIKEY", {"loading": false });
             });
     },
@@ -380,7 +397,6 @@ const actions = {
                 context.dispatch("FETCH_BUNDLES");
             }
         }).catch((error) => {
-            console.log(error);
             context.commit("APIKEY", {"loading" : false });
         })
     },

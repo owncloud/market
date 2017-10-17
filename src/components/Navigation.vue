@@ -24,6 +24,9 @@
 
 				apiform
 
+				li
+					a(href="", @click.prevent="invalidateCache") {{ t('Clear cache') }}
+
 </template>
 
 <script>
@@ -36,6 +39,9 @@
 		methods: {
 			t(string) {
 				return this.$gettext(string);
+			},
+			invalidateCache () {
+				this.$store.dispatch('INVALIDATE_CACHE')
 			}
 		},
 		computed: {

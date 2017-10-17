@@ -35,6 +35,7 @@ return [
 		['name' => 'market#changeApiKey', 'url' => '/apikey', 'verb' => 'PUT'],
 		['name' => 'market#hasLicenseKey', 'url' => '/has-license-key', 'verb' => 'GET'],
 		['name' => 'market#requestDemoLicenseKeyFromMarket', 'url' => '/request-license-key-from-market', 'verb' => 'GET'],
+		['name' => 'market#invalidateCache', 'url' => '/cache/invalidate', 'verb' => 'POST'],
 		// local apps
 		['name' => 'localApps#index', 'url' => '/installed-apps/{state}', 'verb' => 'GET', 'defaults' => ['state' => 'enabled']],
 	],
