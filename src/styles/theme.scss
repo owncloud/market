@@ -42,3 +42,10 @@
     max-width: inherit;
   }
 }
+
+.article {
+  ul {
+    @extend .uk-list;
+    @extend .uk-list-bullet;
+  }
+}

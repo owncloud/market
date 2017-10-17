@@ -19,7 +19,7 @@
 				img(:src="application.screenshots[0].url", :alt="application.title")
 
 			.uk-card-body
-				p {{ application.description }}
+				.article(v-html="markdown(application.description)")
 
 				table.uk-table.uk-table-divider.uk-table-responsive.uk-table-justify(v-if="!processing && !loading")
 					tr
@@ -89,10 +89,13 @@
 							| {{ t('update') }}
 </template>
 <script>
+
+	import Mixins from '../mixins.js'
 	import Rating from './Rating.vue'
 	import _ from 'underscore'
 
 	export default {
+		mixins: [Mixins],
 		components: {
 			Rating
 		},
@@ -179,28 +182,18 @@
 			},
 			update () {
 				this.$store.dispatch('PROCESS_APPLICATION', [this.application.id, 'update'])
-			},
-			t (string, interpolation) {
-				if (!interpolation) {
-					return this.$gettext(string);
-				}
-				else {
-					// %{interplate} with object
-					return this.$gettextInterpolate(string, interpolation);
-				}
 			}
 		}
 	}
 </script>
 
 <style lang="scss" scoped>
-
 	main {
 		position: relative;
 	}
 
 	.uk-card {
-		max-width: 720px;
+		max-width: 960px;
 		margin: 0 auto;
 	}
 
