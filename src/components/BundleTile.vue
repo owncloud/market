@@ -25,7 +25,6 @@
 									span(v-if="isInstalled(application.id) || application.installed").uk-label {{ t('installed') }}
 									span(v-else-if="isProcessing(application.id)", :title="t('installing')" uk-tooltip)
 										span(uk-spinner, uk-icon="icon: spinner; ratio: 0.8")
-
 					button(v-if="bundle.downloadable && installableApps.length > 0", @click="install").uk-button.uk-button-primary {{ t('install bundle') }}
 					a(v-else-if="!bundle.downloadable && installableApps.length === 0", :href="bundle.marketplace", target="_blank").uk-button.uk-button-default {{ t('view in marketplace') }}
 </template>
@@ -52,32 +51,34 @@
 		},
 		computed : {
 			installableApps () {
-				return _.filter(this.bundle.products, function (application) {
+				return _.filter(_.without(this.bundle.products, 'enterprise_key'), function (application) {
 					return !application.installed;
 				});
 			}
 		},
 		methods: {
 			install () {
-				const promise = new Promise((resolve) => {
-					if (this.$store.dispatch('PROCESS_APPLICATION', ['enterprise_key', 'install', { suppressNotifications: true, suppressRefetch: true } ])) {
-						resolve();
-					}
-				});
-
-				promise.then( () => {
+				if (this.bundle.id === 'enterprise_apps' && !this.$store.getters.application('enterprise_key').installed) {
+					this.$store.dispatch('PROCESS_APPLICATION', ['enterprise_key', 'install', { suppressRefetch: true } ])
+					.then(() => {
+						this.$store.dispatch('INSTALL_BUNDLE', this.installableApps);
+					})
+					.catch(() => {
+						console.warn(this.t('enterprise_key installation failed!'))
+					})
+				}
+				else {
 					this.$store.dispatch('INSTALL_BUNDLE', this.installableApps);
-				});
+				}
+			},
 
+			isProcessing (id) {
+				return _.contains(this.$store.state.processing, id)
 			},
 
 			isInstalled (id) {
 				return _.contains(this.$store.state.installed, id)
 			},
-
-			isProcessing (id) {
-				return _.contains(this.$store.state.processing, id)
-			}
 		}
 	}
 </script>
