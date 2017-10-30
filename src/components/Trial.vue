@@ -18,15 +18,12 @@
 
 						.uk-margin.uk-grid-small.uk-child-width-auto(uk-grid)
 							label
-								input.uk-checkbox(v-model="legalChecked", type="checkbox", :readonly="startInstallProcess").uk-margin-small-right
+								input.uk-checkbox(v-model="legalChecked", type="checkbox").uk-margin-small-right
 								| I accept the <a href="https://owncloud.com/licenses/owncloud-confidentiality-agreement" target="_blank" class="uk-text-primary">ownCloud enterprise confidentiality agreement</a> and the <a href="https://owncloud.com/licenses/owncloud-commercial" target="_blank" class="uk-text-primary">ownCloud Commercial License</a>.
 
 					.uk-alert-success(v-if="licenseKeyExists", uk-alert)
 						p.intro
 							strong {{ t('Awesome! Your 30 day trial is ready to go!') }}
-						p
-							a(href="#", @click.prevent="startInstallProcess") Install all Enterprise apps now.
-
 
 				.uk-modal-footer
 					button.uk-button.uk-button-default.uk-modal-close.uk-margin-small-right(type='button') Close
@@ -34,7 +31,6 @@
 						.uk-position-small.uk-position-center-left(uk-spinner, uk-icon="icon: spinner; ratio: 0.8")
 						| &nbsp;&nbsp;&nbsp;&nbsp; {{ t('Loading') }}
 					button.uk-button.uk-button-primary.uk-position-relative.uk-align-right.uk-margin-remove-bottom(v-if="!licenseKeyExists && !loading", @click="requestLicenseKey", :disabled="!legalChecked || !apiKeyExists || loading") {{ t('Start trial') }}
-					button.uk-button.uk-button-primary.uk-position-relative.uk-align-right.uk-margin-remove-bottom(v-else-if="!loading", @click="startInstallProcess", :disabled="!legalChecked || loading") {{ t('Install Enterprise Apps now') }}
 
 </template>
 
@@ -59,33 +55,11 @@
 				UIkit.modal('#edit-api-key').toggle();
 			},
 			requestLicenseKey () {
-				this.$store.dispatch('REQUEST_LICENSE_KEY');
-			},
-			startInstallProcess () {
-				this.$store.dispatch('FETCH_BUNDLES');
-
-				this.$router.push({ name: 'Bundles' });
-
-				const promise = new Promise((resolve) => {
-					if (this.$store.dispatch('PROCESS_APPLICATION', ['enterprise_key', 'install', { suppressNotifications: true, suppressRefetch: true } ])) {
-						resolve();
-					}
-				});
-
-				promise.then( () => {
-					this.$store.dispatch('INSTALL_BUNDLE', this.applications);
-				});
-
-				UIkit.modal('#start-enterprise-trial').toggle();
-			},
-			t (string, interpolation) {
-				if (!interpolation) {
-					return this.$gettext(string);
-				}
-				else {
-					// %{interplate} with object
-					return this.$gettextInterpolate(string, interpolation);
-				}
+				this.$store.dispatch('REQUEST_LICENSE_KEY')
+				.then(this.$router.push({ name: 'Bundles' }))
+				.catch(() => {
+					console.warn('REQUEST_LICENSE_KEY failed')
+				})
 			}
 		},
 		mounted () {
@@ -101,10 +75,6 @@
 					return this.$store.state.apikey.key.length > 0;
 
 				return false;
-			},
-
-			applications () {
-				return this.$store.getters.applicationsByLicense('ownCloud Commercial License');
 			},
 
 			loading () {
