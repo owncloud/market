@@ -70,8 +70,8 @@ const getters = {
     applicationsByLicense: (state) => (license) => {
         return _.filter(state.applications.records, function (application) {
             if (application.release) {
-				return application.release.license === license;
-			}
+                return application.release.license === license;
+            }
         });
     },
 
@@ -136,6 +136,28 @@ const mutations = {
         })
     },
 
+	LOADING_BUNDLES (state) {
+		_.extend(state["bundles"], {
+			loading: true,
+			failed: false
+		})
+	},
+
+	FINISH_BUNDLES (state) {
+		_.extend(state["bundles"], {
+			loading: false,
+			failed: false
+		})
+	},
+
+	FAILED_BUNDLES (state) {
+		_.extend(state["bundles"], {
+			loading: false,
+			failed: true,
+            record: {}
+		})
+	},
+
     LOADING_CATEGORIES (state) {
         _.extend(state["categories"], {
             loading: true,
@@ -185,32 +207,7 @@ const mutations = {
 // Request content from the remote API.
 const actions = {
     INVALIDATE_CACHE (context) {
-		Axios.post(OC.generateUrl("/apps/market/cache/invalidate"),
-			{}, {
-				headers: {
-					requesttoken: OC.requestToken
-				}
-			}
-		).then((response) => {
-			UIkit.notification(response.data.message, {
-				status: "success",
-				pos: "bottom-right"
-			});
-
-			context.dispatch("FETCH_APPLICATIONS")
-
-		}).catch((error) => {
-			UIkit.notification(error.response.data.message, {status:"danger", pos: "bottom-right"});
-		})
-    },
-
-    PROCESS_APPLICATION (context, payload) {
-        let id           = payload[0];
-        let route        = payload[1];
-
-        context.commit("START_PROCESSING", id);
-
-        Axios.post(OC.generateUrl("/apps/market/apps/{id}/" + route, {id}),
+        Axios.post(OC.generateUrl("/apps/market/cache/invalidate"),
             {}, {
                 headers: {
                     requesttoken: OC.requestToken
@@ -221,13 +218,52 @@ const actions = {
                 status: "success",
                 pos: "bottom-right"
             });
-            context.commit("FINISH_PROCESSING", id);
-            context.commit("SET_APPLICATION_INSTALLED", id);
+
             context.dispatch("FETCH_APPLICATIONS")
 
         }).catch((error) => {
             UIkit.notification(error.response.data.message, {status:"danger", pos: "bottom-right"});
-            context.commit("FINISH_PROCESSING", id);
+        })
+    },
+
+    PROCESS_APPLICATION (context, payload) {
+        let id           = payload[0];
+        let route        = payload[1];
+        let options      = (payload[2]) ? payload[2] : false;
+
+        context.commit("START_PROCESSING", id);
+
+        return Axios.post(OC.generateUrl("/apps/market/apps/{id}/" + route, {id}),
+            {}, {
+                headers: {
+                    requesttoken: OC.requestToken
+                }
+            }
+        ).then((response) => {
+			if (!options.suppressRefetch) {
+				context.dispatch("FETCH_APPLICATIONS");
+			}
+
+			if (!options.suppressNotifications) {
+				UIkit.notification(response.data.message, {
+					status: "success",
+					pos: "bottom-right"
+				});
+			}
+
+			context.commit("FINISH_PROCESSING", id);
+			context.commit("SET_APPLICATION_INSTALLED", id);
+
+        }).catch((error) => {
+            if (!options.suppressNotifications) {
+                UIkit.notification(error.response.data.message, {
+                    status:"danger",
+                    pos: "bottom-right"
+                });
+			}
+
+			context.commit("FINISH_PROCESSING", id);
+			return Promise.reject(error.response);
         })
     },
 
@@ -240,7 +276,7 @@ const actions = {
                 context.commit("FINISH_APPLICATIONS")
             })
             .catch((error) => {
-                // UIkit.notification(error.response.data.message, {status:"danger", pos: "bottom-right"});
+                UIkit.notification(error.response.data.message, {status:"danger", pos: "bottom-right"});
                 context.commit("FAILED_APPLICATIONS");
             });
     },
@@ -258,7 +294,7 @@ const actions = {
     REQUEST_LICENSE_KEY (context) {
         context.commit("LICENSE_KEY", {"loading": true });
 
-        Axios.get(OC.generateUrl("/apps/market/request-license-key-from-market"))
+        return Axios.get(OC.generateUrl("/apps/market/request-license-key-from-market"))
             .then((response) => {
                 context.commit("LICENSE_KEY", {
                     "loading": false,
@@ -276,51 +312,33 @@ const actions = {
                     status:"danger",
                     pos: "bottom-right"
                 });
-            });
+
+				return Promise.reject(error.response);
+			});
     },
 
     INSTALL_BUNDLE (context, payload) {
 
         let count = payload.length;
 
+        console.log(count);
+
         let install = (i) => {
 
             if (payload[i]) {
-                context.commit("START_PROCESSING", payload[i].id)
-
-                Axios.post(OC.generateUrl("/apps/market/apps/" + payload[i].id + "/install"),
-                    {}, {
-                        headers: {
-                            requesttoken: OC.requestToken
-                        }
-                    }
-                ).then((response) => {
-
-                    UIkit.notification(response.data.message, {
-                        status: "success",
-                        pos: "bottom-right"
-                    })
-                    context.commit("FINISH_PROCESSING", payload[i].id);
-                    context.commit("SET_APPLICATION_INSTALLED", payload[i].id);
-
-                    install(++i);
-
-                    if (count === i) {
-                        context.dispatch("FETCH_APPLICATIONS");
-                        context.dispatch("FETCH_BUNDLES");
-                    }
-
-                }).catch((error) => {
-
-					UIkit.notification(error.response.data.message, {status:"danger", pos: "bottom-right"});
-                    context.commit("FINISH_PROCESSING", payload[i].id);
-                    install(++i);
-
-                    if (count === i) {
-                        context.dispatch("FETCH_APPLICATIONS");
-                        context.dispatch("FETCH_BUNDLES");
-                    }
-                })
+                context.dispatch('PROCESS_APPLICATION', [payload[i].id, 'install', { suppressNotifications: true, suppressRefetch: true }])
+                .then( () => {
+					console.info( payload[i].id + ' installed successfully.')
+				})
+                .catch( () => {
+					console.warn( payload[i].id + ' installation failed.')
+				})
+                .then( () => {
+					install(++i);
+                });
+            }
+            else {
+				context.dispatch('FETCH_APPLICATIONS');
             }
         };
 
@@ -328,16 +346,16 @@ const actions = {
     },
 
     FETCH_BUNDLES (context) {
-        context.commit("LOADING_APPLICATIONS");
+        context.commit("LOADING_BUNDLES");
 
         Axios.get(OC.generateUrl("/apps/market/bundles"))
             .then((response) => {
                 context.commit("SET_BUNDLES", response.data);
-                context.commit("FINISH_APPLICATIONS")
+                context.commit("FINISH_BUNDLES")
             })
             .catch((error) => {
                 UIkit.notification(error.response.data.message, {status:"danger", pos: "bottom-right"});
-                context.commit("FAILED_APPLICATIONS")
+                context.commit("FAILED_BUNDLES")
             });
     },
 
@@ -400,7 +418,41 @@ const actions = {
             context.commit("APIKEY", {"loading" : false });
         })
     },
-}
+
+    REBUILD_NAVIGATION() {
+        Axios.get(OC.filePath('settings', 'ajax', 'navigationdetect.php'),
+            {
+                headers: {
+                    requesttoken: OC.requestToken
+                }
+            }
+        ).then((response) => {
+
+            let navEntries   = response.data.nav_entries;
+            let $container   = $('#apps ul').html("");
+            let $iconLoading = $('<div>', { "class" : "icon-loading-dark" });
+
+            _.each(navEntries, function (e) {
+                let $li   = $('<li>',   { "data-id" : e.id }),
+                    $link = $('<a>',    { "href" : e.href }),
+                    $icon = $('<img>',  { "class" : "app-icon", "src" : e.icon }),
+                    $name = $('<span>', { "text" : e.name });
+
+                $link
+                    .append($icon, $iconLoading.clone().hide(), $name);
+
+                $li
+                    .append($link)
+                    .appendTo($container);
+
+                if (!OC.Util.hasSVGSupport() && e.icon.match(/\.svg$/i)) {
+                    $icon.addClass('svg');
+                    OC.Util.replaceSVG();
+                }
+            });
+        })
+    }
+};
 
 export default new Vuex.Store({
     state,

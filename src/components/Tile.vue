@@ -25,8 +25,10 @@
 
 <script>
 	import Rating from './Rating.vue';
+	import Mixins from '../mixins';
 
 	export default {
+		mixins: [Mixins],
 		components: {
 			Rating
 		},
@@ -36,11 +38,6 @@
 		filters: {
 			cssBackgroundImage (image) {
 				return 'background-image:url("' + image + '");';
-			}
-		},
-		methods: {
-			t(string) {
-				return this.$gettext(string);
 			}
 		}
 	}

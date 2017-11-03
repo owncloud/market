@@ -10,9 +10,11 @@
 </template>
 
 <script>
+	import Mixins from '../mixins';
 	import Tile from './Tile.vue';
 
 	export default {
+		mixins: [Mixins],
 		components: {
 			Tile
 		},
@@ -32,17 +34,6 @@
 			},
 			category() {
 				return this.$route.params.category
-			}
-		},
-		methods: {
-			t (string, interpolation) {
-				if (!interpolation) {
-					return this.$gettext(string);
-				}
-				else {
-					// %{interplate} with object
-					return this.$gettextInterpolate(string, interpolation);
-				}
 			}
 		}
 	}
