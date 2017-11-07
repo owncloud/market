@@ -5,29 +5,30 @@
 				navigation
 				trial
 
-			main.uk-width-expand
+			main.uk-width-expand(v-if="!showNotice")
 				router-view
-
-		#scaleout-notice-modal(uk-modal="bg-close : false")
-			.uk-modal-dialog.uk-margin-auto-vertical
-				button.uk-modal-close-default(type='button', uk-close)
-				.uk-modal-header
-						h2.uk-modal-title Important notice
-				.uk-modal-body
+			section.uk-width-expand(v-else)
+				.uk-card.uk-card-default.uk-card-body.uk-width-xlarge.uk-align-center
+					h1.uk-card-title Notice
 					.uk-alert-danger(uk-alert)
-						p.uk-h5.uk-text-danger Concerning cluster-setup!
-					p We highly recommend <strong>disabling the market app</strong> if this ownCloud instance is hosted <strong>in a clustered environment</strong>. Installing and updating applications via the market app may lead to unforeseen consequences.
-					p If you would like to know more, please visit&nbsp;
+						p We recommend <strong>disabling the market app</strong> in a clustered environment.
+
+					p
+						| Installing and updating applications via the market app is not supportet.
+						br
+						| For more details, please visit&nbsp;
 						a.uk-text-primary(href="#") this Website
 						| .
 
-				.uk-modal-footer.uk-flex.uk-flex-middle
-					.uk-width-1-2.uk-text-left
-						label
-							input.uk-checkbox(type="checkbox", v-model="showOnStartup").uk-margin-small-right
-							| Show message on startup
-					.uk-width-1-2.uk-text-right
-						button.uk-button.uk-button-default.uk-modal-close(type='button') Close
+					hr.uk-hr
+					.uk-flex.uk-flex-middle
+						.uk-width-1-2.uk-text-left
+							label
+								input.uk-checkbox(type="checkbox", v-model="showNoticeOnStartup").uk-margin-small-right
+								| Show on startup
+
+						.uk-width-1-2.uk-text-right
+							button.uk-button.uk-button-default(type='button', @click="showNotice = false") Dissmiss
 
 </template>
 
@@ -38,14 +39,12 @@
 	export default {
 		data () {
 			return {
-				"showOnStartup": true
+				"showNotice" : true,
+				"showNoticeOnStartup": true
 			}
 		},
 		mounted () {
 			this.$store.dispatch('FETCH_APPLICATIONS');
-			setTimeout( () => {
-				UIkit.modal('#scaleout-notice-modal').toggle();
-			} , 5000);
 		},
 		components: {
 			Navigation,
