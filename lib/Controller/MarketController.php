@@ -42,15 +42,20 @@ class MarketController extends Controller {
 	/** @var IConfig */
 	private $config;
 
+	/** @var IAppManager */
+	private $appManager;
+
 	public function __construct($appName,
 								IRequest $request,
 								MarketService $marketService,
 								IL10N $l10n,
+								IAppManager $appManager,
 								IConfig $config) {
 		parent::__construct($appName, $request);
 		$this->marketService = $marketService;
 		$this->l10n = $l10n;
 		$this->config = $config;
+		$this->appManager = $appManager;
 	}
 
 	/**
@@ -272,8 +277,8 @@ class MarketController extends Controller {
 		}
 
 		$config = [
-			'canInstall' => ($this->config->getSystemValue('operation.mode', 'single-instance') === 'single-instance'),
-			'hasInternetConnection' => ($this->config->getSystemValue('has_internet_connection', true)),
+			'canInstall' => $this->appManager->canInstall(),
+			'hasInternetConnection' => $this->config->getSystemValue('has_internet_connection', true),
 			'licenseKeyAvailable' => $licenseKeyAvailable,
 			'licenseMessage' => $licenseMessage
 		];
