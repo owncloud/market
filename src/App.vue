@@ -1,13 +1,11 @@
 <template lang="pug">
-	.uk-padding
+	.uk-padding(v-if="config")
 		.uk-grid-large(uk-grid)
 			aside.uk-width-auto
 				navigation
 				trial
 
-			main.uk-width-expand(v-if="!showNotice")
-				router-view
-			section.uk-width-expand(v-else)
+			section.uk-width-expand(v-if="showNotice")
 				.uk-card.uk-card-default.uk-card-body.uk-width-xlarge.uk-align-center
 					h1.uk-card-title Notice
 					.uk-alert-danger(uk-alert)
@@ -24,12 +22,14 @@
 					.uk-flex.uk-flex-middle
 						.uk-width-1-2.uk-text-left
 							label
-								input.uk-checkbox(type="checkbox", v-model="showNoticeOnStartup").uk-margin-small-right
+								input.uk-checkbox(type="checkbox").uk-margin-small-right
 								| Show on startup
 
 						.uk-width-1-2.uk-text-right
-							button.uk-button.uk-button-default(type='button', @click="showNotice = false") Dissmiss
+							button.uk-button.uk-button-default(type='button', @click="noticeDismissed = true") Dissmiss
 
+			main.uk-width-expand(v-else)
+				router-view
 </template>
 
 <script>
@@ -39,12 +39,25 @@
 	export default {
 		data () {
 			return {
-				"showNotice" : true,
-				"showNoticeOnStartup": true
+				"noticeDismissed" : false
 			}
 		},
 		mounted () {
+			this.$store.dispatch('FETCH_CONFIG');
 			this.$store.dispatch('FETCH_APPLICATIONS');
+		},
+		computed: {
+			config() {
+				return this.$store.getters.config
+			},
+			showNotice() {
+				return this.noticeDismissed === false && this.config.canInstall === false
+			}
+		},
+		methods: {
+			echo() {
+				console.log(this.showNotice)
+			}
 		},
 		components: {
 			Navigation,

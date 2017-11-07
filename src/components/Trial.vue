@@ -1,6 +1,6 @@
 <template lang="pug">
-	div(v-if="!unborn")
-		button.uk-button.uk-button-primary.uk-margin-small-top.uk-width-1-1(v-if="!licenseKeyExists && !loading", @click="openModalStartEnterpriseKey") {{ t('Start Enterprise trial') }}
+	div
+		button.uk-button.uk-button-primary.uk-margin-small-top.uk-width-1-1(v-if="!config.licenseKeyExists", @click="openModalStartEnterpriseKey") {{ t('Start Enterprise trial') }}
 
 		#start-enterprise-trial(uk-modal='center: true')
 			.uk-modal-dialog
@@ -8,7 +8,7 @@
 				.uk-modal-header
 					h2.uk-modal-title {{ t('Enterprise Trial Version') }}
 				.uk-modal-body
-					div(v-if="!licenseKeyExists")
+					div(v-if="!config.licenseKeyExists")
 						p.intro Take your ownCloud to the next level and start your 30 day ownCloud Enterprise Trial today!
 
 						.uk-alert-danger(uk-alert, v-if="!apiKeyExists")
@@ -21,16 +21,13 @@
 								input.uk-checkbox(v-model="legalChecked", type="checkbox").uk-margin-small-right
 								| I accept the <a href="https://owncloud.com/licenses/owncloud-confidentiality-agreement" target="_blank" class="uk-text-primary">ownCloud enterprise confidentiality agreement</a> and the <a href="https://owncloud.com/licenses/owncloud-commercial" target="_blank" class="uk-text-primary">ownCloud Commercial License</a>.
 
-					.uk-alert-success(v-if="licenseKeyExists", uk-alert)
+					.uk-alert-success(v-if="config.licenseKeyExists", uk-alert)
 						p.intro
 							strong {{ t('Awesome! Your 30 day trial is ready to go!') }}
 
 				.uk-modal-footer
 					button.uk-button.uk-button-default.uk-modal-close.uk-margin-small-right(type='button') Close
-					button.uk-button.uk-button-primary.uk-position-relative.uk-align-right.uk-margin-remove-bottom(v-if="loading", disabled)
-						.uk-position-small.uk-position-center-left(uk-spinner, uk-icon="icon: spinner; ratio: 0.8")
-						| &nbsp;&nbsp;&nbsp;&nbsp; {{ t('Loading') }}
-					button.uk-button.uk-button-primary.uk-position-relative.uk-align-right.uk-margin-remove-bottom(v-if="!licenseKeyExists && !loading", @click="requestLicenseKey", :disabled="!legalChecked || !apiKeyExists || loading") {{ t('Start trial') }}
+					button.uk-button.uk-button-primary.uk-position-relative.uk-align-right.uk-margin-remove-bottom(v-if="!config.licenseKeyExists", @click="requestLicenseKey", :disabled="!legalChecked || !apiKeyExists") {{ t('Start trial') }}
 
 </template>
 
@@ -62,12 +59,9 @@
 				})
 			}
 		},
-		mounted () {
-			this.$store.dispatch('CHECK_LICENSE_KEY');
-		},
 		computed : {
-			licenseKeyExists () {
-				return this.$store.state.licenseKey.exists;
+			config() {
+				return this.$store.getters.config
 			},
 
 			apiKeyExists () {
@@ -75,15 +69,7 @@
 					return this.$store.state.apikey.key.length > 0;
 
 				return false;
-			},
-
-			loading () {
-				return this.$store.state.licenseKey.loading;
-			},
-
-			unborn () {
-				return this.$store.state.licenseKey.unborn;
-			},
+			}
 		}
 	}
 </script>
