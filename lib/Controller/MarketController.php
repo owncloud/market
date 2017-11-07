@@ -29,6 +29,7 @@ use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\IL10N;
 use OCP\IRequest;
+use OCP\IConfig;
 
 class MarketController extends Controller {
 
@@ -38,13 +39,18 @@ class MarketController extends Controller {
 	/** @var IL10N */
 	private $l10n;
 
+	/** @var IConfig */
+	private $config;
+
 	public function __construct($appName,
 								IRequest $request,
 								MarketService $marketService,
-								IL10N $l10n) {
+								IL10N $l10n,
+								IConfig $config) {
 		parent::__construct($appName, $request);
 		$this->marketService = $marketService;
 		$this->l10n = $l10n;
+		$this->config = $config;
 	}
 
 	/**
@@ -257,22 +263,22 @@ class MarketController extends Controller {
 	 * @return string
 	 * @NoCSRFRequired
 	 */
-	public function hasLicenseKey() {
-		if ($this->marketService->hasLicenseKey()) {
-			return new DataResponse(
-				[
-					'message' => $this->l10n->t('License key available.')
-				],
-				Http::STATUS_OK
-			);
+	public function getConfig() {
+		$licenseKeyAvailable = $this->marketService->hasLicenseKey();
+		if ($licenseKeyAvailable) {
+			$licenseMessage = $this->l10n->t('License key available.');
+		} else {
+			$licenseMessage = $this->l10n->t('No license key configured.');
 		}
 
-		return new DataResponse(
-			[
-				'message' => $this->l10n->t('No license key configured.')
-			],
-			Http::STATUS_NOT_FOUND
-		);
+		$config = [
+			'canInstall' => ($this->config->getSystemValue('operation.mode', 'single-instance') === 'single-instance'),
+			'hasInternetConnection' => ($this->config->getSystemValue('has_internet_connection', true)),
+			'licenseKeyAvailable' => $licenseKeyAvailable,
+			'licenseMessage' => $licenseMessage
+		];
+
+		return new DataResponse($config, Http::STATUS_OK);
 	}
 
 	/**
