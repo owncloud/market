@@ -9,14 +9,12 @@
 				.uk-card.uk-card-default.uk-card-body.uk-width-xlarge.uk-align-center
 					h1.uk-card-title Notice
 					.uk-alert-danger(uk-alert)
-						p We recommend <strong>disabling the market app</strong> in a clustered environment.
+						p You're running ownCloud in a clustered setup. Installing or upgrading apps via the Market app is currently not supported.
 
-					p
-						| Installing and updating applications via the market app is not supportet.
-						br
-						| For more details, please visit&nbsp;
-						a.uk-text-primary(href="#") this Website
-						| .
+					p Please follow the&nbsp;
+						a(href="https://doc.owncloud.com/server/latest/admin_manual/upgrading/marketplace_apps.html#clustered-multi-server-environment") manual process
+
+					p You can however browse the available apps and will receive update notifications.
 
 					hr.uk-hr
 					.uk-flex.uk-flex-middle
