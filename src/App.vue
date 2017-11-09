@@ -34,7 +34,7 @@
                 return this.$store.getters.config
             },
             showNotice() {
-                return this.noticeDismissed === false && this.config.canInstall === true
+                return this.noticeDismissed === false && this.config.canInstall === false
             }
         },
         methods: { },
