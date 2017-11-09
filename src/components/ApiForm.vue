@@ -1,6 +1,6 @@
 <template lang="pug">
 	li
-		a(href="#", @click.prevent="openModalEditKey") {{ key ? 'Edit API Key' : 'Add API Key' }}
+		a(href="#", @click.prevent="openModalEditKey") {{ key ? t('Edit API Key') : t('Add API Key') }}
 
 		#edit-api-key(uk-modal='center: true')
 			.uk-modal-dialog
@@ -33,6 +33,9 @@
 			}
 		},
 		methods : {
+			t(string) {
+				return this.$gettext(string);
+			},
 			openModalEditKey () {
 				UIkit.modal('#edit-api-key').toggle();
 			},

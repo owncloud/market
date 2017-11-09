@@ -303,4 +303,15 @@ class MarketController extends Controller {
 			);
 		}
 	}
+
+	public function invalidateCache() {
+		$this->marketService->invalidateCache();
+		return new DataResponse(
+			[
+				'message' => $this->l10n->t('Cache cleared.')
+			],
+			Http::STATUS_OK
+		);
+
+	}
 }
