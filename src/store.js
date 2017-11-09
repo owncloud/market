@@ -102,7 +102,7 @@ const getters = {
 const mutations = {
 
 	CONFIG (state, changes) {
-		_.extend(state["config"], changes);
+		state["config"] = changes;
 	},
 
     LOADING_APPLICATIONS (state) {
