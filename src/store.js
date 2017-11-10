@@ -285,25 +285,18 @@ const actions = {
     },
 
     REQUEST_LICENSE_KEY (context) {
-        context.commit("LICENSE_KEY", {"loading": true });
-
         return Axios.get(OC.generateUrl("/apps/market/request-license-key-from-market"))
             .then((response) => {
-                context.commit("LICENSE_KEY", {
-                    "loading": false,
-                    "exists" : true,
-                    "unborn" : false
+                context.dispatch('FETCH_CONFIG');
+                UIkit.notification(error.response.data.message, {
+                    status : "success",
+                    pos    : "bottom-right"
                 });
             })
             .catch((error) => {
-                context.commit("LICENSE_KEY", {
-                    "loading": false,
-                    "exists" : false,
-                    "unborn" : false
-                });
                 UIkit.notification(error.response.data.message, {
-                    status:"danger",
-                    pos: "bottom-right"
+                    status : "danger",
+                    pos    : "bottom-right"
                 });
 
 				return Promise.reject(error.response);
@@ -383,13 +376,15 @@ const actions = {
     },
 
     FETCH_CONFIG (context) {
-        // context.commit("CONFIG", {"loading": true });
         Axios.get(OC.generateUrl("/apps/market/config"))
             .then((response) => {
                 context.commit("CONFIG", response.data);
             })
             .catch((error) => {
-                // context.commit("APIKEY", {"loading": false });
+                UIkit.notification(error.response.data.message, {
+                    status:"danger",
+                    pos: "bottom-right"
+                });
             });
     },
 

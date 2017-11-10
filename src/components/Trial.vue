@@ -1,6 +1,6 @@
 <template lang="pug">
 	div
-		button.uk-button.uk-button-primary.uk-margin-small-top.uk-width-1-1(v-if="!config.licenseKeyExists", @click="openModalStartEnterpriseKey") {{ t('Start Enterprise trial') }}
+		button.uk-button.uk-button-primary.uk-margin-small-top.uk-width-1-1(v-if="!config.licenseKeyAvailable", @click="openModalStartEnterpriseKey") {{ t('Start Enterprise trial') }}
 
 		#start-enterprise-trial(uk-modal='center: true')
 			.uk-modal-dialog
@@ -8,7 +8,7 @@
 				.uk-modal-header
 					h2.uk-modal-title {{ t('Enterprise Trial Version') }}
 				.uk-modal-body
-					div(v-if="!config.licenseKeyExists")
+					div(v-if="!config.licenseKeyAvailable")
 						p.intro Take your ownCloud to the next level and start your 30 day ownCloud Enterprise Trial today!
 
 						.uk-alert-danger(uk-alert, v-if="!apiKeyExists")
@@ -21,13 +21,13 @@
 								input.uk-checkbox(v-model="legalChecked", type="checkbox").uk-margin-small-right
 								| I accept the <a href="https://owncloud.com/licenses/owncloud-confidentiality-agreement" target="_blank" class="uk-text-primary">ownCloud enterprise confidentiality agreement</a> and the <a href="https://owncloud.com/licenses/owncloud-commercial" target="_blank" class="uk-text-primary">ownCloud Commercial License</a>.
 
-					.uk-alert-success(v-if="config.licenseKeyExists", uk-alert)
+					.uk-alert-success(v-if="config.licenseKeyAvailable", uk-alert)
 						p.intro
 							strong {{ t('Awesome! Your 30 day trial is ready to go!') }}
 
 				.uk-modal-footer
 					button.uk-button.uk-button-default.uk-modal-close.uk-margin-small-right(type='button') Close
-					button.uk-button.uk-button-primary.uk-position-relative.uk-align-right.uk-margin-remove-bottom(v-if="!config.licenseKeyExists", @click="requestLicenseKey", :disabled="!legalChecked || !apiKeyExists") {{ t('Start trial') }}
+					button.uk-button.uk-button-primary.uk-position-relative.uk-align-right.uk-margin-remove-bottom(v-if="!config.licenseKeyAvailable", @click="requestLicenseKey", :disabled="!legalChecked || !apiKeyExists") {{ t('Start trial') }}
 
 </template>
 
@@ -56,7 +56,7 @@
 				.then(this.$router.push({ name: 'Bundles' }))
 				.catch(() => {
 					console.warn('REQUEST_LICENSE_KEY failed')
-				})
+				});
 			}
 		},
 		computed : {
