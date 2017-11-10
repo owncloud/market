@@ -6,6 +6,9 @@ import _ from "underscore";
 Vue.use(Vuex);
 
 const state = {
+
+    config: {},
+
     categories: {
         loading: false,
         failed: false,
@@ -31,18 +34,17 @@ const state = {
         changeable : false
     },
 
-    licenseKey : {
-        exists : false,
-        loading : false,
-        unborn: true
-    },
-
     processing: [],
     installed: []
 };
 
 // Retrieve computed values from state.
 const getters = {
+
+	config (state) {
+		return state.config;
+	},
+
     categories (state) {
         return state.categories.records;
     },
@@ -98,6 +100,11 @@ const getters = {
 
 // Manipulate from the current state.
 const mutations = {
+
+	CONFIG (state, changes) {
+		state["config"] = changes;
+	},
+
     LOADING_APPLICATIONS (state) {
         _.extend(state["applications"], {
             loading: true,
@@ -118,10 +125,6 @@ const mutations = {
             loading: false,
             failed: false
         })
-    },
-
-    LICENSE_KEY (state, changes) {
-        _.extend(state["licenseKey"], changes);
     },
 
     SET_APPLICATIONS (state, content) {
@@ -281,36 +284,19 @@ const actions = {
             });
     },
 
-    CHECK_LICENSE_KEY (context) {
-        Axios.get(OC.generateUrl("/apps/market/has-license-key"))
-            .then(() => {
-                context.commit("LICENSE_KEY", { "exists" : true, "unborn" : false });
-            })
-            .catch(() => {
-                context.commit("LICENSE_KEY", { "exists" : false, "unborn" : false });
-            });
-    },
-
     REQUEST_LICENSE_KEY (context) {
-        context.commit("LICENSE_KEY", {"loading": true });
-
         return Axios.get(OC.generateUrl("/apps/market/request-license-key-from-market"))
             .then((response) => {
-                context.commit("LICENSE_KEY", {
-                    "loading": false,
-                    "exists" : true,
-                    "unborn" : false
+                context.dispatch('FETCH_CONFIG');
+                UIkit.notification(error.response.data.message, {
+                    status : "success",
+                    pos    : "bottom-right"
                 });
             })
             .catch((error) => {
-                context.commit("LICENSE_KEY", {
-                    "loading": false,
-                    "exists" : false,
-                    "unborn" : false
-                });
                 UIkit.notification(error.response.data.message, {
-                    status:"danger",
-                    pos: "bottom-right"
+                    status : "danger",
+                    pos    : "bottom-right"
                 });
 
 				return Promise.reject(error.response);
@@ -386,6 +372,19 @@ const actions = {
             })
             .catch((error) => {
                 context.commit("APIKEY", {"loading": false });
+            });
+    },
+
+    FETCH_CONFIG (context) {
+        Axios.get(OC.generateUrl("/apps/market/config"))
+            .then((response) => {
+                context.commit("CONFIG", response.data);
+            })
+            .catch((error) => {
+                UIkit.notification(error.response.data.message, {
+                    status:"danger",
+                    pos: "bottom-right"
+                });
             });
     },
 
