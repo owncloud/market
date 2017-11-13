@@ -5,15 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased] - 2017-10-??
-### Added
-
-### Changed
-
 ### Fixed
 
 - Show more detailed update information - [#159](https://github.com/owncloud/market/pull/159)
-- Better error messages for marketplace errors - [#141](https://github.com/owncloud/market/issues/141)
-- Provide non-zero exit codes on failure - [#143](https://github.com/owncloud/market/issues/143)
 - Darken card box-shadow - [#136](https://github.com/owncloud/market/issues/136)
 - Handle cluster setups better - [#125](https://github.com/owncloud/market/issues/125) [#184](https://github.com/owncloud/market/pull/184)
 
