@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased] - 2017-10-??
+## [0.2.3] - 2017-10-14
 ### Fixed
 
 - Show more detailed update information - [#159](https://github.com/owncloud/market/pull/159)
@@ -60,7 +60,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Skip migrations when reinstalling missing code - [#76](https://github.com/owncloud/market/issues/76)
 - Reset overwritten core css styles - [#73](https://github.com/owncloud/market/issues/73)
 
-[Unreleased]: https://github.com/owncloud/core/compare/v0.2.2...master
+[Unreleased]: https://github.com/owncloud/core/compare/v10.2.2...master
 [10.0.3 / 0.2.2]: https://github.com/owncloud/core/compare/v10.0.2...v10.0.3
 [10.0.1 / 0.1.0]: https://github.com/owncloud/core/compare/v10.0.0...v10.0.1
 
