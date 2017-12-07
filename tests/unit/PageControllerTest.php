@@ -1,5 +1,7 @@
 <?php
 
+namespace OCA\Market\Tests\Unit;
+
 use OCA\Market\Controller\PageController;
 use OCP\IRequest;
 use Test\TestCase;
