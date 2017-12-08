@@ -22,13 +22,12 @@
 
 namespace OCA\Market\Tests\Unit\Command;
 
-
-use OCA\Market\Command\InstallApp;
+use OCA\Market\Command\UnInstallApp;
 use OCA\Market\MarketService;
 use Symfony\Component\Console\Tester\CommandTester;
 use Test\TestCase;
 
-class InstallAppTest extends TestCase {
+class UnInstallAppTest extends TestCase {
 
 	/** @var CommandTester */
 	private $commandTester;
@@ -39,7 +38,7 @@ class InstallAppTest extends TestCase {
 		parent::setUp();
 
 		$this->marketService = $this->createMock(MarketService::class);
-		$command = new InstallApp($this->marketService);
+		$command = new UnInstallApp($this->marketService);
 		$this->commandTester = new CommandTester($command);
 	}
 
@@ -56,98 +55,18 @@ class InstallAppTest extends TestCase {
 		$this->marketService->expects($this->once())->method('canInstall')->willReturn(true);
 		$this->commandTester->execute([]);
 		$output = $this->commandTester->getDisplay();
-		$this->assertContains('No appId or path to a local package specified. Nothing to do.', $output);
+		$this->assertContains('No appIds specified. Nothing to do.', $output);
 	}
 
-	public function testInstallNewApp() {
+	public function testUnInstall() {
 		$this->marketService->expects($this->once())->method('canInstall')->willReturn(true);
-		$this->marketService->expects($this->once())->method('isAppInstalled')->willReturn(false);
-		$this->marketService->expects($this->once())->method('installApp');
+		$this->marketService->expects($this->once())->method('uninstallApp');
 		$this->commandTester->execute([
 			'ids' => ['foo']
 		]);
 		$output = $this->commandTester->getDisplay();
-		$this->assertContains('foo: Installing new app ...', $output);
-		$this->assertContains('foo: App installed.', $output);
-	}
-
-	public function testInstallInstalledApp() {
-		$this->marketService->expects($this->once())->method('canInstall')->willReturn(true);
-		$this->marketService->expects($this->once())->method('isAppInstalled')->willReturn(true);
-		$this->marketService->expects($this->once())->method('getAvailableUpdateVersion')->willReturn(false);
-		$this->marketService->expects($this->never())->method('installApp');
-		$this->commandTester->execute([
-			'ids' => ['foo']
-		]);
-		$output = $this->commandTester->getDisplay();
-		$this->assertContains('foo: App already installed and no update available', $output);
-	}
-
-	public function testUpdateApp() {
-		$this->marketService->expects($this->once())->method('canInstall')->willReturn(true);
-		$this->marketService->expects($this->once())->method('isAppInstalled')->willReturn(true);
-		$this->marketService->expects($this->once())->method('getAvailableUpdateVersion')->willReturn('1.2.3');
-		$this->marketService->expects($this->never())->method('installApp');
-		$this->marketService->expects($this->once())->method('updateApp');
-		$this->commandTester->execute([
-			'ids' => ['foo']
-		]);
-		$output = $this->commandTester->getDisplay();
-		$this->assertContains('foo: Installing new version 1.2.3 ...', $output);
-	}
-
-	/**
-	 * @dataProvider providesVersions
-	 * @param bool $withHigherVersion
-	 */
-	public function testLocalUpdate($withHigherVersion) {
-		$this->marketService->expects($this->once())->method('canInstall')->willReturn(true);
-		$this->marketService->expects($this->once())->method('readAppPackage')->willReturn([
-			'id' => 'bla',
-			'version' => $withHigherVersion ? '1.2.2' : '1.2.1'
-		]);
-		$this->marketService->expects($this->once())->method('isAppInstalled')->willReturn(true);
-		$this->marketService->expects($this->once())->method('getInstalledAppInfo')->willReturn([
-			'version' => '1.2.1'
-		]);
-		$this->marketService->expects($withHigherVersion ? $this->once() : $this->never())->method('updatePackage');
-		$this->commandTester->execute([
-			'-l' => ['bla.tar.gz']
-		]);
-		$output = $this->commandTester->getDisplay();
-		if ($withHigherVersion) {
-			$this->assertContains('bla: Installing new version from bla.tar.gz', $output);
-			$this->assertContains('bla: App updated.', $output);
-		} else {
-		$this->assertContains('bla: bla.tar.gz has the same or older version of the app', $output);
-		}
-	}
-
-	public function providesVersions() {
-		return [
-			[true],
-			[false],
-		];
-	}
-
-	public function testLocalInstall() {
-		$this->marketService->expects($this->once())->method('canInstall')->willReturn(true);
-		$this->marketService->expects($this->once())->method('readAppPackage')->willReturn([
-			'id' => 'bla',
-			'version' => '1.2.2'
-		]);
-		$this->marketService->expects($this->once())->method('isAppInstalled')->willReturn(false);
-		$this->marketService->expects($this->never())->method('getInstalledAppInfo')->willReturn([
-			'version' => '1.2.1'
-		]);
-		$this->marketService->expects($this->never())->method('updatePackage');
-		$this->marketService->expects($this->once())->method('installPackage');
-		$this->commandTester->execute([
-			'-l' => ['bla.tar.gz']
-		]);
-		$output = $this->commandTester->getDisplay();
-		$this->assertContains('bla: Installing new app from bla.tar.gz', $output);
-		$this->assertContains('bla: App installed.', $output);
+		$this->assertContains('foo: Un-Installing ...', $output);
+		$this->assertContains('foo: App uninstalled.', $output);
 	}
 
 }
