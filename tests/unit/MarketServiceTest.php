@@ -1,5 +1,7 @@
 <?php
 
+namespace OCA\Market\Tests\Unit;
+
 use OCP\ICacheFactory;
 use OCP\IConfig;
 use OCP\IL10N;
@@ -13,7 +15,7 @@ class MarketServiceTest extends TestCase {
 	private $marketService;
 	/** @var boolean */
 	private $hasInternetConnection;
-	/** @var IAppManager | PHPUnit_Framework_MockObject_MockObject */
+	/** @var IAppManager | \PHPUnit_Framework_MockObject_MockObject */
 	private $appManager;
 
 	public function setUp(){
@@ -21,11 +23,11 @@ class MarketServiceTest extends TestCase {
 		$this->appManager = $this->createMock(IAppManager::class);
 		$this->appManager->method('getAllApps')->willReturn([]);
 
-		/** @var IConfig | PHPUnit_Framework_MockObject_MockObject $configMock */
+		/** @var IConfig | \PHPUnit_Framework_MockObject_MockObject $configMock */
 		$configMock = $this->getConfigMock();
-		/** @var ICacheFactory | PHPUnit_Framework_MockObject_MockObject $cacheFactoryMock */
+		/** @var ICacheFactory | \PHPUnit_Framework_MockObject_MockObject $cacheFactoryMock */
 		$cacheFactoryMock = $this->createMock(ICacheFactory::class);
-		/** @var IL10N | PHPUnit_Framework_MockObject_MockObject $l10nMock */
+		/** @var IL10N | \PHPUnit_Framework_MockObject_MockObject $l10nMock */
 		$l10nMock = $this->createMock(IL10N::class);
 		$this->marketService = new MarketService(
 			$this->appManager,
@@ -36,7 +38,7 @@ class MarketServiceTest extends TestCase {
 	}
 
 	/**
-	 * @expectedException OCP\App\AppManagerException
+	 * @expectedException \OCP\App\AppManagerException
 	*/
 	public function testInstallWithInternetConnectionDisabled(){
 		$this->hasInternetConnection = false;
@@ -45,7 +47,7 @@ class MarketServiceTest extends TestCase {
 	}
 	
 	/**
-	 * @expectedException OCP\App\AppManagerException
+	 * @expectedException \OCP\App\AppManagerException
 	*/
 	public function testUpdateWithInternetConnectionDisabled(){
 		$this->hasInternetConnection = false;

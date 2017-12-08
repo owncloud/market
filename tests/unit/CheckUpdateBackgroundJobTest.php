@@ -1,6 +1,6 @@
 <?php
 
-namespace OCA\Market\Tests\Notification;
+namespace OCA\Market\Tests\Unit;
 
 use OCA\Market\CheckUpdateBackgroundJob;
 use OCA\Market\MarketService;

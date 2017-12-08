@@ -25,7 +25,6 @@ use OCA\Market\MarketService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class UnInstallApp extends Command {
@@ -60,13 +59,13 @@ class UnInstallApp extends Command {
 		$appIds = array_unique($appIds);
 
 		if (!count($appIds)){
-			$output->writeln("No appId or path to a local package specified. Nothing to do.");
+			$output->writeln("No appIds specified. Nothing to do.");
 			return;
 		}
 
 		foreach ($appIds as $appId) {
 			try {
-				$output->writeln("$appId: Un-Installing new version ...");
+				$output->writeln("$appId: Un-Installing ...");
 				$this->marketService->uninstallApp($appId);
 				$output->writeln("$appId: App uninstalled.");
 			} catch (\Exception $ex) {

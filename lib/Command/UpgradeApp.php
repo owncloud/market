@@ -105,6 +105,11 @@ class UpgradeApp extends Command {
 		}
 		$appIds = array_unique($appIds);
 
+		if (!count($appIds)){
+			$output->writeln("No appId or path to a local package specified. Nothing to do.");
+			return;
+		}
+
 		foreach ($appIds as $appId) {
 			try {
 				if ($this->marketService->isAppInstalled($appId)) {
