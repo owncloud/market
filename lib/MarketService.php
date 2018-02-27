@@ -313,7 +313,7 @@ class MarketService {
 	 */
 	public function getUpdates() {
 		$result = [];
-		$apps = $this->appManager->getAllApps();
+		$apps = $this->appManager->getInstalledApps();
 		foreach ($apps as $app) {
 			$info = $this->appManager->getAppInfo($app);
 			if (isset($info['id'])) {
