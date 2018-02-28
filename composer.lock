@@ -719,16 +719,16 @@
         },
         {
             "name": "scrutinizer/ocular",
-            "version": "1.3.1",
+            "version": "1.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/scrutinizer-ci/ocular.git",
-                "reference": "b87630fa5a872283319a84133bb610163fe509b1"
+                "reference": "1465d2f0d13b4cf500776550df0582c7ba3e4d53"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/scrutinizer-ci/ocular/zipball/b87630fa5a872283319a84133bb610163fe509b1",
-                "reference": "b87630fa5a872283319a84133bb610163fe509b1",
+                "url": "https://api.github.com/repos/scrutinizer-ci/ocular/zipball/1465d2f0d13b4cf500776550df0582c7ba3e4d53",
+                "reference": "1465d2f0d13b4cf500776550df0582c7ba3e4d53",
                 "shasum": ""
             },
             "require": {
@@ -752,7 +752,10 @@
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
-            "time": "2016-09-09T08:07:18+00:00"
+            "license": [
+                "Apache-2.0"
+            ],
+            "time": "2017-07-20T09:17:38+00:00"
         },
         {
             "name": "symfony/console",
