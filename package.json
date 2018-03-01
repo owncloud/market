@@ -34,7 +34,7 @@
     "expose-loader": "0.7.3",
     "jquery": "3.2.1",
     "less": "2.7.2",
-    "less-loader": "4.0.5",
+    "less-loader": "4.0.6",
     "node-sass": "4.5.3",
     "npm-watch": "0.1.9",
     "pug": "2.0.0-rc.4",
