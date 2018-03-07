@@ -39,7 +39,6 @@ class Notifier implements INotifier {
 	/** @var IFactory */
 	protected $l10NFactory;
 
-
 	/**
 	 * Notifier constructor.
 	 *
@@ -73,6 +72,8 @@ class Notifier implements INotifier {
 		$appVersions = $this->getAppVersions();
 		if (isset($appVersions[$notification->getObjectType()])) {
 			$this->updateAlreadyInstalledCheck($notification, $appVersions[$notification->getObjectType()]);
+		} else {
+			throw new \InvalidArgumentException();
 		}
 
 		$notification->setParsedSubject(
@@ -85,14 +86,18 @@ class Notifier implements INotifier {
 	}
 
 	/**
-	 * Remove the notification and prevent rendering, when the update is installed
+	 * Remove the notification and prevent rendering,
+	 * when either the update is installed or app was removed
 	 *
 	 * @param INotification $notification
 	 * @param string $installedVersion
 	 * @throws \InvalidArgumentException When the update is already installed
 	 */
 	protected function updateAlreadyInstalledCheck(INotification $notification, $installedVersion) {
-		if (version_compare($notification->getObjectId(), $installedVersion, '<=')) {
+		if (
+			$this->appManager->getAppPath($notification->getObjectType()) === false
+			|| version_compare($notification->getObjectId(), $installedVersion, '<=')
+		) {
 			$this->notificationManager->markProcessed($notification);
 			throw new \InvalidArgumentException();
 		}
