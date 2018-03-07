@@ -415,7 +415,7 @@ class MarketService {
 	public function setApiKey($apiKey) {
 		if ($this->isApiKeyChangeableByUser()) {
 			$this->config->setAppValue('market', 'key', $apiKey);
-
+			$this->invalidateCache();
 			return true;
 		}
 
@@ -592,7 +592,7 @@ class MarketService {
 		}
 
 		$this->config->setAppValue('enterprise_key', 'license-key', $demoLicenseKey);
-
+		$this->invalidateCache();
 		return $demoLicenseKey;
 	}
 
