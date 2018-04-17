@@ -4,12 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
-### Added
-
-### Changed
+## [0.2.4] - 2018-04-17
 
 ### Fixed
+- Automatic cache invalidation when starting a enterprise trail [#282](https://github.com/owncloud/market/pull/282)
+- Prevent update notifications for uninstalled apps [#285](https://github.com/owncloud/market/pull/285)
 
 ## [0.2.3] - 2017-11-14
 ### Fixed
@@ -18,7 +17,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Darken card box-shadow - [#136](https://github.com/owncloud/market/issues/136)
 - Handle cluster setups better - [#125](https://github.com/owncloud/market/issues/125) [#184](https://github.com/owncloud/market/pull/184)
 
-## [10.0.3 / 0.2.2] - 2017-09-15
+## [0.2.2] - 2017-09-15
 ### Added
 
 - Added market:uninstall command - [#125](https://github.com/owncloud/market/pull/125)
@@ -60,14 +59,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Translations have been updated - [#75](https://github.com/owncloud/market/pull/78)
 - Erroneous sorting of releases - [#90](https://github.com/owncloud/market/pull/90)
 
-## [10.0.1 / 0.1.0] - 2017-06-23
+## [0.1.0] - 2017-06-23
 
 ### Fixed
 
 - Skip migrations when reinstalling missing code - [#76](https://github.com/owncloud/market/issues/76)
 - Reset overwritten core css styles - [#73](https://github.com/owncloud/market/issues/73)
 
-[Unreleased]: https://github.com/owncloud/core/compare/v10.2.2...master
-[10.0.3 / 0.2.2]: https://github.com/owncloud/core/compare/v10.0.2...v10.0.3
-[10.0.1 / 0.1.0]: https://github.com/owncloud/core/compare/v10.0.0...v10.0.1
+[0.2.4]: https://github.com/owncloud/market/compare/v0.2.3...v0.2.4
+[0.2.3]: https://github.com/owncloud/market/compare/v0.2.2...v0.2.3
+[0.2.2]: https://github.com/owncloud/market/compare/v0.2.1...v0.2.2
+[0.2.1]: https://github.com/owncloud/market/compare/v0.2.0...v0.2.1
+
 
