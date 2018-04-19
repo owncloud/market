@@ -67,16 +67,16 @@ class InstallApp extends Command {
 		}
 
 		$appIds = $input->getArgument('ids');
-		$appIds = array_unique($appIds);
+		$appIds = \array_unique($appIds);
 		$localPackagesArray = $input->getOption('local');
-		$localPackagesArray = array_unique($localPackagesArray);
+		$localPackagesArray = \array_unique($localPackagesArray);
 
-		if (!count($localPackagesArray) && !count($appIds)){
+		if (!\count($localPackagesArray) && !\count($appIds)){
 			$output->writeln("No appId or path to a local package specified. Nothing to do.");
 			return;
 		}
 
-		if (count($localPackagesArray)){
+		if (\count($localPackagesArray)){
 			foreach ($localPackagesArray as $localPackage){
 				try {
 					$appInfo = $this->marketService->readAppPackage($localPackage);
@@ -85,7 +85,7 @@ class InstallApp extends Command {
 						$installedAppInfo = $this->marketService->getInstalledAppInfo($appId);
 						$currentVersion = (string) $installedAppInfo['version'];
 						$packageVersion = (string) $appInfo['version'];
-						if (version_compare($packageVersion, $currentVersion, '>')){
+						if (\version_compare($packageVersion, $currentVersion, '>')){
 							$output->writeln("$appId: Installing new version from $localPackage");
 							$this->marketService->updatePackage($localPackage);
 							$output->writeln("$appId: App updated.");

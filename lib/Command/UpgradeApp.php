@@ -62,8 +62,8 @@ class UpgradeApp extends Command {
 			throw new \Exception("Installing apps is not supported because the app folder is not writable.");
 		}
 		$localPackagesArray = $input->getOption('local');
-		$localPackagesArray = array_unique($localPackagesArray);
-		if (count($localPackagesArray)){
+		$localPackagesArray = \array_unique($localPackagesArray);
+		if (\count($localPackagesArray)){
 			foreach ($localPackagesArray as $localPackage){
 				try {
 					$appInfo = $this->marketService->readAppPackage($localPackage);
@@ -72,7 +72,7 @@ class UpgradeApp extends Command {
 						$installedAppInfo = $this->marketService->getInstalledAppInfo($appId);
 						$currentVersion = (string) $installedAppInfo['version'];
 						$packageVersion = (string) $appInfo['version'];
-						if (version_compare($packageVersion, $currentVersion, '>')){
+						if (\version_compare($packageVersion, $currentVersion, '>')){
 							$output->writeln("$appId: Installing new version from $localPackage");
 							$this->marketService->updatePackage($localPackage);
 							$output->writeln("$appId: App updated.");
@@ -99,13 +99,13 @@ class UpgradeApp extends Command {
 		}
 		$appIds = $input->getArgument('ids');
 		if ($input->getOption('all')) {
-			$appIds = array_map(function($elem) {
+			$appIds = \array_map(function($elem) {
 				return $elem['ocsid'];
 			}, $this->marketService->getUpdates());
 		}
-		$appIds = array_unique($appIds);
+		$appIds = \array_unique($appIds);
 
-		if (!count($appIds)){
+		if (!\count($appIds)){
 			$output->writeln("No appId or path to a local package specified. Nothing to do.");
 			return;
 		}

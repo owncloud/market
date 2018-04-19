@@ -204,12 +204,12 @@ class CheckUpdateBackgroundJobTest extends TestCase{
 				->willReturnSelf();
 
 			if ($userNotifications !== null) {
-				$mockedMethod = $notification->expects($this->exactly(sizeof($userNotifications)))
+				$mockedMethod = $notification->expects($this->exactly(\sizeof($userNotifications)))
 					->method('setUser')
 					->willReturnSelf();
-				call_user_func_array([$mockedMethod, 'withConsecutive'], $userNotifications);
+				\call_user_func_array([$mockedMethod, 'withConsecutive'], $userNotifications);
 
-				$this->notificationManager->expects($this->exactly(sizeof($userNotifications)))
+				$this->notificationManager->expects($this->exactly(\sizeof($userNotifications)))
 					->method('notify')
 					->willReturn($notification);
 			}
@@ -244,7 +244,7 @@ class CheckUpdateBackgroundJobTest extends TestCase{
 		$this->config->expects($this->once())
 			->method('getAppValue')
 			->with('market', 'notify_groups', '["admin"]')
-			->willReturn(json_encode($groups));
+			->willReturn(\json_encode($groups));
 
 		$groupMap = [];
 		foreach ($groupUsers as $gid => $uids) {
@@ -258,7 +258,7 @@ class CheckUpdateBackgroundJobTest extends TestCase{
 			}
 			$groupMap[] = [$gid, $group];
 		}
-		$this->groupManager->expects($this->exactly(sizeof($groups)))
+		$this->groupManager->expects($this->exactly(\sizeof($groups)))
 			->method('get')
 			->willReturnMap($groupMap);
 

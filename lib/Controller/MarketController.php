@@ -75,8 +75,8 @@ class MarketController extends Controller {
 	public function bundles() {
 		try {
 			$bundles = $this->marketService->getBundles();
-			$bundles = array_map(function ($bundle) {
-				$bundle['products'] = array_map(function ($product) {
+			$bundles = \array_map(function ($bundle) {
+				$bundle['products'] = \array_map(function ($product) {
 					return $this->enrichApp($product);
 				}, $bundle['products']);
 				return $bundle;
@@ -222,14 +222,14 @@ class MarketController extends Controller {
 	protected function queryData($category = null) {
 		$apps = $this->marketService->listApps($category);
 
-		return array_map(function ($app) {
+		return \array_map(function ($app) {
 			return $this->enrichApp($app);
 		}, $apps);
 	}
 
 	private function enrichApp($app) {
 		$app['installed'] = $this->marketService->isAppInstalled($app['id']);
-		$releases = array_map(function ($release) {
+		$releases = \array_map(function ($release) {
 			$missing = $this->marketService->getMissingDependencies($release);
 			$release['canInstall'] = empty($missing);
 			$release['missingDependencies'] = $missing;
@@ -240,20 +240,20 @@ class MarketController extends Controller {
 			$app['installInfo'] = $this->marketService->getInstalledAppInfo($app['id']);
 			$app['updateInfo'] = $this->marketService->getAvailableUpdateVersion($app['id']);
 
-			$filteredReleases = array_filter($releases, function ($release) use ($app) {
+			$filteredReleases = \array_filter($releases, function ($release) use ($app) {
 				if (empty($app['updateInfo'])) {
 					return $release['version'] === $app['updateInfo'];
 				}
 				return $release['version'] === $app['updateInfo'];
 			});
-			$app['release'] = array_pop($filteredReleases);
+			$app['release'] = \array_pop($filteredReleases);
 		} else {
 			$app['updateInfo'] = false;
-			usort($releases, function ($a, $b) {
-				return version_compare($a['version'], $b['version'], '>');
+			\usort($releases, function ($a, $b) {
+				return \version_compare($a['version'], $b['version'], '>');
 			});
 			if (!empty($releases)) {
-				$app['release'] = array_pop($releases);
+				$app['release'] = \array_pop($releases);
 			}
 		}
 		return $app;

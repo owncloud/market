@@ -50,8 +50,8 @@ class ListApps extends Command {
 			return 1;
 		}
 
-		usort($apps, function ($a, $b) {
-			return strcmp($a['id'], $b['id']);
+		\usort($apps, function ($a, $b) {
+			return \strcmp($a['id'], $b['id']);
 		});
 
 		foreach ($apps as $app) {
