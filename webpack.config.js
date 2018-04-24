@@ -5,23 +5,23 @@ module.exports = {
 		filename : './js/market.bundle.js'
 	},
 	module: {
-		loaders: [{
+		rules: [{
 			test: require.resolve('uikit'),
-			loader: 'expose-loader?UIkit'
+			use: 'expose-loader?UIkit'
 		}, {
 			test: /\.js?$/,
 			exclude: /node_modules/,
-			loader: 'babel-loader',
+			use: 'babel-loader',
 		}, {
 			test: /\.scss?$/,
-			loader: 'style-loader!css-loader!sass-loader'
+			use: ['style-loader', 'css-loader', 'sass-loader']
 		}, {
 			test: /\.vue$/,
 			loader: 'vue-loader',
 			options: {
-				loaders: {
-					scss: 'vue-style-loader!css-loader!sass-loader',
-					less: 'vue-style-loader!css-loader!less-loader'
+				use: {
+					scss: ['vue-style-loader', 'css-loader', 'sass-loader'],
+					less: ['vue-style-loader', 'css-loader', 'less-loader']
 				}
 			}
 		}]
