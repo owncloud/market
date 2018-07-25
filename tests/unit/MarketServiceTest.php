@@ -2,6 +2,7 @@
 
 namespace OCA\Market\Tests\Unit;
 
+use OCP\ICache;
 use OCP\ICacheFactory;
 use OCP\IConfig;
 use OCP\IL10N;
@@ -17,6 +18,8 @@ class MarketServiceTest extends TestCase {
 	private $hasInternetConnection;
 	/** @var IAppManager | \PHPUnit_Framework_MockObject_MockObject */
 	private $appManager;
+	/** @var ICacheFactory | \PHPUnit_Framework_MockObject_MockObject $cacheFactoryMock */
+	private $cacheFactoryMock;
 
 	public function setUp(){
 		$this->hasInternetConnection = true;
@@ -26,13 +29,13 @@ class MarketServiceTest extends TestCase {
 		/** @var IConfig | \PHPUnit_Framework_MockObject_MockObject $configMock */
 		$configMock = $this->getConfigMock();
 		/** @var ICacheFactory | \PHPUnit_Framework_MockObject_MockObject $cacheFactoryMock */
-		$cacheFactoryMock = $this->createMock(ICacheFactory::class);
+		$this->cacheFactoryMock = $this->createMock(ICacheFactory::class);
 		/** @var IL10N | \PHPUnit_Framework_MockObject_MockObject $l10nMock */
 		$l10nMock = $this->createMock(IL10N::class);
 		$this->marketService = new MarketService(
 			$this->appManager,
 			$configMock,
-			$cacheFactoryMock,
+			$this->cacheFactoryMock,
 			$l10nMock
 		);
 	}
@@ -66,6 +69,25 @@ class MarketServiceTest extends TestCase {
 		$this->marketService->$method('test');
 	}
 
+	/**
+	 * @expectedException \Exception
+	 */
+	public function testInstallAppChecksLicenseOnLatestRelease() {
+		$this->appManager->method('canInstall')->willReturn(true);
+		$this->cacheFactoryMock->method('isAvailable')->willReturn(true);
+		$this->cacheFactoryMock->method('create')->willReturnCallback(function () {
+			$cacheMock = $this->createMock(ICache::class);
+			$cacheMock->method('get')->willReturn(json_encode(['some_app' => ['id' => 'some_app','releases' => [
+				['license' => 'ownCloud Commercial License'],
+				['license' => 'agplv2']]]
+			]));
+
+			return $cacheMock;
+		});
+
+		$this->marketService->installApp('some_app');
+	}
+
 	public function providesMarketMethods() {
 		return [
 			['installApp'],
@@ -80,7 +102,7 @@ class MarketServiceTest extends TestCase {
 		}
 		return \OC::$server->getConfig()->getSystemValue($configKey, $default);
 	}
-	
+
 	private function getConfigMock(){
 		$config = $this->createMock(IConfig::class);
 		$config->method('getSystemValue')
