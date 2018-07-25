@@ -91,7 +91,7 @@ class MarketService {
 		}
 
 		$availableReleases = array_column($this->getApps(), 'releases', 'id')[$appId];
-		if (array_pop($availableReleases)['license'] == 'ownCloud Commercial License') {
+		if (array_shift($availableReleases)['license'] === 'ownCloud Commercial License') {
 			$license = $this->getLicenseKey();
 			if ($license === null) {
 				throw new \Exception($this->l10n->t('Please enter a license-key in to config.php'));
