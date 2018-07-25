@@ -28,6 +28,15 @@
         mounted () {
             this.$store.dispatch('FETCH_CONFIG');
             this.$store.dispatch('FETCH_APPLICATIONS');
+
+			this.$store.watch(
+			    (state)  => {
+					return state.installed;
+			    },
+			    () => {
+					this.$store.dispatch('REBUILD_NAVIGATION');
+			    }
+			);
         },
         computed: {
             config () {
