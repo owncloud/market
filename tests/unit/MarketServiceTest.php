@@ -32,6 +32,7 @@ class MarketServiceTest extends TestCase {
 		$this->cacheFactoryMock = $this->createMock(ICacheFactory::class);
 		/** @var IL10N | \PHPUnit_Framework_MockObject_MockObject $l10nMock */
 		$l10nMock = $this->createMock(IL10N::class);
+		$l10nMock->method('t')->willReturnArgument(0);
 		$this->marketService = new MarketService(
 			$this->appManager,
 			$configMock,
@@ -71,6 +72,7 @@ class MarketServiceTest extends TestCase {
 
 	/**
 	 * @expectedException \Exception
+	 * @expectedExceptionMessage Please enter a license-key in to config.php
 	 */
 	public function testInstallAppChecksLicenseOnLatestRelease() {
 		$this->appManager->method('canInstall')->willReturn(true);
