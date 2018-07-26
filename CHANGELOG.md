@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [0.2.5] - 2018-07-25
+
+### Fixed
+
+- Rebuild top-left navigation if app was (de)installed - [#359](https://github.com/owncloud/market/issues/359)
+- Check license of latest marketplace release - [#362](https://github.com/owncloud/market/pull/362)
+
 ## [0.2.4] - 2018-04-17
 
 ### Fixed
@@ -66,9 +73,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Skip migrations when reinstalling missing code - [#76](https://github.com/owncloud/market/issues/76)
 - Reset overwritten core css styles - [#73](https://github.com/owncloud/market/issues/73)
 
+[0.2.5]: https://github.com/owncloud/market/compare/v0.2.4...v0.2.5
 [0.2.4]: https://github.com/owncloud/market/compare/v0.2.3...v0.2.4
 [0.2.3]: https://github.com/owncloud/market/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/owncloud/market/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/owncloud/market/compare/v0.2.0...v0.2.1
-
 
