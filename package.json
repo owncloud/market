@@ -54,6 +54,9 @@
     "vuex": "2.4.1",
     "webpack": "2.7.0"
   },
+  "engines": {
+    "node": ">=6.9 <=8"
+  },
   "bugs": {
     "url": "https://github.com/owncloud/market/issues"
   },
