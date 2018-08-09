@@ -100,7 +100,7 @@ class UpgradeApp extends Command {
 		$appIds = $input->getArgument('ids');
 		if ($input->getOption('all')) {
 			$appIds = array_map(function($elem) {
-				return $elem['ocsid'];
+				return $elem['id'];
 			}, $this->marketService->getUpdates());
 		}
 		$appIds = array_unique($appIds);

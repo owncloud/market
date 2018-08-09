@@ -142,4 +142,27 @@ class UpgradeAppTest extends TestCase {
 		$output = $this->commandTester->getDisplay();
 		$this->assertContains("foo : 1.2.3\nbar : 4.0.0", $output);
 	}
+
+	public function testAllOption() {
+		$this->marketService->expects($this->once())->method('canInstall')->willReturn(true);
+		$this->marketService->expects($this->any())->method('isAppInstalled')->willReturn(true);
+		$this->marketService->expects($this->any())->method('getAvailableUpdateVersion')->willReturn('42');
+		$this->marketService->expects($this->any())->method('updateApp')->willReturn(true);
+		$this->marketService->expects($this->once())->method('getUpdates')->willReturn([
+			'foo' => [
+				'id' => 'foo',
+				'version' => '1.2.3'
+			],
+			'bar' => [
+				'id' => 'bar',
+				'version' => '4.0.0'
+			],
+		]);
+		$this->commandTester->execute([
+			'--all' => true
+		]);
+		$output = $this->commandTester->getDisplay();
+		$this->assertContains("foo: App updated.", $output);
+		$this->assertContains("bar: App updated.", $output);
+	}
 }
