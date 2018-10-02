@@ -45,7 +45,7 @@ js_deps=node_modules/
 # Catch-all rules
 #
 .PHONY: all
-all: $(composer_dev_deps) $(js_deps)
+all: $(composer_dev_deps) $(js_deps) js/market.bundle.js
 
 .PHONY: clean
 clean: clean-composer-deps clean-js-deps clean-dist clean-build
