@@ -89,7 +89,7 @@ const getters = {
 
     updateList: (state) => {
         return _.filter(state.applications.records, function (application) {
-            return application.updateInfo != false;
+            return application.updateInfo !== false;
         });
     },
 

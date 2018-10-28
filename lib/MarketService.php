@@ -138,7 +138,17 @@ class MarketService {
 		return $this->appManager->readAppPackage($path);
 	}
 
-	private function downloadPackage($appId, $isMajor, $currentVersion = '0.0.0.0') {
+	/**
+	 * @param string $appId
+	 * @param string | null $targetVersion
+	 *
+	 * @return string
+	 *
+	 * @throws AppManagerException
+	 * @throws AppNotFoundException
+	 * @throws AppUpdateNotFoundException
+	 */
+	private function downloadPackage($appId, $targetVersion = null) {
 		$this->httpService->checkInternetConnection();
 		$data = $this->getAppInfo($appId);
 		if (empty($data)) {
@@ -146,21 +156,22 @@ class MarketService {
 		}
 
 		$version = $this->httpService->getPlatformVersion();
-		$release = array_filter($data['releases'], function($element) use ($version, $isMajor, $currentVersion) {
-			if ($isMajor === false) {
-				$marketVersionMajor = $this->getMajorVersion($element['version']);
-				$currentVersionMajor = $this->getMajorVersion($currentVersion);
-				if ($marketVersionMajor > $currentVersionMajor) {
+		$release = array_filter(
+			$data['releases'],
+			function ($element) use ($version, $targetVersion) {
+				if ($targetVersion !== null
+					&& $element['version'] !== $targetVersion
+				) {
 					return false;
 				}
-			}
-			$platformMin = $element['platformMin'];
-			$platformMax = $element['platformMax'];
-			$tooSmall = $this->compare($version, $platformMin, '<');
-			$tooBig = $this->compare($version, $platformMax, '>');
+				$platformMin = $element['platformMin'];
+				$platformMax = $element['platformMax'];
+				$tooSmall = $this->compare($version, $platformMin, '<');
+				$tooBig = $this->compare($version, $platformMax, '>');
 
-			return $tooSmall === false && $tooBig === false;
-		});
+				return $tooSmall === false && $tooBig === false;
+			}
+		);
 		if (empty($release)) {
 			throw new AppUpdateNotFoundException($this->l10n->t('No compatible version for %s', $appId));
 		}
@@ -236,11 +247,52 @@ class MarketService {
 		return $versionArray[0];
 	}
 
+	/**
+	 * @param string $appId
+	 *
+	 * @return string[]
+	 *
+	 * @throws AppNotFoundException
+	 * @throws AppNotInstalledException
+	 */
+	public function getAvailableUpdateVersions($appId) {
+		$major = $this->getAvailableUpdateVersion($appId, true);
+		$minor = $this->getAvailableUpdateVersion($appId, false);
+		// Fixme: major equals to minor if there is no major
+		if ($major === $minor) {
+			$major = false;
+		}
+		return [
+			'major' => $major,
+			'minor' => $minor
+		];
+	}
+
+	/**
+	 * @param string[] $updateVersions
+	 * @param bool $isMajorAllowed
+	 *
+	 * @return string|false
+	 */
+	public function chooseCandidate($updateVersions, $isMajorAllowed) {
+		$updateVersion = $isMajorAllowed
+			? $updateVersions['major']
+			: $updateVersions['minor'];
+		// try to fallback to a minor release if there is no major release
+		if ($isMajorAllowed === false && $updateVersion === false) {
+			$updateVersion = $updateVersions['minor'];
+		}
+		return $updateVersion;
+	}
+
 	public function getAppInfo($appId) {
 		$data = $this->getApps();
-		$data = array_filter($data, function ($element) use ($appId) {
-			return $element['id'] === $appId;
-		});
+		$data = array_filter(
+			$data,
+			function ($element) use ($appId) {
+				return $element['id'] === $appId;
+			}
+		);
 		if (empty($data)) {
 			return null;
 		}
@@ -267,10 +319,14 @@ class MarketService {
 	 * Update the app
 	 *
 	 * @param string $appId
+	 * @param null $targetVersion
+	 *
 	 * @throws AppManagerException
+	 * @throws AppNotFoundException
 	 * @throws AppNotInstalledException
+	 * @throws AppUpdateNotFoundException
 	 */
-	public function updateApp($appId, $isMajorUpdate = false) {
+	public function updateApp($appId, $targetVersion = null) {
 		if (!$this->canInstall()) {
 			throw new \Exception("Installing apps is not supported because the app folder is not writable.");
 		}
@@ -281,7 +337,7 @@ class MarketService {
 		}
 
 		// download package
-		$package = $this->downloadPackage($appId, $isMajorUpdate, $info['version']);
+		$package = $this->downloadPackage($appId, $targetVersion);
 		$this->updatePackage($package);
 	}
 
@@ -344,12 +400,13 @@ class MarketService {
 			if (isset($info['id'])) {
 				try {
 					$appId = $info['id'];
-					$newVersion = $this->getAvailableUpdateVersion($appId);
-					if ($newVersion) {
-						$result[$app] = [
-							'version' => $newVersion,
-							'id' => $appId
-						];
+					$newVersions = $this->getAvailableUpdateVersions($appId);
+					if ($newVersions['major'] !== false
+						|| $newVersions['minor'] !== false
+					) {
+						$result[$app] = array_merge(
+							$newVersions, [ 'id' => $appId ]
+						);
 					}
 				} catch (AppNotInstalledException $e) {
 					// ignore exceptions thrown by getAvailableUpdateVersion

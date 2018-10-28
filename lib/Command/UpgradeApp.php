@@ -106,7 +106,15 @@ class UpgradeApp extends Command {
 		if ($input->getOption('list')) {
 			$updates = $this->marketService->getUpdates();
 			foreach ($updates as $name => $info) {
-				$output->writeln("$name : {$info['version']}");
+				$versions = [];
+				if ($info['minor'] !== false) {
+					$versions[] = "minor:{$info['minor']}";
+				}
+				if ($info['major'] !== false) {
+					$versions[] = "major:{$info['major']}";
+				}
+				$versionStr = implode(', ', $versions);
+				$output->writeln("$name : $versionStr");
 			}
 			return $this->exitCode;
 		}
@@ -120,17 +128,23 @@ class UpgradeApp extends Command {
 
 		if (!count($appIds)) {
 			$output->writeln("No appId or path to a local package specified. Nothing to do.");
-			return $this->exitCode;;
+			return $this->exitCode;
 		}
 
 		foreach ($appIds as $appId) {
 			try {
 				if ($this->marketService->isAppInstalled($appId)) {
-					$updateVersion = $this->marketService->getAvailableUpdateVersion($appId, $isMajorUpdateAllowed);
-					if ($updateVersion !== false) {
+					$updateVersions = $this->marketService->getAvailableUpdateVersions($appId);
+					$updateVersion = $this->marketService->chooseCandidate($updateVersions, $isMajorUpdateAllowed);
+					if ($updateVersion !== null) {
 						$output->writeln("$appId: Installing new version $updateVersion ...");
 						$this->marketService->updateApp($appId, $isMajorUpdateAllowed);
 						$output->writeln("$appId: App updated.");
+					} elseif ($isMajorUpdateAllowed === false
+						&& $updateVersions['major'] !== false
+					) {
+						$major = $updateVersions['major'];
+						$output->writeln("$appId: update to $major requires --major option");
 					} else {
 						$output->writeln("$appId: No update available");
 					}

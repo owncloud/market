@@ -33,12 +33,13 @@ class Listener {
 	}
 
 	public function upgradeAppStoreApp($app, $isMajorUpdate) {
-		$updateVersion = $this->marketService->getAvailableUpdateVersion(
-			$app,
+		$updateVersions = $this->marketService->getAvailableUpdateVersions($app);
+		$updateVersion = $this->marketService->chooseCandidate(
+			$updateVersions,
 			$isMajorUpdate
 		);
 		if ($updateVersion !== false) {
-			$this->marketService->updateApp($app, $isMajorUpdate);
+			$this->marketService->updateApp($app, $updateVersion);
 		} else {
 			throw new AppUpdateNotFoundException();
 		}

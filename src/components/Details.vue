@@ -48,19 +48,17 @@
 
 				.uk-alert-primary(v-if="updateable && !processing && !loading", uk-alert)
 					a.uk-alert-close.uk-close
-					p
-						strong {{ t('Version %{version} available', {version: release.version}) }}&nbsp;
-						span {{ t('published on ') }} {{ release.created | formatDate }}.&nbsp;
+					div(v-for="update in releases")
+						strong {{ t('Version %{version} available', {version: update.version}) }}&nbsp;
+						span {{ t('published on ') }} {{ update.created | formatDate }}.&nbsp;
 						a(:href="application.marketplace", target="_blank") {{ t('Get more info') }}
-
-				div(v-if="updateable && !release.canInstall", uk-alert).uk-alert-danger
-					ul(v-if="!release.canInstall").uk-list
-						li(v-for="dependency in release.missingDependencies")
-							span(uk-icon="icon: warning; ratio: 0.75").uk-margin-small-right
-							| {{ dependency }}
-
-					p.uk-text-small
-						t.missingDep
+						.uk-alert.uk-alert-danger(v-if="!update.canInstall")
+							ul(v-if="!update.canInstall").uk-list
+								li(v-for="dependency in update.missingDependencies")
+									span(uk-icon="icon: warning; ratio: 0.75").uk-margin-small-right
+									| {{ dependency }}
+							p.uk-text-small
+								t.missingDep
 
 			.uk-card-footer
 				div(v-if="processing || loading")
@@ -135,8 +133,8 @@
 					return false
 				}
 				else {
-					if (this.application.release)
-						return this.application.release
+					if (this.application.releases)
+						return this.application.releases
 					return false
 				}
 			},
@@ -154,11 +152,15 @@
 				}
 			},
 
-			release () {
+			releases () {
 				if (!this.updateable)
 					return false;
-
-				return this.application.release;
+				return _.filter([
+					this.application.minorUpdate,
+					this.application.majorUpdate
+				], function (release) {
+					return release !== false;
+				});
 			}
 		},
 		filters: {

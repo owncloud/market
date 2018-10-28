@@ -73,7 +73,7 @@ class CheckUpdateBackgroundJobTest extends TestCase{
 	public function dataCheckAppUpdate() {
 		return [
 			[
-				[ 'test'=> ['id' => 'test', 'version' => '1.2.4' ]],
+				[ 'test'=> ['id' => 'test', 'major' => false, 'minor' => '1.2.4' ]],
 				true,
 			],
 			[

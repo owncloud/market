@@ -73,7 +73,12 @@ class UpgradeAppTest extends TestCase {
 	public function testUpdateNoNewVersion() {
 		$this->marketService->expects($this->once())->method('canInstall')->willReturn(true);
 		$this->marketService->expects($this->once())->method('isAppInstalled')->willReturn(true);
-		$this->marketService->expects($this->once())->method('getAvailableUpdateVersion')->willReturn(false);
+		$this->marketService->expects($this->once())->method('getAvailableUpdateVersions')->willReturn(
+			[
+				'major' => false,
+				'minor' => false
+			]
+		);
 		$this->marketService->expects($this->never())->method('installApp');
 		$this->marketService->expects($this->never())->method('updateApp');
 		$this->commandTester->execute([
@@ -86,7 +91,7 @@ class UpgradeAppTest extends TestCase {
 	public function testUpdateApp() {
 		$this->marketService->expects($this->once())->method('canInstall')->willReturn(true);
 		$this->marketService->expects($this->once())->method('isAppInstalled')->willReturn(true);
-		$this->marketService->expects($this->once())->method('getAvailableUpdateVersion')->willReturn('1.2.3');
+		$this->marketService->expects($this->once())->method('chooseCandidate')->willReturn('1.2.3');
 		$this->marketService->expects($this->never())->method('installApp');
 		$this->marketService->expects($this->once())->method('updateApp');
 		$this->commandTester->execute([
@@ -133,31 +138,39 @@ class UpgradeAppTest extends TestCase {
 	public function testListOption() {
 		$this->marketService->expects($this->once())->method('canInstall')->willReturn(true);
 		$this->marketService->expects($this->once())->method('getUpdates')->willReturn([
-			'foo' => ['version' => '1.2.3'],
-			'bar' => ['version' => '4.0.0'],
+			'foo' => ['major' => '2.2.3', 'minor' => '1.2.3'],
+			'bar' => ['major' => '5.0.3', 'minor' => '4.0.0'],
 		]);
 		$this->commandTester->execute([
 			'--list' => true
 		]);
 		$output = $this->commandTester->getDisplay();
-		$this->assertContains("foo : 1.2.3\nbar : 4.0.0", $output);
+		$this->assertContains("foo : minor:1.2.3, major:2.2.3\nbar : minor:4.0.0, major:5.0.3", $output);
 	}
 
 	public function testAllOption() {
 		$this->marketService->expects($this->once())->method('canInstall')->willReturn(true);
 		$this->marketService->expects($this->any())->method('isAppInstalled')->willReturn(true);
-		$this->marketService->expects($this->any())->method('getAvailableUpdateVersion')->willReturn('42');
+		$this->marketService->expects($this->any())->method('getAvailableUpdateVersions')->willReturn(
+			[ 'major' => false, 'minor' => '1.2.3']
+		);
 		$this->marketService->expects($this->any())->method('updateApp')->willReturn(true);
-		$this->marketService->expects($this->once())->method('getUpdates')->willReturn([
+		$this->marketService->expects($this->once())->method('getUpdates')->willReturn(
+			[
 			'foo' => [
 				'id' => 'foo',
-				'version' => '1.2.3'
+				'minor' => '1.2.3',
+				'major' => false
 			],
 			'bar' => [
 				'id' => 'bar',
-				'version' => '4.0.0'
+				'minor' => '4.0.0',
+				'major' => false,
 			],
-		]);
+			]
+		);
+		$this->marketService->method('chooseCandidate')
+			->will($this->onConsecutiveCalls('1.2.3', '4.0.0'));
 		$this->commandTester->execute([
 			'--all' => true
 		]);

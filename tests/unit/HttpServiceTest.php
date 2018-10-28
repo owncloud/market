@@ -23,7 +23,9 @@ namespace OCA\Market\Tests\Unit;
 
 use OCA\Market\HttpService;
 use OCP\App\AppManagerException;
+use OCP\Http\Client\IClient;
 use OCP\Http\Client\IClientService;
+use OCP\Http\Client\IResponse;
 use OCP\ICacheFactory;
 use OCP\IConfig;
 use OCP\IL10N;
@@ -77,5 +79,28 @@ class HttpServiceTest extends TestCase {
 			[true, ''],
 			[false, AppManagerException::class]
 		];
+	}
+
+	public function testGetApps() {
+		$expectedApps = [];
+		$this->config->expects($this->at(0))->method('getSystemValue')
+			->with('has_internet_connection', true)
+			->willReturn(true);
+		$this->config->expects($this->at(1))->method('getSystemValue')
+			->with('marketplace.key', null)
+			->willReturn('');
+
+		$clientMock = $this->getClientResponseMock(json_encode($expectedApps));
+		$this->httpClientService->method('newClient')->willReturn($clientMock);
+		$apps = $this->httpService->getApps();
+		$this->assertEquals($expectedApps, $apps);
+	}
+
+	private function getClientResponseMock($body) {
+		$responseMock = $this->createMock(IResponse::class);
+		$responseMock->method('getBody')->willReturn($body);
+		$clientMock = $this->createMock(IClient::class);
+		$clientMock->method('get')->willReturn($responseMock);
+		return $clientMock;
 	}
 }

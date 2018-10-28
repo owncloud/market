@@ -58,7 +58,7 @@ class InstallApp extends Command {
 	/**
 	 * @param InputInterface $input
 	 * @param OutputInterface $output
-	 * @return int|null|void
+	 * @return int|null
 	 * @throws \Exception
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
@@ -73,7 +73,7 @@ class InstallApp extends Command {
 
 		if (!count($localPackagesArray) && !count($appIds)){
 			$output->writeln("No appId or path to a local package specified. Nothing to do.");
-			return;
+			return $this->exitCode;
 		}
 
 		if (count($localPackagesArray)){
@@ -106,13 +106,14 @@ class InstallApp extends Command {
 			foreach ($appIds as $appId) {
 				try {
 					if ($this->marketService->isAppInstalled($appId)) {
-						$updateVersion = $this->marketService->getAvailableUpdateVersion($appId);
+						$updateVersions = $this->marketService->getAvailableUpdateVersions($appId);
+						$updateVersion = $updateVersions['minor'];
 						if ($updateVersion !== false) {
 							$output->writeln("$appId: Installing new version $updateVersion ...");
 							$this->marketService->updateApp($appId);
 							$output->writeln("$appId: App updated.");
 						} else {
-							$output->writeln("$appId: App already installed and no update available");
+							$output->writeln("$appId: App already installed and no minor update available");
 						}
 					} else {
 						$output->writeln("$appId: Installing new app ...");
