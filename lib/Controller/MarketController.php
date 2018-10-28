@@ -174,7 +174,6 @@ class MarketController extends Controller {
 	 * @return array|mixed
 	 */
 	public function getApiKey() {
-
 		return new DataResponse( [
 			'apiKey' => $this->marketService->getApiKey(),
 			'changeable' => $this->marketService->isApiKeyChangeableByUser(),

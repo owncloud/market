@@ -2,7 +2,8 @@
 
 namespace OCA\Market\Tests\Unit;
 
-use OCP\ICache;
+use OCA\Market\HttpService;
+use OCP\App\AppManagerException;
 use OCP\ICacheFactory;
 use OCP\IConfig;
 use OCP\IL10N;
@@ -14,29 +15,26 @@ class MarketServiceTest extends TestCase {
 
 	/** @var MarketService */
 	private $marketService;
-	/** @var boolean */
-	private $hasInternetConnection;
+	/** @var HttpService | \PHPUnit_Framework_MockObject_MockObject $cacheFactoryMock */
+	private $httpService;
 	/** @var IAppManager | \PHPUnit_Framework_MockObject_MockObject */
 	private $appManager;
-	/** @var ICacheFactory | \PHPUnit_Framework_MockObject_MockObject $cacheFactoryMock */
-	private $cacheFactoryMock;
+	/** @var IConfig | \PHPUnit_Framework_MockObject_MockObject $configMock */
+	private $config;
 
-	public function setUp(){
-		$this->hasInternetConnection = true;
+	public function setUp() {
+		/** @var ICacheFactory | \PHPUnit_Framework_MockObject_MockObject $cacheFactoryMock */
+		$this->httpService = $this->createMock(HttpService::class);
 		$this->appManager = $this->createMock(IAppManager::class);
 		$this->appManager->method('getAllApps')->willReturn([]);
-
-		/** @var IConfig | \PHPUnit_Framework_MockObject_MockObject $configMock */
-		$configMock = $this->getConfigMock();
-		/** @var ICacheFactory | \PHPUnit_Framework_MockObject_MockObject $cacheFactoryMock */
-		$this->cacheFactoryMock = $this->createMock(ICacheFactory::class);
+		$this->config = $this->createMock(IConfig::class);
 		/** @var IL10N | \PHPUnit_Framework_MockObject_MockObject $l10nMock */
 		$l10nMock = $this->createMock(IL10N::class);
 		$l10nMock->method('t')->willReturnArgument(0);
 		$this->marketService = new MarketService(
+			$this->httpService,
 			$this->appManager,
-			$configMock,
-			$this->cacheFactoryMock,
+			$this->config,
 			$l10nMock
 		);
 	}
@@ -45,8 +43,10 @@ class MarketServiceTest extends TestCase {
 	 * @expectedException \OCP\App\AppManagerException
 	*/
 	public function testInstallWithInternetConnectionDisabled(){
-		$this->hasInternetConnection = false;
 		$this->appManager->method('canInstall')->willReturn(true);
+		$this->httpService->method('getApps')->willThrowException(
+			new AppManagerException()
+		);
 		$this->marketService->installApp('fubar');
 	}
 	
@@ -54,7 +54,6 @@ class MarketServiceTest extends TestCase {
 	 * @expectedException \OCP\App\AppManagerException
 	*/
 	public function testUpdateWithInternetConnectionDisabled(){
-		$this->hasInternetConnection = false;
 		$this->appManager->method('canInstall')->willReturn(true);
 		$this->marketService->updateApp('files');
 	}
@@ -66,7 +65,6 @@ class MarketServiceTest extends TestCase {
 	 */
 	public function testInstallNotPossible($method) {
 		$this->appManager->method('canInstall')->willReturn(false);
-
 		$this->marketService->$method('test');
 	}
 
@@ -76,17 +74,17 @@ class MarketServiceTest extends TestCase {
 	 */
 	public function testInstallAppChecksLicenseOnLatestRelease() {
 		$this->appManager->method('canInstall')->willReturn(true);
-		$this->cacheFactoryMock->method('isAvailable')->willReturn(true);
-		$this->cacheFactoryMock->method('create')->willReturnCallback(function () {
-			$cacheMock = $this->createMock(ICache::class);
-			$cacheMock->method('get')->willReturn(json_encode(['some_app' => ['id' => 'some_app','releases' => [
-				['license' => 'ownCloud Commercial License'],
-				['license' => 'agplv2']]]
-			]));
-
-			return $cacheMock;
-		});
-
+		$this->httpService->method('getApps')->willReturn(
+			[
+				'some_app' => [
+					'id' => 'some_app',
+					'releases' => [
+						['license' => 'ownCloud Commercial License'],
+						['license' => 'agplv2']
+					]
+				]
+			]
+		);
 		$this->marketService->installApp('some_app');
 	}
 
@@ -96,19 +94,5 @@ class MarketServiceTest extends TestCase {
 			['uninstallApp'],
 			['updateApp']
 		];
-	}
-	
-	public function getSystemValue($configKey, $default = null){
-		if ($configKey==='has_internet_connection'){
-			return $this->hasInternetConnection;
-		}
-		return \OC::$server->getConfig()->getSystemValue($configKey, $default);
-	}
-
-	private function getConfigMock(){
-		$config = $this->createMock(IConfig::class);
-		$config->method('getSystemValue')
-				->will($this->returnCallback([$this, 'getSystemValue']));
-		return $config;
 	}
 }

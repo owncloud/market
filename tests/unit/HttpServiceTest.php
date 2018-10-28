@@ -1,0 +1,81 @@
+<?php
+/**
+ * @author Viktar Dubiniuk <dubinuk@owncloud.com>
+ *
+ * @copyright Copyright (c) 2018, ownCloud GmbH
+ * @license AGPL-3.0
+ *
+ * This code is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License, version 3,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License, version 3,
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+namespace OCA\Market\Tests\Unit;
+
+use OCA\Market\HttpService;
+use OCP\App\AppManagerException;
+use OCP\Http\Client\IClientService;
+use OCP\ICacheFactory;
+use OCP\IConfig;
+use OCP\IL10N;
+use Test\TestCase;
+
+/**
+ * Class HttpServiceTest
+ *
+ * @package OCA\Market\Tests\Unit
+ */
+class HttpServiceTest extends TestCase {
+	/** @var IClientService | \PHPUnit_Framework_MockObject_MockObject */
+	private $httpClientService;
+	/** @var ICacheFactory | \PHPUnit_Framework_MockObject_MockObject */
+	private $cacheFactory;
+	/** @var IConfig | \PHPUnit_Framework_MockObject_MockObject */
+	private $config;
+	/** @var IL10N | \PHPUnit_Framework_MockObject_MockObject */
+	private $l10n;
+	/** @var HttpService */
+	private $httpService;
+
+	protected function setUp() {
+		parent::setUp();
+		$this->httpClientService = $this->createMock(IClientService::class);
+		$this->cacheFactory = $this->createMock(ICacheFactory::class);
+		$this->config = $this->createMock(IConfig::class);
+		$this->l10n = $this->createMock(IL10N::class);
+		$this->httpService = new HttpService(
+			$this->httpClientService,
+			$this->config,
+			$this->cacheFactory,
+			$this->l10n
+		);
+	}
+
+	/**
+	 * @dataProvider testCheckInternetConnectionDataProvider
+	 */
+	public function textCheckInternetConnection($connectionStatus, $expectedExceptionClass) {
+		$this->config->method('getSystemValue')
+			->with(['has_internet_connection', true])
+			->willReturn($connectionStatus);
+		if ($expectedExceptionClass !== '') {
+			$this->expectException($expectedExceptionClass);
+		}
+	}
+
+	public function testCheckInternetConnectionDataProvider() {
+		return [
+			[true, ''],
+			[false, AppManagerException::class]
+		];
+	}
+}

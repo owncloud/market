@@ -21,36 +21,28 @@
 
 namespace OCA\Market;
 
-use GuzzleHttp\Exception\ServerException;
-use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\TransferException;
 use OC\App\DependencyAnalyzer;
 use OC\App\Platform;
 use OCA\Market\Exception\LicenseKeyAlreadyAvailableException;
 use OCA\Market\Exception\MarketException;
 use OCP\App\AppManagerException;
 use OCP\App\IAppManager;
-use OCP\ICacheFactory;
 use OCP\IConfig;
 use OCP\IL10N;
-use OCP\Util;
 use OCP\App\AppAlreadyInstalledException;
 use OCP\App\AppNotFoundException;
 use OCP\App\AppNotInstalledException;
 use OCP\App\AppUpdateNotFoundException;
 
 class MarketService {
-
-	/** @var array */
-	private $apps;
-	/** @var ICacheFactory */
-	private $cacheFactory;
+	/** @var HttpService */
+	private $httpService;
 	/** @var IAppManager */
 	private $appManager;
 	/** @var IConfig */
 	private $config;
-	/** @var string */
-	private $storeUrl;
+	/** @var array */
+	private $apps;
 	/** @var array */
 	private $categories;
 	/** @var array */
@@ -61,18 +53,20 @@ class MarketService {
 	/**
 	 * Service constructor.
 	 *
+	 * @param HttpService $httpService
 	 * @param IAppManager $appManager
 	 * @param IConfig $config
-	 * @param ICacheFactory $cacheFactory
 	 * @param IL10N $l10n
 	 */
-	public function __construct(IAppManager $appManager, IConfig $config, ICacheFactory $cacheFactory, IL10N $l10n) {
-		$storeUrl = $config->getSystemValue('appstoreurl', 'https://marketplace.owncloud.com');
-
+	public function __construct(
+		HttpService $httpService,
+		IAppManager $appManager,
+		IConfig $config,
+		IL10N $l10n
+	) {
+		$this->httpService = $httpService;
 		$this->appManager = $appManager;
 		$this->config = $config;
-		$this->storeUrl = rtrim($storeUrl, '/');
-		$this->cacheFactory = $cacheFactory;
 		$this->l10n = $l10n;
 	}
 
@@ -81,6 +75,7 @@ class MarketService {
 	 *
 	 * @param string $appId
 	 * @param bool $skipMigrations whether to skip migrations
+	 *
 	 * @throws AppAlreadyInstalledException
 	 * @throws AppManagerException
 	 * @throws \Exception
@@ -109,7 +104,6 @@ class MarketService {
 			}
 		}
 
-
 		$info = $this->getInstalledAppInfo($appId);
 		if (!is_null($info)) {
 			throw new AppAlreadyInstalledException($this->l10n->t('App %s is already installed', $appId));
@@ -123,8 +117,10 @@ class MarketService {
 
 	/**
 	 * Install downloaded package
+	 *
 	 * @param string $package package path
 	 * @param bool $skipMigrations whether to skip migrations
+	 *
 	 * @return string appId
 	 */
 	public function installPackage($package, $skipMigrations = false){
@@ -133,7 +129,9 @@ class MarketService {
 
 	/**
 	 * Get appinfo from package
+	 *
 	 * @param string $path
+	 *
 	 * @return string[] app info
 	 */
 	public function readAppPackage($path){
@@ -141,13 +139,13 @@ class MarketService {
 	}
 
 	private function downloadPackage($appId, $isMajor, $currentVersion = '0.0.0.0') {
-		$this->checkInternetConnection();
+		$this->httpService->checkInternetConnection();
 		$data = $this->getAppInfo($appId);
 		if (empty($data)) {
 			throw new AppNotFoundException($this->l10n->t('Unknown app (%s)', $appId));
 		}
 
-		$version = $this->getPlatformVersion();
+		$version = $this->httpService->getPlatformVersion();
 		$release = array_filter($data['releases'], function($element) use ($version, $isMajor, $currentVersion) {
 			if ($isMajor === false) {
 				$marketVersionMajor = $this->getMajorVersion($element['version']);
@@ -175,7 +173,7 @@ class MarketService {
 		$pathInfo = pathinfo($downloadLink);
 		$extension = isset($pathInfo['extension']) ? '.' . $pathInfo['extension'] : '';
 		$path = \OC::$server->getTempManager()->getTemporaryFile($extension);
-		$this->httpGet($downloadLink, ['save_to' => $path]);
+		$this->httpService->downloadApp($downloadLink, $path);
 		return $path;
 	}
 
@@ -183,6 +181,7 @@ class MarketService {
 	 * Checks if the app with the given app id is installed
 	 *
 	 * @param string $appId
+	 *
 	 * @return bool
 	 */
 	public function isAppInstalled($appId) {
@@ -195,7 +194,9 @@ class MarketService {
 	 *
 	 * @param string $appId
 	 * @param bool $isMajorUpdate are major app updates allowed
+	 *
 	 * @return bool|string
+	 *
 	 * @throws AppNotFoundException
 	 * @throws AppNotInstalledException
 	 */
@@ -235,10 +236,9 @@ class MarketService {
 		return $versionArray[0];
 	}
 
-
 	public function getAppInfo($appId) {
 		$data = $this->getApps();
-		$data = array_filter($data, function($element) use ($appId) {
+		$data = array_filter($data, function ($element) use ($appId) {
 			return $element['id'] === $appId;
 		});
 		if (empty($data)) {
@@ -289,6 +289,7 @@ class MarketService {
 	 * Uninstall the app
 	 *
 	 * @param string $appId
+	 *
 	 * @throws AppManagerException
 	 */
 	public function uninstallApp($appId) {
@@ -306,7 +307,9 @@ class MarketService {
 
 	/**
 	 * Update downloaded package
+	 *
 	 * @param string $package
+	 *
 	 * @return string appId
 	 */
 	public function updatePackage($package){
@@ -317,7 +320,8 @@ class MarketService {
 	 * Verify if all requirements are met
 	 *
 	 * @param [] $appInfo
-	 * @return array []
+	 *
+	 * @return array[]
 	 */
 	public function getMissingDependencies($appInfo) {
 		// bad hack - should use OCP
@@ -363,8 +367,10 @@ class MarketService {
 	 * Truncates both versions to the lowest common version, e.g.
 	 * 5.1.2.3 and 5.1 will be turned into 5.1 and 5.1,
 	 * 5.2.6.5 and 5.1 will be turned into 5.2 and 5.1
+	 *
 	 * @param string $first
 	 * @param string $second
+	 *
 	 * @return string[] first element is the first version, second element is the
 	 * second version
 	 */
@@ -383,9 +389,11 @@ class MarketService {
 	/**
 	 * Parameters will be normalized and then passed into version_compare
 	 * in the same order they are specified in the method header
+	 *
 	 * @param string $first
 	 * @param string $second
 	 * @param string $operator
+	 *
 	 * @return bool result similar to version_compare
 	 */
 	private function compare($first, $second, $operator) {
@@ -395,107 +403,45 @@ class MarketService {
 		if ($first !== null && $second !== null) {
 			list($first, $second) = $this->normalizeVersions($first, $second);
 		}
-
 		return version_compare($first, $second, $operator);
 	}
 
-	private function getPlatformVersion() {
-		$v = Util::getVersion();
-		return join('.', $v);
-	}
-
 	private function getApps() {
-		$version = $this->getPlatformVersion();
-		list($version,) = $this->normalizeVersions($version, '1.2.3');
 		if (!is_null($this->apps)) {
 			return $this->apps;
 		}
-
-		return $this->queryData("apps_$version", "/api/v1/platform/$version/apps.json");
+		$this->apps = $this->httpService->getApps();
+		return $this->apps;
 	}
 
 	public function getBundles() {
 		if ($this->bundles !== null) {
 			return $this->bundles;
 		}
-		$this->bundles = $this->queryData("bundles", "/api/v1/bundles.json");
+		$this->bundles = $this->httpService->getBundles();
 		return $this->bundles;
-	}
-
-
-	public function getApiKey() {
-		$configFileApiKey = $this->config->getSystemValue('marketplace.key', null);
-
-		if ($configFileApiKey) {
-			return $configFileApiKey;
-		}
-
-		return $this->config->getAppValue('market', 'key', null);
 	}
 
 	public function setApiKey($apiKey) {
 		if ($this->isApiKeyChangeableByUser()) {
 			$this->config->setAppValue('market', 'key', $apiKey);
-			$this->invalidateCache();
+			$this->httpService->invalidateCache();
 			return true;
 		}
-
 		return false;
 	}
 
 	/**
 	 * ApiKey can only be changed by user if no key is configured in config.php
+	 *
 	 * @return bool
 	 */
 	public function isApiKeyChangeableByUser() {
 		$configFileApiKey = $this->config->getSystemValue('marketplace.key', null);
-
 		if ($configFileApiKey) {
 			return false;
 		}
-
 		return true;
-	}
-
-	/**
-	 * @param string $path
-	 * @param array $options
-	 * @param string | null $apiKey
-	 * @return \OCP\Http\Client\IResponse
-	 */
-	private function httpGet($path, $options = [], $apiKey = null) {
-		if ($apiKey === null) {
-			$apiKey = $this->getApiKey();
-		}
-		if ($apiKey !== null) {
-			$options = array_merge([
-				'headers' => ['Authorization' => "apikey: $apiKey"]
-			], $options);
-		}
-		$ca = $this->config->getSystemValue('marketplace.ca', null);
-		if ($ca !== null) {
-			$options = array_merge([
-				'verify' => $ca
-			], $options);
-		}
-		$client = \OC::$server->getHTTPClientService()->newClient();
-		try {
-			$response = $client->get($path, $options);
-		} catch (TransferException $e) {
-			if ($e instanceof ClientException) {
-				if ($e->getCode() === 401) {
-					if ($apiKey !== null) {
-						throw new AppManagerException($this->l10n->t('Invalid marketplace API key provided'));
-					}
-					throw new AppManagerException($this->l10n->t('Marketplace API key missing'));
-				}
-				if ($e->getCode() === 402) {
-					throw new AppManagerException($this->l10n->t('Active subscription on marketplace required'));
-				}
-			}
-			throw new AppManagerException($this->l10n->t('No marketplace connection: '. $e->getMessage()), 0, $e);
-		}
-		return $response;
 	}
 
 	public function listApps($category = null) {
@@ -512,46 +458,13 @@ class MarketService {
 		if ($this->categories !== null) {
 			return $this->categories;
 		}
-
-		$this->categories = $this->queryData('categories', "/api/v1/categories.json");
+		$this->categories = $this->httpService->getCategories();
 		return $this->categories;
-	}
-
-	private function queryData($key, $uri) {
-		// read from cache
-		if ($this->cacheFactory->isAvailable()) {
-			$cache = $this->cacheFactory->create('ocmp');
-			$data = $cache->get($key);
-			if ($data !== null) {
-				return json_decode($data, true);
-			}
-		}
-
-		$this->checkInternetConnection();
-
-		// ask the server
-		$response = $this->httpGet($this->storeUrl . $uri);
-		$data = $response->getBody();
-		if ($this->cacheFactory->isAvailable()) {
-			// cache if for a day - TODO: evaluate the response header
-			$cache = $this->cacheFactory->create('ocmp');
-			$cache->set($key, $data, 60*60*24);
-		}
-		return json_decode($data, true);
-
-	}
-	
-	private function checkInternetConnection(){
-		if ($this->config->getSystemValue('has_internet_connection', true) !== true){
-			throw new AppManagerException(
-				$this->l10n->t('The Internet connection is disabled.'
-				)
-			);
-		}
 	}
 
 	/**
 	 * @param string $apiKey
+	 *
 	 * @return bool
 	 */
 	public function isApiKeyValid($apiKey) {
@@ -559,7 +472,7 @@ class MarketService {
 			return true;
 		}
 		try {
-			$this->httpGet($this->storeUrl . '/api/v1/categories.json', [], $apiKey);
+			$this->httpService->validateKey($apiKey);
 			return true;
 		} catch (\Exception $ex) {
 			return false;
@@ -571,7 +484,6 @@ class MarketService {
 	 */
 	private function getLicenseKey() {
 		$licenseKey = $this->config->getSystemValue('license-key');
-
 		if ($licenseKey) {
 			return $licenseKey;
 		}
@@ -588,6 +500,7 @@ class MarketService {
 
 	/**
 	 * @return string
+	 *
 	 * @throws LicenseKeyAlreadyAvailableException
 	 * @throws MarketException
 	 */
@@ -596,24 +509,18 @@ class MarketService {
 			throw new LicenseKeyAlreadyAvailableException();
 		}
 
-		$instanceId = $this->config->getSystemValue('instanceid');
-		$data = $this->queryData(
-			'demo_license_information',
-			"/api/v1/instance/$instanceId/demo-key"
-		);
-
+		$data = $this->httpService->getDemoKey();
 		if (!array_key_exists('license_key', $data)) {
 			throw new MarketException('Marketplace did not return a demo license key.');
 		}
 
 		$demoLicenseKey = $data['license_key'];
-
 		if (!$demoLicenseKey) {
 			throw new MarketException('Marketplace returned an empty demo license key.');
 		}
 
 		$this->config->setAppValue('enterprise_key', 'license-key', $demoLicenseKey);
-		$this->invalidateCache();
+		$this->httpService->invalidateCache();
 		return $demoLicenseKey;
 	}
 
@@ -622,15 +529,14 @@ class MarketService {
 			$appsFolder = \OC_App::getInstallPath();
 			return $appsFolder !== null && is_writable($appsFolder) && is_readable($appsFolder);
 		}
-
 		return $this->appManager->canInstall();
 	}
 
+	public function getApiKey() {
+		return $this->httpService->getApiKey();
+	}
+
 	public function invalidateCache() {
-		if (!$this->cacheFactory->isAvailable()) {
-			return;
-		}
-		$cache = $this->cacheFactory->create('ocmp');
-		$cache->clear();
+		$this->httpService->invalidateCache();
 	}
 }
