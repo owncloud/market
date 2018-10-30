@@ -28,7 +28,6 @@ use OCP\Http\Client\IClientService;
 use OCP\ICacheFactory;
 use OCP\IConfig;
 use OCP\IL10N;
-use OCP\Util;
 
 /**
  * Class HttpService
@@ -52,6 +51,8 @@ class HttpService {
 
 	/** @var IClientService */
 	private $httpClientService;
+	/** @var VersionHelper */
+	private $versionHelper;
 	/** @var ICacheFactory */
 	private $cacheFactory;
 	/** @var IConfig */
@@ -69,11 +70,13 @@ class HttpService {
 	 */
 	public function __construct(
 		IClientService $httpClientService,
+		VersionHelper $versionHelper,
 		IConfig $config,
 		ICacheFactory $cacheFactory,
 		IL10N $l10n
 	) {
 		$this->httpClientService = $httpClientService;
+		$this->versionHelper = $versionHelper;
 		$this->config = $config;
 		$this->cacheFactory = $cacheFactory;
 		$this->l10n = $l10n;
@@ -280,10 +283,7 @@ class HttpService {
 	private function getEntities($code) {
 		$url = $this->urlConfig[$code];
 		if ($code === self::APPS) {
-			$ocVersion = $this->getPlatformVersion();
-			$versionArray = explode('.', $ocVersion);
-			$majorMinorPatchArray = array_slice($versionArray, 0, 3);
-			$platformVersion = implode('.', $majorMinorPatchArray);
+			$platformVersion = $this->versionHelper->getPlatformVersion(3);
 			$url = sprintf($url, $platformVersion);
 			$code = sprintf($code, $platformVersion);
 		} elseif ($code == self::DEMO_KEY) {
@@ -291,14 +291,6 @@ class HttpService {
 			$url = sprintf($url, $instanceId);
 		}
 		return $this->queryData($code, $url);
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getPlatformVersion() {
-		$v = Util::getVersion();
-		return join('.', $v);
 	}
 
 	/**

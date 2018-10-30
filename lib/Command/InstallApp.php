@@ -22,6 +22,7 @@
 namespace OCA\Market\Command;
 
 use OCA\Market\MarketService;
+use OCA\Market\VersionHelper;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -33,22 +34,29 @@ class InstallApp extends Command {
 	/** @var MarketService */
 	private $marketService;
 
+	/** @var VersionHelper */
+	private $versionHelper;
+
 	/** @var int  */
 	private $exitCode = 0;
 
-	public function __construct(MarketService $marketService) {
+	public function __construct(MarketService $marketService, VersionHelper $versionHelper) {
 		parent::__construct();
 		$this->marketService = $marketService;
+		$this->versionHelper = $versionHelper;
 	}
 
 	protected function configure() {
 		$this
 			->setName('market:install')
 			->setDescription('Install apps from the marketplace. If already installed and an update is available the update will be installed.')
-			->addArgument('ids',
+			->addArgument(
+				'ids',
 				InputArgument::OPTIONAL | InputArgument::IS_ARRAY,
-				'Ids of the apps')
-			->addOption('local',
+				'Ids of the apps'
+			)
+			->addOption(
+				'local',
 				'l',
 				InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
 				'Optional path to a local app packages'
@@ -85,12 +93,14 @@ class InstallApp extends Command {
 						$installedAppInfo = $this->marketService->getInstalledAppInfo($appId);
 						$currentVersion = (string) $installedAppInfo['version'];
 						$packageVersion = (string) $appInfo['version'];
-						if (version_compare($packageVersion, $currentVersion, '>')){
+						try {
+							$this->checkVersion($currentVersion, $packageVersion);
 							$output->writeln("$appId: Installing new version from $localPackage");
 							$this->marketService->updatePackage($localPackage);
 							$output->writeln("$appId: App updated.");
-						} else {
-							$output->writeln("$appId: $localPackage has the same or older version of the app");
+						} catch (\DomainException $e) {
+							$errorMessage = $e->getMessage();
+							$output->writeln("$appId: $localPackage $errorMessage");
 						}
 					} else {
 						$output->writeln("$appId: Installing new app from $localPackage");
@@ -113,7 +123,10 @@ class InstallApp extends Command {
 							$this->marketService->updateApp($appId);
 							$output->writeln("$appId: App updated.");
 						} else {
-							$output->writeln("$appId: App already installed and no minor update available");
+							$updateMessage = $updateVersions['major'] === false
+								? 'App already installed and no update available'
+								: "Major update is available, use market:upgrade $appId --major.";
+							$output->writeln("$appId: $updateMessage");
 						}
 					} else {
 						$output->writeln("$appId: Installing new app ...");
@@ -128,5 +141,29 @@ class InstallApp extends Command {
 		}
 
 		return $this->exitCode;
+	}
+
+	/**
+	 * @param string $installedVersion
+	 * @param string $packageVersion
+	 *
+	 * @return void
+	 *
+	 * @throws \DomainException
+	 */
+	protected function checkVersion($installedVersion, $packageVersion) {
+		// At first check if we are installing a new version
+		if ($this->versionHelper->lessThanOrEqualTo($packageVersion, $installedVersion)) {
+			throw new \DomainException('has the same or older version of the app.');
+		}
+
+		// Check if the major version is different
+		$isMajorUpdate = !$this->versionHelper->isSameMajorVersion(
+			$installedVersion,
+			$packageVersion
+		);
+		if ($isMajorUpdate) {
+			throw new \DomainException('has a different major version, try market:upgrade --major instead.');
+		}
 	}
 }

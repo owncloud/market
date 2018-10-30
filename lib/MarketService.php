@@ -37,34 +37,39 @@ use OCP\App\AppUpdateNotFoundException;
 class MarketService {
 	/** @var HttpService */
 	private $httpService;
+	/** @var VersionHelper */
+	private $versionHelper;
 	/** @var IAppManager */
 	private $appManager;
 	/** @var IConfig */
 	private $config;
+	/** @var IL10N */
+	private $l10n;
 	/** @var array */
 	private $apps;
 	/** @var array */
 	private $categories;
 	/** @var array */
 	private $bundles;
-	/** @var IL10N */
-	private $l10n;
 
 	/**
 	 * Service constructor.
 	 *
 	 * @param HttpService $httpService
+	 * @param VersionHelper $versionHelper
 	 * @param IAppManager $appManager
 	 * @param IConfig $config
 	 * @param IL10N $l10n
 	 */
 	public function __construct(
 		HttpService $httpService,
+		VersionHelper $versionHelper,
 		IAppManager $appManager,
 		IConfig $config,
 		IL10N $l10n
 	) {
 		$this->httpService = $httpService;
+		$this->versionHelper = $versionHelper;
 		$this->appManager = $appManager;
 		$this->config = $config;
 		$this->l10n = $l10n;
@@ -156,7 +161,7 @@ class MarketService {
 		}
 
 		// download package
-		$package = $this->downloadPackage($appId, true);
+		$package = $this->downloadPackage($appId);
 		$this->installPackage($package, $skipMigrations);
 		$this->appManager->enableApp($appId);
 	}
@@ -263,7 +268,7 @@ class MarketService {
 						);
 					}
 				} catch (AppNotInstalledException $e) {
-					// ignore exceptions thrown by getAvailableUpdateVersion
+					// ignore exceptions thrown by getAvailableUpdateVersions
 				} catch (AppNotFoundException $e) {
 					// app is not published at marketplace - this is ok
 				}
@@ -285,12 +290,17 @@ class MarketService {
 	 * @throws AppNotInstalledException
 	 */
 	public function getAvailableUpdateVersions($appId) {
-		$major = $this->getAvailableUpdateVersion($appId, true);
-		$minor = $this->getAvailableUpdateVersion($appId, false);
-		// Fixme: major equals to minor if there is no major
-		if ($major === $minor) {
-			$major = false;
+		$info = $this->getInstalledAppInfo($appId);
+		if (is_null($info)) {
+			throw new AppNotInstalledException($this->l10n->t('App (%s) is not installed', $appId));
 		}
+		$marketInfo = $this->getAppInfo($appId);
+		if (is_null($marketInfo)) {
+			throw new AppNotFoundException($this->l10n->t('App (%s) is not known at the marketplace.', $appId));
+		}
+		$currentVersion = (string) $info['version'];
+		$major = $this->filterReleases($marketInfo, $currentVersion, true);
+		$minor = $this->filterReleases($marketInfo, $currentVersion, false);
 		return [
 			'major' => $major,
 			'minor' => $minor
@@ -492,15 +502,11 @@ class MarketService {
 		$this->httpService->invalidateCache();
 	}
 
-	public function getMajorVersion($version) {
-		$versionArray = \explode('.', $version);
-		return $versionArray[0];
-	}
-
 	/**
 	 * Returns the version for the app if an update is available
 	 *
-	 * @param string $appId
+	 * @param string[][] $marketInfo
+	 * @param string $currentVersion
 	 * @param bool $isMajorUpdate are major app updates allowed
 	 *
 	 * @return bool|string
@@ -508,31 +514,27 @@ class MarketService {
 	 * @throws AppNotFoundException
 	 * @throws AppNotInstalledException
 	 */
-	private function getAvailableUpdateVersion($appId, $isMajorUpdate = false) {
-		$info = $this->getInstalledAppInfo($appId);
-		if (is_null($info)) {
-			throw new AppNotInstalledException($this->l10n->t('App (%s) is not installed', $appId));
-		}
-		$marketInfo = $this->getAppInfo($appId);
-		if (is_null($marketInfo)) {
-			throw new AppNotFoundException($this->l10n->t('App (%s) is not known at the marketplace.', $appId));
-		}
+	private function filterReleases($marketInfo, $currentVersion, $isMajorUpdate) {
 		$releases = $marketInfo['releases'];
-		$currentVersion = (string) $info['version'];
-		$releases = array_filter($releases, function($r) use ($currentVersion, $isMajorUpdate) {
-			$marketVersion = $r['version'];
-			$marketVersionMajor = $this->getMajorVersion($marketVersion);
-			$currentVersionMajor = $this->getMajorVersion($currentVersion);
-			if ($isMajorUpdate === false
-				&& $marketVersionMajor > $currentVersionMajor
-			) {
-				return false;
+		$releases = array_filter(
+			$releases,
+			function ($r) use ($currentVersion, $isMajorUpdate) {
+				$marketVersion = $r['version'];
+				$isDifferentMajor = !$this->versionHelper->isSameMajorVersion(
+					$marketVersion,
+					$currentVersion
+				);
+				if ($isMajorUpdate !== $isDifferentMajor) {
+					return false;
+				}
+				return version_compare($marketVersion, $currentVersion, '>');
 			}
-			return version_compare($marketVersion, $currentVersion, '>');
-		});
-		usort($releases, function ($a, $b) {
-			return version_compare($a['version'], $b['version'], '>');
-		});
+		);
+		usort(
+			$releases, function ($a, $b) {
+				return version_compare($a['version'], $b['version'], '>');
+			}
+		);
 		if (!empty($releases)) {
 			return array_pop($releases)['version'];
 		}
@@ -549,49 +551,6 @@ class MarketService {
 		}
 
 		return $this->config->getAppValue('enterprise_key', 'license-key', null);
-	}
-
-	/**
-	 * Truncates both versions to the lowest common version, e.g.
-	 * 5.1.2.3 and 5.1 will be turned into 5.1 and 5.1,
-	 * 5.2.6.5 and 5.1 will be turned into 5.2 and 5.1
-	 *
-	 * @param string $first
-	 * @param string $second
-	 *
-	 * @return string[] first element is the first version, second element is the
-	 * second version
-	 */
-	private function normalizeVersions($first, $second) {
-		$first = explode('.', $first);
-		$second = explode('.', $second);
-
-		// get both arrays to the same minimum size
-		$length = min(count($second), count($first));
-		$first = array_slice($first, 0, $length);
-		$second = array_slice($second, 0, $length);
-
-		return [implode('.', $first), implode('.', $second)];
-	}
-
-	/**
-	 * Parameters will be normalized and then passed into version_compare
-	 * in the same order they are specified in the method header
-	 *
-	 * @param string $first
-	 * @param string $second
-	 * @param string $operator
-	 *
-	 * @return bool result similar to version_compare
-	 */
-	private function compare($first, $second, $operator) {
-		// we can't normalize versions if one of the given parameters is not a
-		// version string but null. In case one parameter is null normalization
-		// will therefore be skipped
-		if ($first !== null && $second !== null) {
-			list($first, $second) = $this->normalizeVersions($first, $second);
-		}
-		return version_compare($first, $second, $operator);
 	}
 
 	private function getApps() {
@@ -619,7 +578,7 @@ class MarketService {
 			throw new AppNotFoundException($this->l10n->t('Unknown app (%s)', $appId));
 		}
 
-		$version = $this->httpService->getPlatformVersion();
+		$version = $this->versionHelper->getPlatformVersion();
 		$release = array_filter(
 			$data['releases'],
 			function ($element) use ($version, $targetVersion) {
@@ -630,8 +589,8 @@ class MarketService {
 				}
 				$platformMin = $element['platformMin'];
 				$platformMax = $element['platformMax'];
-				$tooSmall = $this->compare($version, $platformMin, '<');
-				$tooBig = $this->compare($version, $platformMax, '>');
+				$tooSmall = $this->versionHelper->compare($version, $platformMin, '<');
+				$tooBig = $this->versionHelper->compare($version, $platformMax, '>');
 
 				return $tooSmall === false && $tooBig === false;
 			}

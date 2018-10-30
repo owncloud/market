@@ -22,6 +22,7 @@
 namespace OCA\Market\Tests\Unit;
 
 use OCA\Market\HttpService;
+use OCA\Market\VersionHelper;
 use OCP\App\AppManagerException;
 use OCP\Http\Client\IClient;
 use OCP\Http\Client\IClientService;
@@ -39,6 +40,8 @@ use Test\TestCase;
 class HttpServiceTest extends TestCase {
 	/** @var IClientService | \PHPUnit_Framework_MockObject_MockObject */
 	private $httpClientService;
+	/** @var VersionHelper | \PHPUnit_Framework_MockObject_MockObject */
+	private $versionHelper;
 	/** @var ICacheFactory | \PHPUnit_Framework_MockObject_MockObject */
 	private $cacheFactory;
 	/** @var IConfig | \PHPUnit_Framework_MockObject_MockObject */
@@ -51,11 +54,13 @@ class HttpServiceTest extends TestCase {
 	protected function setUp() {
 		parent::setUp();
 		$this->httpClientService = $this->createMock(IClientService::class);
+		$this->versionHelper =  $this->createMock(VersionHelper::class);
 		$this->cacheFactory = $this->createMock(ICacheFactory::class);
 		$this->config = $this->createMock(IConfig::class);
 		$this->l10n = $this->createMock(IL10N::class);
 		$this->httpService = new HttpService(
 			$this->httpClientService,
+			$this->versionHelper,
 			$this->config,
 			$this->cacheFactory,
 			$this->l10n
@@ -65,13 +70,14 @@ class HttpServiceTest extends TestCase {
 	/**
 	 * @dataProvider testCheckInternetConnectionDataProvider
 	 */
-	public function textCheckInternetConnection($connectionStatus, $expectedExceptionClass) {
+	public function testCheckInternetConnection($connectionStatus, $expectedExceptionClass) {
 		$this->config->method('getSystemValue')
-			->with(['has_internet_connection', true])
+			->with('has_internet_connection', true)
 			->willReturn($connectionStatus);
 		if ($expectedExceptionClass !== '') {
 			$this->expectException($expectedExceptionClass);
 		}
+		$this->httpService->checkInternetConnection();
 	}
 
 	public function testCheckInternetConnectionDataProvider() {

@@ -21,8 +21,8 @@
 
 namespace OCA\Market\Command;
 
-use Aws\Common\Exception\DomainException;
 use OCA\Market\MarketService;
+use OCA\Market\VersionHelper;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -34,11 +34,15 @@ class UpgradeApp extends Command {
 	/** @var MarketService */
 	private $marketService;
 
-	/** @var int  */
+	/** @var VersionHelper */
+	private $versionHelper;
+
+	/** @var int */
 	private $exitCode = 0;
 
-	public function __construct(MarketService $marketService) {
+	public function __construct(MarketService $marketService, VersionHelper $versionHelper) {
 		parent::__construct();
+		$this->versionHelper = $versionHelper;
 		$this->marketService = $marketService;
 	}
 
@@ -46,10 +50,13 @@ class UpgradeApp extends Command {
 		$this
 			->setName('market:upgrade')
 			->setDescription('Installs new app versions if available on the marketplace')
-			->addArgument('ids',
+			->addArgument(
+				'ids',
 				InputArgument::OPTIONAL | InputArgument::IS_ARRAY,
-				'Ids of the apps')
-			->addOption('local',
+				'Ids of the apps'
+			)
+			->addOption(
+				'local',
 				'l',
 				InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
 				'Optional path to a local app packages'
@@ -62,9 +69,16 @@ class UpgradeApp extends Command {
 			)
 			->addOption('list')
 			->addOption('all');
-
 	}
 
+	/**
+	 * @param InputInterface $input
+	 * @param OutputInterface $output
+	 *
+	 * @return int
+	 *
+	 * @throws \Exception
+	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		if (!$this->marketService->canInstall()) {
 			throw new \Exception("Installing apps is not supported because the app folder is not writable.");
@@ -85,7 +99,7 @@ class UpgradeApp extends Command {
 						$packageVersion = (string) $appInfo['version'];
 						try {
 							$this->checkVersion($currentVersion, $packageVersion, $isMajorUpdateAllowed);
-							$output->writeln("$appId: Installing new version from $localPackage");
+							$output->writeln("$appId: Installing new version from $localPackage.");
 							$this->marketService->updatePackage($localPackage);
 							$output->writeln("$appId: App updated.");
 						} catch (\DomainException $e) {
@@ -120,9 +134,12 @@ class UpgradeApp extends Command {
 		}
 		$appIds = $input->getArgument('ids');
 		if ($input->getOption('all')) {
-			$appIds = array_map(function ($elem) {
-				return $elem['id'];
-			}, $this->marketService->getUpdates());
+			$appIds = array_map(
+				function ($elem) {
+					return $elem['id'];
+				},
+				$this->marketService->getUpdates()
+			);
 		}
 		$appIds = array_unique($appIds);
 
@@ -138,15 +155,15 @@ class UpgradeApp extends Command {
 					$updateVersion = $this->marketService->chooseCandidate($updateVersions, $isMajorUpdateAllowed);
 					if ($updateVersion !== null) {
 						$output->writeln("$appId: Installing new version $updateVersion ...");
-						$this->marketService->updateApp($appId, $isMajorUpdateAllowed);
+						$this->marketService->updateApp($appId, $updateVersion);
 						$output->writeln("$appId: App updated.");
 					} elseif ($isMajorUpdateAllowed === false
 						&& $updateVersions['major'] !== false
 					) {
 						$major = $updateVersions['major'];
-						$output->writeln("$appId: update to $major requires --major option");
+						$output->writeln("$appId: update to $major requires --major option.");
 					} else {
-						$output->writeln("$appId: No update available");
+						$output->writeln("$appId: No update available.");
 					}
 				} else {
 					$output->writeln("$appId: Not installed ...");
@@ -164,20 +181,24 @@ class UpgradeApp extends Command {
 	 * @param string $packageVersion
 	 * @param bool $isMajorUpdateAllowed
 	 *
+	 * @return void
+	 *
 	 * @throws \DomainException
 	 */
 	protected function checkVersion($installedVersion, $packageVersion, $isMajorUpdateAllowed) {
 		// At first check if we are installing a new version
-		if (\version_compare($packageVersion, $installedVersion, '<=')) {
-			throw new \DomainException('has the same or older version of the app');
+		if ($this->versionHelper->lessThanOrEqualTo($packageVersion, $installedVersion)) {
+			throw new \DomainException('has the same or older version of the app.');
 		}
 
 		// Check if the major version is different
 		if ($isMajorUpdateAllowed === false) {
-			$installedMajorVersion = $this->marketService->getMajorVersion($installedVersion);
-			$packageMajorVersion = $this->marketService->getMajorVersion($packageVersion);
-			if ($installedMajorVersion !== $packageMajorVersion) {
-				throw new \DomainException('has a different major version, try with --major option');
+			$isMajorUpdate = !$this->versionHelper->isSameMajorVersion(
+				$installedVersion,
+				$packageVersion
+			);
+			if ($isMajorUpdate) {
+				throw new \DomainException('has a different major version, try with --major option.');
 			}
 		}
 	}
