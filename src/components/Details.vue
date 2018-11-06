@@ -82,9 +82,21 @@
 							| {{ t('uninstall') }}
 
 					// Update
-					div(v-if="updateable")
+					div(v-if="updateable && releases.length > 1").uk-button-group.uk-align-right.uk-margin-remove-bottom.uk-margin-small-left.uk-position-relative
+						button.uk-button.uk-button-primary._multiupdate-button(:disabled="processing", @click="update")
+							| {{ t('Update to') }} {{ releases[updateVersion].version }}
+						.uk-inline
+							button.uk-button.uk-button-primary._multiupdate-dropdown(:disabled="processing")
+								span(uk-icon='icon:  triangle-down')
+							div(uk-dropdown='mode: click; boundary: ! .uk-button-group; boundary-align: true; pos: top-center;')._multiupdate-uikit-element
+								ul.uk-nav.uk-dropdown-nav
+									li(v-for="(release, rid) in releases")
+										a(@click="setUpdateVersion(rid)") {{ t('version') }} {{ release.version }}
+
+					div(v-else-if="updateable && releases.length === 1")
 						button.uk-button.uk-button-primary.uk-align-right.uk-margin-remove-bottom.uk-margin-small-left.uk-position-relative(:disabled="processing", @click="update")
 							| {{ t('update') }}
+
 </template>
 <script>
 
@@ -96,6 +108,13 @@
 		mixins: [Mixins],
 		components: {
 			Rating
+		},
+		data () {
+			return {
+				// Key of releases array
+				// if length exeeds 1
+				updateVersion : 0
+			}
 		},
 		computed: {
 			loading() {
@@ -184,6 +203,10 @@
 			},
 			update () {
 				this.$store.dispatch('PROCESS_APPLICATION', [this.application.id, 'update'])
+			},
+			setUpdateVersion (version) {
+				UIkit.dropdown('._multiupdate-uikit-element').hide();
+				this.updateVersion = parseInt(version);
 			}
 		}
 	}
@@ -201,5 +224,14 @@
 
 	.uk-label {
 		font-size: .75rem;
+	}
+
+	._multiupdate-button {
+		padding-right: 5px;
+	}
+
+	._multiupdate-dropdown {
+		padding-left: 10px;
+		padding-right: 10px;
 	}
 </style>
