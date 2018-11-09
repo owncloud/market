@@ -236,8 +236,10 @@ const actions = {
 
         context.commit("START_PROCESSING", id);
 
+        let data = (options.version) ? {'toVersion' : options.version} : {};
+
         return Axios.post(OC.generateUrl("/apps/market/apps/{id}/" + route, {id}),
-            {}, {
+            data, {
                 headers: {
                     requesttoken: OC.requestToken
                 }

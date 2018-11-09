@@ -112,7 +112,7 @@
 		data () {
 			return {
 				// Key of releases array
-				// if length exeeds 1
+				// if length exceeds 1
 				updateVersion : 0
 			}
 		},
@@ -202,7 +202,11 @@
 				});
 			},
 			update () {
-				this.$store.dispatch('PROCESS_APPLICATION', [this.application.id, 'update'])
+				if (this.releases.length > 1) {
+					this.$store.dispatch('PROCESS_APPLICATION', [this.application.id, 'update', {'version' : this.releases[this.updateVersion].version}]);
+				} else {
+					this.$store.dispatch('PROCESS_APPLICATION', [this.application.id, 'update']);
+				}
 			},
 			setUpdateVersion (version) {
 				UIkit.dropdown('._multiupdate-uikit-element').hide();

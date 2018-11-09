@@ -54,7 +54,7 @@
 		},
 		methods: {
 			update (id, version) {
-				this.$store.dispatch('PROCESS_APPLICATION', [id, 'update'])
+				this.$store.dispatch('PROCESS_APPLICATION', [id, 'update', {'version' : version}])
 			},
 			processing(id) {
 				return _.contains(this.$store.state.processing, id)

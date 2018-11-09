@@ -202,15 +202,17 @@ class MarketController extends Controller {
 	 * @return array | DataResponse
 	 */
 	public function update($appId) {
+		$targetVersion = $this->request->getParam('toVersion');
 		try {
-			$this->marketService->updateApp($appId);
+			$this->marketService->updateApp($appId, $targetVersion);
 			return [
 				'message' => $this->l10n->t('App %s updated successfully', $appId)
 			];
 		} catch(\Exception $ex) {
-			return new DataResponse([
-				'message' => $ex->getMessage()
-			], Http::STATUS_BAD_REQUEST);
+			return new DataResponse(
+				['message' => $ex->getMessage()],
+				Http::STATUS_BAD_REQUEST
+			);
 		}
 	}
 
