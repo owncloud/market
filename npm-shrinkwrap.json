@@ -8257,9 +8257,9 @@
       "optional": true
     },
     "uikit": {
-      "version": "3.0.0-beta.34",
-      "resolved": "https://registry.npmjs.org/uikit/-/uikit-3.0.0-beta.34.tgz",
-      "integrity": "sha512-1ieJfyAZfJreGBmkKB3Cj9IRkuQ9IBHVkNZl1uylI9r86bg1eryfq1JmwlwY3C9FZjbdi0zJk4KnI5HnyvK4pg=="
+      "version": "3.0.0-rc.22",
+      "resolved": "https://registry.npmjs.org/uikit/-/uikit-3.0.0-rc.22.tgz",
+      "integrity": "sha512-vJbZz/NBeN2i08lXRI4ZkV7pO1K4GDXOZcez2yjm9JwNL9bw4DyLPJhoAA9T/Na8ZvktOO6QlZ2ZDsvcthiLMQ=="
     },
     "underscore": {
       "version": "1.8.3",
