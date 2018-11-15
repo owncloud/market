@@ -8498,9 +8498,9 @@
       "integrity": "sha1-wGavtYK7HLQSjWDqkjkulNXp2+w="
     },
     "vue": {
-      "version": "2.4.4",
-      "resolved": "https://registry.npmjs.org/vue/-/vue-2.4.4.tgz",
-      "integrity": "sha512-PCiRmc8ZT1DD5+BN8QUAmnkBefcCLfZVSuhc1u7iu5JoPrSHyyk/+4nehm7k2xVMi8+RFLk5WIHAN14UKF0txw=="
+      "version": "2.5.17",
+      "resolved": "https://registry.npmjs.org/vue/-/vue-2.5.17.tgz",
+      "integrity": "sha512-mFbcWoDIJi0w0Za4emyLiW72Jae0yjANHbCVquMKijcavBGypqlF7zHRgMa5k4sesdv7hv2rB4JPdZfR+TPfhQ=="
     },
     "vue-gettext": {
       "version": "2.0.23",
