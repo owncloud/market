@@ -44,7 +44,15 @@ class Application extends App {
 			IRepairStep::class . '::upgradeAppStoreApp',
 			function ($event) use ($listener) {
 				if ($event instanceof GenericEvent) {
-					$listener->upgradeAppStoreApp($event->getSubject());
+					try {
+						$isMajorUpdate = $event->getArgument('isMajorUpdate');
+					} catch (\InvalidArgumentException $e) {
+						$isMajorUpdate = false;
+					}
+					$listener->upgradeAppStoreApp(
+						$event->getSubject(),
+						$isMajorUpdate
+					);
 				}
 			}
 		);

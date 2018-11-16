@@ -89,8 +89,12 @@ class CheckUpdateBackgroundJob extends TimedJob {
 				'market.page.index'
 			);
 			$url .= '#/app/' . $appId;
-
-			$this->createNotifications($appId, $appInfo['version'], $url);
+			if ($appInfo['major'] !== false) {
+				$this->createNotifications($appId, $appInfo['major'], $url);
+			}
+			if ($appInfo['minor'] !== false) {
+				$this->createNotifications($appId, $appInfo['minor'], $url);
+			}
 		}
 	}
 

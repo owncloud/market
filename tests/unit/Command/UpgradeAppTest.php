@@ -24,6 +24,7 @@ namespace OCA\Market\Tests\Unit\Command;
 
 use OCA\Market\Command\UpgradeApp;
 use OCA\Market\MarketService;
+use OCA\Market\VersionHelper;
 use Symfony\Component\Console\Tester\CommandTester;
 use Test\TestCase;
 
@@ -33,12 +34,15 @@ class UpgradeAppTest extends TestCase {
 	private $commandTester;
 	/** @var MarketService | \PHPUnit_Framework_MockObject_MockObject */
 	private $marketService;
+	/** @var VersionHelper | \PHPUnit_Framework_MockObject_MockObject */
+	private $versionHelper;
 
 	public function setUp() {
 		parent::setUp();
 
 		$this->marketService = $this->createMock(MarketService::class);
-		$command = new UpgradeApp($this->marketService);
+		$this->versionHelper = $this->createMock(VersionHelper::class);
+		$command = new UpgradeApp($this->marketService, $this->versionHelper);
 		$this->commandTester = new CommandTester($command);
 	}
 
@@ -73,7 +77,12 @@ class UpgradeAppTest extends TestCase {
 	public function testUpdateNoNewVersion() {
 		$this->marketService->expects($this->once())->method('canInstall')->willReturn(true);
 		$this->marketService->expects($this->once())->method('isAppInstalled')->willReturn(true);
-		$this->marketService->expects($this->once())->method('getAvailableUpdateVersion')->willReturn(false);
+		$this->marketService->expects($this->once())->method('getAvailableUpdateVersions')->willReturn(
+			[
+				'major' => false,
+				'minor' => false
+			]
+		);
 		$this->marketService->expects($this->never())->method('installApp');
 		$this->marketService->expects($this->never())->method('updateApp');
 		$this->commandTester->execute([
@@ -86,7 +95,7 @@ class UpgradeAppTest extends TestCase {
 	public function testUpdateApp() {
 		$this->marketService->expects($this->once())->method('canInstall')->willReturn(true);
 		$this->marketService->expects($this->once())->method('isAppInstalled')->willReturn(true);
-		$this->marketService->expects($this->once())->method('getAvailableUpdateVersion')->willReturn('1.2.3');
+		$this->marketService->expects($this->once())->method('chooseCandidate')->willReturn('1.2.3');
 		$this->marketService->expects($this->never())->method('installApp');
 		$this->marketService->expects($this->once())->method('updateApp');
 		$this->commandTester->execute([
@@ -111,6 +120,8 @@ class UpgradeAppTest extends TestCase {
 			'version' => '1.2.1'
 		]);
 		$this->marketService->expects($withHigherVersion ? $this->once() : $this->never())->method('updatePackage');
+		$this->versionHelper->method('lessThanOrEqualTo')->willReturn(!$withHigherVersion);
+		$this->versionHelper->method('isSameMajorVersion')->willReturn(true);
 		$this->commandTester->execute([
 			'-l' => ['bla.tar.gz']
 		]);
@@ -133,36 +144,113 @@ class UpgradeAppTest extends TestCase {
 	public function testListOption() {
 		$this->marketService->expects($this->once())->method('canInstall')->willReturn(true);
 		$this->marketService->expects($this->once())->method('getUpdates')->willReturn([
-			'foo' => ['version' => '1.2.3'],
-			'bar' => ['version' => '4.0.0'],
+			'foo' => ['major' => '2.2.3', 'minor' => '1.2.3'],
+			'bar' => ['major' => '5.0.3', 'minor' => '4.0.0'],
 		]);
 		$this->commandTester->execute([
 			'--list' => true
 		]);
 		$output = $this->commandTester->getDisplay();
-		$this->assertContains("foo : 1.2.3\nbar : 4.0.0", $output);
+		$this->assertContains("foo : minor:1.2.3, major:2.2.3\nbar : minor:4.0.0, major:5.0.3", $output);
 	}
 
 	public function testAllOption() {
 		$this->marketService->expects($this->once())->method('canInstall')->willReturn(true);
 		$this->marketService->expects($this->any())->method('isAppInstalled')->willReturn(true);
-		$this->marketService->expects($this->any())->method('getAvailableUpdateVersion')->willReturn('42');
+		$this->marketService->expects($this->any())->method('getAvailableUpdateVersions')->willReturn(
+			[ 'major' => false, 'minor' => '1.2.3']
+		);
 		$this->marketService->expects($this->any())->method('updateApp')->willReturn(true);
-		$this->marketService->expects($this->once())->method('getUpdates')->willReturn([
+		$this->marketService->expects($this->once())->method('getUpdates')->willReturn(
+			[
 			'foo' => [
 				'id' => 'foo',
-				'version' => '1.2.3'
+				'minor' => '1.2.3',
+				'major' => false
 			],
 			'bar' => [
 				'id' => 'bar',
-				'version' => '4.0.0'
+				'minor' => '4.0.0',
+				'major' => false,
 			],
-		]);
+			]
+		);
+		$this->marketService->method('chooseCandidate')
+			->will($this->onConsecutiveCalls('1.2.3', '4.0.0'));
 		$this->commandTester->execute([
 			'--all' => true
 		]);
 		$output = $this->commandTester->getDisplay();
 		$this->assertContains("foo: App updated.", $output);
 		$this->assertContains("bar: App updated.", $output);
+	}
+
+
+	public function testLocalUpgradeRefusesMajorUpgrade() {
+		$this->marketService->expects($this->once())->method('canInstall')->willReturn(true);
+		$this->marketService->expects($this->once())->method('readAppPackage')->willReturn(
+			[
+				'id' => 'bla',
+				'version' => '2.0.0'
+			]
+		);
+		$this->marketService->expects($this->once())->method('isAppInstalled')->willReturn(true);
+		$this->marketService->method('getInstalledAppInfo')
+			->willReturn(
+				['version' => '1.2.1']
+			);
+		$this->marketService->expects($this->never())->method('updatePackage');
+		$this->versionHelper->method('isSameMajorVersion')->willReturn(false);
+		$this->commandTester->execute(
+			['-l' => ['bla.tar.gz']]
+		);
+		$output = $this->commandTester->getDisplay();
+		$this->assertContains('has a different major version, try with --major option', $output);
+	}
+
+	public function testInstallRefusesMajorUpgrade() {
+		$this->marketService->expects($this->once())->method('canInstall')->willReturn(true);
+		$this->marketService->expects($this->once())->method('getAvailableUpdateVersions')->willReturn(
+			[
+				'major' => '2.0.0',
+				'minor' => false
+			]
+		);
+		$this->marketService->expects($this->once())->method('isAppInstalled')->willReturn(true);
+		$this->marketService->method('getInstalledAppInfo')
+			->willReturn(
+				['version' => '1.2.1']
+			);
+		$this->marketService->expects($this->never())->method('updatePackage');
+		$this->versionHelper->method('isSameMajorVersion')->willReturn(false);
+		$this->commandTester->execute(
+			['ids' => ['bla']]
+		);
+		$output = $this->commandTester->getDisplay();
+		$this->assertContains('update to 2.0.0 requires --major option', $output);
+	}
+
+	public function testInstallMajorUpgrade() {
+		$this->marketService->expects($this->once())->method('canInstall')->willReturn(true);
+		$this->marketService->expects($this->once())
+			->method('chooseCandidate')
+			->willReturn('1.3.0');
+		$this->marketService->expects($this->once())->method('isAppInstalled')->willReturn(true);
+		$this->marketService->method('getInstalledAppInfo')
+			->willReturn(
+				['version' => '1.2.1']
+			);
+		$this->marketService->expects($this->once())
+			->method('updateApp')
+			->with('bla', '1.3.0');
+		$this->versionHelper->method('isSameMajorVersion')->willReturn(false);
+		$this->commandTester->execute(
+			[
+				'ids' => ['bla'],
+				'--major' => 1
+			]
+		);
+		$output = $this->commandTester->getDisplay();
+		$this->assertContains('App updated', $output);
 	}
 }

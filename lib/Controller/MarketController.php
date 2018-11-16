@@ -174,7 +174,6 @@ class MarketController extends Controller {
 	 * @return array|mixed
 	 */
 	public function getApiKey() {
-
 		return new DataResponse( [
 			'apiKey' => $this->marketService->getApiKey(),
 			'changeable' => $this->marketService->isApiKeyChangeableByUser(),
@@ -203,15 +202,17 @@ class MarketController extends Controller {
 	 * @return array | DataResponse
 	 */
 	public function update($appId) {
+		$targetVersion = $this->request->getParam('toVersion');
 		try {
-			$this->marketService->updateApp($appId);
+			$this->marketService->updateApp($appId, $targetVersion);
 			return [
 				'message' => $this->l10n->t('App %s updated successfully', $appId)
 			];
 		} catch(\Exception $ex) {
-			return new DataResponse([
-				'message' => $ex->getMessage()
-			], Http::STATUS_BAD_REQUEST);
+			return new DataResponse(
+				['message' => $ex->getMessage()],
+				Http::STATUS_BAD_REQUEST
+			);
 		}
 	}
 
@@ -222,46 +223,63 @@ class MarketController extends Controller {
 	protected function queryData($category = null) {
 		$apps = $this->marketService->listApps($category);
 
-		return array_map(function ($app) {
+		$apps = array_map(function ($app) {
 			return $this->enrichApp($app);
 		}, $apps);
+		return $apps;
 	}
 
 	private function enrichApp($app) {
 		$app['installed'] = $this->marketService->isAppInstalled($app['id']);
-		$releases = array_map(function ($release) {
-			$missing = $this->marketService->getMissingDependencies($release);
-			$release['canInstall'] = empty($missing);
-			$release['missingDependencies'] = $missing;
-			return $release;
-		}, $app['releases']);
+		$releases = array_map(
+			function ($release) {
+				$missing = $this->marketService->getMissingDependencies($release);
+				$release['canInstall'] = empty($missing);
+				$release['missingDependencies'] = $missing;
+				return $release;
+			},
+			$app['releases']
+		);
 		unset($app['releases']);
+
+		$app['minorUpdate'] = false;
+		$app['majorUpdate'] = false;
 		if ($app['installed']) {
 			$app['installInfo'] = $this->marketService->getInstalledAppInfo($app['id']);
-			$app['updateInfo'] = $this->marketService->getAvailableUpdateVersion($app['id']);
-
-			$filteredReleases = array_filter($releases, function ($release) use ($app) {
-				if (empty($app['updateInfo'])) {
-					return $release['version'] === $app['updateInfo'];
+			$app['updateInfo'] = $this->marketService->getAvailableUpdateVersions($app['id']);
+			$app['updateTo'] = $app['updateInfo']['minor'] !== false
+				? $app['updateInfo']['minor']
+				: $app['updateInfo']['major'];
+			array_walk(
+				$releases,
+				function ($release) use (&$app) {
+					if ($release['version'] === $app['updateInfo']['major']) {
+						$app['majorUpdate'] = $release;
+					}
+					if ($release['version'] === $app['updateInfo']['minor']) {
+						$app['minorUpdate'] = $release;
+					}
 				}
-				return $release['version'] === $app['updateInfo'];
-			});
-			$app['release'] = array_pop($filteredReleases);
+			);
 		} else {
-			$app['updateInfo'] = false;
-			usort($releases, function ($a, $b) {
-				return version_compare($a['version'], $b['version'], '>');
-			});
+			usort(
+				$releases,
+				function ($a, $b) {
+					return version_compare($a['version'], $b['version'], '>');
+				}
+			);
 			if (!empty($releases)) {
 				$app['release'] = array_pop($releases);
 			}
 		}
+		$app['updateInfo'] = $app['majorUpdate'] !== false || $app['minorUpdate'] !== false;
 		return $app;
 	}
 
 	/**
-	 * @return string
 	 * @NoCSRFRequired
+	 *
+	 * @return DataResponse
 	 */
 	public function getConfig() {
 		$licenseKeyAvailable = $this->marketService->hasLicenseKey();

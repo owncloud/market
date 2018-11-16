@@ -22,9 +22,15 @@
 								td
 									span {{ application.installInfo.version }}
 									span(uk-icon="icon: arrow-right").uk-margin-small-left.uk-margin-small-right
-									span {{ application.updateInfo }}
+									select(v-model="application.updateTo" v-if="application.minorUpdate !== false && application.majorUpdate !== false")
+										option(:value="application.minorUpdate.version" selected="selected") {{ application.minorUpdate.version }}
+										option(:value="application.majorUpdate.version") {{ application.majorUpdate.version }}
+									span(v-else-if="application.minorUpdate !== false") {{ application.minorUpdate.version }}
+										input(type="hidden" v-model="application.updateTo" value="application.minorUpdate.version")
+									span(v-else-if="application.majorUpdate !== false") {{ application.majorUpdate.version }}
+										input(type="hidden" v-model="application.updateTo" value="application.majorUpdate.version")
 								td
-									button.uk-button.uk-button-primary.uk-align-right.uk-margin-remove.uk-position-relative(@click="update(application.id)", :disabled="processing(application.id)")
+									button.uk-button.uk-button-primary.uk-align-right.uk-margin-remove.uk-position-relative(@click="update(application.id, application.updateTo)", :disabled="processing(application.id)")
 										span(v-if="processing(application.id)")
 											span.uk-position-small.uk-position-center-left(uk-spinner, uk-icon="icon: spinner; ratio: 0.8")
 											span.uk-margin-small-left &nbsp;&nbsp; {{ t('updating') }}
@@ -47,8 +53,8 @@
 			Tile
 		},
 		methods: {
-			update (id) {
-				this.$store.dispatch('PROCESS_APPLICATION', [id, 'update'])
+			update (id, version) {
+				this.$store.dispatch('PROCESS_APPLICATION', [id, 'update', {'version' : version}])
 			},
 			processing(id) {
 				return _.contains(this.$store.state.processing, id)

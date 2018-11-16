@@ -48,19 +48,17 @@
 
 				.uk-alert-primary(v-if="updateable && !processing && !loading", uk-alert)
 					a.uk-alert-close.uk-close
-					p
-						strong {{ t('Version %{version} available', {version: release.version}) }}&nbsp;
-						span {{ t('published on ') }} {{ release.created | formatDate }}.&nbsp;
+					div(v-for="update in releases")
+						strong {{ t('Version %{version} available', {version: update.version}) }}&nbsp;
+						span {{ t('published on ') }} {{ update.created | formatDate }}.&nbsp;
 						a(:href="application.marketplace", target="_blank") {{ t('Get more info') }}
-
-				div(v-if="updateable && !release.canInstall", uk-alert).uk-alert-danger
-					ul(v-if="!release.canInstall").uk-list
-						li(v-for="dependency in release.missingDependencies")
-							span(uk-icon="icon: warning; ratio: 0.75").uk-margin-small-right
-							| {{ dependency }}
-
-					p.uk-text-small
-						t.missingDep
+						.uk-alert.uk-alert-danger(v-if="!update.canInstall")
+							ul(v-if="!update.canInstall").uk-list
+								li(v-for="dependency in update.missingDependencies")
+									span(uk-icon="icon: warning; ratio: 0.75").uk-margin-small-right
+									| {{ dependency }}
+							p.uk-text-small
+								t.missingDep
 
 			.uk-card-footer
 				div(v-if="processing || loading")
@@ -84,9 +82,21 @@
 							| {{ t('uninstall') }}
 
 					// Update
-					div(v-if="updateable")
+					div(v-if="updateable && releases.length > 1").uk-button-group.uk-align-right.uk-margin-remove-bottom.uk-margin-small-left.uk-position-relative
+						button.uk-button.uk-button-primary._multiupdate-button(:disabled="processing", @click="update")
+							| {{ t('Update to') }} {{ releases[updateVersion].version }}
+						.uk-inline
+							button.uk-button.uk-button-primary._multiupdate-dropdown(:disabled="processing")
+								span(uk-icon='icon:  triangle-down')
+							div(uk-dropdown='mode: click; boundary: ! .uk-button-group; boundary-align: true; pos: top-center;')._multiupdate-uikit-element
+								ul.uk-nav.uk-dropdown-nav
+									li(v-for="(release, rid) in releases")
+										a(@click="setUpdateVersion(rid)") {{ t('version') }} {{ release.version }}
+
+					div(v-else-if="updateable && releases.length === 1")
 						button.uk-button.uk-button-primary.uk-align-right.uk-margin-remove-bottom.uk-margin-small-left.uk-position-relative(:disabled="processing", @click="update")
 							| {{ t('update') }}
+
 </template>
 <script>
 
@@ -98,6 +108,13 @@
 		mixins: [Mixins],
 		components: {
 			Rating
+		},
+		data () {
+			return {
+				// Key of releases array
+				// if length exceeds 1
+				updateVersion : 0
+			}
 		},
 		computed: {
 			loading() {
@@ -135,8 +152,8 @@
 					return false
 				}
 				else {
-					if (this.application.release)
-						return this.application.release
+					if (this.application.releases)
+						return this.application.releases
 					return false
 				}
 			},
@@ -154,11 +171,15 @@
 				}
 			},
 
-			release () {
+			releases () {
 				if (!this.updateable)
 					return false;
-
-				return this.application.release;
+				return _.filter([
+					this.application.minorUpdate,
+					this.application.majorUpdate
+				], function (release) {
+					return release !== false;
+				});
 			}
 		},
 		filters: {
@@ -181,7 +202,15 @@
 				});
 			},
 			update () {
-				this.$store.dispatch('PROCESS_APPLICATION', [this.application.id, 'update'])
+				if (this.releases.length > 1) {
+					this.$store.dispatch('PROCESS_APPLICATION', [this.application.id, 'update', {'version' : this.releases[this.updateVersion].version}]);
+				} else {
+					this.$store.dispatch('PROCESS_APPLICATION', [this.application.id, 'update']);
+				}
+			},
+			setUpdateVersion (version) {
+				UIkit.dropdown('._multiupdate-uikit-element').hide();
+				this.updateVersion = parseInt(version);
 			}
 		}
 	}
@@ -199,5 +228,14 @@
 
 	.uk-label {
 		font-size: .75rem;
+	}
+
+	._multiupdate-button {
+		padding-right: 5px;
+	}
+
+	._multiupdate-dropdown {
+		padding-left: 10px;
+		padding-right: 10px;
 	}
 </style>
