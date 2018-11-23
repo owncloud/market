@@ -4,7 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [0.3.0]
+
+### Changed
+- Admins can now choose between minor or major update of an app - [#391](https://github.com/owncloud/market/issues/391)
+- Bugfix/update dependencies breaking - [#407](https://github.com/owncloud/market/issues/407) [#408](https://github.com/owncloud/market/issues/408)
+- Bump jakub-onderka/php-console-highlighter from 0.3.2 to 0.4 - [#392](https://github.com/owncloud/market/issues/392)
+- Bump constantinople from 3.0.2 to 3.1.2 - [#412](https://github.com/owncloud/market/issues/412)
+
+### Fixed
+
+- Fix "--all" switch for occ command - [#388](https://github.com/owncloud/market/issues/388)
+- Set max node version - [#381](https://github.com/owncloud/market/issues/381)
 
 ## [0.2.5] - 2018-07-25
 
@@ -75,7 +86,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Skip migrations when reinstalling missing code - [#76](https://github.com/owncloud/market/issues/76)
 - Reset overwritten core css styles - [#73](https://github.com/owncloud/market/issues/73)
 
-[Unreleased]: https://github.com/owncloud/market/compare/v0.2.5...HEAD
+[0.3.0]: https://github.com/owncloud/market/compare/v0.2.5...v0.3.0
 [0.2.5]: https://github.com/owncloud/market/compare/v0.2.4...v0.2.5
 [0.2.4]: https://github.com/owncloud/market/compare/v0.2.3...v0.2.4
 [0.2.3]: https://github.com/owncloud/market/compare/v0.2.2...v0.2.3
