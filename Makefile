@@ -45,6 +45,7 @@ market_src_dirs=appinfo img js lib templates vendor
 market_all_src=$(market_src_dirs) $(market_doc_files)
 build_dir=build
 dist_dir=$(build_dir)/dist
+COMPOSER_PHAR=$(build_dir)/composer.phar
 
 # internal aliases
 composer_deps=vendor/
@@ -64,28 +65,28 @@ clean: clean-composer-deps clean-js-deps clean-dist clean-build
 #
 # Basic required tools
 #
-$(COMPOSER_BIN):
+$(COMPOSER_PHAR):
 	mkdir $(build_dir)
 	cd $(build_dir) && curl -sS https://getcomposer.org/installer | php
 
 #
 # ownCloud market PHP dependencies
 #
-$(composer_deps): $(COMPOSER_BIN) composer.json composer.lock
-	php $(COMPOSER_BIN) install --no-dev
+$(composer_deps): $(COMPOSER_PHAR) composer.json composer.lock
+	php $(COMPOSER_PHAR) install --no-dev
 
-$(composer_dev_deps): $(COMPOSER_BIN) composer.json composer.lock
-	php $(COMPOSER_BIN) install --dev
+$(composer_dev_deps): $(COMPOSER_PHAR) composer.json composer.lock
+	php $(COMPOSER_PHAR) install --dev
 
 .PHONY: clean-composer-deps
 clean-composer-deps:
-	rm -f $(COMPOSER_BIN)
+	rm -f $(COMPOSER_PHAR)
 	rm -Rf $(composer_deps)
 
 .PHONY: update-composer
-update-composer: $(COMPOSER_BIN)
+update-composer: $(COMPOSER_PHAR)
 	rm -f composer.lock
-	php $(COMPOSER_BIN) install --prefer-dist
+	php $(COMPOSER_PHAR) install --prefer-dist
 
 #
 # ownCloud market JavaScript dependencies
