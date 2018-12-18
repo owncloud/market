@@ -179,7 +179,7 @@ test-php-phpstan: vendor-bin/phpstan/vendor
 
 .PHONY: test-php-codecheck
 test-php-codecheck:
-	$(occ) app:check-code $(app_name) -c private -c strong-comparison
+	# $(occ) app:check-code $(app_name) -c private -c strong-comparison
 	$(occ) app:check-code $(app_name) -c deprecation
 
 #
