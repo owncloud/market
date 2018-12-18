@@ -8,6 +8,7 @@ pipeline:
   install-core:
     image: owncloudci/core
     version: ${OC_VERSION}
+    exclude: apps/market
     pull: true
     db_type: ${DB_TYPE}
     db_name: ${DB_NAME}
