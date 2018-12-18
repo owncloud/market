@@ -21,7 +21,6 @@
 
 namespace OCA\Market;
 
-
 use OCP\App\IAppManager;
 use OCP\L10N\IFactory;
 use OCP\Notification\IManager;
@@ -96,7 +95,7 @@ class Notifier implements INotifier {
 	protected function updateAlreadyInstalledCheck(INotification $notification, $installedVersion) {
 		if (
 			$this->appManager->getAppPath($notification->getObjectType()) === false
-			|| version_compare($notification->getObjectId(), $installedVersion, '<=')
+			|| \version_compare($notification->getObjectId(), $installedVersion, '<=')
 		) {
 			$this->notificationManager->markProcessed($notification);
 			throw new \InvalidArgumentException();

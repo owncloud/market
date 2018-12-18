@@ -19,7 +19,6 @@
  *
  */
 
-
 namespace OCA\Market\Tests\Unit\Command;
 
 use OCA\Market\Command\UnInstallApp;
@@ -68,5 +67,4 @@ class UnInstallAppTest extends TestCase {
 		$this->assertContains('foo: Un-Installing ...', $output);
 		$this->assertContains('foo: App uninstalled.', $output);
 	}
-
 }

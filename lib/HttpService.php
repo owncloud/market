@@ -166,7 +166,7 @@ class HttpService {
 			$cache = $this->cacheFactory->create(self::CACHE_KEY);
 			$data = $cache->get($key);
 			if ($data !== null) {
-				return json_decode($data, true);
+				return \json_decode($data, true);
 			}
 		}
 
@@ -180,7 +180,7 @@ class HttpService {
 			$cache = $this->cacheFactory->create(self::CACHE_KEY);
 			$cache->set($key, $data, 60 * 60 * 24);
 		}
-		return json_decode($data, true);
+		return \json_decode($data, true);
 	}
 
 	/**
@@ -224,7 +224,7 @@ class HttpService {
 	 */
 	private function httpGet($path, $options, $apiKey) {
 		if ($apiKey !== null) {
-			$options = array_merge(
+			$options = \array_merge(
 				[
 					'headers' => ['Authorization' => "apikey: $apiKey"]
 				],
@@ -233,7 +233,7 @@ class HttpService {
 		}
 		$ca = $this->config->getSystemValue('marketplace.ca', null);
 		if ($ca !== null) {
-			$options = array_merge(
+			$options = \array_merge(
 				[
 					'verify' => $ca
 				],
@@ -284,11 +284,11 @@ class HttpService {
 		$url = $this->urlConfig[$code];
 		if ($code === self::APPS) {
 			$platformVersion = $this->versionHelper->getPlatformVersion(3);
-			$url = sprintf($url, $platformVersion);
-			$code = sprintf($code, $platformVersion);
+			$url = \sprintf($url, $platformVersion);
+			$code = \sprintf($code, $platformVersion);
 		} elseif ($code == self::DEMO_KEY) {
 			$instanceId = $this->config->getSystemValue('instanceid');
-			$url = sprintf($url, $instanceId);
+			$url = \sprintf($url, $instanceId);
 		}
 		return $this->queryData($code, $url);
 	}
@@ -299,6 +299,6 @@ class HttpService {
 	 */
 	private function getAbsoluteUrl($relativeUrl) {
 		$storeUrl = $this->config->getSystemValue('appstoreurl', 'https://marketplace.owncloud.com');
-		return rtrim($storeUrl, '/') . $relativeUrl;
+		return \rtrim($storeUrl, '/') . $relativeUrl;
 	}
 }

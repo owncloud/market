@@ -25,5 +25,4 @@ namespace OCA\Market\Exception;
  * @package OCA\Market\Exception
  */
 class MarketException extends \Exception {
-
 }

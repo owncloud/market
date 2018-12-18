@@ -24,7 +24,7 @@ namespace OCA\Market\Tests\Unit;
 use OCA\Market\VersionHelper;
 use Test\TestCase;
 
-class VersionHelperTest extends TestCase{
+class VersionHelperTest extends TestCase {
 	/** @var VersionHelper | \PHPUnit_Framework_MockObject_MockObject */
 	private $versionHelper;
 

@@ -11,7 +11,6 @@ use OCP\Notification\IManager;
 use Test\TestCase;
 
 class NotifierTest extends TestCase {
-
 	protected $appManager;
 
 	protected $notificationManager;

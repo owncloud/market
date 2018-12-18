@@ -96,7 +96,7 @@ class HttpServiceTest extends TestCase {
 			->with('marketplace.key', null)
 			->willReturn('');
 
-		$clientMock = $this->getClientResponseMock(json_encode($expectedApps));
+		$clientMock = $this->getClientResponseMock(\json_encode($expectedApps));
 		$this->httpClientService->method('newClient')->willReturn($clientMock);
 		$apps = $this->httpService->getApps();
 		$this->assertEquals($expectedApps, $apps);
