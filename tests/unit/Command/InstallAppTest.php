@@ -19,9 +19,7 @@
  *
  */
 
-
 namespace OCA\Market\Tests\Unit\Command;
-
 
 use OCA\Market\Command\InstallApp;
 use OCA\Market\MarketService;
@@ -128,7 +126,7 @@ class InstallAppTest extends TestCase {
 			$this->assertContains('bla: Installing new version from bla.tar.gz', $output);
 			$this->assertContains('bla: App updated.', $output);
 		} else {
-		$this->assertContains('bla: bla.tar.gz has the same or older version of the app', $output);
+			$this->assertContains('bla: bla.tar.gz has the same or older version of the app', $output);
 		}
 	}
 

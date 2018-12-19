@@ -39,9 +39,9 @@ class VersionHelper {
 	public function getPlatformVersion($cutTo = null) {
 		$v = Util::getVersion();
 		if ($cutTo !== null) {
-			$v = array_slice($v, 0, $cutTo);
+			$v = \array_slice($v, 0, $cutTo);
 		}
-		return join('.', $v);
+		return \join('.', $v);
 	}
 
 	/**
@@ -64,7 +64,7 @@ class VersionHelper {
 	 * @return mixed
 	 */
 	public function lessThanOrEqualTo($first, $second) {
-		return version_compare($first, $second, '<=');
+		return \version_compare($first, $second, '<=');
 	}
 
 	/**
@@ -84,7 +84,7 @@ class VersionHelper {
 		if ($first !== null && $second !== null) {
 			list($first, $second) = $this->normalizeVersions($first, $second);
 		}
-		return version_compare($first, $second, $operator);
+		return \version_compare($first, $second, $operator);
 	}
 
 	/**
@@ -99,15 +99,15 @@ class VersionHelper {
 	 * second version
 	 */
 	private function normalizeVersions($first, $second) {
-		$first = explode('.', $first);
-		$second = explode('.', $second);
+		$first = \explode('.', $first);
+		$second = \explode('.', $second);
 
 		// get both arrays to the same minimum size
-		$length = min(count($second), count($first));
-		$first = array_slice($first, 0, $length);
-		$second = array_slice($second, 0, $length);
+		$length = \min(\count($second), \count($first));
+		$first = \array_slice($first, 0, $length);
+		$second = \array_slice($second, 0, $length);
 
-		return [implode('.', $first), implode('.', $second)];
+		return [\implode('.', $first), \implode('.', $second)];
 	}
 
 	/**

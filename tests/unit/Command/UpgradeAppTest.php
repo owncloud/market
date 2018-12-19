@@ -19,7 +19,6 @@
  *
  */
 
-
 namespace OCA\Market\Tests\Unit\Command;
 
 use OCA\Market\Command\UpgradeApp;
@@ -184,7 +183,6 @@ class UpgradeAppTest extends TestCase {
 		$this->assertContains("foo: App updated.", $output);
 		$this->assertContains("bar: App updated.", $output);
 	}
-
 
 	public function testLocalUpgradeRefusesMajorUpgrade() {
 		$this->marketService->expects($this->once())->method('canInstall')->willReturn(true);

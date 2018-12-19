@@ -75,8 +75,8 @@ class MarketController extends Controller {
 	public function bundles() {
 		try {
 			$bundles = $this->marketService->getBundles();
-			$bundles = array_map(function ($bundle) {
-				$bundle['products'] = array_map(function ($product) {
+			$bundles = \array_map(function ($bundle) {
+				$bundle['products'] = \array_map(function ($product) {
 					return $this->enrichApp($product);
 				}, $bundle['products']);
 				return $bundle;
@@ -137,7 +137,7 @@ class MarketController extends Controller {
 			return [
 				'message' => $this->l10n->t('App %s installed successfully', $appId)
 			];
-		} catch(\Exception $ex) {
+		} catch (\Exception $ex) {
 			return new DataResponse([
 				'message' => $ex->getMessage()
 			], Http::STATUS_BAD_REQUEST);
@@ -174,7 +174,7 @@ class MarketController extends Controller {
 	 * @return array|mixed
 	 */
 	public function getApiKey() {
-		return new DataResponse( [
+		return new DataResponse([
 			'apiKey' => $this->marketService->getApiKey(),
 			'changeable' => $this->marketService->isApiKeyChangeableByUser(),
 		], Http::STATUS_OK);
@@ -190,7 +190,7 @@ class MarketController extends Controller {
 			return [
 				'message' => $this->l10n->t('App %s uninstalled successfully', $appId)
 			];
-		} catch(\Exception $ex) {
+		} catch (\Exception $ex) {
 			return new DataResponse([
 				'message' => $ex->getMessage()
 			], Http::STATUS_BAD_REQUEST);
@@ -208,7 +208,7 @@ class MarketController extends Controller {
 			return [
 				'message' => $this->l10n->t('App %s updated successfully', $appId)
 			];
-		} catch(\Exception $ex) {
+		} catch (\Exception $ex) {
 			return new DataResponse(
 				['message' => $ex->getMessage()],
 				Http::STATUS_BAD_REQUEST
@@ -223,7 +223,7 @@ class MarketController extends Controller {
 	protected function queryData($category = null) {
 		$apps = $this->marketService->listApps($category);
 
-		$apps = array_map(function ($app) {
+		$apps = \array_map(function ($app) {
 			return $this->enrichApp($app);
 		}, $apps);
 		return $apps;
@@ -231,7 +231,7 @@ class MarketController extends Controller {
 
 	private function enrichApp($app) {
 		$app['installed'] = $this->marketService->isAppInstalled($app['id']);
-		$releases = array_map(
+		$releases = \array_map(
 			function ($release) {
 				$missing = $this->marketService->getMissingDependencies($release);
 				$release['canInstall'] = empty($missing);
@@ -250,7 +250,7 @@ class MarketController extends Controller {
 			$app['updateTo'] = $app['updateInfo']['minor'] !== false
 				? $app['updateInfo']['minor']
 				: $app['updateInfo']['major'];
-			array_walk(
+			\array_walk(
 				$releases,
 				function ($release) use (&$app) {
 					if ($release['version'] === $app['updateInfo']['major']) {
@@ -262,14 +262,14 @@ class MarketController extends Controller {
 				}
 			);
 		} else {
-			usort(
+			\usort(
 				$releases,
 				function ($a, $b) {
-					return version_compare($a['version'], $b['version'], '>');
+					return \version_compare($a['version'], $b['version'], '>');
 				}
 			);
 			if (!empty($releases)) {
-				$app['release'] = array_pop($releases);
+				$app['release'] = \array_pop($releases);
 			}
 		}
 		$app['updateInfo'] = $app['majorUpdate'] !== false || $app['minorUpdate'] !== false;
@@ -336,6 +336,5 @@ class MarketController extends Controller {
 			],
 			Http::STATUS_OK
 		);
-
 	}
 }

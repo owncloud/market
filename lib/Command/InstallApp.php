@@ -75,17 +75,17 @@ class InstallApp extends Command {
 		}
 
 		$appIds = $input->getArgument('ids');
-		$appIds = array_unique($appIds);
+		$appIds = \array_unique($appIds);
 		$localPackagesArray = $input->getOption('local');
-		$localPackagesArray = array_unique($localPackagesArray);
+		$localPackagesArray = \array_unique($localPackagesArray);
 
-		if (!count($localPackagesArray) && !count($appIds)){
+		if (!\count($localPackagesArray) && !\count($appIds)) {
 			$output->writeln("No appId or path to a local package specified. Nothing to do.");
 			return $this->exitCode;
 		}
 
-		if (count($localPackagesArray)){
-			foreach ($localPackagesArray as $localPackage){
+		if (\count($localPackagesArray)) {
+			foreach ($localPackagesArray as $localPackage) {
 				try {
 					$appInfo = $this->marketService->readAppPackage($localPackage);
 					$appId = $appInfo['id'];

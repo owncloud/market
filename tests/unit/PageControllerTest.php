@@ -7,7 +7,6 @@ use OCP\IRequest;
 use Test\TestCase;
 
 class PageControllerTest extends TestCase {
-
 	private $appName = 'market';
 	/** @var IRequest */
 	private $request;
@@ -22,7 +21,6 @@ class PageControllerTest extends TestCase {
 	}
 
 	public function testIndex() {
-
 		$response = $this->controller->index();
 
 		$policy = new \OCP\AppFramework\Http\ContentSecurityPolicy();
@@ -33,5 +31,4 @@ class PageControllerTest extends TestCase {
 
 		$this->assertEquals('index', $response->getTemplateName());
 	}
-
 }

@@ -45,7 +45,7 @@ class MarketServiceTest extends TestCase {
 	/**
 	 * @expectedException \OCP\App\AppManagerException
 	*/
-	public function testInstallWithInternetConnectionDisabled(){
+	public function testInstallWithInternetConnectionDisabled() {
 		$this->appManager->method('getAllApps')->willReturn([]);
 		$this->appManager->method('canInstall')->willReturn(true);
 		$this->httpService->method('getApps')->willThrowException(
@@ -57,7 +57,7 @@ class MarketServiceTest extends TestCase {
 	/**
 	 * @expectedException \OCP\App\AppManagerException
 	*/
-	public function testUpdateWithInternetConnectionDisabled(){
+	public function testUpdateWithInternetConnectionDisabled() {
 		$this->appManager->method('getAllApps')->willReturn([]);
 		$this->appManager->method('canInstall')->willReturn(true);
 		$this->marketService->updateApp('files');

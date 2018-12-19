@@ -19,7 +19,6 @@
  *
  */
 
-
 namespace OCA\Market\Tests\Unit\Command;
 
 use OCA\Market\Command\ListApps;
@@ -51,5 +50,4 @@ class ListAppsTest extends TestCase {
 		$output = $this->commandTester->getDisplay();
 		$this->assertContains("bar\nfoo", $output);
 	}
-
 }

@@ -19,9 +19,7 @@
  *
  */
 
-
 namespace OCA\Market;
-
 
 use OCA\Market\Notifier;
 use OCP\AppFramework\App;
@@ -33,7 +31,7 @@ class Application extends App {
 	/**
 	 * @param array $urlParams
 	 */
-	public function __construct(array $urlParams = array()) {
+	public function __construct(array $urlParams = []) {
 		parent::__construct('market', $urlParams);
 		// needed for translation
 		// t('Market')
@@ -66,13 +64,13 @@ class Application extends App {
 		);
 
 		$manager = \OC::$server->getNotificationManager();
-		$manager->registerNotifier(function() use ($manager) {
+		$manager->registerNotifier(function () use ($manager) {
 			return new Notifier(
 				$manager,
 				\OC::$server->getAppManager(),
 				\OC::$server->getL10NFactory()
 			);
-		}, function() {
+		}, function () {
 			$l = \OC::$server->getL10N('market');
 			return [
 				'id' => 'market',
