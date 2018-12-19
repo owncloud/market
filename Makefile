@@ -177,6 +177,21 @@ test-php-phpstan: ## Run phpstan
 test-php-phpstan: vendor-bin/phpstan/vendor
 	$(PHPSTAN) analyse --memory-limit=4G --configuration=./phpstan.neon --no-progress --level=5 appinfo lib
 
+.PHONY: test-acceptance-api
+test-acceptance-api: ## Run API acceptance tests
+test-acceptance-api:
+	../../tests/acceptance/run.sh --remote --type api
+
+.PHONY: test-acceptance-cli
+test-acceptance-cli: ## Run CLI acceptance tests
+test-acceptance-cli:
+	../../tests/acceptance/run.sh --remote --type cli
+
+.PHONY: test-acceptance-webui
+test-acceptance-webui: ## Run webUI acceptance tests
+test-acceptance-webui:
+	../../tests/acceptance/run.sh --remote --type webUI
+
 .PHONY: test-php-codecheck
 test-php-codecheck:
 	# $(occ) app:check-code $(app_name) -c private -c strong-comparison
