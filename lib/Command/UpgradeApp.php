@@ -153,7 +153,7 @@ class UpgradeApp extends Command {
 				if ($this->marketService->isAppInstalled($appId)) {
 					$updateVersions = $this->marketService->getAvailableUpdateVersions($appId);
 					$updateVersion = $this->marketService->chooseCandidate($updateVersions, $isMajorUpdateAllowed);
-					if ($updateVersion !== false) {
+					if ($updateVersion !== null) {
 						$output->writeln("$appId: Installing new version $updateVersion ...");
 						$this->marketService->updateApp($appId, $updateVersion);
 						$output->writeln("$appId: App updated.");
