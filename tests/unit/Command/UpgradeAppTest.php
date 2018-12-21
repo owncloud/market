@@ -82,6 +82,7 @@ class UpgradeAppTest extends TestCase {
 				'minor' => false
 			]
 		);
+		$this->marketService->expects($this->once())->method('chooseCandidate')->willReturn(false);
 		$this->marketService->expects($this->never())->method('installApp');
 		$this->marketService->expects($this->never())->method('updateApp');
 		$this->commandTester->execute([
@@ -213,6 +214,9 @@ class UpgradeAppTest extends TestCase {
 				'major' => '2.0.0',
 				'minor' => false
 			]
+		);
+		$this->marketService->expects($this->once())->method('chooseCandidate')->willReturn(
+			false
 		);
 		$this->marketService->expects($this->once())->method('isAppInstalled')->willReturn(true);
 		$this->marketService->method('getInstalledAppInfo')
