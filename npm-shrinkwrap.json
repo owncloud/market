@@ -8503,9 +8503,9 @@
       "integrity": "sha512-PCiRmc8ZT1DD5+BN8QUAmnkBefcCLfZVSuhc1u7iu5JoPrSHyyk/+4nehm7k2xVMi8+RFLk5WIHAN14UKF0txw=="
     },
     "vue-gettext": {
-      "version": "2.0.23",
-      "resolved": "https://registry.npmjs.org/vue-gettext/-/vue-gettext-2.0.23.tgz",
-      "integrity": "sha1-/nv5dL/Zfz4KD+Z/TJ9eifi9lCI="
+      "version": "2.1.1",
+      "resolved": "https://registry.npmjs.org/vue-gettext/-/vue-gettext-2.1.1.tgz",
+      "integrity": "sha512-vbKhl7VGlVtTElNIdvpC4GKTRH1CwZmzhELcP6jS/UaFcF+yZvS5bIIAiPCQzMEU5dpAI0hIgJAxAKOMIg7UXw=="
     },
     "vue-hot-reload-api": {
       "version": "2.1.1",
