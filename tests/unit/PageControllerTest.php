@@ -31,4 +31,16 @@ class PageControllerTest extends TestCase {
 
 		$this->assertEquals('index', $response->getTemplateName());
 	}
+
+	public function testIndexHash() {
+		$response = $this->controller->indexHash();
+
+		$policy = new \OCP\AppFramework\Http\ContentSecurityPolicy();
+		$policy->addAllowedImageDomain('https://storage.marketplace.owncloud.com');
+		$policy->addAllowedImageDomain('https://marketplace-storage.int.owncloud.com');
+		$policy->addAllowedImageDomain('http://minio:9000');
+		$this->assertEquals($policy, $response->getContentSecurityPolicy());
+
+		$this->assertEquals('index', $response->getTemplateName());
+	}
 }

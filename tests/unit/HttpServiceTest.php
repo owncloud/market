@@ -21,6 +21,7 @@
 
 namespace OCA\Market\Tests\Unit;
 
+use GuzzleHttp\Exception\TransferException;
 use OCA\Market\HttpService;
 use OCA\Market\VersionHelper;
 use OCP\App\AppManagerException;
@@ -96,17 +97,43 @@ class HttpServiceTest extends TestCase {
 			->with('marketplace.key', null)
 			->willReturn('');
 
-		$clientMock = $this->getClientResponseMock(\json_encode($expectedApps));
+		$clientMock = $this->getClientResponseMockForGet(\json_encode($expectedApps));
 		$this->httpClientService->method('newClient')->willReturn($clientMock);
 		$apps = $this->httpService->getApps();
 		$this->assertEquals($expectedApps, $apps);
 	}
 
-	private function getClientResponseMock($body) {
+	public function testExchangeLoginTokenForApiKey() {
+		$clientMock = $this->getClientResponseMockForPost(\json_encode(['apiKey' => 'someapikey']));
+		$this->httpClientService->method('newClient')->willReturn($clientMock);
+		$apiKey = $this->httpService->exchangeLoginTokenForApiKey('abc', 'defg');
+		$this->assertEquals($apiKey, 'someapikey');
+	}
+
+	/**
+	 * @expectedException \OCP\App\AppManagerException
+	 */
+	public function testExchangeLoginTokenError() {
+		$clientMock = $this->getClientResponseMockForPost(\json_encode(['apiKey' => 'someapikey']));
+		$clientMock->method('post')->willThrowException(new TransferException());
+		$this->httpClientService->method('newClient')->willReturn($clientMock);
+
+		$this->httpService->exchangeLoginTokenForApiKey('abc', 'defg');
+	}
+
+	private function getClientResponseMockForGet($body) {
 		$responseMock = $this->createMock(IResponse::class);
 		$responseMock->method('getBody')->willReturn($body);
 		$clientMock = $this->createMock(IClient::class);
 		$clientMock->method('get')->willReturn($responseMock);
+		return $clientMock;
+	}
+
+	private function getClientResponseMockForPost($body) {
+		$responseMock = $this->createMock(IResponse::class);
+		$responseMock->method('getBody')->willReturn($body);
+		$clientMock = $this->createMock(IClient::class);
+		$clientMock->method('post')->willReturn($responseMock);
 		return $clientMock;
 	}
 }

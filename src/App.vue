@@ -8,6 +8,7 @@
                     p {{ t("This is a clustered setup or the web server has no permissions to write to the apps folder.") }}
             aside.uk-width-auto
                 navigation
+                login
                 trial
             main.uk-width-expand
                 router-view
@@ -17,6 +18,7 @@
     import Mixins from './mixins.js'
     import Navigation from './components/Navigation.vue'
     import Trial from './components/Trial.vue'
+	import Login from './components/Login.vue'
 
     export default {
         mixins: [Mixins],
@@ -49,7 +51,8 @@
         methods: { },
         components: {
             Navigation,
-            Trial
+			Login,
+			Trial
         }
     }
 </script>

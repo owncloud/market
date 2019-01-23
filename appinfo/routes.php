@@ -23,6 +23,7 @@ return [
 	'routes' => [
 		// ui controller
 		['name' => 'page#index', 'url' => '/', 'verb' => 'GET'],
+		['name' => 'page#indexHash', 'url' => '#/', 'verb' => 'GET'],
 		// market controller
 		['name' => 'market#categories', 'url' => '/categories', 'verb' => 'GET'],
 		['name' => 'market#bundles', 'url' => '/bundles', 'verb' => 'GET'],
@@ -36,7 +37,8 @@ return [
 		['name' => 'market#getConfig', 'url' => '/config', 'verb' => 'GET'],
 		['name' => 'market#requestDemoLicenseKeyFromMarket', 'url' => '/request-license-key-from-market', 'verb' => 'GET'],
 		['name' => 'market#invalidateCache', 'url' => '/cache/invalidate', 'verb' => 'POST'],
-		// local apps
+		['name' => 'market#receiveMarketplaceLoginToken', 'url' => '/check-marketplace-login-token', 'verb' => 'POST'],
+		['name' => 'market#startMarketplaceLogin', 'url' => '/generate-login-challenge', 'verb' => 'POST'],
 		['name' => 'localApps#index', 'url' => '/installed-apps/{state}', 'verb' => 'GET', 'defaults' => ['state' => 'enabled']],
 	],
 	'resources' => []
