@@ -361,7 +361,7 @@ const actions = {
             });
     },
 
-    FETCH_APIKEY (context) {
+    FETCH_APIKEY (context, callback) {
         context.commit("APIKEY", {"loading": true });
         Axios.get(OC.generateUrl("/apps/market/apikey"))
             .then((response) => {
@@ -370,10 +370,16 @@ const actions = {
                     "changeable" : response.data.changeable,
                     "loading"    : false,
                     "processing" : false
-                });
+				});
+				
+				if (typeof callback === 'function')
+					callback(response.data);
             })
             .catch((error) => {
-                context.commit("APIKEY", {"loading": false });
+				context.commit("APIKEY", {"loading": false });
+				
+				if (typeof callback === 'function')
+					callback(error);
             });
     },
 

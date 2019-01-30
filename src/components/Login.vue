@@ -1,11 +1,10 @@
 <template lang="pug">
 	div
-		button.uk-button.uk-button-primary.uk-margin-small-top.uk-width-1-1(v-if="!isLoggedIn", @click="startMarketplaceLogin") {{ t('Login') }}
-
+		button.uk-button.uk-button-primary.uk-margin-small-top.uk-width-1-1(:disabled="apiKeyIsValid", @click="startMarketplaceLogin")
+			span(v-if="!apiKeyIsValid") {{ t('Login') }}
+			span(v-else) {{ t('Loggen in') }}
 </template>
-
 <script>
-
 	import Mixins from '../mixins';
 	import Axios from 'axios';
 	import _ from 'underscore';
@@ -22,6 +21,10 @@
 
 		},
 		mounted() {
+			this.$store.dispatch('FETCH_APIKEY', (response) => {
+				this.$store.dispatch('WRITE_APIKEY', response.apiKey);
+			});
+			
 			if (!this.$route.query.hasOwnProperty('token')) {
 				return
 			}
@@ -51,6 +54,10 @@
 		computed : {
 			config() {
 				return this.$store.getters.config
+			},
+
+			apiKeyIsValid () {
+				return this.$store.state.apikey.valid;
 			},
 
 			apiKeyExists () {

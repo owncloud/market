@@ -351,7 +351,7 @@ class MarketController extends Controller {
 		$appStoreUrl = $this->config->getSystemValue('appstoreurl', 'https://marketplace.owncloud.com');
 
 		return new DataResponse([
-			'loginUrl' => "$appStoreUrl/api-login?callbackUrl=$callbackUrl&codeChallenge=$codeChallenge"
+			'loginUrl' => "$appStoreUrl/login?callbackUrl=$callbackUrl&codeChallenge=$codeChallenge"
 		]);
 	}
 

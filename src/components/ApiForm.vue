@@ -43,7 +43,6 @@
 				UIkit.modal('#view-api-key').toggle();
 			},
 			setKey () {
-				console.log("setKey");
 				this.$store.dispatch('WRITE_APIKEY', this.newKey);
 			}
 		},
