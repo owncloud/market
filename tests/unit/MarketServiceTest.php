@@ -10,6 +10,7 @@ use OCP\IConfig;
 use OCP\IL10N;
 use OCP\App\IAppManager;
 use OCA\Market\MarketService;
+use OCP\Security\ISecureRandom;
 use Test\TestCase;
 
 class MarketServiceTest extends TestCase {
@@ -30,6 +31,7 @@ class MarketServiceTest extends TestCase {
 		$this->versionHelper = $this->createMock(VersionHelper::class);
 		$this->appManager = $this->createMock(IAppManager::class);
 		$this->config = $this->createMock(IConfig::class);
+		$rng = $this->createMock(ISecureRandom::class);
 		/** @var IL10N | \PHPUnit_Framework_MockObject_MockObject $l10nMock */
 		$l10nMock = $this->createMock(IL10N::class);
 		$l10nMock->method('t')->willReturnArgument(0);
@@ -38,7 +40,8 @@ class MarketServiceTest extends TestCase {
 			$this->versionHelper,
 			$this->appManager,
 			$this->config,
-			$l10nMock
+			$l10nMock,
+			$rng
 		);
 	}
 
@@ -253,5 +256,19 @@ class MarketServiceTest extends TestCase {
 		$updatesAvailable = $this->marketService->getAvailableUpdateVersions($appId);
 		$this->assertEquals('1.1.1', $updatesAvailable['minor']);
 		$this->assertEquals('3.2.3', $updatesAvailable['major']);
+	}
+
+	public function testStartMarketplaceLoginWillReturnsPkceChallenge() {
+		//PKCE challenge is always 88 chars long and ends wit ah equals sign (base64)
+		$res = $this->marketService->startMarketplaceLogin();
+		$this->assertTrue(\strlen($res) === 88);
+		$this->assertTrue($res[87] === '=');
+	}
+
+	public function testLoginViaMarketplace() {
+		$this->httpService->method('exchangeLoginTokenForApiKey')->willReturn('abc');
+		$apiKey = $this->marketService->loginViaMarketplace('someToken');
+
+		$this->assertEquals('abc', $apiKey);
 	}
 }

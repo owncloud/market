@@ -1,8 +1,9 @@
 <?php
 /**
  * @author Thomas Müller <thomas.mueller@tmit.eu>
+ * @author Ilja Neumann <ineumann@owncloud.com>
  *
- * @copyright Copyright (c) 2016, ownCloud GmbH
+ * @copyright Copyright (c) 2019, ownCloud GmbH
  * @license AGPL-3.0
  *
  * This code is free software: you can redistribute it and/or modify
@@ -33,6 +34,7 @@ use OCP\App\AppAlreadyInstalledException;
 use OCP\App\AppNotFoundException;
 use OCP\App\AppNotInstalledException;
 use OCP\App\AppUpdateNotFoundException;
+use OCP\Security\ISecureRandom;
 
 class MarketService {
 	/** @var HttpService */
@@ -51,6 +53,8 @@ class MarketService {
 	private $categories;
 	/** @var array */
 	private $bundles;
+	/** @var ISecureRandom  */
+	private $rng;
 
 	/**
 	 * Service constructor.
@@ -66,13 +70,15 @@ class MarketService {
 		VersionHelper $versionHelper,
 		IAppManager $appManager,
 		IConfig $config,
-		IL10N $l10n
+		IL10N $l10n,
+		ISecureRandom $rng
 	) {
 		$this->httpService = $httpService;
 		$this->versionHelper = $versionHelper;
 		$this->appManager = $appManager;
 		$this->config = $config;
 		$this->l10n = $l10n;
+		$this->rng = $rng;
 	}
 
 	/**
@@ -416,6 +422,32 @@ class MarketService {
 		return $this->httpService->getApiKey();
 	}
 
+	public function startMarketplaceLogin() {
+		$codeVerify = $this->rng->generate(
+			64,
+			ISecureRandom::CHAR_DIGITS .
+			ISecureRandom::CHAR_LOWER .
+			ISecureRandom::CHAR_UPPER
+		);
+
+		$codeChallenge = \base64_encode(\hash('sha256', $codeVerify));
+		$this->config->setAppValue('market', 'code_verify', $codeVerify);
+		$this->config->setAppValue('market', 'code_challenge', $codeChallenge);
+
+		return $codeChallenge;
+	}
+
+	public function loginViaMarketplace($loginToken) {
+		$codeVerify = $this->config->getAppValue('market', 'code_verify');
+		$apiKey = $this->httpService->exchangeLoginTokenForApiKey($loginToken, $codeVerify);
+
+		$this->setApiKey($apiKey);
+		$this->config->deleteAppValue('market', 'code_verify');
+		$this->config->deleteAppValue('market', 'code_challenge');
+
+		return $apiKey;
+	}
+
 	/**
 	 * Set api key
 	 *
@@ -425,6 +457,7 @@ class MarketService {
 	 */
 	public function setApiKey($apiKey) {
 		if ($this->isApiKeyChangeableByUser()) {
+			$this->config->deleteAppValue('market', 'key');
 			$this->config->setAppValue('market', 'key', $apiKey);
 			$this->httpService->invalidateCache();
 			return true;

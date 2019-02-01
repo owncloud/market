@@ -29,6 +29,17 @@ class PageController extends Controller {
 
 	/**
 	 * @NoCSRFRequired
+	 *
+	 * Required for marketplace login to generate a callbackurl with
+	 * hash sign, or else login token will be attached before it resulting
+	 * in a broken url.
+	 */
+	public function indexHash() {
+		return $this->index();
+	}
+
+	/**
+	 * @NoCSRFRequired
 	 */
 	public function index() {
 		$templateResponse = new TemplateResponse($this->appName, 'index', []);
