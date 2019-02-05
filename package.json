@@ -55,7 +55,7 @@
     "vue-template-compiler": "2.5.21",
     "vuex": "2.4.1",
     "webpack": "2.7.0",
-    "snyk": "^1.89.0"
+    "snyk": "^1.124.1"
   },
   "engines": {
     "node": ">=6.9 <=8"
