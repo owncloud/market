@@ -2,7 +2,7 @@
 	div
 		button.uk-button.uk-button-primary.uk-margin-small-top.uk-width-1-1(:disabled="apiKeyIsValid", @click="startMarketplaceLogin")
 			span(v-if="!apiKeyIsValid") {{ t('Login') }}
-			span(v-else) {{ t('Loggen in') }}
+			span(v-else) {{ t('Logged in') }}
 </template>
 <script>
 	import Mixins from '../mixins';
