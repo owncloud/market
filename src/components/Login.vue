@@ -57,7 +57,7 @@
 			},
 
 			apiKeyIsValid () {
-				return this.$store.state.apikey.valid;
+				return this.$store.state.apikey.valid && this.$store.state.apikey.key !== null;
 			},
 
 			apiKeyExists () {
