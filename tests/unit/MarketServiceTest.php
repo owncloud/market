@@ -258,6 +258,20 @@ class MarketServiceTest extends TestCase {
 		$this->assertEquals('3.2.3', $updatesAvailable['major']);
 	}
 
+	/**
+	 * @expectedException \OCP\App\AppManagerException
+	 * @expectedExceptionMessage Market app can not uninstall itself.
+	 */
+	public function testMarketAppCanNotBeUninstalled() {
+		$this->appManager->method('canInstall')
+			->willReturn(true);
+
+		$this->appManager->method('isShipped')
+			->willReturn(false);
+
+		$this->marketService->uninstallApp('market');
+	}
+
 	public function testStartMarketplaceLoginWillReturnsPkceChallenge() {
 		//PKCE challenge is always 88 chars long and ends wit ah equals sign (base64)
 		$res = $this->marketService->startMarketplaceLogin();

@@ -187,6 +187,11 @@ class MarketService {
 		if ($this->appManager->isShipped($appId)) {
 			throw new AppManagerException($this->l10n->t('Shipped apps cannot be uninstalled'));
 		}
+
+		if ($appId === 'market') {
+			throw new AppManagerException($this->l10n->t('Market app can not uninstall itself.'));
+		}
+
 		if (!\OC_App::removeApp($appId)) {
 			throw new AppManagerException($this->l10n->t('App (%s) could not be uninstalled. Please check the server logs.', $appId));
 		}

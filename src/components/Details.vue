@@ -77,7 +77,7 @@
 							| {{ t('install') }}
 
 					// Uninstall
-					div(v-else)
+					div(v-else-if="application.id !== 'market'")
 						button.uk-button.uk-button-default.uk-align-right.uk-margin-remove-bottom.uk-margin-small-left(:disabled="processing", @click="uninstall")
 							| {{ t('uninstall') }}
 
