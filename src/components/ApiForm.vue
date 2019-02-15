@@ -1,5 +1,5 @@
 <template lang="pug">
-	li
+	li(v-if="changeable")
 		a(href="#", @click.prevent="openModalEditKey") {{ key ? t('Edit API Key') : t('Add API Key') }}
 
 		#edit-api-key(uk-modal='center: true')
