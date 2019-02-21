@@ -57,10 +57,7 @@ class LocalAppsController extends Controller {
 			$app['missingDependencies'] = $missing;
 			$app['installed'] = true;
 			$app['updateInfo'] = [];
-//			if ($app['installed']) {
-//				$app['installInfo'] = $this->marketService->getInstalledAppInfo($app['id']);
-//				$app['updateInfo'] = $this->marketService->getAvailableUpdateVersion($app['id']);
-//			}
+
 			return $app;
 		}, $apps));
 	}
