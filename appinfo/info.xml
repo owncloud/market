@@ -9,7 +9,7 @@ Please note: Since ownCloud X (10.0) every instance gets shipped with this app i
 To use this application click on "Files" in the top left corner and click on "Market" (cart icon) (Administrator privileges required) </description>
 	<licence>AGPL</licence>
 	<author>Thomas Müller, Felix Heidecke, Thomas Börger, Philipp Schaffrath, Viktar Dubiniuk</author>
-	<version>0.3.0</version>
+	<version>0.4.0</version>
 	<default_enable/>
 	<category>tools</category>
 	<screenshot>https://raw.githubusercontent.com/owncloud/screenshots/master/market/ownCloud-market-app.jpg</screenshot>
