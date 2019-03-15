@@ -6,6 +6,30 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.4.0] - 2019-03-14
+
+### Added
+
+- Login directly from market-app to auto-install api-key - [#443](https://github.com/owncloud/market/issues/443)
+
+### Changed
+
+- Bump npm-watch from 0.1.9 to 0.5.0 - [#429](https://github.com/owncloud/market/issues/429)
+- Bump vue-router from 2.7.0 to 3.0.2 - [#431](https://github.com/owncloud/market/issues/431)
+- Bump vue-gettext from 2.0.23 to 2.1.2 - [#440](https://github.com/owncloud/market/issues/440)
+- Bump vue and vue-template-compiler - [#428](https://github.com/owncloud/market/issues/428)
+- Bump uikit from 3.0.0-beta.34 to 3.0.0-rc.26 - [#441](https://github.com/owncloud/market/issues/441)
+- Bump uglify-js from 3.1.3 to 3.4.9 - [#394](https://github.com/owncloud/market/issues/394)
+- Library updates to resolve vulnerabilities - [#377](https://github.com/owncloud/market/issues/377) [#445](https://github.com/owncloud/market/issues/445)
+
+### Fixed
+
+- Hide api key in xhr-responses if key is configured in config.php - [#454](https://github.com/owncloud/market/issues/454)
+- Hide 'Edit/Add API Key' button if not changeable - [#185](https://github.com/owncloud/market/issues/185)
+- Fix "Logged In" is shown despite being logged out - [#450](https://github.com/owncloud/market/issues/450)
+- Fix typo "Logged In" - [#448](https://github.com/owncloud/market/issues/448)
+- Prevent uninstalling market app from within market app - [#145](https://github.com/owncloud/market/issues/145)
+
 ## [0.3.0] - 2018-12-20
 
 ### Changed
@@ -90,7 +114,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Skip migrations when reinstalling missing code - [#76](https://github.com/owncloud/market/issues/76)
 - Reset overwritten core css styles - [#73](https://github.com/owncloud/market/issues/73)
 
-[Unreleased]: https://github.com/owncloud/market/compare/v0.3.0...master
+[Unreleased]: https://github.com/owncloud/market/compare/v0.4.0...master
+[0.4.0]: https://github.com/owncloud/market/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/owncloud/market/compare/v0.2.5...v0.3.0
 [0.2.5]: https://github.com/owncloud/market/compare/v0.2.4...v0.2.5
 [0.2.4]: https://github.com/owncloud/market/compare/v0.2.3...v0.2.4

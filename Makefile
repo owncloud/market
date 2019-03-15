@@ -40,7 +40,7 @@ PHP_CS_FIXER=php -d zend.enable_gc=0 vendor-bin/owncloud-codestyle/vendor/bin/ph
 PHAN=php -d zend.enable_gc=0 vendor-bin/phan/vendor/bin/phan
 PHPSTAN=php -d zend.enable_gc=0 vendor-bin/phpstan/vendor/bin/phpstan
 
-market_doc_files=LICENSE README.md
+market_doc_files=LICENSE README.md CHANGELOG.md
 market_src_dirs=appinfo img js lib templates vendor
 market_all_src=$(market_src_dirs) $(market_doc_files)
 build_dir=build
@@ -119,7 +119,7 @@ ifdef CAN_SIGN
 else
 	@echo $(sign_skip_msg)
 endif
-	tar -czf $(appstore_package_name).tar.gz -C $(appstore_package_name)/../ $(app_name)
+	tar --format=gnu -czf $(appstore_package_name).tar.gz -C $(appstore_package_name)/../ $(app_name)
 
 .PHONY: clean-dist
 clean-dist:
