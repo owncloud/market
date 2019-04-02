@@ -69,7 +69,7 @@ class HttpServiceTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider testCheckInternetConnectionDataProvider
+	 * @dataProvider checkInternetConnectionDataProvider
 	 */
 	public function testCheckInternetConnection($connectionStatus, $expectedExceptionClass) {
 		$this->config->method('getSystemValue')
@@ -78,10 +78,10 @@ class HttpServiceTest extends TestCase {
 		if ($expectedExceptionClass !== '') {
 			$this->expectException($expectedExceptionClass);
 		}
-		$this->httpService->checkInternetConnection();
+		$this->assertNull($this->httpService->checkInternetConnection());
 	}
 
-	public function testCheckInternetConnectionDataProvider() {
+	public function checkInternetConnectionDataProvider() {
 		return [
 			[true, ''],
 			[false, AppManagerException::class]
