@@ -39,15 +39,15 @@ use Test\TestCase;
  * @package OCA\Market\Tests\Unit
  */
 class HttpServiceTest extends TestCase {
-	/** @var IClientService | \PHPUnit_Framework_MockObject_MockObject */
+	/** @var IClientService | \PHPUnit\Framework\MockObject\MockObject */
 	private $httpClientService;
-	/** @var VersionHelper | \PHPUnit_Framework_MockObject_MockObject */
+	/** @var VersionHelper | \PHPUnit\Framework\MockObject\MockObject */
 	private $versionHelper;
-	/** @var ICacheFactory | \PHPUnit_Framework_MockObject_MockObject */
+	/** @var ICacheFactory | \PHPUnit\Framework\MockObject\MockObject */
 	private $cacheFactory;
-	/** @var IConfig | \PHPUnit_Framework_MockObject_MockObject */
+	/** @var IConfig | \PHPUnit\Framework\MockObject\MockObject */
 	private $config;
-	/** @var IL10N | \PHPUnit_Framework_MockObject_MockObject */
+	/** @var IL10N | \PHPUnit\Framework\MockObject\MockObject */
 	private $l10n;
 	/** @var HttpService */
 	private $httpService;

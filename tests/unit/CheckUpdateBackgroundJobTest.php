@@ -16,17 +16,17 @@ use Test\TestCase;
 
 class CheckUpdateBackgroundJobTest extends TestCase {
 
-	/** @var IConfig|\PHPUnit_Framework_MockObject_MockObject */
+	/** @var IConfig|\PHPUnit\Framework\MockObject\MockObject */
 	protected $config;
-	/** @var ITimeFactory|\PHPUnit_Framework_MockObject_MockObject */
+	/** @var ITimeFactory|\PHPUnit\Framework\MockObject\MockObject */
 	protected $timeFactory;
-	/** @var IManager|\PHPUnit_Framework_MockObject_MockObject */
+	/** @var IManager|\PHPUnit\Framework\MockObject\MockObject */
 	protected $notificationManager;
-	/** @var IGroupManager|\PHPUnit_Framework_MockObject_MockObject */
+	/** @var IGroupManager|\PHPUnit\Framework\MockObject\MockObject */
 	protected $groupManager;
-	/** @var MarketService |\PHPUnit_Framework_MockObject_MockObject */
+	/** @var MarketService |\PHPUnit\Framework\MockObject\MockObject */
 	private $marketService;
-	/** @var IURLGenerator|\PHPUnit_Framework_MockObject_MockObject */
+	/** @var IURLGenerator|\PHPUnit\Framework\MockObject\MockObject */
 	protected $urlGenerator;
 
 	public function setUp() {
@@ -42,7 +42,7 @@ class CheckUpdateBackgroundJobTest extends TestCase {
 
 	/**
 	 * @param array $methods
-	 * @return CheckUpdateBackgroundJob|\PHPUnit_Framework_MockObject_MockObject
+	 * @return CheckUpdateBackgroundJob|\PHPUnit\Framework\MockObject\MockObject
 	 */
 	protected function getJob(array $methods = []) {
 		if (empty($methods)) {
@@ -306,7 +306,7 @@ class CheckUpdateBackgroundJobTest extends TestCase {
 
 	/**
 	 * @param string[] $userIds
-	 * @return IUser[]|\PHPUnit_Framework_MockObject_MockObject[]
+	 * @return IUser[]|\PHPUnit\Framework\MockObject\MockObject[]
 	 */
 	protected function getUsers(array $userIds) {
 		$users = [];
@@ -322,7 +322,7 @@ class CheckUpdateBackgroundJobTest extends TestCase {
 
 	/**
 	 * @param string $gid
-	 * @return \OCP\IGroup|\PHPUnit_Framework_MockObject_MockObject
+	 * @return \OCP\IGroup|\PHPUnit\Framework\MockObject\MockObject
 	 */
 	protected function getGroup($gid) {
 		$group = $this->createMock(IGroup::class);

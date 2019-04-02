@@ -35,7 +35,7 @@ class MarketControllerTest extends TestCase {
 	private $controller;
 	/** @var IRequest */
 	private $request;
-	/** @var MarketService|\PHPUnit_Framework_MockObject_MockObject */
+	/** @var MarketService|\PHPUnit\Framework\MockObject\MockObject */
 	private $marketService;
 
 	public function setUp() {
