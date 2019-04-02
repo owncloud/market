@@ -30,7 +30,7 @@ class UnInstallAppTest extends TestCase {
 
 	/** @var CommandTester */
 	private $commandTester;
-	/** @var MarketService | \PHPUnit_Framework_MockObject_MockObject */
+	/** @var MarketService | \PHPUnit\Framework\MockObject\MockObject */
 	private $marketService;
 
 	public function setUp() {

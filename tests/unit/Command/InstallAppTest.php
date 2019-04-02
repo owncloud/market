@@ -31,9 +31,9 @@ class InstallAppTest extends TestCase {
 
 	/** @var CommandTester */
 	private $commandTester;
-	/** @var MarketService | \PHPUnit_Framework_MockObject_MockObject */
+	/** @var MarketService | \PHPUnit\Framework\MockObject\MockObject */
 	private $marketService;
-	/** @var VersionHelper | \PHPUnit_Framework_MockObject_MockObject */
+	/** @var VersionHelper | \PHPUnit\Framework\MockObject\MockObject */
 	private $versionHelper;
 
 	public function setUp() {

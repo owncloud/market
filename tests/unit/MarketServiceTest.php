@@ -17,13 +17,13 @@ class MarketServiceTest extends TestCase {
 
 	/** @var MarketService */
 	private $marketService;
-	/** @var HttpService | \PHPUnit_Framework_MockObject_MockObject $cacheFactoryMock */
+	/** @var HttpService | \PHPUnit\Framework\MockObject\MockObject $cacheFactoryMock */
 	private $httpService;
-	/** @var VersionHelper | \PHPUnit_Framework_MockObject_MockObject $cacheFactoryMock */
+	/** @var VersionHelper | \PHPUnit\Framework\MockObject\MockObject $cacheFactoryMock */
 	private $versionHelper;
-	/** @var IAppManager | \PHPUnit_Framework_MockObject_MockObject */
+	/** @var IAppManager | \PHPUnit\Framework\MockObject\MockObject */
 	private $appManager;
-	/** @var IConfig | \PHPUnit_Framework_MockObject_MockObject $configMock */
+	/** @var IConfig | \PHPUnit\Framework\MockObject\MockObject $configMock */
 	private $config;
 
 	public function setUp() {
@@ -32,7 +32,7 @@ class MarketServiceTest extends TestCase {
 		$this->appManager = $this->createMock(IAppManager::class);
 		$this->config = $this->createMock(IConfig::class);
 		$rng = $this->createMock(ISecureRandom::class);
-		/** @var IL10N | \PHPUnit_Framework_MockObject_MockObject $l10nMock */
+		/** @var IL10N | \PHPUnit\Framework\MockObject\MockObject $l10nMock */
 		$l10nMock = $this->createMock(IL10N::class);
 		$l10nMock->method('t')->willReturnArgument(0);
 		$this->marketService = new MarketService(
