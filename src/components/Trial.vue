@@ -12,8 +12,10 @@
 						p.intro Take your ownCloud to the next level and start your 30 day ownCloud Enterprise Trial today!
 
 						.uk-alert-danger(uk-alert, v-if="!apiKeyExists")
-							p An Marketplace API key is required!&nbsp;
-								a(href="#", @click.prevent="openModalEditKey") Set API key here
+							p A Marketplace API key is required! Please copy it from&nbsp;
+								a(href="https://marketplace.owncloud.com/account/general") your profile page on the Marketplace
+								| . Then&nbsp;
+								a(href="#", @click.prevent="openModalEditKey") enter the API key here
 								| &nbsp;and try again.
 
 						.uk-margin.uk-grid-small.uk-child-width-auto(uk-grid)
