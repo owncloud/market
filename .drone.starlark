@@ -1130,6 +1130,7 @@ def installCore(version, db, useBundledApp):
 		'settings': {
 			'version': version,
 			'core_path': '/var/www/owncloud/server',
+			'db_timeout': 120,
 			'db_type': dbType,
 			'db_name': database,
 			'db_host': host,
