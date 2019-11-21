@@ -124,7 +124,6 @@ steps:
     db_host: sqlite
     db_name: owncloud
     db_password: owncloud
-    db_timeout: 120
     db_type: sqlite
     db_username: owncloud
     exclude: apps/market
@@ -191,7 +190,6 @@ steps:
     db_host: mariadb
     db_name: owncloud
     db_password: owncloud
-    db_timeout: 120
     db_type: mysql
     db_username: owncloud
     exclude: apps/market
@@ -268,7 +266,6 @@ steps:
     db_host: mysql
     db_name: owncloud
     db_password: owncloud
-    db_timeout: 120
     db_type: mysql
     db_username: owncloud
     exclude: apps/market
@@ -345,7 +342,6 @@ steps:
     db_host: mysql
     db_name: owncloud
     db_password: owncloud
-    db_timeout: 120
     db_type: mysql
     db_username: owncloud
     exclude: apps/market
@@ -422,7 +418,6 @@ steps:
     db_host: postgres
     db_name: owncloud
     db_password: owncloud
-    db_timeout: 120
     db_type: pgsql
     db_username: owncloud
     exclude: apps/market
@@ -498,7 +493,6 @@ steps:
     db_host: oracle
     db_name: XE
     db_password: oracle
-    db_timeout: 120
     db_type: oci
     db_username: system
     exclude: apps/market
@@ -575,7 +569,6 @@ steps:
     db_host: mysql
     db_name: owncloud
     db_password: owncloud
-    db_timeout: 120
     db_type: mysql
     db_username: owncloud
     exclude: apps/market
@@ -643,7 +636,6 @@ steps:
     db_host: mysql
     db_name: owncloud
     db_password: owncloud
-    db_timeout: 120
     db_type: mysql
     db_username: owncloud
     exclude: apps/market
@@ -711,7 +703,6 @@ steps:
     db_host: mysql
     db_name: owncloud
     db_password: owncloud
-    db_timeout: 120
     db_type: mysql
     db_username: owncloud
     exclude: apps/market
