@@ -36,7 +36,7 @@ class UpgradeAppTest extends TestCase {
 	/** @var VersionHelper | \PHPUnit\Framework\MockObject\MockObject */
 	private $versionHelper;
 
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		$this->marketService = $this->createMock(MarketService::class);

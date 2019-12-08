@@ -17,7 +17,7 @@ class NotifierTest extends TestCase {
 
 	protected $l10nFactory;
 
-	protected function setUp() {
+	protected function setUp(): void {
 		parent::setUp();
 		$l10n = $this->getMockBuilder(IL10N::class)
 			->disableOriginalConstructor()

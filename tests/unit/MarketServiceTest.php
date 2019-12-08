@@ -26,7 +26,7 @@ class MarketServiceTest extends TestCase {
 	/** @var IConfig | \PHPUnit\Framework\MockObject\MockObject $configMock */
 	private $config;
 
-	public function setUp() {
+	public function setUp(): void {
 		$this->httpService = $this->createMock(HttpService::class);
 		$this->versionHelper = $this->createMock(VersionHelper::class);
 		$this->appManager = $this->createMock(IAppManager::class);

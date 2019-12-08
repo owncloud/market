@@ -38,7 +38,7 @@ class MarketControllerTest extends TestCase {
 	/** @var MarketService|\PHPUnit\Framework\MockObject\MockObject */
 	private $marketService;
 
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 		$this->request = $this->createMock(IRequest::class);
 		$this->marketService = $this->createMock(MarketService::class);
