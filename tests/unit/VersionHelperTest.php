@@ -28,7 +28,7 @@ class VersionHelperTest extends TestCase {
 	/** @var VersionHelper | \PHPUnit\Framework\MockObject\MockObject */
 	private $versionHelper;
 
-	protected function setUp() {
+	protected function setUp(): void {
 		$this->versionHelper = new VersionHelper();
 	}
 	/**

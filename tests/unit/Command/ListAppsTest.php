@@ -33,7 +33,7 @@ class ListAppsTest extends TestCase {
 	/** @var MarketService | \PHPUnit\Framework\MockObject\MockObject */
 	private $marketService;
 
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		$this->marketService = $this->createMock(MarketService::class);

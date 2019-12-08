@@ -52,7 +52,7 @@ class HttpServiceTest extends TestCase {
 	/** @var HttpService */
 	private $httpService;
 
-	protected function setUp() {
+	protected function setUp(): void {
 		parent::setUp();
 		$this->httpClientService = $this->createMock(IClientService::class);
 		$this->versionHelper =  $this->createMock(VersionHelper::class);
