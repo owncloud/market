@@ -45,9 +45,10 @@ class NotifierTest extends TestCase {
 	}
 
 	/**
-	 * @expectedException \InvalidArgumentException
 	 */
 	public function testUnexistingAppsDoNotCreateNotifications() {
+		$this->expectException(\InvalidArgumentException::class);
+
 		$appName = 'whatsapp';
 		$notifier = new Notifier($this->notificationManager, $this->appManager, $this->l10nFactory);
 		$notification = new Notification();
@@ -58,9 +59,10 @@ class NotifierTest extends TestCase {
 	}
 
 	/**
-	 * @expectedException \InvalidArgumentException
 	 */
 	public function testUninstalledAppsDoNotCreateNotifications() {
+		$this->expectException(\InvalidArgumentException::class);
+
 		$appName = 'whatsapp';
 		$notifier = $this->getMockBuilder(Notifier::class)
 			->setConstructorArgs([$this->notificationManager, $this->appManager, $this->l10nFactory])

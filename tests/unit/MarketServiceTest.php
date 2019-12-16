@@ -46,9 +46,10 @@ class MarketServiceTest extends TestCase {
 	}
 
 	/**
-	 * @expectedException \OCP\App\AppManagerException
 	*/
 	public function testInstallWithInternetConnectionDisabled() {
+		$this->expectException(\OCP\App\AppManagerException::class);
+
 		$this->appManager->method('getAllApps')->willReturn([]);
 		$this->appManager->method('canInstall')->willReturn(true);
 		$this->httpService->method('getApps')->willThrowException(
@@ -58,9 +59,10 @@ class MarketServiceTest extends TestCase {
 	}
 	
 	/**
-	 * @expectedException \OCP\App\AppManagerException
 	*/
 	public function testUpdateWithInternetConnectionDisabled() {
+		$this->expectException(\OCP\App\AppManagerException::class);
+
 		$this->appManager->method('getAllApps')->willReturn([]);
 		$this->appManager->method('canInstall')->willReturn(true);
 		$this->marketService->updateApp('files');
@@ -68,20 +70,22 @@ class MarketServiceTest extends TestCase {
 
 	/**
 	 * @dataProvider providesMarketMethods
-	 * @expectedException \Exception
-	 * @expectedExceptionMessage Installing apps is not supported because the app folder is not writable.
 	 */
 	public function testInstallNotPossible($method) {
+		$this->expectException(\Exception::class);
+		$this->expectExceptionMessage('Installing apps is not supported because the app folder is not writable.');
+
 		$this->appManager->method('getAllApps')->willReturn([]);
 		$this->appManager->method('canInstall')->willReturn(false);
 		$this->marketService->$method('test');
 	}
 
 	/**
-	 * @expectedException \Exception
-	 * @expectedExceptionMessage Please enter a license-key in to config.php
 	 */
 	public function testInstallAppChecksLicenseOnLatestRelease() {
+		$this->expectException(\Exception::class);
+		$this->expectExceptionMessage('Please enter a license-key in to config.php');
+
 		$this->appManager->method('getAllApps')->willReturn([]);
 		$this->appManager->method('canInstall')->willReturn(true);
 		$this->httpService->method('getApps')->willReturn(
@@ -259,10 +263,11 @@ class MarketServiceTest extends TestCase {
 	}
 
 	/**
-	 * @expectedException \OCP\App\AppManagerException
-	 * @expectedExceptionMessage Market app can not uninstall itself.
 	 */
 	public function testMarketAppCanNotBeUninstalled() {
+		$this->expectException(\OCP\App\AppManagerException::class);
+		$this->expectExceptionMessage('Market app can not uninstall itself.');
+
 		$this->appManager->method('canInstall')
 			->willReturn(true);
 

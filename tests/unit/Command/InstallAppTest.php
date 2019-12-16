@@ -46,10 +46,11 @@ class InstallAppTest extends TestCase {
 	}
 
 	/**
-	 * @expectedException \Exception
-	 * @expectedExceptionMessage Installing apps is not supported because the app folder is not writable.
 	 */
 	public function testInstallNotSupported() {
+		$this->expectException(\Exception::class);
+		$this->expectExceptionMessage('Installing apps is not supported because the app folder is not writable.');
+
 		$this->marketService->expects($this->once())->method('canInstall')->willReturn(false);
 		$this->commandTester->execute([]);
 	}

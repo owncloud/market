@@ -111,9 +111,10 @@ class HttpServiceTest extends TestCase {
 	}
 
 	/**
-	 * @expectedException \OCP\App\AppManagerException
 	 */
 	public function testExchangeLoginTokenError() {
+		$this->expectException(\OCP\App\AppManagerException::class);
+
 		$clientMock = $this->getClientResponseMockForPost(\json_encode(['apiKey' => 'someapikey']));
 		$clientMock->method('post')->willThrowException(new TransferException());
 		$this->httpClientService->method('newClient')->willReturn($clientMock);
