@@ -32,7 +32,7 @@
     "babel-polyfill": "6.26.0",
     "babel-preset-env": "^1.7.0",
     "css-loader": "1.0.0",
-    "easygettext": "^2.6.4",
+    "easygettext": "^2.8.0",
     "expose-loader": "0.7.5",
     "jquery": "3.4.1",
     "less": "2.7.2",
@@ -55,7 +55,7 @@
     "vue-style-loader": "1.0.0",
     "vue-template-compiler": "2.5.21",
     "vuex": "2.4.1",
-    "webpack": "2.7.0"
+    "webpack": "4.29.0"
   },
   "engines": {
     "node": ">=6.9 <=8"
