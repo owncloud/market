@@ -71,8 +71,8 @@ class VersionHelper {
 	 * Parameters will be normalized and then passed into version_compare
 	 * in the same order they are specified in the method header
 	 *
-	 * @param string $first
-	 * @param string $second
+	 * @param string|null $first
+	 * @param string|null $second
 	 * @param string $operator
 	 *
 	 * @return bool result similar to version_compare

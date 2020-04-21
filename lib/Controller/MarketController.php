@@ -142,7 +142,7 @@ class MarketController extends Controller {
 		try {
 			$this->marketService->installApp($appId);
 			return [
-				'message' => $this->l10n->t('App %s installed successfully', $appId)
+				'message' => $this->l10n->t('App %s installed successfully', [$appId])
 			];
 		} catch (\Exception $ex) {
 			return new DataResponse([
@@ -154,7 +154,7 @@ class MarketController extends Controller {
 	/**
 	 * @NoCSRFRequired
 	 *
-	 * @param $apiKey
+	 * @param string $apiKey
 	 * @return array|mixed
 	 */
 	public function changeApiKey($apiKey) {
@@ -207,7 +207,7 @@ class MarketController extends Controller {
 		try {
 			$this->marketService->uninstallApp($appId);
 			return [
-				'message' => $this->l10n->t('App %s uninstalled successfully', $appId)
+				'message' => $this->l10n->t('App %s uninstalled successfully', [$appId])
 			];
 		} catch (\Exception $ex) {
 			return new DataResponse([
@@ -225,7 +225,7 @@ class MarketController extends Controller {
 		try {
 			$this->marketService->updateApp($appId, $targetVersion);
 			return [
-				'message' => $this->l10n->t('App %s updated successfully', $appId)
+				'message' => $this->l10n->t('App %s updated successfully', [$appId])
 			];
 		} catch (\Exception $ex) {
 			return new DataResponse(

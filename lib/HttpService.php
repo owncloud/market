@@ -286,7 +286,7 @@ class HttpService {
 			throw new AppManagerException(
 				$this->l10n->t(
 					'No marketplace connection: %s',
-					$e->getMessage()
+					[$e->getMessage()]
 				),
 				0,
 				$e
@@ -319,7 +319,7 @@ class HttpService {
 			throw new AppManagerException(
 				$this->l10n->t(
 					'No marketplace connection: %s',
-					$e->getMessage()
+					[$e->getMessage()]
 				),
 				0,
 				$e

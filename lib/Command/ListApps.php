@@ -56,5 +56,6 @@ class ListApps extends Command {
 		foreach ($apps as $app) {
 			$output->writeln("{$app['id']}");
 		}
+		return 0;
 	}
 }

@@ -50,12 +50,12 @@ class CheckUpdateBackgroundJob extends TimedJob {
 	/** @var IURLGenerator */
 	private $urlGenerator;
 
-	/** @var string[] */
+	/** @var bool|string[] */
 	private $users;
 
 	/**
-	 * @param IConfig|null $config
-	 * @param ITimeFactory|null $timeFactory
+	 * @param IConfig $config
+	 * @param ITimeFactory $timeFactory
 	 * @param IManager $notificationManager
 	 * @param IGroupManager $groupManager
 	 * @param MarketService $marketService
@@ -79,7 +79,7 @@ class CheckUpdateBackgroundJob extends TimedJob {
 	}
 
 	/**
-	 * @param $argument
+	 * @param string $argument
 	 */
 	protected function run($argument) {
 		$updates = $this->marketService->getUpdates();
@@ -120,7 +120,7 @@ class CheckUpdateBackgroundJob extends TimedJob {
 			->setDateTime(
 				\DateTime::createFromFormat(
 					'U',
-					$this->timeFactory->getTime()
+					\strval($this->timeFactory->getTime())
 				)
 			)
 			->setObject($app, $version)

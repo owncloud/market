@@ -60,7 +60,7 @@ class UnInstallApp extends Command {
 
 		if (!\count($appIds)) {
 			$output->writeln("No appIds specified. Nothing to do.");
-			return;
+			return 0;
 		}
 
 		foreach ($appIds as $appId) {

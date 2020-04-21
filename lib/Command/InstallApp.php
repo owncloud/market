@@ -86,9 +86,9 @@ class InstallApp extends Command {
 
 		if (\count($localPackagesArray)) {
 			foreach ($localPackagesArray as $localPackage) {
+				$appInfo = $this->marketService->readAppPackage($localPackage);
+				$appId = $appInfo['id'];
 				try {
-					$appInfo = $this->marketService->readAppPackage($localPackage);
-					$appId = $appInfo['id'];
 					if ($this->marketService->isAppInstalled($appId)) {
 						$installedAppInfo = $this->marketService->getInstalledAppInfo($appId);
 						$currentVersion = (string) $installedAppInfo['version'];

@@ -66,6 +66,9 @@ class Notifier implements INotifier {
 		}
 
 		$l = $this->l10NFactory->get('market', $languageCode);
+		/**
+		 * @var array|null $appInfo
+		 */
 		$appInfo = $this->getAppInfo($notification->getObjectType());
 		$appName = ($appInfo === null) ? $notification->getObjectType() : $appInfo['name'];
 		$appVersions = $this->getAppVersions();
