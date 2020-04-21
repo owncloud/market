@@ -163,7 +163,7 @@ class MarketService {
 
 		$info = $this->getInstalledAppInfo($appId);
 		if ($info !== null) {
-			throw new AppAlreadyInstalledException($this->l10n->t('App %s is already installed', $appId));
+			throw new AppAlreadyInstalledException($this->l10n->t('App %s is already installed', [$appId]));
 		}
 
 		// download package
@@ -193,7 +193,7 @@ class MarketService {
 		}
 
 		if (!\OC_App::removeApp($appId)) {
-			throw new AppManagerException($this->l10n->t('App (%s) could not be uninstalled. Please check the server logs.', $appId));
+			throw new AppManagerException($this->l10n->t('App (%s) could not be uninstalled. Please check the server logs.', [$appId]));
 		}
 	}
 
@@ -201,7 +201,7 @@ class MarketService {
 	 * Update the app
 	 *
 	 * @param string $appId
-	 * @param null $targetVersion
+	 * @param string $targetVersion
 	 *
 	 * @throws AppManagerException
 	 * @throws AppNotFoundException
@@ -215,7 +215,7 @@ class MarketService {
 
 		$info = $this->getInstalledAppInfo($appId);
 		if ($info === null) {
-			throw new AppNotInstalledException($this->l10n->t('App (%s) is not installed', $appId));
+			throw new AppNotInstalledException($this->l10n->t('App (%s) is not installed', [$appId]));
 		}
 
 		// download package
@@ -275,7 +275,7 @@ class MarketService {
 						|| $newVersions['minor'] !== false
 					) {
 						$result[$app] = \array_merge(
-							$newVersions, [ 'id' => $appId ]
+							$newVersions, ['id' => $appId]
 						);
 					}
 				} catch (AppNotInstalledException $e) {
@@ -294,7 +294,7 @@ class MarketService {
 	 *
 	 * @param string $appId
 	 *
-	 * @return string[]
+	 * @return string[]|bool[]
 	 *
 	 * @throws AppNotFoundException
 	 * @throws AppNotInstalledException
@@ -302,11 +302,11 @@ class MarketService {
 	public function getAvailableUpdateVersions($appId) {
 		$info = $this->getInstalledAppInfo($appId);
 		if ($info === null) {
-			throw new AppNotInstalledException($this->l10n->t('App (%s) is not installed', $appId));
+			throw new AppNotInstalledException($this->l10n->t('App (%s) is not installed', [$appId]));
 		}
 		$marketInfo = $this->getAppInfo($appId);
 		if ($marketInfo === null) {
-			throw new AppNotFoundException($this->l10n->t('App (%s) is not known at the marketplace.', $appId));
+			throw new AppNotFoundException($this->l10n->t('App (%s) is not known at the marketplace.', [$appId]));
 		}
 		$currentVersion = (string) $info['version'];
 		$major = $this->filterReleases($marketInfo, $currentVersion, true);
@@ -322,7 +322,7 @@ class MarketService {
 	 * major is chosen only if it is allowed
 	 * if it is allowed but does not exist - fallback to minor
 	 *
-	 * @param string[] $updateVersions
+	 * @param string[]|bool[] $updateVersions
 	 * @param bool $isMajorAllowed
 	 *
 	 * @return string|false
@@ -341,7 +341,7 @@ class MarketService {
 	/**
 	 * Verify if all requirements are met
 	 *
-	 * @param [] $appInfo
+	 * @param string [] $appInfo
 	 *
 	 * @return array[]
 	 */
@@ -542,11 +542,11 @@ class MarketService {
 	/**
 	 * Returns the version for the app if an update is available
 	 *
-	 * @param string[][] $marketInfo
+	 * @param string[][][] $marketInfo
 	 * @param string $currentVersion
 	 * @param bool $isMajorUpdate are major app updates allowed
 	 *
-	 * @return bool|string
+	 * @return string|bool
 	 *
 	 * @throws AppNotFoundException
 	 * @throws AppNotInstalledException
@@ -612,7 +612,7 @@ class MarketService {
 		$this->httpService->checkInternetConnection();
 		$data = $this->getAppInfo($appId);
 		if (empty($data)) {
-			throw new AppNotFoundException($this->l10n->t('Unknown app (%s)', $appId));
+			throw new AppNotFoundException($this->l10n->t('Unknown app (%s)', [$appId]));
 		}
 
 		$version = $this->versionHelper->getPlatformVersion();
@@ -633,7 +633,7 @@ class MarketService {
 			}
 		);
 		if (empty($release)) {
-			throw new AppUpdateNotFoundException($this->l10n->t('No compatible version for %s', $appId));
+			throw new AppUpdateNotFoundException($this->l10n->t('No compatible version for %s', [$appId]));
 		}
 		\usort($release, function ($a, $b) {
 			return \version_compare($b['version'], $a['version']);
