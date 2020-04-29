@@ -48,6 +48,6 @@ class ListAppsTest extends TestCase {
 		]);
 		$this->commandTester->execute([]);
 		$output = $this->commandTester->getDisplay();
-		$this->assertContains("bar\nfoo", $output);
+		$this->assertStringContainsString("bar\nfoo", $output);
 	}
 }

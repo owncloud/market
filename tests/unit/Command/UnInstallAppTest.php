@@ -55,7 +55,7 @@ class UnInstallAppTest extends TestCase {
 		$this->marketService->expects($this->once())->method('canInstall')->willReturn(true);
 		$this->commandTester->execute([]);
 		$output = $this->commandTester->getDisplay();
-		$this->assertContains('No appIds specified. Nothing to do.', $output);
+		$this->assertStringContainsString('No appIds specified. Nothing to do.', $output);
 	}
 
 	public function testUnInstall() {
@@ -65,7 +65,7 @@ class UnInstallAppTest extends TestCase {
 			'ids' => ['foo']
 		]);
 		$output = $this->commandTester->getDisplay();
-		$this->assertContains('foo: Un-Installing ...', $output);
-		$this->assertContains('foo: App uninstalled.', $output);
+		$this->assertStringContainsString('foo: Un-Installing ...', $output);
+		$this->assertStringContainsString('foo: App uninstalled.', $output);
 	}
 }
