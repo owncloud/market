@@ -59,7 +59,7 @@ class InstallAppTest extends TestCase {
 		$this->marketService->expects($this->once())->method('canInstall')->willReturn(true);
 		$this->commandTester->execute([]);
 		$output = $this->commandTester->getDisplay();
-		$this->assertContains('No appId or path to a local package specified. Nothing to do.', $output);
+		$this->assertStringContainsString('No appId or path to a local package specified. Nothing to do.', $output);
 	}
 
 	public function testInstallNewApp() {
@@ -70,8 +70,8 @@ class InstallAppTest extends TestCase {
 			'ids' => ['foo']
 		]);
 		$output = $this->commandTester->getDisplay();
-		$this->assertContains('foo: Installing new app ...', $output);
-		$this->assertContains('foo: App installed.', $output);
+		$this->assertStringContainsString('foo: Installing new app ...', $output);
+		$this->assertStringContainsString('foo: App installed.', $output);
 	}
 
 	public function testInstallInstalledApp() {
@@ -85,7 +85,7 @@ class InstallAppTest extends TestCase {
 			'ids' => ['foo']
 		]);
 		$output = $this->commandTester->getDisplay();
-		$this->assertContains('foo: App already installed and no update available', $output);
+		$this->assertStringContainsString('foo: App already installed and no update available', $output);
 	}
 
 	public function testUpdateApp() {
@@ -99,7 +99,7 @@ class InstallAppTest extends TestCase {
 			'ids' => ['foo']
 		]);
 		$output = $this->commandTester->getDisplay();
-		$this->assertContains('foo: Installing new version 0.9.0 ...', $output);
+		$this->assertStringContainsString('foo: Installing new version 0.9.0 ...', $output);
 	}
 
 	/**
@@ -124,10 +124,10 @@ class InstallAppTest extends TestCase {
 		]);
 		$output = $this->commandTester->getDisplay();
 		if ($withHigherVersion) {
-			$this->assertContains('bla: Installing new version from bla.tar.gz', $output);
-			$this->assertContains('bla: App updated.', $output);
+			$this->assertStringContainsString('bla: Installing new version from bla.tar.gz', $output);
+			$this->assertStringContainsString('bla: App updated.', $output);
 		} else {
-			$this->assertContains('bla: bla.tar.gz has the same or older version of the app', $output);
+			$this->assertStringContainsString('bla: bla.tar.gz has the same or older version of the app', $output);
 		}
 	}
 
@@ -154,8 +154,8 @@ class InstallAppTest extends TestCase {
 			'-l' => ['bla.tar.gz']
 		]);
 		$output = $this->commandTester->getDisplay();
-		$this->assertContains('bla: Installing new app from bla.tar.gz', $output);
-		$this->assertContains('bla: App installed.', $output);
+		$this->assertStringContainsString('bla: Installing new app from bla.tar.gz', $output);
+		$this->assertStringContainsString('bla: App installed.', $output);
 	}
 
 	public function testLocalInstallRefusesMajorUpgrade() {
@@ -177,7 +177,7 @@ class InstallAppTest extends TestCase {
 			['-l' => ['bla.tar.gz']]
 		);
 		$output = $this->commandTester->getDisplay();
-		$this->assertContains('has a different major version, try market:upgrade --major instead', $output);
+		$this->assertStringContainsString('has a different major version, try market:upgrade --major instead', $output);
 	}
 
 	public function testInstallRefusesMajorUpgrade() {
@@ -199,6 +199,6 @@ class InstallAppTest extends TestCase {
 			['ids' => ['bla']]
 		);
 		$output = $this->commandTester->getDisplay();
-		$this->assertContains('Major update is available, use market:upgrade bla --major', $output);
+		$this->assertStringContainsString('Major update is available, use market:upgrade bla --major', $output);
 	}
 }
