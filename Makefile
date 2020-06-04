@@ -68,6 +68,7 @@ $(composer_deps): composer.json composer.lock
 .PHONY: clean-composer-deps
 clean-composer-deps:
 	rm -Rf $(composer_deps)
+	rm -Rf vendor-bin/**/vendor vendor-bin/**/composer.lock
 
 .PHONY: update-composer
 update-composer:
