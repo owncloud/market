@@ -22,10 +22,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - [Security] Bump https-proxy-agent from 2.2.1 to 2.2.4 - [#505](https://github.com/owncloud/market/issues/505)
 - [Security] Bump mixin-deep from 1.3.1 to 1.3.2 - [#497](https://github.com/owncloud/market/issues/497)
 - [Security] Bump jquery from 3.4.1 to 3.5.0 - [#556](https://github.com/owncloud/market/issues/556)
-- [Snyk] Fix for 1 vulnerabilities - [#527](https://github.com/owncloud/market/issues/527)
-- [Snyk] Fix for 1 vulnerabilities - [#523](https://github.com/owncloud/market/issues/523)
-- [Snyk] Fix for 1 vulnerabilities - [#524](https://github.com/owncloud/market/issues/524)
-- [Snyk] Fix for 1 vulnerabilities - [#517](https://github.com/owncloud/market/issues/517)
+- [Synk] Security upgrade snyk from 1.269.0 to 1.290.1 - [#527](https://github.com/owncloud/market/issues/527)
+- [Synk] Security upgrade node-sass from 4.12.0 to 4.13.1 - [#523](https://github.com/owncloud/market/issues/523)
+- [Synk] Security upgrade sass-loader from 6.0.6 to 6.0.7 - [#524](https://github.com/owncloud/market/issues/524)
 
 ## [0.5.0] - 2019-06-24
 
