@@ -58,7 +58,7 @@
 		},
 		methods: {
 			install () {
-				if (this.bundle.id === 'enterprise_apps' && !this.$store.getters.application('enterprise_key').installed) {
+				if (this.bundle.id === 'enterprise_apps' && this.$store.getters.application('enterprise_key') && !this.$store.getters.application('enterprise_key').installed) {
 					this.$store.dispatch('PROCESS_APPLICATION', ['enterprise_key', 'install', { suppressRefetch: true } ])
 					.then(() => {
 						this.$store.dispatch('INSTALL_BUNDLE', this.installableApps);
