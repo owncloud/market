@@ -142,20 +142,25 @@ class MarketService {
 			throw new \Exception("Installing apps is not supported because the app folder is not writable.");
 		}
 
-		$availableReleases = \array_column($this->getApps(), 'releases', 'id')[$appId];
-		if (\array_shift($availableReleases)['license'] === 'ownCloud Commercial License') {
-			$license = $this->getLicenseKey();
-			if ($license === null) {
-				throw new \Exception($this->l10n->t('Please enter a license-key in to config.php'));
-			}
-			if ($appId !== 'enterprise_key') {
-				if (!$this->appManager->isEnabledForUser('enterprise_key')) {
-					throw new \Exception($this->l10n->t('Please install and enable the enterprise_key app and enter a license-key in config.php first.'));
+		$platformVersion = $this->versionHelper->getPlatformVersion(2);
+
+		// Platform versions less than 10.5 don't require enterprise-key app
+		if ($this->versionHelper->compare($platformVersion, "10.5", "<")) {
+			$availableReleases = \array_column($this->getApps(), 'releases', 'id')[$appId];
+			if (\array_shift($availableReleases)['license'] === 'ownCloud Commercial License') {
+				$license = $this->getLicenseKey();
+				if ($license === null) {
+					throw new \Exception($this->l10n->t('Please enter a license-key in to config.php'));
 				}
-				if (\class_exists('\OCA\Enterprise_Key\EnterpriseKey')) {
-					$e = new \OCA\Enterprise_Key\EnterpriseKey($license, $this->config);
-					if (!$e->check()) {
-						throw new \Exception($this->l10n->t('Your license-key is not valid.'));
+				if ($appId !== 'enterprise_key') {
+					if (!$this->appManager->isEnabledForUser('enterprise_key')) {
+						throw new \Exception($this->l10n->t('Please install and enable the enterprise_key app and enter a license-key in config.php first.'));
+					}
+					if (\class_exists('\OCA\Enterprise_Key\EnterpriseKey')) {
+						$e = new \OCA\Enterprise_Key\EnterpriseKey($license, $this->config);
+						if (!$e->check()) {
+							throw new \Exception($this->l10n->t('Your license-key is not valid.'));
+						}
 					}
 				}
 			}

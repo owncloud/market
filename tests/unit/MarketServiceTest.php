@@ -57,7 +57,7 @@ class MarketServiceTest extends TestCase {
 		);
 		$this->marketService->installApp('fubar');
 	}
-	
+
 	/**
 	*/
 	public function testUpdateWithInternetConnectionDisabled() {
@@ -86,6 +86,7 @@ class MarketServiceTest extends TestCase {
 		$this->expectException(\Exception::class);
 		$this->expectExceptionMessage('Please enter a license-key in to config.php');
 
+		$this->versionHelper->method('compare')->willReturn('true');
 		$this->appManager->method('getAllApps')->willReturn([]);
 		$this->appManager->method('canInstall')->willReturn(true);
 		$this->httpService->method('getApps')->willReturn(
