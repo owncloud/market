@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- Set owncloud min-version to 10.5
 - Only enable enterprise_key for versions < 10.5.0
 - Bump libraries
 
