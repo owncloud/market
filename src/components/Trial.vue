@@ -6,26 +6,13 @@
 			.uk-modal-dialog
 				button.uk-modal-close-default(type='button', uk-close='')
 				.uk-modal-header
-					h2.uk-modal-title {{ t('Enterprise Trial Version') }}
+					h2.uk-modal-title {{ t('Enterprise Trial') }}
 				.uk-modal-body
-					div(v-if="!config.licenseKeyAvailable")
-						p.intro Take your ownCloud to the next level and start your 30 day ownCloud Enterprise Trial today!
-
-						.uk-alert-danger(uk-alert, v-if="!apiKeyExists")
-							p A Marketplace API key is required! Please copy it from&nbsp;
-								a(href="https://marketplace.owncloud.com/account/general") your profile page on the Marketplace
-								| . Then&nbsp;
-								a(href="#", @click.prevent="openModalEditKey") enter the API key here
-								| &nbsp;and try again.
-
-						.uk-margin.uk-grid-small.uk-child-width-auto(uk-grid)
-							label
-								input.uk-checkbox(v-model="legalChecked", type="checkbox").uk-margin-small-right
-								| I accept the <a href="https://owncloud.com/licenses/owncloud-confidentiality-agreement" target="_blank" class="uk-text-primary">ownCloud enterprise confidentiality agreement</a> and the <a href="https://owncloud.com/licenses/owncloud-commercial" target="_blank" class="uk-text-primary">ownCloud Commercial License</a>.
-
-					.uk-alert-success(v-if="config.licenseKeyAvailable", uk-alert)
-						p.intro
-							strong {{ t('Awesome! Your 30 day trial is ready to go!') }}
+					.uk-alert-danger(uk-alert)
+						p As we recently simplified our trial process we kindly ask you to upgrade your current ownCloud installation to version 10.5.0 or greater to try enterprise features.
+				.uk-alert-success(v-if="config.licenseKeyAvailable", uk-alert)
+					p.intro
+						strong {{ t('Awesome! Your 30 day trial is ready to go!') }}
 
 				.uk-modal-footer
 					button.uk-button.uk-button-default.uk-modal-close.uk-margin-small-right(type='button') Close
