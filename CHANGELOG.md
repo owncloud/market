@@ -4,9 +4,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [0.5.1] - 2020-07-28
+
+### Added
+
+- Notification about new trial - [#586](https://github.com/owncloud/market/issues/586)
+
 ## [0.5.0] - 2019-06-24
 
 ### Changed
+
 - Provided information on how/where to retrieve API keys for the market app [#468](https://github.com/owncloud/market/pull/468)
 - Library updates [#465](https://github.com/owncloud/market/pull/465) [#466](https://github.com/owncloud/market/pull/466) [#467](https://github.com/owncloud/market/pull/467) [#474](https://github.com/owncloud/market/pull/474) [#476](https://github.com/owncloud/market/pull/476) [#478](https://github.com/owncloud/market/pull/478) [#482](https://github.com/owncloud/market/pull/482)
 
@@ -118,7 +125,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Skip migrations when reinstalling missing code - [#76](https://github.com/owncloud/market/issues/76)
 - Reset overwritten core css styles - [#73](https://github.com/owncloud/market/issues/73)
 
-[Unreleased]: https://github.com/owncloud/market/compare/v0.4.0...master
+[0.5.1]: https://github.com/owncloud/market/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/owncloud/market/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/owncloud/market/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/owncloud/market/compare/v0.2.5...v0.3.0
