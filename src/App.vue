@@ -8,7 +8,6 @@
 					p {{ t("This is a clustered setup or the web server has no permissions to write to the apps folder.") }}
 			aside.uk-width-auto
 				navigation
-				login
 				trial
 			main.uk-width-expand
 				router-view
