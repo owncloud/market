@@ -50,7 +50,7 @@
     "vue": "2.5.21",
     "vue-gettext": "2.1.2",
     "vue-html-loader": "1.2.4",
-    "vue-loader": "11.3.4",
+    "vue-loader": "15.4.2",
     "vue-router": "3.0.2",
     "vue-style-loader": "1.0.0",
     "vue-template-compiler": "2.5.21",
