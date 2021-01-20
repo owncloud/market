@@ -574,7 +574,7 @@ class MarketService {
 		);
 		\usort(
 			$releases, function ($a, $b) {
-				return \version_compare($a['version'], $b['version'], '>');
+				return \version_compare($a['version'], $b['version']);
 			}
 		);
 		if (!empty($releases)) {
