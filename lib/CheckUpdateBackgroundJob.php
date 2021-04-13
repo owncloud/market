@@ -85,7 +85,7 @@ class CheckUpdateBackgroundJob extends TimedJob {
 		$updates = $this->marketService->getUpdates();
 
 		foreach ($updates as $appId => $appInfo) {
-			$url = $this->urlGenerator->linkToRouteAbsolute(
+			$url = $this->urlGenerator->linkToRoute(
 				'market.page.index'
 			);
 			$url .= '#/app/' . $appId;
