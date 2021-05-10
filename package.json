@@ -42,7 +42,7 @@
     "pug": "2.0.4",
     "sass-loader": "6.0.7",
     "showdown": "^1.9.1",
-    "snyk": "^1.290.1",
+    "snyk": "^1.588.0",
     "style-loader": "0.23.1",
     "uglify-js": "3.4.9",
     "uikit": "3.0.0-rc.26",
