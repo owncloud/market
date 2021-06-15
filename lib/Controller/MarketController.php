@@ -47,12 +47,14 @@ class MarketController extends Controller {
 	/** @var IConfig */
 	private $config;
 
-	public function __construct($appName,
-								IRequest $request,
-								MarketService $marketService,
-								IL10N $l10n,
-								IURLGenerator $urlGenerator,
-								IConfig $config) {
+	public function __construct(
+		$appName,
+		IRequest $request,
+		MarketService $marketService,
+		IL10N $l10n,
+		IURLGenerator $urlGenerator,
+		IConfig $config
+	) {
 		parent::__construct($appName, $request);
 		$this->marketService = $marketService;
 		$this->l10n = $l10n;
@@ -69,8 +71,10 @@ class MarketController extends Controller {
 		try {
 			return $this->marketService->getCategories();
 		} catch (\Exception $ex) {
-			return new DataResponse(['message' => $ex->getMessage() ],
-				Http::STATUS_SERVICE_UNAVAILABLE);
+			return new DataResponse(
+				['message' => $ex->getMessage() ],
+				Http::STATUS_SERVICE_UNAVAILABLE
+			);
 		}
 	}
 
@@ -95,8 +99,10 @@ class MarketController extends Controller {
 				'message' => $ex->getMessage()
 			]);
 		} catch (\Exception $ex) {
-			return new DataResponse(['message' => $ex->getMessage() ],
-				Http::STATUS_SERVICE_UNAVAILABLE);
+			return new DataResponse(
+				['message' => $ex->getMessage() ],
+				Http::STATUS_SERVICE_UNAVAILABLE
+			);
 		}
 	}
 
@@ -113,8 +119,10 @@ class MarketController extends Controller {
 				'message' => $ex->getMessage()
 			]);
 		} catch (\Exception $ex) {
-			return new DataResponse(['message' => $ex->getMessage() ],
-				Http::STATUS_SERVICE_UNAVAILABLE);
+			return new DataResponse(
+				['message' => $ex->getMessage() ],
+				Http::STATUS_SERVICE_UNAVAILABLE
+			);
 		}
 	}
 
@@ -129,8 +137,10 @@ class MarketController extends Controller {
 			$info = $this->marketService->getAppInfo($appId);
 			return $this->enrichApp($info);
 		} catch (\Exception $ex) {
-			return new DataResponse(['message' => $ex->getMessage() ],
-				Http::STATUS_SERVICE_UNAVAILABLE);
+			return new DataResponse(
+				['message' => $ex->getMessage() ],
+				Http::STATUS_SERVICE_UNAVAILABLE
+			);
 		}
 	}
 
@@ -159,7 +169,8 @@ class MarketController extends Controller {
 	 */
 	public function changeApiKey($apiKey) {
 		if (!$this->marketService->isApiKeyValid($apiKey)) {
-			return new DataResponse([
+			return new DataResponse(
+				[
 					'message' => $this->l10n->t('The api key is not valid.')
 				]
 			);
@@ -172,7 +183,8 @@ class MarketController extends Controller {
 		}
 
 		if (!$this->marketService->setApiKey($apiKey)) {
-			return new DataResponse([
+			return new DataResponse(
+				[
 					'message' => $this->l10n->t('Can not change api key because it is configured in config.php')
 				]
 			);
@@ -378,7 +390,8 @@ class MarketController extends Controller {
 		try {
 			$apiKey =  $this->marketService->loginViaMarketplace($token);
 		} catch (\Exception $ex) {
-			return new DataResponse([
+			return new DataResponse(
+				[
 				'message' => $this->l10n->t('Could not login via marketplace')],
 				Http::STATUS_UNAUTHORIZED
 			);
