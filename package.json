@@ -39,7 +39,7 @@
     "less-loader": "4.0.5",
     "node-sass": "^4.13.1",
     "npm-watch": "0.5.0",
-    "pug": "2.0.4",
+    "pug": "3.0.1",
     "sass-loader": "6.0.7",
     "showdown": "^1.9.1",
     "snyk": "^1.290.1",
