@@ -44,7 +44,8 @@ class UnInstallApp extends Command {
 		$this
 			->setName('market:uninstall')
 			->setDescription('Un-Install apps.')
-			->addArgument('ids',
+			->addArgument(
+				'ids',
 				InputArgument::OPTIONAL | InputArgument::IS_ARRAY,
 				'Ids of the apps'
 			);
