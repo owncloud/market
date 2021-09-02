@@ -104,7 +104,7 @@ class CheckUpdateBackgroundJobTest extends TestCase {
 
 		if ($shouldNotify) {
 			$this->urlGenerator->expects($this->once())
-				->method('linkToRouteAbsolute')
+				->method('linkToRoute')
 				->with('market.page.index')
 				->willReturn('meow');
 
@@ -113,7 +113,7 @@ class CheckUpdateBackgroundJobTest extends TestCase {
 				->willReturn(null);
 		} else {
 			$this->urlGenerator->expects($this->never())
-				->method('linkToRouteAbsolute');
+				->method('linkToRoute');
 
 			$job->expects($this->never())
 				->method('createNotifications');

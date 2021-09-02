@@ -280,7 +280,8 @@ class MarketService {
 						|| $newVersions['minor'] !== false
 					) {
 						$result[$app] = \array_merge(
-							$newVersions, ['id' => $appId]
+							$newVersions,
+							['id' => $appId]
 						);
 					}
 				} catch (AppNotInstalledException $e) {
@@ -573,8 +574,9 @@ class MarketService {
 			}
 		);
 		\usort(
-			$releases, function ($a, $b) {
-				return \version_compare($a['version'], $b['version'], '>');
+			$releases,
+			function ($a, $b) {
+				return \version_compare($a['version'], $b['version']);
 			}
 		);
 		if (!empty($releases)) {

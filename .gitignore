@@ -6,6 +6,7 @@
 /l10n/template.pot
 /l10n/locale/
 .php_cs.cache
+.php-cs-fixer.cache
 
 # Composer
 vendor/
@@ -16,3 +17,9 @@ vendor-bin/**/composer.lock
 /tests/acceptance/output
 /tests/output
 .phpunit.result.cache
+
+# SonarCloud scanner
+.scannerwork
+
+# Generated from .drone.star
+.drone.yml

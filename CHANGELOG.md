@@ -4,7 +4,45 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [Unreleased] - XXXX-XX-XX
+
+
+
+## [0.6.1] - 2021-06-18
+
+### Fixed
+
+- Use relative url instead of absoulute url - [#650](https://github.com/owncloud/market/issues/650)
+
+## [0.6.0] - 2020-07-10
+
+### Removed
+
+- Drop login button - [#573](https://github.com/owncloud/market/issues/573)
+- Drop start trial functionality - [#572](https://github.com/owncloud/market/issues/572)
+
+### Changed
+
+- Set owncloud min-version to 10.5
+- Only enable enterprise_key for versions < 10.5.0
+- Bump libraries
+
+### Security
+
+- [Snyk] Security upgrade easygettext from 2.7.0 to 2.8.0 - [#533](https://github.com/owncloud/market/issues/533)
+- [Security] Bump lodash from 4.17.11 to 4.17.15 - [#518](https://github.com/owncloud/market/issues/518)
+- [Security] Bump https-proxy-agent from 2.2.1 to 2.2.4 - [#505](https://github.com/owncloud/market/issues/505)
+- [Security] Bump mixin-deep from 1.3.1 to 1.3.2 - [#497](https://github.com/owncloud/market/issues/497)
+- [Security] Bump jquery from 3.4.1 to 3.5.0 - [#556](https://github.com/owncloud/market/issues/556)
+- [Synk] Security upgrade snyk from 1.269.0 to 1.290.1 - [#527](https://github.com/owncloud/market/issues/527)
+- [Synk] Security upgrade node-sass from 4.12.0 to 4.13.1 - [#523](https://github.com/owncloud/market/issues/523)
+- [Synk] Security upgrade sass-loader from 6.0.6 to 6.0.7 - [#524](https://github.com/owncloud/market/issues/524)
+
+## [0.5.1] - 2020-07-28
+
+### Added
+
+- Notification about new trial - [#586](https://github.com/owncloud/market/issues/586)
 
 ## [0.5.0] - 2019-06-24
 
@@ -120,7 +158,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Skip migrations when reinstalling missing code - [#76](https://github.com/owncloud/market/issues/76)
 - Reset overwritten core css styles - [#73](https://github.com/owncloud/market/issues/73)
 
-[Unreleased]: https://github.com/owncloud/market/compare/v0.5.0...master
+[Unreleased]: https://github.com/owncloud/market/compare/v0.6.1...master
+[0.6.1]: https://github.com/owncloud/market/compare/v0.6.0...v0.6.1
+[0.6.0]: https://github.com/owncloud/market/compare/v0.5.1...v0.6.0
+[0.5.1]: https://github.com/owncloud/market/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/owncloud/market/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/owncloud/market/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/owncloud/market/compare/v0.2.5...v0.3.0
@@ -129,4 +170,3 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 [0.2.3]: https://github.com/owncloud/market/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/owncloud/market/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/owncloud/market/compare/v0.2.0...v0.2.1
-
