@@ -4,7 +4,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [Unreleased] - XXXX-XX-XX
+
+
+
+## [0.6.1] - 2021-06-18
+
+### Fixed
+
+- Use relative url instead of absoulute url - [#650](https://github.com/owncloud/market/issues/650)
 
 ## [0.6.0] - 2020-07-10
 
@@ -29,6 +37,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - [Synk] Security upgrade snyk from 1.269.0 to 1.290.1 - [#527](https://github.com/owncloud/market/issues/527)
 - [Synk] Security upgrade node-sass from 4.12.0 to 4.13.1 - [#523](https://github.com/owncloud/market/issues/523)
 - [Synk] Security upgrade sass-loader from 6.0.6 to 6.0.7 - [#524](https://github.com/owncloud/market/issues/524)
+
+## [0.5.1] - 2020-07-28
+
+### Added
+
+- Notification about new trial - [#586](https://github.com/owncloud/market/issues/586)
 
 ## [0.5.0] - 2019-06-24
 
@@ -144,8 +158,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Skip migrations when reinstalling missing code - [#76](https://github.com/owncloud/market/issues/76)
 - Reset overwritten core css styles - [#73](https://github.com/owncloud/market/issues/73)
 
-[Unreleased]: https://github.com/owncloud/market/compare/v0.6.0...master
-[0.6.0]: https://github.com/owncloud/market/compare/v0.5.0...v0.6.0
+[Unreleased]: https://github.com/owncloud/market/compare/v0.6.1...master
+[0.6.1]: https://github.com/owncloud/market/compare/v0.6.0...v0.6.1
+[0.6.0]: https://github.com/owncloud/market/compare/v0.5.1...v0.6.0
+[0.5.1]: https://github.com/owncloud/market/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/owncloud/market/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/owncloud/market/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/owncloud/market/compare/v0.2.5...v0.3.0

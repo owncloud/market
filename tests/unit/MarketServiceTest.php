@@ -122,7 +122,7 @@ class MarketServiceTest extends TestCase {
 		$this->appManager->expects($this->any())
 			->method('getAppInfo')
 			->willReturn(
-					['id' => $appId, 'version' => '1.1']
+				['id' => $appId, 'version' => '1.1']
 			);
 		$this->httpService->expects($this->any())
 			->method('getApps')

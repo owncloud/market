@@ -61,12 +61,14 @@ class CheckUpdateBackgroundJob extends TimedJob {
 	 * @param MarketService $marketService
 	 * @param IURLGenerator $urlGenerator
 	 */
-	public function __construct(IConfig $config,
-								ITimeFactory $timeFactory,
-								IManager $notificationManager,
-								IGroupManager $groupManager,
-								MarketService $marketService,
-								IURLGenerator $urlGenerator) {
+	public function __construct(
+		IConfig $config,
+		ITimeFactory $timeFactory,
+		IManager $notificationManager,
+		IGroupManager $groupManager,
+		MarketService $marketService,
+		IURLGenerator $urlGenerator
+	) {
 		// Run daily
 		$this->setInterval(60 * 60 * 24);
 
@@ -85,7 +87,7 @@ class CheckUpdateBackgroundJob extends TimedJob {
 		$updates = $this->marketService->getUpdates();
 
 		foreach ($updates as $appId => $appInfo) {
-			$url = $this->urlGenerator->linkToRouteAbsolute(
+			$url = $this->urlGenerator->linkToRoute(
 				'market.page.index'
 			);
 			$url .= '#/app/' . $appId;

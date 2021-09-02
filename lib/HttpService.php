@@ -36,12 +36,12 @@ use OCP\IL10N;
  * @package OCA\Market
  */
 class HttpService {
-	const CACHE_KEY = 'ocmp';
+	public const CACHE_KEY = 'ocmp';
 
-	const APPS = 'apps_%s';
-	const BUNDLES = 'bundles';
-	const CATEGORIES = 'categories';
-	const DEMO_KEY = 'demo_license_information';
+	public const APPS = 'apps_%s';
+	public const BUNDLES = 'bundles';
+	public const CATEGORIES = 'categories';
+	public const DEMO_KEY = 'demo_license_information';
 
 	private $urlConfig = [
 		self::APPS => '/api/v1/platform/%s/apps.json',
