@@ -1,4 +1,6 @@
-import 'babel-polyfill';
+// note that babel polyfill has been depreciated and replaced by the core default core-js library
+import 'core-js/stable';
+import "regenerator-runtime/runtime";
 require('./styles/theme.scss');
 
 // -------------------------------------------------------- Uikit components ---
@@ -9,7 +11,7 @@ UIkit.use(Icons);
 
 // ------------------------------------------------------------- Vue plugins ---
 
-import Vue       from 'vue'
+import Vue       from 'vue';
 import VueRouter from 'vue-router';
 
 Vue.use(VueRouter);

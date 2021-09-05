@@ -1,11 +1,17 @@
 <template lang="pug">
 	ul.uk-padding-remove.uk-margin-remove.uk-inline-block(uk-tooltip, :title="overall | rating")
 		li(v-for="n in stars").uk-inline-block
-			span(:class="(n <= overall) ? '-on' : '-off'", uk-icon="icon: star; ratio: 0.8").star
+			span(:class="computedClass", uk-icon="icon: star; ratio: 0.8").star
 </template>
 
 <script>
 	export default {
+		computed: {
+			computedClass() {
+				let ternary = (this.n <= this.overall) ? '-on' : '-off';
+				return ternary;
+			}
+		},
 		props: [
 			'rating'
 		],
@@ -14,7 +20,8 @@
 				classOn: "on",
 				classOff: "off",
 				overall: this.rating.mean,
-				stars: 5
+				stars: 5,
+				n: 0
 			}
 		},
 		filters: {
