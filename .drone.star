@@ -14,14 +14,7 @@ config = {
     "branches": [
         "master",
     ],
-    "codestyle": {
-        "ordinary": {
-            "phpVersions": [
-                "7.3",
-                "7.4",
-            ],
-        },
-    },
+    "codestyle": True,
     "phpstan": True,
     "javascript": False,
     "phpunit": {
