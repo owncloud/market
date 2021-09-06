@@ -1,4 +1,4 @@
-// note that babel polyfill has been depreciated and replaced by the core default core-js library
+// note that babel polyfill has been deprecated and replaced by the core default core-js library
 import 'core-js/stable';
 import "regenerator-runtime/runtime";
 require('./styles/theme.scss');
