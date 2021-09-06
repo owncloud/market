@@ -26,7 +26,7 @@ module.exports = {
 			exclude: /node_modules/,
 			use: ['babel-loader'],
 		}, {
-			test: /\.scss?$/,
+			test: /\.(sa|sc|c)ss$/,
 			use: ['style-loader', 'css-loader', 'sass-loader'],
 		}, {
 			test: /\.vue$/,
