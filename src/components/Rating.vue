@@ -8,7 +8,7 @@
 	export default {
 		methods: {
 			getIconClass(n) {
-				return (this.n <= this.overall) ? '-on' : '-off';
+				return (n <= this.overall) ? '-on' : '-off';
 			}
 		},
 		props: [
