@@ -1,15 +1,14 @@
 <template lang="pug">
 	ul.uk-padding-remove.uk-margin-remove.uk-inline-block(uk-tooltip, :title="overall | rating")
 		li(v-for="n in stars").uk-inline-block
-			span(:class="computedClass", uk-icon="icon: star; ratio: 0.8").star
+			span(:class=getIconClass(n), uk-icon="icon: star; ratio: 0.8").star
 </template>
 
 <script>
 	export default {
-		computed: {
-			computedClass() {
-				let ternary = (this.n <= this.overall) ? '-on' : '-off';
-				return ternary;
+		methods: {
+			getIconClass(n) {
+				return (this.n <= this.overall) ? '-on' : '-off';
 			}
 		},
 		props: [
