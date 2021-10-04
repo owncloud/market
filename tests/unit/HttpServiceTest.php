@@ -90,12 +90,14 @@ class HttpServiceTest extends TestCase {
 
 	public function testGetApps() {
 		$expectedApps = [];
-		$this->config->expects($this->at(0))->method('getSystemValue')
-			->with('has_internet_connection', true)
-			->willReturn(true);
-		$this->config->expects($this->at(1))->method('getSystemValue')
-			->with('marketplace.key', null)
-			->willReturn('');
+		$this->config
+			->expects($this->any())
+			->method('getSystemValue')
+			->withConsecutive(
+				['has_internet_connection', true],
+				['marketplace.key', null],
+			)
+			->willReturnOnConsecutiveCalls(true, '');
 
 		$clientMock = $this->getClientResponseMockForGet(\json_encode($expectedApps));
 		$this->httpClientService->method('newClient')->willReturn($clientMock);
