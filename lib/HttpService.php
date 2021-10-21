@@ -127,7 +127,7 @@ class HttpService {
 	 */
 	public function downloadApp($url, $path) {
 		$apiKey = $this->getApiKey();
-		$this->httpGet($url, ['save_to' => $path], $apiKey);
+		$this->httpGet($url, ['sink' => $path], $apiKey);
 	}
 
 	/**
