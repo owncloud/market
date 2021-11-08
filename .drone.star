@@ -1775,7 +1775,7 @@ def setupElasticSearch(esVersion):
         ],
     }]
 
-def fixPermissions(phpVersion, federatedServerNeeded):
+def fixPermissions(phpVersion, federatedServerNeeded, selUserNeeded = False):
     return [{
         "name": "fix-permissions",
         "image": "owncloudci/php:%s" % phpVersion,
