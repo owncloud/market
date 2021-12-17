@@ -7,6 +7,8 @@
 /l10n/locale/
 .php_cs.cache
 .php-cs-fixer.cache
+*.po
+*.pl
 
 # Composer
 vendor/

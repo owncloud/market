@@ -1,0 +1,17 @@
+OC.L10N.register(
+    "market",
+    {
+    "Version" : "Versió",
+    "License" : "Llicència",
+    "update" : "actualitza",
+    "Update available" : "Actualització disponible",
+    "Installed" : "Instal·lat",
+    "Market" : "Botiga",
+    "Show all" : "Mostra tot",
+    "Categories" : "Categories",
+    "Updates" : "Actualitzacions",
+    "Settings" : "Configuració",
+    "Clear cache" : "Esborra la memòria cau",
+    "Update for %1$s to version %2$s is available." : "L'actualització per %1$s a la versió %2$s està disponible."
+},
+"nplurals=2; plural=(n != 1);");
