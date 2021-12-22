@@ -6,7 +6,6 @@ dir = {
 }
 
 config = {
-    "app": "market",
     "rocketchat": {
         "channel": "builds",
         "from_secret": "private_rocketchat",
@@ -203,7 +202,7 @@ def jscodestyle(ctx):
         "steps": [
             {
                 "name": "coding-standard-js",
-                "image": "owncloudci/php:8.0",
+                "image": "owncloudci/nodejs:14",
                 "pull": "always",
                 "commands": [
                     "make test-js-style",
@@ -325,7 +324,7 @@ def phpstan(ctx):
                     "path": "server/apps/%s" % ctx.repo.name,
                 },
                 "steps": installCore(ctx, "daily-master-qa", "sqlite", False) +
-                         installApp(ctx, phpVersion) +
+                         installAppPhp(ctx, phpVersion) +
                          installExtraApps(phpVersion, params["extraApps"]) +
                          setupServerAndApp(ctx, phpVersion, params["logLevel"], False, params["enableApp"]) +
                          [
@@ -570,7 +569,7 @@ def javascript(ctx, withCoverage):
             "path": "server/apps/%s" % ctx.repo.name,
         },
         "steps": installCore(ctx, "daily-master-qa", "sqlite", False) +
-                 installApp(ctx, "7.4") +
+                 installAppJavaScript(ctx) +
                  setupServerAndApp(ctx, "7.4", params["logLevel"], False, params["enableApp"]) +
                  params["extraSetup"] +
                  [
@@ -742,7 +741,7 @@ def phpTests(ctx, testType, withCoverage):
                         "path": "server/apps/%s" % ctx.repo.name,
                     },
                     "steps": installCore(ctx, "daily-master-qa", db, False) +
-                             installApp(ctx, phpVersion) +
+                             installAppPhp(ctx, phpVersion) +
                              installExtraApps(phpVersion, params["extraApps"]) +
                              setupServerAndApp(ctx, phpVersion, params["logLevel"], False, params["enableApp"]) +
                              setupCeph(params["cephS3"]) +
@@ -859,6 +858,7 @@ def acceptance(ctx):
         "skipExceptParts": [],
         "earlyFail": True,
         "enableApp": True,
+        "selUserNeeded": False,
     }
 
     if "defaults" in config:
@@ -1019,6 +1019,7 @@ def acceptance(ctx):
 
                 environment["TEST_SERVER_URL"] = "http://server"
                 environment["BEHAT_FILTER_TAGS"] = testConfig["filterTags"]
+                environment["DOWNLOADS_DIRECTORY"] = "%s/downloads" % dir["server"]
 
                 if (testConfig["runAllSuites"] == False):
                     environment["BEHAT_SUITE"] = suite
@@ -1073,7 +1074,8 @@ def acceptance(ctx):
                     "steps": installCore(ctx, testConfig["server"], testConfig["database"], testConfig["useBundledApp"]) +
                              installTestrunner(ctx, "7.4", testConfig["useBundledApp"]) +
                              (installFederated(testConfig["server"], testConfig["phpVersion"], testConfig["logLevel"], testConfig["database"], federationDbSuffix) + owncloudLog("federated") if testConfig["federatedServerNeeded"] else []) +
-                             installApp(ctx, testConfig["phpVersion"]) +
+                             installAppPhp(ctx, testConfig["phpVersion"]) +
+                             installAppJavaScript(ctx) +
                              installExtraApps(testConfig["phpVersion"], testConfig["extraApps"]) +
                              setupServerAndApp(ctx, testConfig["phpVersion"], testConfig["logLevel"], testConfig["federatedServerNeeded"], params["enableApp"]) +
                              owncloudLog("server") +
@@ -1081,7 +1083,8 @@ def acceptance(ctx):
                              setupScality(testConfig["scalityS3"]) +
                              setupElasticSearch(testConfig["esVersion"]) +
                              testConfig["extraSetup"] +
-                             fixPermissions(testConfig["phpVersion"], testConfig["federatedServerNeeded"]) +
+                             fixPermissions(testConfig["phpVersion"], testConfig["federatedServerNeeded"], params["selUserNeeded"]) +
+                             waitForBrowserService(testConfig["phpVersion"], isWebUI) +
                              [
                                  ({
                                      "name": "acceptance-tests",
@@ -1093,6 +1096,10 @@ def acceptance(ctx):
                                          ". %s/saved-settings.sh" % dir["base"],
                                          "make %s" % makeParameter,
                                      ],
+                                     "volumes": [{
+                                         "name": "downloads",
+                                         "path": "%s/downloads" % dir["server"],
+                                     }],
                                  }),
                              ] + testConfig["extraTeardown"] + buildGithubCommentForBuildStopped(name, params["earlyFail"]) + githubComment(params["earlyFail"]) + stopBuild(ctx, params["earlyFail"]),
                     "services": databaseService(testConfig["database"]) +
@@ -1110,6 +1117,10 @@ def acceptance(ctx):
                                 ) if testConfig["federatedServerNeeded"] else []),
                     "depends_on": [],
                     "trigger": {},
+                    "volumes": [{
+                        "name": "downloads",
+                        "temp": {},
+                    }],
                 }
 
                 if (testConfig["cron"] != ""):
@@ -1325,6 +1336,10 @@ def browserService(browser):
             "environment": {
                 "JAVA_OPTS": "-Dselenium.LOGGER.level=WARNING",
             },
+            "volumes": [{
+                "name": "downloads",
+                "path": "/home/seluser/Downloads",
+            }],
         }]
 
     if browser == "firefox":
@@ -1336,8 +1351,24 @@ def browserService(browser):
                 "JAVA_OPTS": "-Dselenium.LOGGER.level=WARNING",
                 "SE_OPTS": "-enablePassThrough false",
             },
+            "volumes": [{
+                "name": "downloads",
+                "path": "/home/seluser/Downloads",
+            }],
         }]
 
+    return []
+
+def waitForBrowserService(phpVersion, isWebUi):
+    if isWebUi:
+        return [{
+            "name": "wait-for-selenium",
+            "image": "owncloudci/php:%s" % phpVersion,
+            "pull": "always",
+            "commands": [
+                "wait-for-it -t 600 selenium:4444",
+            ],
+        }]
     return []
 
 def emailService(emailNeeded):
@@ -1608,35 +1639,53 @@ def installExtraApps(phpVersion, extraApps):
         "commands": commandArray,
     }]
 
-def installApp(ctx, phpVersion):
-    if "appInstallCommand" not in config:
+def installAppPhp(ctx, phpVersion):
+    if "appInstallCommandPhp" not in config:
         return []
 
-    if "buildJsDeps" not in config:
-        installJsDeps = False
-    else:
-        installJsDeps = config["buildJsDeps"]
+    # config["appInstallCommandPhp"] must be the command that is needed to
+    # install just the PHP-related part of the app. The docker image has PHP
+    # and "base" tools. But it does not have JavaScript tools like nodejs,
+    # npm, yarn etc.
+    return [
+        {
+            "name": "install-app-php-%s" % ctx.repo.name,
+            "image": "owncloudci/php:%s" % phpVersion,
+            "pull": "always",
+            "commands": [
+                "cd %s/apps/%s" % (dir["server"], ctx.repo.name),
+                config["appInstallCommandPhp"],
+            ],
+        },
+    ]
+
+def installAppJavaScript(ctx):
+    nothingToDo = True
+    commandArray = [
+        "cd %s/apps/%s" % (dir["server"], ctx.repo.name),
+    ]
+
+    if "appInstallCommandJavaScript" in config:
+        nothingToDo = False
+        commandArray.append(config["appInstallCommandJavaScript"])
+
+    if "buildJsDeps" in config:
+        if config["buildJsDeps"]:
+            nothingToDo = False
+            commandArray.append("make install-js-deps")
+            commandArray.append("make build-dev")
+
+    if (nothingToDo):
+        return []
 
     return [
         {
-            "name": "install-app-js-%s" % config["app"],
+            "name": "install-app-js-%s" % ctx.repo.name,
             "image": "owncloudci/nodejs:%s" % getNodeJsVersion(),
             "pull": "always",
-            "commands": [
-                "cd /var/www/owncloud/server/apps/%s" % config["app"],
-                "make install-js-deps",
-                "make build-dev",
-            ],
+            "commands": commandArray,
         },
-    ] if installJsDeps else [] + [{
-        "name": "install-app-%s" % ctx.repo.name,
-        "image": "owncloudci/php:%s" % phpVersion,
-        "pull": "always",
-        "commands": [
-            "cd %s/apps/%s" % (dir["server"], ctx.repo.name),
-            config["appInstallCommand"],
-        ],
-    }]
+    ]
 
 def setupServerAndApp(ctx, phpVersion, logLevel, federatedServerNeeded = False, enableApp = True):
     return [{
@@ -1726,7 +1775,7 @@ def setupElasticSearch(esVersion):
         ],
     }]
 
-def fixPermissions(phpVersion, federatedServerNeeded):
+def fixPermissions(phpVersion, federatedServerNeeded, selUserNeeded = False):
     return [{
         "name": "fix-permissions",
         "image": "owncloudci/php:%s" % phpVersion,
@@ -1737,7 +1786,13 @@ def fixPermissions(phpVersion, federatedServerNeeded):
         ] + ([
             "chown -R www-data %s" % dir["federated"],
             "wait-for-it -t 600 federated:80",
-        ] if federatedServerNeeded else []),
+        ] if federatedServerNeeded else []) + ([
+            "chmod 777 /home/seluser/Downloads/",
+        ] if selUserNeeded else []),
+        "volumes": [{
+            "name": "downloads",
+            "path": "/home/seluser/Downloads/",
+        }],
     }]
 
 def owncloudLog(server):
