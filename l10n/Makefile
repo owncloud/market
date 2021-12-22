@@ -2,11 +2,11 @@ NODE_BINDIR = ../node_modules/.bin
 export PATH := $(NODE_BINDIR):$(PATH)
 
 # Available locales for the app.
-LOCALES = af_ZA  bg_BG  ca  cs_CZ  da  de  de_DE  el  en_GB  es  et_EE  fi_FI  fr  he  hu_HU  is  it  ja  ko  lt_LT  nb_NO  nl  oc  pl  pt_BR  pt_PT  ru  sl  sq  sv  th_TH  tr  uk  zh_CN
+LOCALES = af_ZA  bg_BG  ca  cs_CZ  da  de  de_DE  el  en_GB  es  et_EE  fi_FI  fr  he  hu_HU  is  it  ja  ko  lt_LT  nb_NO  nl  pl  pt_BR  pt_PT  ru  sl  sq  sv  th_TH  tr  uk  zh_CN
 
 
 # Name of the generated .po files for each available locale.
-LOCALE_FILES ?= $(patsubst %,locale/%/market.po,$(LOCALES))
+LOCALE_FILES ?= $(patsubst %,%/market.po,$(LOCALES))
 
 GETTEXT_JS_SOURCES = $(shell find ../src -name '*.vue' -o -name '*.js')
 GETTEXT_PHP_SOURCES = $(shell find .. -name '*.php')
@@ -15,7 +15,10 @@ GETTEXT_PHP_SOURCES = $(shell find .. -name '*.php')
 .PHONY: clean makemessages translations push pull
 
 clean:
-	rm -rf template.pot translations.json locale
+	rm -rf l10n/l10n.pl
+	find l10n -type f -name \*.po -or -name \*.pot | xargs rm -f
+	find l10n -type f -name uz.\* -or -name yo.\* -or -name ne.\* -or -name or_IN.\* | xargs git rm -f || true
+	rm -rf template.pot translations.json
 
 makemessages:
 	touch template.pot
@@ -38,4 +41,11 @@ push:
 pull:
 	tx -d pull -a --minimum-perc=15
 
-transifex-sync: clean makemessages push pull translations
+transifex-sync: clean makemessages push pull translations write
+
+.PHONY: write
+write: l10n.pl
+	perl l10n.pl market write
+
+l10n.pl:
+	wget -qO l10n.pl https://raw.githubusercontent.com/owncloud-ci/transifex/d1c63674d791fe8812216b29da9d8f2f26e7e138/rootfs/usr/bin/l10n

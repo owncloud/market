@@ -3,7 +3,7 @@ host = https://www.transifex.com
 lang_map = ja_JP: ja
 
 [owncloud.market]
-file_filter = locale/<lang>/market.po
+file_filter = <lang>/market.po
 source_file = template.pot
 source_lang = en
 type = PO
