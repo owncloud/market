@@ -2,8 +2,10 @@ parameters:
   inferPrivatePropertyTypeFromConstructor: true
   bootstrapFiles:
     - %currentWorkingDirectory%/../../lib/base.php
-  excludes_analyse:
+  excludePaths:
     - %currentWorkingDirectory%/appinfo/Migrations/*.php
     - %currentWorkingDirectory%/appinfo/routes.php
   ignoreErrors:
-
+    -
+      message: '#Property OCA\\Market\\Controller\\LocalAppsController::\$appManager is never read, only written.#'
+      path: lib/Controller/LocalAppsController.php
