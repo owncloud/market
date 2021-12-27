@@ -245,7 +245,7 @@ class HttpService {
 	 * @throws AppManagerException
 	 */
 	private function httpGet($path, $options, $apiKey) {
-		if ($apiKey !== null) {
+		if (!empty($apiKey)) {
 			$options = \array_merge(
 				[
 					'headers' => ['Authorization' => "apikey: $apiKey"]
