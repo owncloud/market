@@ -24,8 +24,8 @@ class PageControllerTest extends TestCase {
 		$response = $this->controller->index();
 
 		$policy = new \OCP\AppFramework\Http\ContentSecurityPolicy();
-		$policy->addAllowedImageDomain('https://storage.marketplace.owncloud.com');
-		$policy->addAllowedImageDomain('https://marketplace-storage.int.owncloud.com');
+		$policy->addAllowedImageDomain('https://marketplace-storage.owncloud.com');
+		$policy->addAllowedImageDomain('https://marketplace-storage.staging.owncloud.services');
 		$policy->addAllowedImageDomain('http://minio:9000');
 		$this->assertEquals($policy, $response->getContentSecurityPolicy());
 
@@ -36,8 +36,8 @@ class PageControllerTest extends TestCase {
 		$response = $this->controller->indexHash();
 
 		$policy = new \OCP\AppFramework\Http\ContentSecurityPolicy();
-		$policy->addAllowedImageDomain('https://storage.marketplace.owncloud.com');
-		$policy->addAllowedImageDomain('https://marketplace-storage.int.owncloud.com');
+		$policy->addAllowedImageDomain('https://marketplace-storage.owncloud.com');
+		$policy->addAllowedImageDomain('https://marketplace-storage.staging.owncloud.services');
 		$policy->addAllowedImageDomain('http://minio:9000');
 		$this->assertEquals($policy, $response->getContentSecurityPolicy());
 
