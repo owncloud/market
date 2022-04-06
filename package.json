@@ -45,7 +45,7 @@
     "snyk": "^1.696.0",
     "style-loader": "0.23.1",
     "uglify-js": "3.14.1",
-    "uikit": "3.0.0-rc.26",
+    "uikit": "3.13.7",
     "underscore": "1.13.1",
     "vue": "2.5.21",
     "vue-gettext": "2.1.12",
