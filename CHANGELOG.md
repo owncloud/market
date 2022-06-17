@@ -4,7 +4,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased] - XXXX-XX-XX
+## [Unreleased]
+
+-
+
+## [0.6.3] - 2022-02-16
+
+### Fixed
+
+- replace marketplace storage urls in csp - [#913](https://github.com/owncloud/market/pull/913)
+
 
 ## [0.6.2] - 2021-12-29
 
@@ -167,7 +176,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Skip migrations when reinstalling missing code - [#76](https://github.com/owncloud/market/issues/76)
 - Reset overwritten core css styles - [#73](https://github.com/owncloud/market/issues/73)
 
-[Unreleased]: https://github.com/owncloud/market/compare/v0.6.2...master
+[Unreleased]: https://github.com/owncloud/market/compare/v0.6.3...master
+[0.6.3]: https://github.com/owncloud/market/compare/v0.6.2...v0.6.3
 [0.6.2]: https://github.com/owncloud/market/compare/v0.6.1...v0.6.2
 [0.6.1]: https://github.com/owncloud/market/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/owncloud/market/compare/v0.5.1...v0.6.0
