@@ -134,7 +134,7 @@ class InstallApp extends Command {
 						$output->writeln("$appId: App installed.");
 					}
 				} catch (\Exception $ex) {
-					$output->writeln("<error> $appId: {$ex->getMessage()} </error>");
+					$output->writeln("<error>$appId: {$ex->getMessage()}</error>");
 					$this->exitCode = 1;
 				}
 			}

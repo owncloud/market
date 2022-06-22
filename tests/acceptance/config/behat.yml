@@ -1,0 +1,22 @@
+default:
+  autoload:
+     '': '%paths.base%/../features/bootstrap'
+
+  suites:
+    cliMain:
+      paths:
+        - '%paths.base%/../features/cliMain'
+      contexts:
+        - MarketContext:
+        - FeatureContext: &common_feature_context_params
+            baseUrl:  http://localhost:8080
+            adminUsername: admin
+            adminPassword: admin
+            regularUserPassword: 123456
+            ocPath: apps/testing/api/v1/occ
+        - LoggingContext:
+        - OccContext:
+        - OccAppManagementContext:
+
+  extensions:
+    Cjm\Behat\StepThroughExtension: ~

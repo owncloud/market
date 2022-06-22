@@ -167,6 +167,7 @@ class UpgradeApp extends Command {
 					}
 				} else {
 					$output->writeln("$appId: Not installed ...");
+					$this->exitCode = 1;
 				}
 			} catch (\Exception $ex) {
 				$output->writeln("<error>$appId: {$ex->getMessage()}</error>");
