@@ -47,7 +47,16 @@ config = {
     "phpstan": True,
     "javascript": False,
     "phpunit": True,
-    "acceptance": False,
+    "acceptance": {
+        "cli": {
+            "suites": [
+                "cliMain",
+            ],
+            "servers": [
+                "daily-master-qa",
+            ],
+        },
+    },
 }
 
 def main(ctx):
