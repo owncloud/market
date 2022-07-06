@@ -4,9 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [0.7.0] - 2022-07-05
 
--
+### Changed
+
+- [#39387](https://github.com/owncloud/core/issues/39387) - Update guzzle major version to 7
+- This version requires ownCloud 10.11.0 or above
 
 ## [0.6.3] - 2022-02-16
 
@@ -176,7 +179,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Skip migrations when reinstalling missing code - [#76](https://github.com/owncloud/market/issues/76)
 - Reset overwritten core css styles - [#73](https://github.com/owncloud/market/issues/73)
 
-[Unreleased]: https://github.com/owncloud/market/compare/v0.6.3...master
+[Unreleased]: https://github.com/owncloud/market/compare/v0.7.0...master
+[0.7.0]: https://github.com/owncloud/market/compare/v0.6.3...v0.7.0
 [0.6.3]: https://github.com/owncloud/market/compare/v0.6.2...v0.6.3
 [0.6.2]: https://github.com/owncloud/market/compare/v0.6.1...v0.6.2
 [0.6.1]: https://github.com/owncloud/market/compare/v0.6.0...v0.6.1
