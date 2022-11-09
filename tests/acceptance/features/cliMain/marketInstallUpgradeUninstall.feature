@@ -43,6 +43,7 @@ Feature: install, upgrade and uninstall apps that are available in the market-pl
     """
     And app "activity" should not be in the apps list
 
+
   Scenario: install an app that is not available in the market-place
     When the administrator invokes occ command "market:install nonexistentapp"
     Then the command should have failed with exit code 1
@@ -52,6 +53,7 @@ Feature: install, upgrade and uninstall apps that are available in the market-pl
     nonexistentapp: Unknown app (nonexistentapp)
     """
 
+
   Scenario: upgrade an app that is not available in the market-place
     When the administrator invokes occ command "market:upgrade nonexistentapp"
     Then the command should have failed with exit code 1
@@ -59,6 +61,7 @@ Feature: install, upgrade and uninstall apps that are available in the market-pl
     """
     nonexistentapp: Not installed ...
     """
+
 
   Scenario: upgrade an app that is available in the market-place but not installed locally
     When the administrator invokes occ command "market:upgrade activity"
@@ -68,6 +71,7 @@ Feature: install, upgrade and uninstall apps that are available in the market-pl
     activity: Not installed ...
     """
 
+
   Scenario: uninstall an app that is not available in the market-place
     When the administrator invokes occ command "market:uninstall nonexistentapp"
     Then the command should have failed with exit code 1
@@ -76,6 +80,7 @@ Feature: install, upgrade and uninstall apps that are available in the market-pl
     nonexistentapp: Un-Installing ...
     nonexistentapp: App (nonexistentapp) could not be uninstalled. Please check the server logs.
     """
+
 
   Scenario: uninstall an app that is available in the market-place but not installed locally
     When the administrator invokes occ command "market:uninstall activity"
