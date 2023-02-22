@@ -154,7 +154,7 @@ class HttpService {
 	public function exchangeLoginTokenForApiKey($loginToken, $codeVerifier) {
 		$url = $this->getAbsoluteUrl('/api/v1/authorize');
 		$result = $this->httpPost($url, [
-			'body' => [
+			'form_params' => [
 				'loginToken' => $loginToken,
 				'codeVerifier' => $codeVerifier
 			]
