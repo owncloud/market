@@ -29,6 +29,7 @@ use OCP\Http\Client\IClientService;
 use OCP\ICacheFactory;
 use OCP\IConfig;
 use OCP\IL10N;
+use OCP\Util;
 
 /**
  * Class HttpService
@@ -153,12 +154,23 @@ class HttpService {
 	 */
 	public function exchangeLoginTokenForApiKey($loginToken, $codeVerifier) {
 		$url = $this->getAbsoluteUrl('/api/v1/authorize');
-		$result = $this->httpPost($url, [
-			'form_params' => [
-				'loginToken' => $loginToken,
-				'codeVerifier' => $codeVerifier
-			]
-		]);
+		$ocVersion = \implode('.', Util::getVersion());
+		$hasGuzzle7 = \version_compare($ocVersion, '10.11', '>=');
+		if ($hasGuzzle7) {
+			$result = $this->httpPost($url, [
+				'form_params' => [
+					'loginToken' => $loginToken,
+					'codeVerifier' => $codeVerifier
+				]
+			]);
+		} else {
+			$result = $this->httpPost($url, [
+				'body' => [
+					'loginToken' => $loginToken,
+					'codeVerifier' => $codeVerifier
+				]
+			]);
+		}
 
 		$body = \json_decode($result->getBody(), true);
 		return $body['apiKey'];
