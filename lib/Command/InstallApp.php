@@ -125,7 +125,7 @@ class InstallApp extends Command {
 						} else {
 							$updateMessage = $updateVersions['major'] === false
 								? 'App already installed and no update available'
-								: "Major update is available, use market:upgrade $appId --major.";
+								: "Major update is available, use market:upgrade --major $appId.";
 							$output->writeln("$appId: $updateMessage");
 						}
 					} else {
