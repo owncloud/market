@@ -199,6 +199,6 @@ class InstallAppTest extends TestCase {
 			['ids' => ['bla']]
 		);
 		$output = $this->commandTester->getDisplay();
-		$this->assertStringContainsString('Major update is available, use market:upgrade bla --major', $output);
+		$this->assertStringContainsString('Major update is available, use market:upgrade --major bla', $output);
 	}
 }
