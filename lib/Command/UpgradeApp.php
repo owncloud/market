@@ -79,7 +79,7 @@ class UpgradeApp extends Command {
 	 *
 	 * @throws \Exception
 	 */
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		if (!$this->marketService->canInstall()) {
 			throw new \Exception("Installing apps is not supported because the app folder is not writable.");
 		}

@@ -66,10 +66,10 @@ class InstallApp extends Command {
 	/**
 	 * @param InputInterface $input
 	 * @param OutputInterface $output
-	 * @return int|null
+	 * @return int
 	 * @throws \Exception
 	 */
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		if (!$this->marketService->canInstall()) {
 			throw new \Exception("Installing apps is not supported because the app folder is not writable.");
 		}
