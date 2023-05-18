@@ -51,7 +51,7 @@ class UnInstallApp extends Command {
 			);
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		if (!$this->marketService->canInstall()) {
 			throw new \Exception("Un-Installing apps is not supported because the app folder is not writable.");
 		}
