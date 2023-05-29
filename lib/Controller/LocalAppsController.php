@@ -28,7 +28,6 @@ use OCP\AppFramework\Controller;
 use OCP\IRequest;
 
 class LocalAppsController extends Controller {
-
 	/** @var IAppManager */
 	private $appManager;
 

@@ -27,7 +27,6 @@ use OCP\AppFramework\Http\ContentSecurityPolicy;
 use OCP\AppFramework\Http\TemplateResponse;
 
 class PageController extends Controller {
-
 	/**
 	 * @NoCSRFRequired
 	 *

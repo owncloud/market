@@ -15,7 +15,6 @@ use OCP\Notification\INotification;
 use Test\TestCase;
 
 class CheckUpdateBackgroundJobTest extends TestCase {
-
 	/** @var IConfig|\PHPUnit\Framework\MockObject\MockObject */
 	protected $config;
 	/** @var ITimeFactory|\PHPUnit\Framework\MockObject\MockObject */

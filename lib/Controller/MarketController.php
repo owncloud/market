@@ -34,7 +34,6 @@ use OCP\IConfig;
 use OCP\IURLGenerator;
 
 class MarketController extends Controller {
-
 	/** @var MarketService */
 	private $marketService;
 

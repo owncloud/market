@@ -30,7 +30,6 @@ use OCP\IURLGenerator;
 use Test\TestCase;
 
 class MarketControllerTest extends TestCase {
-
 	/** @var MarketController */
 	private $controller;
 	/** @var IRequest */

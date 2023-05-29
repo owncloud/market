@@ -27,7 +27,6 @@ use Symfony\Component\Console\Tester\CommandTester;
 use Test\TestCase;
 
 class UnInstallAppTest extends TestCase {
-
 	/** @var CommandTester */
 	private $commandTester;
 	/** @var MarketService | \PHPUnit\Framework\MockObject\MockObject */

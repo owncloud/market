@@ -14,7 +14,6 @@ use OCP\Security\ISecureRandom;
 use Test\TestCase;
 
 class MarketServiceTest extends TestCase {
-
 	/** @var MarketService */
 	private $marketService;
 	/** @var HttpService | \PHPUnit\Framework\MockObject\MockObject $cacheFactoryMock */

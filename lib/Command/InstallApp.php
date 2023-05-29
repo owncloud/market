@@ -30,7 +30,6 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class InstallApp extends Command {
-
 	/** @var MarketService */
 	private $marketService;
 
