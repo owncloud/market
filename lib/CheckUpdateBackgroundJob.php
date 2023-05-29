@@ -36,7 +36,6 @@ use OCP\Notification\IManager;
  */
 
 class CheckUpdateBackgroundJob extends TimedJob {
-
 	/** @var IConfig */
 	private $config;
 	/** @var ITimeFactory */

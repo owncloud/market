@@ -19,4 +19,4 @@
  *
  */
 
- $app = new OCA\Market\Application();
+$app = new OCA\Market\Application();

@@ -27,7 +27,6 @@ use OCP\Migration\IRepairStep;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
 class Application extends App {
-
 	/**
 	 * @param array $urlParams
 	 */
