@@ -8,7 +8,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
-- 
+- [#1233](https://github.com/owncloud/market/pull/1233) - Always return an int from Symfony Command execute method
+- [#1230](https://github.com/owncloud/market/pull/1230) - Update suggested use for major update
 
 ## [0.7.0] - 2022-07-05
 
