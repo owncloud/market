@@ -10,9 +10,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "webpack  --progress --colors --watch",
     "build-dev": "webpack",
-    "build": "webpack -p",
-    "snyk-protect": "snyk protect",
-    "prepare": "npm run snyk-protect"
+    "build": "webpack -p"
   },
   "repository": {
     "type": "git",
@@ -42,7 +40,6 @@
     "pug": "3.0.1",
     "sass-loader": "6.0.7",
     "showdown": "^1.9.1",
-    "snyk": "^1.696.0",
     "style-loader": "0.23.1",
     "uglify-js": "3.14.1",
     "uikit": "3.0.0-rc.26",
