@@ -4,13 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [0.8.0] - 2023-07-27
+## [0.8.0] - 2023-08-11
 
 ### Changed
 
 - [#1233](https://github.com/owncloud/market/pull/1233) - Always return an int from Symfony Command execute method
 - [#1230](https://github.com/owncloud/market/pull/1230) - Update suggested use for major update
 - Minimum core version 10.11, minimum php version 7.4
+- Dependencies updated
 
 ## [0.7.0] - 2022-07-05
 
