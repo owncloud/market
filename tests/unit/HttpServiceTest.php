@@ -21,7 +21,6 @@
 
 namespace OCA\Market\Tests\Unit;
 
-use GuzzleHttp\Exception\TransferException;
 use OCA\Market\HttpService;
 use OCA\Market\VersionHelper;
 use OCP\App\AppManagerException;
@@ -103,25 +102,6 @@ class HttpServiceTest extends TestCase {
 		$this->httpClientService->method('newClient')->willReturn($clientMock);
 		$apps = $this->httpService->getApps();
 		$this->assertEquals($expectedApps, $apps);
-	}
-
-	public function testExchangeLoginTokenForApiKey() {
-		$clientMock = $this->getClientResponseMockForPost(\json_encode(['apiKey' => 'someapikey']));
-		$this->httpClientService->method('newClient')->willReturn($clientMock);
-		$apiKey = $this->httpService->exchangeLoginTokenForApiKey('abc', 'defg');
-		$this->assertEquals($apiKey, 'someapikey');
-	}
-
-	/**
-	 */
-	public function testExchangeLoginTokenError() {
-		$this->expectException(\OCP\App\AppManagerException::class);
-
-		$clientMock = $this->getClientResponseMockForPost(\json_encode(['apiKey' => 'someapikey']));
-		$clientMock->method('post')->willThrowException(new TransferException());
-		$this->httpClientService->method('newClient')->willReturn($clientMock);
-
-		$this->httpService->exchangeLoginTokenForApiKey('abc', 'defg');
 	}
 
 	private function getClientResponseMockForGet($body) {

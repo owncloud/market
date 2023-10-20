@@ -53,8 +53,6 @@ class MarketService {
 	private $categories;
 	/** @var array */
 	private $bundles;
-	/** @var ISecureRandom  */
-	private $rng;
 
 	/**
 	 * Service constructor.
@@ -70,15 +68,13 @@ class MarketService {
 		VersionHelper $versionHelper,
 		IAppManager $appManager,
 		IConfig $config,
-		IL10N $l10n,
-		ISecureRandom $rng
+		IL10N $l10n
 	) {
 		$this->httpService = $httpService;
 		$this->versionHelper = $versionHelper;
 		$this->appManager = $appManager;
 		$this->config = $config;
 		$this->l10n = $l10n;
-		$this->rng = $rng;
 	}
 
 	/**
@@ -431,32 +427,6 @@ class MarketService {
 
 	public function getApiKey() {
 		return $this->httpService->getApiKey();
-	}
-
-	public function startMarketplaceLogin() {
-		$codeVerify = $this->rng->generate(
-			64,
-			ISecureRandom::CHAR_DIGITS .
-			ISecureRandom::CHAR_LOWER .
-			ISecureRandom::CHAR_UPPER
-		);
-
-		$codeChallenge = \base64_encode(\hash('sha256', $codeVerify));
-		$this->config->setAppValue('market', 'code_verify', $codeVerify);
-		$this->config->setAppValue('market', 'code_challenge', $codeChallenge);
-
-		return $codeChallenge;
-	}
-
-	public function loginViaMarketplace($loginToken) {
-		$codeVerify = $this->config->getAppValue('market', 'code_verify');
-		$apiKey = $this->httpService->exchangeLoginTokenForApiKey($loginToken, $codeVerify);
-
-		$this->setApiKey($apiKey);
-		$this->config->deleteAppValue('market', 'code_verify');
-		$this->config->deleteAppValue('market', 'code_challenge');
-
-		return $apiKey;
 	}
 
 	/**
