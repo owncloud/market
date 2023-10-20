@@ -50,6 +50,7 @@ all: $(js_deps) js/market.bundle.js
 
 .PHONY: clean
 clean: clean-composer-deps clean-js-deps clean-dist clean-build
+	rm js/market.bundle.js
 
 #
 # ownCloud market PHP dependencies
