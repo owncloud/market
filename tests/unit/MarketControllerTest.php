@@ -47,7 +47,6 @@ class MarketControllerTest extends TestCase {
 			$this->request,
 			$this->marketService,
 			$this->createMock(IL10N::class),
-			$this->createMock(IURLGenerator::class),
 			$this->createMock(IConfig::class)
 		);
 	}

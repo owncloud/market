@@ -276,18 +276,4 @@ class MarketServiceTest extends TestCase {
 
 		$this->marketService->uninstallApp('market');
 	}
-
-	public function testStartMarketplaceLoginWillReturnsPkceChallenge() {
-		//PKCE challenge is always 88 chars long and ends wit ah equals sign (base64)
-		$res = $this->marketService->startMarketplaceLogin();
-		$this->assertTrue(\strlen($res) === 88);
-		$this->assertTrue($res[87] === '=');
-	}
-
-	public function testLoginViaMarketplace() {
-		$this->httpService->method('exchangeLoginTokenForApiKey')->willReturn('abc');
-		$apiKey = $this->marketService->loginViaMarketplace('someToken');
-
-		$this->assertEquals('abc', $apiKey);
-	}
 }

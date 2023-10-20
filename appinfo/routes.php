@@ -37,8 +37,6 @@ return [
 		['name' => 'market#getConfig', 'url' => '/config', 'verb' => 'GET'],
 		['name' => 'market#requestDemoLicenseKeyFromMarket', 'url' => '/request-license-key-from-market', 'verb' => 'GET'],
 		['name' => 'market#invalidateCache', 'url' => '/cache/invalidate', 'verb' => 'POST'],
-		['name' => 'market#receiveMarketplaceLoginToken', 'url' => '/check-marketplace-login-token', 'verb' => 'POST'],
-		['name' => 'market#startMarketplaceLogin', 'url' => '/generate-login-challenge', 'verb' => 'POST'],
 		['name' => 'localApps#index', 'url' => '/installed-apps/{state}', 'verb' => 'GET', 'defaults' => ['state' => 'enabled']],
 	],
 	'resources' => []
