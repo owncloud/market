@@ -66,7 +66,7 @@
     "json5": "2.2.2",
     "kind-of": "6.0.3",
     "loader-utils": "1.4.2",
-    "minimist": "1.2.6",
+    "minimist": "1.2.8",
     "scss-tokenizer": "0.4.3",
     "set-value": "2.0.1",
     "tar": "6.2.0",
