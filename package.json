@@ -68,7 +68,7 @@
     "loader-utils": "1.4.2",
     "minimist": "1.2.8",
     "scss-tokenizer": "0.4.3",
-    "set-value": "2.0.1",
+    "set-value": "4.1.0",
     "tar": "6.2.0",
     "trim-newlines": "3.0.1",
     "webpack-cli": "^4.10.0"
