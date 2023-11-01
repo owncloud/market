@@ -40,9 +40,6 @@ class MarketController extends Controller {
 	/** @var IL10N */
 	private $l10n;
 
-	/** @var IURLGenerator */
-	private $urlGenerator;
-
 	/** @var IConfig */
 	private $config;
 
@@ -51,13 +48,11 @@ class MarketController extends Controller {
 		IRequest $request,
 		MarketService $marketService,
 		IL10N $l10n,
-		IURLGenerator $urlGenerator,
 		IConfig $config
 	) {
 		parent::__construct($appName, $request);
 		$this->marketService = $marketService;
 		$this->l10n = $l10n;
-		$this->urlGenerator = $urlGenerator;
 		$this->config = $config;
 	}
 
@@ -356,47 +351,6 @@ class MarketController extends Controller {
 				Http::STATUS_INTERNAL_SERVER_ERROR
 			);
 		}
-	}
-
-	/**
-	 * @NoCSRFRequired
-	 */
-	public function startMarketplaceLogin() {
-		$codeChallenge = $this->marketService->startMarketplaceLogin();
-		$callbackUrl = $this->urlGenerator->linkToRouteAbsolute('market.page.indexHash');
-		$appStoreUrl = $this->config->getSystemValue('appstoreurl', 'https://marketplace.owncloud.com');
-
-		return new DataResponse([
-			'loginUrl' => "$appStoreUrl/login?callbackUrl=$callbackUrl&codeChallenge=$codeChallenge"
-		]);
-	}
-
-	/**
-	 * Redirect from marketplace with login-token in the query
-	 *
-	 * @NoCSRFRequired
-	 *
-	 * @param string $token
-	 * @return DataResponse
-	 */
-	public function receiveMarketplaceLoginToken($token) {
-		if (!$token) {
-			return new DataResponse([
-				'message' => $this->l10n->t('Token is missing')
-			], Http::STATUS_BAD_REQUEST);
-		}
-
-		try {
-			$apiKey =  $this->marketService->loginViaMarketplace($token);
-		} catch (\Exception $ex) {
-			return new DataResponse(
-				[
-				'message' => $this->l10n->t('Could not login via marketplace')],
-				Http::STATUS_UNAUTHORIZED
-			);
-		}
-
-		return new DataResponse(['apiKey' => $apiKey]);
 	}
 
 	public function invalidateCache() {

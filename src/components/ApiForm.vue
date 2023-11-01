@@ -66,7 +66,7 @@
 	}
 </script>
 
-<style lang="css" scoped>
+<style lang="scss" scoped>
 	.-monospace {
 		font-family: "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", monospace;
 	}

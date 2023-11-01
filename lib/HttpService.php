@@ -143,28 +143,6 @@ class HttpService {
 	}
 
 	/**
-	 *
-	 * Exchange login token for api key
-	 *
-	 * @param string $loginToken
-	 * @param string $codeVerifier
-	 * @return string
-	 * @throws AppManagerException
-	 */
-	public function exchangeLoginTokenForApiKey($loginToken, $codeVerifier) {
-		$url = $this->getAbsoluteUrl('/api/v1/authorize');
-		$result = $this->httpPost($url, [
-			'body' => [
-				'loginToken' => $loginToken,
-				'codeVerifier' => $codeVerifier
-			]
-		]);
-
-		$body = \json_decode($result->getBody(), true);
-		return $body['apiKey'];
-	}
-
-	/**
 	 * @return void
 	 */
 	public function invalidateCache() {
@@ -292,40 +270,6 @@ class HttpService {
 				$e
 			);
 		}
-		return $response;
-	}
-
-	/**
-	 * @param string $path
-	 * @param array $options
-	 * @return \OCP\Http\Client\IResponse
-	 * @throws AppManagerException
-	 */
-	private function httpPost($path, $options) {
-		$ca = $this->config->getSystemValue('marketplace.ca', null);
-		if ($ca !== null) {
-			$options = \array_merge(
-				[
-					'verify' => $ca
-				],
-				$options
-			);
-		}
-		$client = $this->httpClientService->newClient();
-
-		try {
-			$response = $client->post($path, $options);
-		} catch (TransferException $e) {
-			throw new AppManagerException(
-				$this->l10n->t(
-					'No marketplace connection: %s',
-					[$e->getMessage()]
-				),
-				0,
-				$e
-			);
-		}
-
 		return $response;
 	}
 

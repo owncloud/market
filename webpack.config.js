@@ -1,11 +1,15 @@
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
+
 module.exports = {
 	devtool: 'cheap-eval-source-map',
 	entry: './src/default.js',
 	output : {
-		filename : './js/market.bundle.js'
+		path: require('path').resolve(__dirname, 'js'),
+		filename : 'market.bundle.js',
+		publicPath: '/'
 	},
 	module: {
-		loaders: [{
+		rules: [{
 			test: require.resolve('uikit'),
 			loader: 'expose-loader?UIkit'
 		}, {
@@ -16,6 +20,9 @@ module.exports = {
 			test: /\.scss?$/,
 			loader: 'style-loader!css-loader!sass-loader'
 		}, {
+			test: /\.pug$/,
+			loader: 'vue-pug-loader'
+		}, {
 			test: /\.vue$/,
 			loader: 'vue-loader',
 			options: {
@@ -25,5 +32,8 @@ module.exports = {
 				}
 			}
 		}]
-	}
+	},
+	plugins: [
+		new VueLoaderPlugin()
+	]
 }
