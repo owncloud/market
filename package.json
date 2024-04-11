@@ -69,7 +69,7 @@
     "minimist": "1.2.8",
     "scss-tokenizer": "0.4.3",
     "set-value": "2.0.1",
-    "tar": "6.2.1",
+    "tar": "7.0.0",
     "trim-newlines": "3.0.1",
     "webpack-cli": "^4.10.0"
   },
