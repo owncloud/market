@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [0.9.0] - 2024-06-04
+
+- [#1292](https://github.com/owncloud/market/pull/1292) - fix: use webpack 5
+- 23 security reports fixed
+- Dependencies updated
+
+
 ## [0.8.0] - 2023-08-11
 
 ### Changed
@@ -188,7 +195,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Skip migrations when reinstalling missing code - [#76](https://github.com/owncloud/market/issues/76)
 - Reset overwritten core css styles - [#73](https://github.com/owncloud/market/issues/73)
 
-[Unreleased]: https://github.com/owncloud/market/compare/v0.8.0...master
+[Unreleased]: https://github.com/owncloud/market/compare/v0.9.0...master
+[0.9.0]: https://github.com/owncloud/market/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/owncloud/market/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/owncloud/market/compare/v0.6.3...v0.7.0
 [0.6.3]: https://github.com/owncloud/market/compare/v0.6.2...v0.6.3
