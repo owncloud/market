@@ -46,7 +46,6 @@
     "underscore": "1.13.6",
     "vue": "2.5.21",
     "vue-gettext": "2.1.12",
-    "vue-html-loader": "1.2.4",
     "vue-loader": "^15.11.1",
     "vue-pug-loader": "^1.1.29",
     "vue-router": "3.5.2",
