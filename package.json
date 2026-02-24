@@ -54,7 +54,7 @@
     "webpack": "^5.105.0"
   },
   "devDependencies": {
-    "acorn": "5.7.4",
+    "acorn": "8.15.0",
     "ansi-regex": "4.1.1",
     "glob-parent": "5.1.2",
     "json-schema": "0.4.0",
