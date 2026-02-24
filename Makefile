@@ -93,6 +93,9 @@ clean-js-deps:
 js/market.bundle.js: $(js_deps)
 	$(NPM) run build
 
+.PHONY: build-dev
+build-dev: js/market.bundle.js
+
 #
 # dist
 #

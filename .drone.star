@@ -53,9 +53,10 @@ config = {
     "branches": [
         "master",
     ],
+    "buildJsDeps": True,
     "codestyle": True,
     "phpstan": True,
-    "javascript": False,
+    "javascript": True,
     "phpunit": True,
     "acceptance": {
         "cli": {
