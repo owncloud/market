@@ -21,7 +21,12 @@ module.exports = {
 			use: 'babel-loader',
 		}, {
 			test: /\.scss?$/,
-			use: ['style-loader', 'css-loader', 'sass-loader']
+			use: ['style-loader', 'css-loader', {
+				loader: 'sass-loader',
+				options: {
+					implementation: require('sass'),
+				}
+			}]
 		}, {
 			test: /\.pug$/,
 			use: 'vue-pug-loader'

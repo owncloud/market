@@ -93,6 +93,9 @@ clean-js-deps:
 js/market.bundle.js: $(js_deps)
 	$(NPM) run build
 
+.PHONY: build-dev
+build-dev: js/market.bundle.js
+
 #
 # dist
 #
@@ -126,6 +129,9 @@ clean-build:
 ##---------------------
 ## Tests
 ##---------------------
+.PHONY: test-js
+test-js:
+	@echo No JavaScript tests defined yet
 
 .PHONY: test-php-unit
 test-php-unit: ## Run php unit tests
