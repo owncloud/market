@@ -129,6 +129,9 @@ clean-build:
 ##---------------------
 ## Tests
 ##---------------------
+.PHONY: test-js
+test-js:
+	@echo No JavaScript tests defined yet
 
 .PHONY: test-php-unit
 test-php-unit: ## Run php unit tests
