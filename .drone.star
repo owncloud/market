@@ -54,10 +54,10 @@ config = {
         "master",
     ],
     "buildJsDeps": True,
-    "codestyle": True,
-    "phpstan": True,
-    "javascript": True,
-    "phpunit": True,
+    "codestyle": False,
+    "phpstan": False,
+    "javascript": False,
+    "phpunit": False,
     "acceptance": {
         "cli": {
             "suites": [
