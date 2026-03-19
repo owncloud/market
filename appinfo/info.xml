@@ -14,8 +14,8 @@ To use this application click on "Files" in the top left corner and click on "Ma
 	<category>tools</category>
 	<screenshot>https://raw.githubusercontent.com/owncloud/screenshots/master/market/ownCloud-market-app.jpg</screenshot>
 	<dependencies>
-		<owncloud min-version="10.15" max-version="11" />
-                <php min-version="7.4" />
+		<owncloud min-version="11" max-version="11" />
+                <php min-version="8.3" />
 	</dependencies>
 	<background-jobs>
 		<job>OCA\Market\CheckUpdateBackgroundJob</job>
