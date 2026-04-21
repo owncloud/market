@@ -42,7 +42,7 @@
     "style-loader": "^3.3.3",
     "uglify-js": "3.17.4",
     "uikit": "3.24.2",
-    "underscore": "1.13.6",
+    "underscore": "1.13.8",
     "vue": "2.5.21",
     "vue-gettext": "2.1.12",
     "vue-loader": "^15.11.1",
