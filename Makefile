@@ -68,6 +68,11 @@ update-composer:
 	rm -f composer.lock
 	php $(COMPOSER_BIN) install --prefer-dist
 
+# Installs dependencies and does any build actions needed for the app to run in CI
+.PHONY: ci
+ci: vendor install-js-deps
+	@echo dependencies and build actions for CI are completed
+
 #
 # ownCloud market JavaScript dependencies
 #
