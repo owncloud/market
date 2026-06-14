@@ -29,12 +29,12 @@ use OCP\IConfig;
 use OCP\IRequest;
 
 class PageController extends Controller {
-	public function __construct(
-		string $appName,
-		IRequest $request,
-		private readonly IConfig $config,
-	) {
+	/** @var IConfig */
+	private $config;
+
+	public function __construct($appName, IRequest $request, IConfig $config) {
 		parent::__construct($appName, $request);
+		$this->config = $config;
 	}
 
 	/**
