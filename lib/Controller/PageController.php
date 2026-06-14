@@ -25,8 +25,18 @@ namespace OCA\Market\Controller;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\ContentSecurityPolicy;
 use OCP\AppFramework\Http\TemplateResponse;
+use OCP\IConfig;
+use OCP\IRequest;
 
 class PageController extends Controller {
+	public function __construct(
+		string $appName,
+		IRequest $request,
+		private readonly IConfig $config,
+	) {
+		parent::__construct($appName, $request);
+	}
+
 	/**
 	 * @NoCSRFRequired
 	 *
@@ -50,8 +60,32 @@ class PageController extends Controller {
 		$policy->addAllowedImageDomain('https://marketplace-storage.staging.owncloud.services');
 		// local dev storage
 		$policy->addAllowedImageDomain('http://minio:9000');
+		// configured appstore (may serve its own images)
+		$storeUrl = $this->config->getSystemValue('appstoreurl', 'https://marketplace.owncloud.com');
+		$storeDomain = $this->extractDomain($storeUrl);
+		if ($storeDomain !== null) {
+			$policy->addAllowedImageDomain($storeDomain);
+		}
 		$templateResponse->setContentSecurityPolicy($policy);
 
 		return $templateResponse;
+	}
+
+	/**
+	 * Reduce a URL to scheme + host (+ port) since CSP works on the domain
+	 * level - any path in the configured appstore URL must be stripped.
+	 *
+	 * @return string|null the domain, or null if it cannot be determined
+	 */
+	private function extractDomain(string $url): ?string {
+		$parts = \parse_url($url);
+		if ($parts === false || empty($parts['scheme']) || empty($parts['host'])) {
+			return null;
+		}
+		$domain = $parts['scheme'] . '://' . $parts['host'];
+		if (isset($parts['port'])) {
+			$domain .= ':' . $parts['port'];
+		}
+		return $domain;
 	}
 }
