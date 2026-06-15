@@ -1,4 +1,5 @@
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = {
 	mode: 'production',
@@ -7,6 +8,15 @@ module.exports = {
 		path: require('path').resolve(__dirname, 'js'),
 		filename : 'market.bundle.js',
 		publicPath: '/'
+	},
+	optimization: {
+		// Disable terser's parallel worker pool: in CI the jest-worker child
+		// processes can fail to terminate, leaving webpack hanging after the
+		// build completes until the job hits the 6h timeout. Building
+		// single-threaded is negligibly slower for this bundle.
+		minimizer: [
+			new TerserPlugin({ parallel: false })
+		]
 	},
 	module: {
 		rules: [{
