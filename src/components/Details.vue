@@ -152,8 +152,8 @@
 					return false
 				}
 				else {
-					if (this.application.releases)
-						return this.application.releases
+					if (this.application.release)
+						return this.application.release
 					return false
 				}
 			},
