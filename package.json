@@ -63,7 +63,7 @@
     "loader-utils": "1.4.2",
     "minimist": "1.2.8",
     "scss-tokenizer": "0.4.3",
-    "set-value": "2.0.1",
+    "set-value": "4.1.0",
     "webpack-cli": "^5.1.4"
   },
   "engines": {
