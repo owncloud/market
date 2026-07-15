@@ -66,6 +66,9 @@
     "set-value": "2.0.1",
     "webpack-cli": "^5.1.4"
   },
+  "overrides": {
+    "postcss": "^8.5.10"
+  },
   "engines": {
     "node": ">=6.9 <=20"
   },
