@@ -64,7 +64,7 @@
     "minimist": "1.2.8",
     "scss-tokenizer": "0.4.3",
     "set-value": "4.1.0",
-    "webpack-cli": "^5.1.4"
+    "webpack-cli": "^7.2.1"
   },
   "overrides": {
     "postcss": "^8.5.10"
