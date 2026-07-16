@@ -11,7 +11,7 @@ ownCloud Server 10 Marketplace integration app. Provides an in-app storefront fo
 - `templates/` -- Server-side templates
 - `img/` -- Images and icons
 - `l10n/` -- Translation files
-- `tests/` -- Unit tests
+- `tests/` -- Unit and Acceptance tests
 - `Makefile` -- Build and test automation
 - `composer.json` -- PHP dependencies
 - `package.json` -- Node.js dependencies
@@ -26,12 +26,13 @@ ownCloud Server 10 Marketplace integration app. Provides an in-app storefront fo
 ## Build & Test Commands
 
 ```bash
-make install-js-deps    # Install Node.js dependencies
-make build-dev          # Build frontend (development)
-make dist               # Create distribution package
-make test-php-unit      # Run PHP unit tests
-make test-php-style     # Check PHP code style
-make test-js            # Run JavaScript tests
+make install-js-deps     # Install Node.js dependencies
+make build-dev           # Build frontend (development)
+make dist                # Create distribution package
+make test-php-unit       # Run PHP unit tests
+make test-php-style      # Check PHP code style
+make test-acceptance-cli # Run CLI acceptance tests
+make test-js             # Run JavaScript tests
 ```
 
 ## Important Constraints
