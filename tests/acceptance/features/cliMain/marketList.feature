@@ -8,4 +8,4 @@ Feature: list apps that are available in the market-place
     Then the command should have been successful
     # The command lists all the apps that are available on the market-place
     # Just check for an example app that should always be there
-    And the command output should contain the text "activity"
+    And the command output should contain the text "migrate_to_ocis"
