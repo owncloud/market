@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [0.9.1] - 2026-07-17
+
+### Changed
+
+- [#1433](https://github.com/owncloud/market/pull/1433) - feat: allow configured appstoreurl as CSP image domain
+
+
 ## [0.9.0] - 2024-06-04
 
 - [#1292](https://github.com/owncloud/market/pull/1292) - fix: use webpack 5
@@ -195,7 +202,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Skip migrations when reinstalling missing code - [#76](https://github.com/owncloud/market/issues/76)
 - Reset overwritten core css styles - [#73](https://github.com/owncloud/market/issues/73)
 
-[Unreleased]: https://github.com/owncloud/market/compare/v0.9.0...master
+[0.9.1]: https://github.com/owncloud/market/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/owncloud/market/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/owncloud/market/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/owncloud/market/compare/v0.6.3...v0.7.0
