@@ -33,7 +33,7 @@
     "easygettext": "^2.17.0",
     "expose-loader": "^4.1.0",
     "jquery": "3.6.0",
-    "less": "^4.6.7",
+    "less": "^4.7.0",
     "less-loader": "^13.0.0",
     "sass": "^1.101.0",
     "pug": "3.0.4",
