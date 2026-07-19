@@ -60,7 +60,7 @@
     "json-schema": "0.4.0",
     "json5": "2.2.3",
     "kind-of": "6.0.3",
-    "loader-utils": "1.4.2",
+    "loader-utils": "3.3.1",
     "minimist": "1.2.8",
     "scss-tokenizer": "0.4.3",
     "set-value": "4.1.0",
