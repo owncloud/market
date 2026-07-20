@@ -8,7 +8,7 @@
 Please note: Since ownCloud X (10.0) every instance gets shipped with this app included. You do not need to install it separately.
 To use this application click on "Files" in the top left corner and click on "Market" (cart icon) (Administrator privileges required) </description>
 	<licence>AGPL</licence>
-	<author>Thomas Müller, Felix Heidecke, Thomas Börger, Philipp Schaffrath, Viktar Dubiniuk</author>
+	<author>ownCloud GmbH - a Kiteworks Company</author>
 	<version>0.10.0</version>
 	<default_enable/>
 	<category>tools</category>
