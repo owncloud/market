@@ -7,6 +7,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 
+## [0.10.1] - 2026-07-22
+
+### Changed
+- Maintenance release re-signed with the ownCloud G2 code-signing certificate for the ownCloud 11.0.0 release.
+
+## [0.10.0] - 2026-06-29
+
+### Changed
+- ownCloud 11 compatible release (oc 11.0.0-rc1).
 
 ## [0.9.0] - 2024-06-04
 
@@ -199,7 +208,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Skip migrations when reinstalling missing code - [#76](https://github.com/owncloud/market/issues/76)
 - Reset overwritten core css styles - [#73](https://github.com/owncloud/market/issues/73)
 
-[Unreleased]: https://github.com/owncloud/market/compare/v0.9.0...master
+[Unreleased]: https://github.com/owncloud/market/compare/v0.10.1..master
+[0.10.1]: https://github.com/owncloud/market/compare/v0.10.0..v0.10.1
+[0.10.0]: https://github.com/owncloud/market/compare/v0.9.0..v0.10.0
 [0.9.0]: https://github.com/owncloud/market/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/owncloud/market/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/owncloud/market/compare/v0.6.3...v0.7.0
@@ -216,3 +227,4 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 [0.2.3]: https://github.com/owncloud/market/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/owncloud/market/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/owncloud/market/compare/v0.2.0...v0.2.1
+[0.2.0]: https://github.com/owncloud/market/compare/v0.1.0..v0.2.0
