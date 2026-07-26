@@ -23,7 +23,7 @@
   "author": "Felix Heidecke",
   "license": "AGPL-3.0",
   "dependencies": {
-    "@babel/cli": "^7.0.0",
+    "@babel/cli": "^8.0.4",
     "@babel/core": "^7.29.6",
     "@babel/preset-env": "^7.0.0",
     "axios": "^1.18.1",
