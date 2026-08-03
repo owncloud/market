@@ -29,7 +29,7 @@
     "axios": "^1.19.0",
     "babel-loader": "^9.0.0",
     "core-js": "^3.49.0",
-    "css-loader": "^6.8.1",
+    "css-loader": "^7.1.4",
     "easygettext": "^2.17.0",
     "expose-loader": "^5.0.1",
     "jquery": "3.6.0",
