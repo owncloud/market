@@ -1,4 +1,4 @@
-# agents.md -- Market
+# AGENTS.md -- Market
 
 ## Repository Overview
 
