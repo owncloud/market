@@ -35,7 +35,7 @@
     "jquery": "3.6.0",
     "less": "^4.9.1",
     "less-loader": "^13.0.0",
-    "sass": "^1.105.0",
+    "sass": "^1.105.1",
     "pug": "3.0.4",
     "sass-loader": "^17.0.1",
     "showdown": "^2.1.0",
@@ -55,7 +55,7 @@
   },
   "devDependencies": {
     "acorn": "8.18.0",
-    "ansi-regex": "6.3.0",
+    "ansi-regex": "6.4.0",
     "glob-parent": "6.0.2",
     "json-schema": "0.4.0",
     "json5": "2.2.3",
