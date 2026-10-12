@@ -22,7 +22,6 @@
 
 namespace OCA\Market;
 
-use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\TransferException;
 use OCP\App\AppManagerException;
 use OCP\Http\Client\IClientService;
@@ -126,20 +125,7 @@ class HttpService {
 	 * @throws AppManagerException
 	 */
 	public function downloadApp($url, $path) {
-		$apiKey = $this->getApiKey();
-		$this->httpGet($url, ['sink' => $path], $apiKey);
-	}
-
-	/**
-	 * @param string $apiKey
-	 *
-	 * @return \OCP\Http\Client\IResponse
-	 *
-	 * @throws AppManagerException
-	 */
-	public function validateKey($apiKey) {
-		$url = $this->getAbsoluteUrl('/api/v1/categories.json');
-		return $this->httpGet($url, [], $apiKey);
+		$this->httpGet($url, ['sink' => $path]);
 	}
 
 	/**
@@ -172,9 +158,8 @@ class HttpService {
 		}
 
 		$this->checkInternetConnection();
-		$apiKey = $this->getApiKey();
 		$endpointUrl = $this->getAbsoluteUrl($uri);
-		$response = $this->httpGet($endpointUrl, [], $apiKey);
+		$response = $this->httpGet($endpointUrl, []);
 		$data = $response->getBody();
 		if ($this->cacheFactory->isAvailable()) {
 			// cache if for a day - TODO: evaluate the response header
@@ -204,33 +189,14 @@ class HttpService {
 	}
 
 	/**
-	 * @return string | null
-	 */
-	public function getApiKey() {
-		$configFileApiKey = $this->config->getSystemValue('marketplace.key', null);
-		if ($configFileApiKey) {
-			return $configFileApiKey;
-		}
-		return $this->config->getAppValue('market', 'key', null);
-	}
-	/**
 	 * @param string $path
 	 * @param array $options
-	 * @param string | null $apiKey
 	 *
 	 * @return \OCP\Http\Client\IResponse
 	 *
 	 * @throws AppManagerException
 	 */
-	private function httpGet($path, $options, $apiKey) {
-		if (!empty($apiKey)) {
-			$options = \array_merge(
-				[
-					'headers' => ['Authorization' => "apikey: $apiKey"]
-				],
-				$options
-			);
-		}
+	private function httpGet($path, $options) {
 		$ca = $this->config->getSystemValue('marketplace.ca', null);
 		if ($ca !== null) {
 			$options = \array_merge(
@@ -244,23 +210,6 @@ class HttpService {
 		try {
 			$response = $client->get($path, $options);
 		} catch (TransferException $e) {
-			if ($e instanceof ClientException) {
-				if ($e->getCode() === 401) {
-					if ($apiKey !== null) {
-						throw new AppManagerException(
-							$this->l10n->t('Invalid marketplace API key provided')
-						);
-					}
-					throw new AppManagerException(
-						$this->l10n->t('Marketplace API key missing')
-					);
-				}
-				if ($e->getCode() === 402) {
-					throw new AppManagerException(
-						$this->l10n->t('Active subscription on marketplace required')
-					);
-				}
-			}
 			throw new AppManagerException(
 				$this->l10n->t(
 					'No marketplace connection: %s',
