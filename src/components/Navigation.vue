@@ -22,16 +22,12 @@
 
 				li.uk-nav-header {{ t('Settings') }}
 
-				apiform
-
 				li
 					a(href="", @click.prevent="invalidateCache") {{ t('Clear cache') }}
 
 </template>
 
 <script>
-	import Apiform from './ApiForm.vue'
-
 	export default {
 		mounted () {
 			this.$store.dispatch('FETCH_CATEGORIES')
@@ -61,9 +57,6 @@
 			updateList() {
 				return this.$store.getters.updateList
 			}
-		},
-		components: {
-			Apiform
 		}
 	}
 </script>
