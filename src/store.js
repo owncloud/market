@@ -27,13 +27,6 @@ const state = {
         records: {}
     },
 
-    apikey : {
-        key : null,
-        loading: false,
-        valid : undefined,
-        changeable : false
-    },
-
     processing: [],
     installed: []
 };
@@ -91,10 +84,6 @@ const getters = {
         return _.filter(state.applications.records, function (application) {
             return application.updateInfo !== false;
         });
-    },
-
-    apikey (state) {
-        return state.apikey;
     }
 };
 
@@ -200,10 +189,6 @@ const mutations = {
 
     SET_APPLICATION_INSTALLED (state, id) {
         state["installed"].push(id)
-    },
-
-    APIKEY (state, changes) {
-        _.extend(state["apikey"], changes);
     },
 };
 
@@ -361,28 +346,6 @@ const actions = {
             });
     },
 
-    FETCH_APIKEY (context, callback) {
-        context.commit("APIKEY", {"loading": true });
-        Axios.get(OC.generateUrl("/apps/market/apikey"))
-            .then((response) => {
-                context.commit("APIKEY", {
-                    "key"        : response.data.apiKey,
-                    "changeable" : response.data.changeable,
-                    "loading"    : false,
-                    "processing" : false
-				});
-				
-				if (typeof callback === 'function')
-					callback(response.data);
-            })
-            .catch((error) => {
-				context.commit("APIKEY", {"loading": false });
-				
-				if (typeof callback === 'function')
-					callback(error);
-            });
-    },
-
     FETCH_CONFIG (context) {
         Axios.get(OC.generateUrl("/apps/market/config"))
             .then((response) => {
@@ -394,36 +357,6 @@ const actions = {
                     pos: "bottom-right"
                 });
             });
-    },
-
-    WRITE_APIKEY (context, payload) {
-        let key = payload;
-        context.commit("APIKEY", {"loading": true });
-        Axios.put(OC.generateUrl("/apps/market/apikey"),
-            {
-                "apiKey" : key
-            }, {
-                headers: {
-                    requesttoken: OC.requestToken
-                }
-            }
-        ).then((response) => {
-            if (response.data.message == "The api key is not valid.") {
-                context.commit("APIKEY", {
-                    "loading": false,
-                    "valid"  : false
-                });
-            }
-            else {
-                context.commit("APIKEY", {"valid" : true });
-                context.dispatch("FETCH_APIKEY");
-                context.dispatch("FETCH_APPLICATIONS");
-                context.dispatch("FETCH_CATEGORIES");
-                context.dispatch("FETCH_BUNDLES");
-            }
-        }).catch((error) => {
-            context.commit("APIKEY", {"loading" : false });
-        })
     },
 
     REBUILD_NAVIGATION() {

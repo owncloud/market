@@ -90,18 +90,35 @@ class HttpServiceTest extends TestCase {
 	public function testGetApps() {
 		$expectedApps = [];
 		$this->config
-			->expects($this->any())
 			->method('getSystemValue')
-			->withConsecutive(
-				['has_internet_connection', true],
-				['marketplace.key', null],
-			)
-			->willReturnOnConsecutiveCalls(true, '');
+			->willReturnMap([
+				['has_internet_connection', true, true],
+				['appstoreurl', 'https://marketplace.owncloud.com', 'https://marketplace.owncloud.com'],
+				['marketplace.ca', null, null],
+			]);
 
 		$clientMock = $this->getClientResponseMockForGet(\json_encode($expectedApps));
 		$this->httpClientService->method('newClient')->willReturn($clientMock);
 		$apps = $this->httpService->getApps();
 		$this->assertEquals($expectedApps, $apps);
+	}
+
+	public function testDownloadAppSendsNoCredentials() {
+		$this->config->method('getSystemValue')
+			->willReturnMap([
+				['marketplace.key', null, 'secret'],
+				['marketplace.ca', null, null],
+			]);
+		$this->config->method('getAppValue')->willReturn('secret');
+
+		$clientMock = $this->createMock(IClient::class);
+		$clientMock->expects($this->once())
+			->method('get')
+			->with('https://example.org/foo.tar.gz', ['sink' => '/tmp/app.tar.gz'])
+			->willReturn($this->createMock(IResponse::class));
+		$this->httpClientService->method('newClient')->willReturn($clientMock);
+
+		$this->httpService->downloadApp('https://example.org/foo.tar.gz', '/tmp/app.tar.gz');
 	}
 
 	private function getClientResponseMockForGet($body) {
