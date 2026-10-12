@@ -425,59 +425,6 @@ class MarketService {
 		return $apps;
 	}
 
-	public function getApiKey() {
-		return $this->httpService->getApiKey();
-	}
-
-	/**
-	 * Set api key
-	 *
-	 * @param string $apiKey
-	 *
-	 * @return bool
-	 */
-	public function setApiKey($apiKey) {
-		if ($this->isApiKeyChangeableByUser()) {
-			$this->config->deleteAppValue('market', 'key');
-			$this->config->setAppValue('market', 'key', $apiKey);
-			$this->httpService->invalidateCache();
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * Check if ApiKey is valid
-	 *
-	 * @param string $apiKey
-	 *
-	 * @return bool
-	 */
-	public function isApiKeyValid($apiKey) {
-		if ($apiKey === '') {
-			return true;
-		}
-		try {
-			$this->httpService->validateKey($apiKey);
-			return true;
-		} catch (\Exception $ex) {
-			return false;
-		}
-	}
-
-	/**
-	 * ApiKey can only be changed by user if no key is configured in config.php
-	 *
-	 * @return bool
-	 */
-	public function isApiKeyChangeableByUser() {
-		$configFileApiKey = $this->config->getSystemValue('marketplace.key', null);
-		if ($configFileApiKey) {
-			return false;
-		}
-		return true;
-	}
-
 	/**
 	 * @return bool
 	 */
