@@ -41,7 +41,7 @@
     "showdown": "^2.1.0",
     "style-loader": "^4.0.0",
     "uglify-js": "3.19.3",
-    "uikit": "3.25.25",
+    "uikit": "3.25.26",
     "underscore": "1.13.8",
     "vue": "2.7.16",
     "vue-gettext": "2.1.12",
@@ -54,7 +54,7 @@
     "webpack": "^5.111.1"
   },
   "devDependencies": {
-    "acorn": "8.18.0",
+    "acorn": "8.19.0",
     "ansi-regex": "6.4.0",
     "glob-parent": "6.0.2",
     "json-schema": "0.4.0",
