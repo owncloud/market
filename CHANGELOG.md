@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [0.9.2] - 2026-11-02
+
+### Removed
+
+- [#1498](https://github.com/owncloud/market/pull/1498) - The marketplace API key. The marketplace no longer uses API keys, but the app still sent the configured key with every request, including app downloads from the URLs the catalog returned. The API key settings form and its endpoints are gone.
+
 ## [0.9.1] - 2026-07-17
 
 ### Changed
@@ -202,6 +208,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Skip migrations when reinstalling missing code - [#76](https://github.com/owncloud/market/issues/76)
 - Reset overwritten core css styles - [#73](https://github.com/owncloud/market/issues/73)
 
+[0.9.2]: https://github.com/owncloud/market/compare/v0.9.1...v0.9.2
 [0.9.1]: https://github.com/owncloud/market/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/owncloud/market/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/owncloud/market/compare/v0.7.0...v0.8.0
