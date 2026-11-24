@@ -10,3 +10,11 @@ parameters:
       message: '#Property OCA\\Market\\Controller\\LocalAppsController::\$appManager is never read, only written.#'
       path: lib/Controller/LocalAppsController.php
       count: 1
+    -
+      message: '#Variable \$first on left side of \?\? always exists and is not nullable.#'
+      path: lib/VersionHelper.php
+      count: 1
+    -
+      message: '#Variable \$second on left side of \?\? always exists and is not nullable.#'
+      path: lib/VersionHelper.php
+      count: 1

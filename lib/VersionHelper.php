@@ -53,8 +53,8 @@ class VersionHelper {
 	 * @return bool
 	 */
 	public function isSameMajorVersion($first, $second) {
-		$firstMajor = $this->getMajorVersion($first);
-		$secondMajor = $this->getMajorVersion($second);
+		$firstMajor = $this->getMajorVersion($first ?? '');
+		$secondMajor = $this->getMajorVersion($second ?? '');
 		return $firstMajor === $secondMajor;
 	}
 
@@ -84,7 +84,7 @@ class VersionHelper {
 		if ($first !== null && $second !== null) {
 			list($first, $second) = $this->normalizeVersions($first, $second);
 		}
-		return \version_compare($first, $second, $operator);
+		return \version_compare($first ?? '', $second ?? '', $operator);
 	}
 
 	/**
